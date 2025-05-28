@@ -1,3 +1,117 @@
+<?php
+require_once '../db_connect.php';
+
+// Query for pending funeral bookings
+$funeralQuery = "SELECT 
+                    b.booking_id,
+                    CONCAT(b.deceased_lname, ', ', b.deceased_fname, ' ', IFNULL(b.deceased_midname, '')) AS deceased_name,
+                    b.booking_date AS notification_date,
+                    IFNULL(s.service_name, 'Custom Package') AS service_name,
+                    'funeral' AS notification_type,
+                    'Booking_acceptance.php' AS link_base
+                 FROM booking_tb b
+                 LEFT JOIN services_tb s ON b.service_id = s.service_id
+                 WHERE b.status = 'Pending'
+                 ORDER BY b.booking_date DESC";
+
+// Query for pending life plan bookings
+$lifeplanQuery = "SELECT 
+                    lb.lpbooking_id AS booking_id,
+                    CONCAT(lb.benefeciary_lname, ', ', lb.benefeciary_fname, ' ', IFNULL(lb.benefeciary_mname, '')) AS deceased_name,
+                    lb.initial_date AS notification_date,
+                    s.service_name,
+                    'lifeplan' AS notification_type,
+                    'Booking_acceptance.php' AS link_base
+                  FROM lifeplan_booking_tb lb
+                  JOIN services_tb s ON lb.service_id = s.service_id
+                  WHERE lb.booking_status = 'pending'
+                  ORDER BY lb.initial_date DESC";
+
+// Query for pending ID validations
+$idValidationQuery = "SELECT 
+                        id AS booking_id,
+                        '' AS deceased_name,
+                        upload_at AS notification_date,
+                        'ID Validation' AS service_name,
+                        'id_validation' AS notification_type,
+                        'id_confirmation.php' AS link_base
+                     FROM valid_id_tb
+                     WHERE is_validated = 'no'
+                     ORDER BY upload_at DESC";
+
+// Execute all queries
+$funeralResult = $conn->query($funeralQuery);
+$lifeplanResult = $conn->query($lifeplanQuery);
+$idValidationResult = $conn->query($idValidationQuery);
+
+// Store results in arrays
+$funeralNotifications = [];
+$lifeplanNotifications = [];
+$idValidationNotifications = [];
+
+if ($funeralResult && $funeralResult->num_rows > 0) {
+    while ($row = $funeralResult->fetch_assoc()) {
+        $funeralNotifications[] = $row;
+    }
+}
+
+if ($lifeplanResult && $lifeplanResult->num_rows > 0) {
+    while ($row = $lifeplanResult->fetch_assoc()) {
+        $lifeplanNotifications[] = $row;
+    }
+}
+
+if ($idValidationResult && $idValidationResult->num_rows > 0) {
+    while ($row = $idValidationResult->fetch_assoc()) {
+        $idValidationNotifications[] = $row;
+    }
+}
+
+// Count totals
+$totalFuneral = count($funeralNotifications);
+$totalLifeplan = count($lifeplanNotifications);
+$totalIdValidation = count($idValidationNotifications);
+$totalPending = $totalFuneral + $totalLifeplan + $totalIdValidation;
+
+// Function to calculate time ago
+function time_elapsed_string($datetime, $full = false) {
+    $now = new DateTime;
+    $ago = new DateTime($datetime);
+    $diff = $now->diff($ago);
+
+    $weeks = floor($diff->d / 7);
+    $days = $diff->d % 7;
+
+    $string = array(
+        'y' => 'year',
+        'm' => 'month',
+        'w' => 'week',
+        'd' => 'day',
+        'h' => 'hour',
+        'i' => 'minute',
+        's' => 'second',
+    );
+    
+    $diff->d = $days;
+    
+    foreach ($string as $k => &$v) {
+        if ($k === 'w') {
+            if ($weeks) {
+                $v = $weeks . ' ' . $v . ($weeks > 1 ? 's' : '');
+            } else {
+                unset($string[$k]);
+            }
+        } elseif ($diff->$k) {
+            $v = $diff->$k . ' ' . $v . ($diff->$k > 1 ? 's' : '');
+        } else {
+            unset($string[$k]);
+        }
+    }
+
+    if (!$full) $string = array_slice($string, 0, 1);
+    return $string ? implode(', ', $string) . ' ago' : 'just now';
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,7 +121,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Alex+Brush&family=Inter:wght@300;400;500;600;700&family=Cinzel:wght@400;500;600&family=Hedvig+Letters+Serif:opsz,wght@12..24,400&display=swap" rel="stylesheet">
-    
     
     <script>
         tailwind.config = {
@@ -131,13 +244,12 @@
                     </button>
                     <div>
                         <h1 class="text-2xl font-semibold text-sidebar-text font-playfair">Notifications</h1>
-                        <p class="text-sm text-gray-600 mt-1">Manage all system notifications and bookings</p>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
                     <div class="relative">
                         <span class="bg-sidebar-accent text-white text-sm px-3 py-1 rounded-full font-medium shadow-sm animate-pulse">
-                            <span id="total-notifications">7</span> Pending
+                            <span id="total-notifications"><?php echo $totalPending; ?></span> Pending
                         </span>
                     </div>
                     <button 
@@ -217,7 +329,7 @@
                     >
                         <i class="fas fa-list mr-2" aria-hidden="true"></i>
                         All Notifications
-                        <span class="ml-2 bg-sidebar-accent text-white text-xs rounded-full px-2 py-0.5">7</span>
+                        <span class="ml-2 bg-sidebar-accent text-white text-xs rounded-full px-2 py-0.5"><?php echo $totalPending; ?></span>
                     </button>
                     <button 
                         onclick="filterNotifications('funeral')" 
@@ -228,7 +340,7 @@
                     >
                         <i class="fas fa-cross mr-2" aria-hidden="true"></i>
                         Funeral Bookings
-                        <span class="ml-2 bg-blue-500 text-white text-xs rounded-full px-2 py-0.5">3</span>
+                        <span class="ml-2 bg-blue-500 text-white text-xs rounded-full px-2 py-0.5"><?php echo $totalFuneral; ?></span>
                     </button>
                     <button 
                         onclick="filterNotifications('lifeplan')" 
@@ -239,7 +351,7 @@
                     >
                         <i class="fas fa-heart mr-2" aria-hidden="true"></i>
                         Life Plan Bookings
-                        <span class="ml-2 bg-purple-500 text-white text-xs rounded-full px-2 py-0.5">2</span>
+                        <span class="ml-2 bg-purple-500 text-white text-xs rounded-full px-2 py-0.5"><?php echo $totalLifeplan; ?></span>
                     </button>
                     <button 
                         onclick="filterNotifications('validation')" 
@@ -250,7 +362,7 @@
                     >
                         <i class="fas fa-id-card mr-2" aria-hidden="true"></i>
                         ID Validations
-                        <span class="ml-2 bg-yellow-500 text-white text-xs rounded-full px-2 py-0.5">2</span>
+                        <span class="ml-2 bg-yellow-500 text-white text-xs rounded-full px-2 py-0.5"><?php echo $totalIdValidation; ?></span>
                     </button>
                 </nav>
             </div>
@@ -299,460 +411,187 @@
 
         <!-- Notifications List -->
         <div id="notifications-container" class="space-y-4">
-            <!-- High Priority Funeral Booking -->
-            <div class="notification-item funeral notification-priority-high bg-sidebar-bg rounded-lg shadow-card border border-sidebar-border overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1" data-priority="high" data-timestamp="1710504000">
-                <div class="flex items-start p-6">
-                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-red-500"></div>
-                    <div class="flex-shrink-0 bg-red-100 rounded-full p-3 mr-4">
-                        <i class="fas fa-cross text-red-600 text-lg" aria-hidden="true"></i>
+            <?php if ($totalPending === 0): ?>
+                <div class="text-center py-12">
+                    <div class="bg-sidebar-bg rounded-lg shadow-card border border-sidebar-border p-8">
+                        <i class="fas fa-check-circle text-6xl text-green-500 mb-4" aria-hidden="true"></i>
+                        <h3 class="text-lg font-semibold text-sidebar-text mb-2">No pending notifications</h3>
+                        <p class="text-gray-600 mb-4">All caught up! You have no pending notifications at this time.</p>
                     </div>
-                    <div class="flex-grow">
-                        <div class="flex justify-between items-start mb-2">
-                            <div class="flex-grow">
-                                <div class="flex items-center gap-2 mb-2">
-                                    <h3 class="text-lg font-semibold text-sidebar-text">URGENT: Funeral Booking Request</h3>
-                                    <span class="bg-red-100 text-red-800 text-xs font-medium px-2 py-1 rounded-full">High Priority</span>
+                </div>
+            <?php else: ?>
+                <!-- Funeral Bookings -->
+                <?php foreach ($funeralNotifications as $notification): 
+                    $timeAgo = time_elapsed_string($notification['notification_date']);
+                    $isUrgent = (strtotime($notification['notification_date']) > strtotime('-1 day'));
+                ?>
+                <div class="notification-item funeral <?php echo $isUrgent ? 'notification-priority-high' : ''; ?> bg-sidebar-bg rounded-lg shadow-card border border-sidebar-border overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1" data-priority="<?php echo $isUrgent ? 'high' : 'medium'; ?>" data-timestamp="<?php echo strtotime($notification['notification_date']); ?>">
+                    <div class="flex items-start p-6">
+                        <div class="absolute left-0 top-0 bottom-0 w-1 <?php echo $isUrgent ? 'bg-red-500' : 'bg-blue-500'; ?>"></div>
+                        <div class="flex-shrink-0 <?php echo $isUrgent ? 'bg-red-100' : 'bg-blue-100'; ?> rounded-full p-3 mr-4">
+                            <i class="fas fa-cross <?php echo $isUrgent ? 'text-red-600' : 'text-blue-600'; ?> text-lg" aria-hidden="true"></i>
+                        </div>
+                        <div class="flex-grow">
+                            <div class="flex justify-between items-start mb-2">
+                                <div class="flex-grow">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <h3 class="text-lg font-semibold text-sidebar-text"><?php echo $isUrgent ? 'URGENT: ' : ''; ?>Funeral Booking Request</h3>
+                                        <?php if ($isUrgent): ?>
+                                        <span class="bg-red-100 text-red-800 text-xs font-medium px-2 py-1 rounded-full">High Priority</span>
+                                        <?php endif; ?>
+                                    </div>
+                                    <p class="text-sidebar-text"><?php echo htmlspecialchars($notification['deceased_name']); ?> - <?php echo htmlspecialchars($notification['service_name']); ?></p>
                                 </div>
-                                <p class="text-sidebar-text">Smith, John Michael - Premium Funeral Package</p>
-                                <p class="text-sm text-gray-600 mt-1">Requires immediate attention due to service date proximity</p>
+                                <div class="flex items-center space-x-2 ml-4">
+                                    <span class="h-3 w-3 bg-blue-600 rounded-full" aria-label="Unread notification"></span>
+                                    <span class="text-xs text-gray-500">Unread</span>
+                                </div>
                             </div>
-                            <div class="flex items-center space-x-2 ml-4">
-                                <span class="h-3 w-3 bg-red-600 rounded-full animate-pulse" aria-label="Unread notification"></span>
-                                <span class="text-xs text-gray-500">Unread</span>
+                            <div class="flex flex-wrap items-center text-sm text-gray-600 mb-4 gap-4">
+                                <div class="flex items-center">
+                                    <i class="far fa-clock mr-2" aria-hidden="true"></i>
+                                    <span><?php echo $timeAgo; ?></span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-calendar mr-2" aria-hidden="true"></i>
+                                    <span>Booking Date: <?php echo date('F j, Y', strtotime($notification['notification_date'])); ?></span>
+                                </div>
                             </div>
-                        </div>
-                        <div class="flex flex-wrap items-center text-sm text-gray-600 mb-4 gap-4">
-                            <div class="flex items-center">
-                                <i class="far fa-clock mr-2" aria-hidden="true"></i>
-                                <span>2 hours ago</span>
-                            </div>
-                            <div class="flex items-center">
-                                <i class="fas fa-calendar mr-2" aria-hidden="true"></i>
-                                <span>Service Date: March 15, 2025</span>
-                            </div>
-                            <div class="flex items-center">
-                                <i class="fas fa-user mr-2" aria-hidden="true"></i>
-                                <span>Contact: (555) 123-4567</span>
-                            </div>
-                        </div>
-                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                            <div class="flex flex-wrap gap-2">
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                                <div class="flex flex-wrap gap-2">
+                                    <a href="<?php echo $notification['link_base']; ?>" 
+                                        class="ripple-effect px-4 py-2 bg-sidebar-accent text-white rounded-lg hover:bg-darkgold transition-all duration-200 text-sm font-medium transform hover:scale-105 focus-visible:focus"
+                                        title="View detailed booking information"
+                                    >
+                                        <i class="fas fa-eye mr-2" aria-hidden="true"></i>View Details
+                                    </a>
+                                </div>
                                 <button 
-                                    onclick="viewBooking('funeral', 1)" 
-                                    class="ripple-effect px-4 py-2 bg-sidebar-accent text-white rounded-lg hover:bg-darkgold transition-all duration-200 text-sm font-medium transform hover:scale-105 focus-visible:focus"
-                                    title="View detailed booking information"
+                                    onclick="markAsRead(this)" 
+                                    class="text-gray-400 hover:text-sidebar-accent transition-colors p-2 rounded focus-visible:focus"
+                                    title="Mark as read"
+                                    aria-label="Mark notification as read"
                                 >
-                                    <i class="fas fa-eye mr-2" aria-hidden="true"></i>View Details
-                                </button>
-                                <button 
-                                    onclick="approveBooking('funeral', 1, this)" 
-                                    class="ripple-effect px-4 py-2 bg-success text-white rounded-lg hover:bg-green-600 transition-all duration-200 text-sm font-medium transform hover:scale-105 focus-visible:focus"
-                                    title="Approve this booking"
-                                >
-                                    <i class="fas fa-check mr-2" aria-hidden="true"></i>Approve
-                                </button>
-                                <button 
-                                    onclick="rejectBooking('funeral', 1, this)" 
-                                    class="ripple-effect px-4 py-2 bg-error text-white rounded-lg hover:bg-red-600 transition-all duration-200 text-sm font-medium transform hover:scale-105 focus-visible:focus"
-                                    title="Decline this booking"
-                                >
-                                    <i class="fas fa-times mr-2" aria-hidden="true"></i>Decline
+                                    <i class="fas fa-check-circle text-lg" aria-hidden="true"></i>
                                 </button>
                             </div>
-                            <button 
-                                onclick="markAsRead(this)" 
-                                class="text-gray-400 hover:text-sidebar-accent transition-colors p-2 rounded focus-visible:focus"
-                                title="Mark as read"
-                                aria-label="Mark notification as read"
-                            >
-                                <i class="fas fa-check-circle text-lg" aria-hidden="true"></i>
-                            </button>
                         </div>
                     </div>
                 </div>
-            </div>
+                <?php endforeach; ?>
 
-            <!-- Life Plan Booking -->
-            <div class="notification-item lifeplan bg-sidebar-bg rounded-lg shadow-card border border-sidebar-border overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1" data-priority="medium" data-timestamp="1710490800">
-                <div class="flex items-start p-6">
-                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-purple-500"></div>
-                    <div class="flex-shrink-0 bg-purple-100 rounded-full p-3 mr-4">
-                        <i class="fas fa-heart text-purple-600 text-lg" aria-hidden="true"></i>
-                    </div>
-                    <div class="flex-grow">
-                        <div class="flex justify-between items-start mb-2">
-                            <div class="flex-grow">
-                                <h3 class="text-lg font-semibold text-sidebar-text">New Life Plan Booking Request</h3>
-                                <p class="text-sidebar-text mt-1">Johnson, Mary Elizabeth - Complete Life Plan Package</p>
-                                <p class="text-sm text-gray-600 mt-1">Monthly payment plan enrollment</p>
-                            </div>
-                            <div class="flex items-center space-x-2 ml-4">
-                                <span class="h-3 w-3 bg-purple-600 rounded-full" aria-label="Unread notification"></span>
-                                <span class="text-xs text-gray-500">Unread</span>
-                            </div>
+                <!-- Life Plan Bookings -->
+                <?php foreach ($lifeplanNotifications as $notification): 
+                    $timeAgo = time_elapsed_string($notification['notification_date']);
+                ?>
+                <div class="notification-item lifeplan bg-sidebar-bg rounded-lg shadow-card border border-sidebar-border overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1" data-priority="medium" data-timestamp="<?php echo strtotime($notification['notification_date']); ?>">
+                    <div class="flex items-start p-6">
+                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-purple-500"></div>
+                        <div class="flex-shrink-0 bg-purple-100 rounded-full p-3 mr-4">
+                            <i class="fas fa-heart text-purple-600 text-lg" aria-hidden="true"></i>
                         </div>
-                        <div class="flex flex-wrap items-center text-sm text-gray-600 mb-4 gap-4">
-                            <div class="flex items-center">
-                                <i class="far fa-clock mr-2" aria-hidden="true"></i>
-                                <span>4 hours ago</span>
+                        <div class="flex-grow">
+                            <div class="flex justify-between items-start mb-2">
+                                <div class="flex-grow">
+                                    <h3 class="text-lg font-semibold text-sidebar-text">New Life Plan Booking Request</h3>
+                                    <p class="text-sidebar-text mt-1"><?php echo htmlspecialchars($notification['deceased_name']); ?> - <?php echo htmlspecialchars($notification['service_name']); ?></p>
+                                </div>
+                                <div class="flex items-center space-x-2 ml-4">
+                                    <span class="h-3 w-3 bg-purple-600 rounded-full" aria-label="Unread notification"></span>
+                                    <span class="text-xs text-gray-500">Unread</span>
+                                </div>
                             </div>
-                            <div class="flex items-center">
-                                <i class="fas fa-dollar-sign mr-2" aria-hidden="true"></i>
-                                <span>Monthly Plan: $250</span>
+                            <div class="flex flex-wrap items-center text-sm text-gray-600 mb-4 gap-4">
+                                <div class="flex items-center">
+                                    <i class="far fa-clock mr-2" aria-hidden="true"></i>
+                                    <span><?php echo $timeAgo; ?></span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-calendar mr-2" aria-hidden="true"></i>
+                                    <span>Initial Date: <?php echo date('F j, Y', strtotime($notification['notification_date'])); ?></span>
+                                </div>
                             </div>
-                            <div class="flex items-center">
-                                <i class="fas fa-envelope mr-2" aria-hidden="true"></i>
-                                <span>mary.johnson@email.com</span>
-                            </div>
-                        </div>
-                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                            <div class="flex flex-wrap gap-2">
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                                <div class="flex flex-wrap gap-2">
+                                    <a href="<?php echo $notification['link_base']; ?>" 
+                                        class="ripple-effect px-4 py-2 bg-sidebar-accent text-white rounded-lg hover:bg-darkgold transition-all duration-200 text-sm font-medium transform hover:scale-105 focus-visible:focus"
+                                        title="View detailed booking information"
+                                    >
+                                        <i class="fas fa-eye mr-2" aria-hidden="true"></i>View Details
+                                    </a>
+                                </div>
                                 <button 
-                                    onclick="viewBooking('lifeplan', 1)" 
-                                    class="ripple-effect px-4 py-2 bg-sidebar-accent text-white rounded-lg hover:bg-darkgold transition-all duration-200 text-sm font-medium transform hover:scale-105 focus-visible:focus"
-                                    title="View detailed booking information"
+                                    onclick="markAsRead(this)" 
+                                    class="text-gray-400 hover:text-sidebar-accent transition-colors p-2 rounded focus-visible:focus"
+                                    title="Mark as read"
+                                    aria-label="Mark notification as read"
                                 >
-                                    <i class="fas fa-eye mr-2" aria-hidden="true"></i>View Details
-                                </button>
-                                <button 
-                                    onclick="approveBooking('lifeplan', 1, this)" 
-                                    class="ripple-effect px-4 py-2 bg-success text-white rounded-lg hover:bg-green-600 transition-all duration-200 text-sm font-medium transform hover:scale-105 focus-visible:focus"
-                                    title="Approve this booking"
-                                >
-                                    <i class="fas fa-check mr-2" aria-hidden="true"></i>Approve
-                                </button>
-                                <button 
-                                    onclick="rejectBooking('lifeplan', 1, this)" 
-                                    class="ripple-effect px-4 py-2 bg-error text-white rounded-lg hover:bg-red-600 transition-all duration-200 text-sm font-medium transform hover:scale-105 focus-visible:focus"
-                                    title="Decline this booking"
-                                >
-                                    <i class="fas fa-times mr-2" aria-hidden="true"></i>Decline
+                                    <i class="fas fa-check-circle text-lg" aria-hidden="true"></i>
                                 </button>
                             </div>
-                            <button 
-                                onclick="markAsRead(this)" 
-                                class="text-gray-400 hover:text-sidebar-accent transition-colors p-2 rounded focus-visible:focus"
-                                title="Mark as read"
-                                aria-label="Mark notification as read"
-                            >
-                                <i class="fas fa-check-circle text-lg" aria-hidden="true"></i>
-                            </button>
                         </div>
                     </div>
                 </div>
-            </div>
+                <?php endforeach; ?>
 
-            <!-- ID Validation -->
-            <div class="notification-item validation bg-sidebar-bg rounded-lg shadow-card border border-sidebar-border overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1" data-priority="medium" data-timestamp="1710418800">
-                <div class="flex items-start p-6">
-                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-yellow-500"></div>
-                    <div class="flex-shrink-0 bg-yellow-100 rounded-full p-3 mr-4">
-                        <i class="fas fa-id-card text-yellow-600 text-lg" aria-hidden="true"></i>
-                    </div>
-                    <div class="flex-grow">
-                        <div class="flex justify-between items-start mb-2">
-                            <div class="flex-grow">
-                                <h3 class="text-lg font-semibold text-sidebar-text">ID Validation Required</h3>
-                                <p class="text-sidebar-text mt-1">New identification document uploaded for verification</p>
-                                <p class="text-sm text-gray-600 mt-1">Driver's License - Expires in review queue after 7 days</p>
-                            </div>
-                            <div class="flex items-center space-x-2 ml-4">
-                                <span class="h-3 w-3 bg-yellow-600 rounded-full" aria-label="Unread notification"></span>
-                                <span class="text-xs text-gray-500">Unread</span>
-                            </div>
+                <!-- ID Validations -->
+                <?php foreach ($idValidationNotifications as $notification): 
+                    $timeAgo = time_elapsed_string($notification['notification_date']);
+                ?>
+                <div class="notification-item validation bg-sidebar-bg rounded-lg shadow-card border border-sidebar-border overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1" data-priority="medium" data-timestamp="<?php echo strtotime($notification['notification_date']); ?>">
+                    <div class="flex items-start p-6">
+                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-yellow-500"></div>
+                        <div class="flex-shrink-0 bg-yellow-100 rounded-full p-3 mr-4">
+                            <i class="fas fa-id-card text-yellow-600 text-lg" aria-hidden="true"></i>
                         </div>
-                        <div class="flex flex-wrap items-center text-sm text-gray-600 mb-4 gap-4">
-                            <div class="flex items-center">
-                                <i class="far fa-clock mr-2" aria-hidden="true"></i>
-                                <span>1 day ago</span>
+                        <div class="flex-grow">
+                            <div class="flex justify-between items-start mb-2">
+                                <div class="flex-grow">
+                                    <h3 class="text-lg font-semibold text-sidebar-text">ID Validation Required</h3>
+                                    <p class="text-sidebar-text mt-1">New identification document uploaded for verification</p>
+                                </div>
+                                <div class="flex items-center space-x-2 ml-4">
+                                    <span class="h-3 w-3 bg-yellow-600 rounded-full" aria-label="Unread notification"></span>
+                                    <span class="text-xs text-gray-500">Unread</span>
+                                </div>
                             </div>
-                            <div class="flex items-center">
-                                <i class="fas fa-user mr-2" aria-hidden="true"></i>
-                                <span>User ID: #12345</span>
+                            <div class="flex flex-wrap items-center text-sm text-gray-600 mb-4 gap-4">
+                                <div class="flex items-center">
+                                    <i class="far fa-clock mr-2" aria-hidden="true"></i>
+                                    <span><?php echo $timeAgo; ?></span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-user mr-2" aria-hidden="true"></i>
+                                    <span>ID #<?php echo htmlspecialchars($notification['booking_id']); ?></span>
+                                </div>
                             </div>
-                            <div class="flex items-center">
-                                <i class="fas fa-file-alt mr-2" aria-hidden="true"></i>
-                                <span>Document Type: Driver's License</span>
-                            </div>
-                        </div>
-                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                            <div class="flex flex-wrap gap-2">
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                                <div class="flex flex-wrap gap-2">
+                                    <a href="<?php echo $notification['link_base']; ?>" 
+                                        class="ripple-effect px-4 py-2 bg-sidebar-accent text-white rounded-lg hover:bg-darkgold transition-all duration-200 text-sm font-medium transform hover:scale-105 focus-visible:focus"
+                                        title="Review uploaded ID document"
+                                    >
+                                        <i class="fas fa-eye mr-2" aria-hidden="true"></i>Review ID
+                                    </a>
+                                </div>
                                 <button 
-                                    onclick="viewValidation(1)" 
-                                    class="ripple-effect px-4 py-2 bg-sidebar-accent text-white rounded-lg hover:bg-darkgold transition-all duration-200 text-sm font-medium transform hover:scale-105 focus-visible:focus"
-                                    title="Review uploaded ID document"
+                                    onclick="markAsRead(this)" 
+                                    class="text-gray-400 hover:text-sidebar-accent transition-colors p-2 rounded focus-visible:focus"
+                                    title="Mark as read"
+                                    aria-label="Mark notification as read"
                                 >
-                                    <i class="fas fa-eye mr-2" aria-hidden="true"></i>Review ID
-                                </button>
-                                <button 
-                                    onclick="approveValidation(1, this)" 
-                                    class="ripple-effect px-4 py-2 bg-success text-white rounded-lg hover:bg-green-600 transition-all duration-200 text-sm font-medium transform hover:scale-105 focus-visible:focus"
-                                    title="Validate this ID"
-                                >
-                                    <i class="fas fa-check mr-2" aria-hidden="true"></i>Validate
-                                </button>
-                                <button 
-                                    onclick="rejectValidation(1, this)" 
-                                    class="ripple-effect px-4 py-2 bg-error text-white rounded-lg hover:bg-red-600 transition-all duration-200 text-sm font-medium transform hover:scale-105 focus-visible:focus"
-                                    title="Reject this ID"
-                                >
-                                    <i class="fas fa-times mr-2" aria-hidden="true"></i>Reject
-                                </button>
-                            </div>
-                            <button 
-                                onclick="markAsRead(this)" 
-                                class="text-gray-400 hover:text-sidebar-accent transition-colors p-2 rounded focus-visible:focus"
-                                title="Mark as read"
-                                aria-label="Mark notification as read"
-                            >
-                                <i class="fas fa-check-circle text-lg" aria-hidden="true"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Regular Funeral Booking -->
-            <div class="notification-item funeral bg-sidebar-bg rounded-lg shadow-card border border-sidebar-border overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1" data-priority="low" data-timestamp="1710332400">
-                <div class="flex items-start p-6">
-                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-blue-500"></div>
-                    <div class="flex-shrink-0 bg-blue-100 rounded-full p-3 mr-4">
-                        <i class="fas fa-cross text-blue-600 text-lg" aria-hidden="true"></i>
-                    </div>
-                    <div class="flex-grow">
-                        <div class="flex justify-between items-start mb-2">
-                            <div class="flex-grow">
-                                <h3 class="text-lg font-semibold text-sidebar-text">Funeral Booking Update Required</h3>
-                                <p class="text-sidebar-text mt-1">Garcia, Roberto Carlos - Basic Funeral Package</p>
-                                <p class="text-sm text-gray-600 mt-1">Client requested additional services - awaiting approval</p>
-                            </div>
-                            <div class="flex items-center space-x-2 ml-4">
-                                <span class="h-3 w-3 bg-blue-600 rounded-full" aria-label="Unread notification"></span>
-                                <span class="text-xs text-gray-500">Unread</span>
-                            </div>
-                        </div>
-                        <div class="flex flex-wrap items-center text-sm text-gray-600 mb-4 gap-4">
-                            <div class="flex items-center">
-                                <i class="far fa-clock mr-2" aria-hidden="true"></i>
-                                <span>2 days ago</span>
-                            </div>
-                            <div class="flex items-center">
-                                <i class="fas fa-exclamation-triangle mr-2" aria-hidden="true"></i>
-                                <span>Requires additional information</span>
-                            </div>
-                            <div class="flex items-center">
-                                <i class="fas fa-phone mr-2" aria-hidden="true"></i>
-                                <span>(555) 987-6543</span>
-                            </div>
-                        </div>
-                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                            <div class="flex flex-wrap gap-2">
-                                <button 
-                                    onclick="viewBooking('funeral', 2)" 
-                                    class="ripple-effect px-4 py-2 bg-sidebar-accent text-white rounded-lg hover:bg-darkgold transition-all duration-200 text-sm font-medium transform hover:scale-105 focus-visible:focus"
-                                    title="View detailed booking information"
-                                >
-                                    <i class="fas fa-eye mr-2" aria-hidden="true"></i>View Details
-                                </button>
-                                <button 
-                                    onclick="contactClient(2)" 
-                                    class="ripple-effect px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all duration-200 text-sm font-medium transform hover:scale-105 focus-visible:focus"
-                                    title="Contact client directly"
-                                >
-                                    <i class="fas fa-phone mr-2" aria-hidden="true"></i>Contact
-                                </button>
-                                <button 
-                                    onclick="scheduleCallback(2)" 
-                                    class="ripple-effect px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-all duration-200 text-sm font-medium transform hover:scale-105 focus-visible:focus"
-                                    title="Schedule a callback"
-                                >
-                                    <i class="fas fa-calendar mr-2" aria-hidden="true"></i>Schedule Call
-                                </button>
-                            </div>
-                            <button 
-                                onclick="markAsRead(this)" 
-                                class="text-gray-400 hover:text-sidebar-accent transition-colors p-2 rounded focus-visible:focus"
-                                title="Mark as read"
-                                aria-label="Mark notification as read"
-                            >
-                                <i class="fas fa-check-circle text-lg" aria-hidden="true"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Additional Life Plan Notification -->
-            <div class="notification-item lifeplan bg-sidebar-bg rounded-lg shadow-card border border-sidebar-border overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1" data-priority="low" data-timestamp="1710246000">
-                <div class="flex items-start p-6">
-                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-purple-500"></div>
-                    <div class="flex-shrink-0 bg-purple-100 rounded-full p-3 mr-4">
-                        <i class="fas fa-heart text-purple-600 text-lg" aria-hidden="true"></i>
-                    </div>
-                    <div class="flex-grow">
-                        <div class="flex justify-between items-start mb-2">
-                            <div class="flex-grow">
-                                <h3 class="text-lg font-semibold text-sidebar-text">Life Plan Payment Confirmation</h3>
-                                <p class="text-sidebar-text mt-1">Williams, David Michael - Premium Life Plan</p>
-                                <p class="text-sm text-gray-600 mt-1">First payment received - activation pending</p>
-                            </div>
-                            <div class="flex items-center space-x-2 ml-4">
-                                <span class="h-3 w-3 bg-gray-300 rounded-full" aria-label="Read notification"></span>
-                                <span class="text-xs text-gray-500">Read</span>
-                            </div>
-                        </div>
-                        <div class="flex flex-wrap items-center text-sm text-gray-600 mb-4 gap-4">
-                            <div class="flex items-center">
-                                <i class="far fa-clock mr-2" aria-hidden="true"></i>
-                                <span>3 days ago</span>
-                            </div>
-                            <div class="flex items-center">
-                                <i class="fas fa-check-circle mr-2 text-success" aria-hidden="true"></i>
-                                <span>Payment Received: $350</span>
-                            </div>
-                        </div>
-                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                            <div class="flex flex-wrap gap-2">
-                                <button 
-                                    onclick="activateLifePlan(3)" 
-                                    class="ripple-effect px-4 py-2 bg-success text-white rounded-lg hover:bg-green-600 transition-all duration-200 text-sm font-medium transform hover:scale-105 focus-visible:focus"
-                                    title="Activate life plan"
-                                >
-                                    <i class="fas fa-play mr-2" aria-hidden="true"></i>Activate Plan
-                                </button>
-                                <button 
-                                    onclick="viewBooking('lifeplan', 3)" 
-                                    class="ripple-effect px-4 py-2 bg-sidebar-accent text-white rounded-lg hover:bg-darkgold transition-all duration-200 text-sm font-medium transform hover:scale-105 focus-visible:focus"
-                                >
-                                    <i class="fas fa-eye mr-2" aria-hidden="true"></i>View Details
+                                    <i class="fas fa-check-circle text-lg" aria-hidden="true"></i>
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- Second ID Validation -->
-            <div class="notification-item validation bg-sidebar-bg rounded-lg shadow-card border border-sidebar-border overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1" data-priority="medium" data-timestamp="1710159600">
-                <div class="flex items-start p-6">
-                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-yellow-500"></div>
-                    <div class="flex-shrink-0 bg-yellow-100 rounded-full p-3 mr-4">
-                        <i class="fas fa-id-card text-yellow-600 text-lg" aria-hidden="true"></i>
-                    </div>
-                    <div class="flex-grow">
-                        <div class="flex justify-between items-start mb-2">
-                            <div class="flex-grow">
-                                <h3 class="text-lg font-semibold text-sidebar-text">ID Validation - Document Resubmitted</h3>
-                                <p class="text-sidebar-text mt-1">Previous document was rejected - new upload received</p>
-                                <p class="text-sm text-gray-600 mt-1">Passport - Second submission attempt</p>
-                            </div>
-                            <div class="flex items-center space-x-2 ml-4">
-                                <span class="h-3 w-3 bg-yellow-600 rounded-full" aria-label="Unread notification"></span>
-                                <span class="text-xs text-gray-500">Unread</span>
-                            </div>
-                        </div>
-                        <div class="flex flex-wrap items-center text-sm text-gray-600 mb-4 gap-4">
-                            <div class="flex items-center">
-                                <i class="far fa-clock mr-2" aria-hidden="true"></i>
-                                <span>4 days ago</span>
-                            </div>
-                            <div class="flex items-center">
-                                <i class="fas fa-redo mr-2" aria-hidden="true"></i>
-                                <span>Resubmission</span>
-                            </div>
-                            <div class="flex items-center">
-                                <i class="fas fa-user mr-2" aria-hidden="true"></i>
-                                <span>User ID: #67890</span>
-                            </div>
-                        </div>
-                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                            <div class="flex flex-wrap gap-2">
-                                <button 
-                                    onclick="viewValidation(2)" 
-                                    class="ripple-effect px-4 py-2 bg-sidebar-accent text-white rounded-lg hover:bg-darkgold transition-all duration-200 text-sm font-medium transform hover:scale-105 focus-visible:focus"
-                                >
-                                    <i class="fas fa-eye mr-2" aria-hidden="true"></i>Review ID
-                                </button>
-                                <button 
-                                    onclick="compareDocuments(2)" 
-                                    class="ripple-effect px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all duration-200 text-sm font-medium transform hover:scale-105 focus-visible:focus"
-                                    title="Compare with previous submission"
-                                >
-                                    <i class="fas fa-balance-scale mr-2" aria-hidden="true"></i>Compare
-                                </button>
-                                <button 
-                                    onclick="approveValidation(2, this)" 
-                                    class="ripple-effect px-4 py-2 bg-success text-white rounded-lg hover:bg-green-600 transition-all duration-200 text-sm font-medium transform hover:scale-105 focus-visible:focus"
-                                >
-                                    <i class="fas fa-check mr-2" aria-hidden="true"></i>Validate
-                                </button>
-                            </div>
-                            <button 
-                                onclick="markAsRead(this)" 
-                                class="text-gray-400 hover:text-sidebar-accent transition-colors p-2 rounded focus-visible:focus"
-                                title="Mark as read"
-                                aria-label="Mark notification as read"
-                            >
-                                <i class="fas fa-check-circle text-lg" aria-hidden="true"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Additional Funeral Booking -->
-            <div class="notification-item funeral bg-sidebar-bg rounded-lg shadow-card border border-sidebar-border overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1" data-priority="low" data-timestamp="1710073200">
-                <div class="flex items-start p-6">
-                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-blue-500"></div>
-                    <div class="flex-shrink-0 bg-blue-100 rounded-full p-3 mr-4">
-                        <i class="fas fa-cross text-blue-600 text-lg" aria-hidden="true"></i>
-                    </div>
-                    <div class="flex-grow">
-                        <div class="flex justify-between items-start mb-2">
-                            <div class="flex-grow">
-                                <h3 class="text-lg font-semibold text-sidebar-text">Funeral Service Completed</h3>
-                                <p class="text-sidebar-text mt-1">Thompson, Sarah Jane - Standard Funeral Package</p>
-                                <p class="text-sm text-gray-600 mt-1">Service completed successfully - feedback requested</p>
-                            </div>
-                            <div class="flex items-center space-x-2 ml-4">
-                                <span class="h-3 w-3 bg-gray-300 rounded-full" aria-label="Read notification"></span>
-                                <span class="text-xs text-gray-500">Read</span>
-                            </div>
-                        </div>
-                        <div class="flex flex-wrap items-center text-sm text-gray-600 mb-4 gap-4">
-                            <div class="flex items-center">
-                                <i class="far fa-clock mr-2" aria-hidden="true"></i>
-                                <span>5 days ago</span>
-                            </div>
-                            <div class="flex items-center">
-                                <i class="fas fa-check-circle mr-2 text-success" aria-hidden="true"></i>
-                                <span>Service Completed</span>
-                            </div>
-                        </div>
-                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                            <div class="flex flex-wrap gap-2">
-                                <button 
-                                    onclick="sendFeedbackForm(4)" 
-                                    class="ripple-effect px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all duration-200 text-sm font-medium transform hover:scale-105 focus-visible:focus"
-                                    title="Send feedback form to family"
-                                >
-                                    <i class="fas fa-comment mr-2" aria-hidden="true"></i>Send Feedback
-                                </button>
-                                <button 
-                                    onclick="generateReport(4)" 
-                                    class="ripple-effect px-4 py-2 bg-sidebar-accent text-white rounded-lg hover:bg-darkgold transition-all duration-200 text-sm font-medium transform hover:scale-105 focus-visible:focus"
-                                    title="Generate service report"
-                                >
-                                    <i class="fas fa-file-alt mr-2" aria-hidden="true"></i>Report
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
         </div>
 
         <!-- Load More Button -->
+        <?php if ($totalPending > 0): ?>
         <div class="text-center mt-8">
             <button 
                 onclick="loadMoreNotifications()" 
@@ -767,8 +606,9 @@
 
         <!-- Pagination Info -->
         <div class="text-center mt-4 text-sm text-gray-600">
-            Showing <span id="current-count">7</span> of <span id="total-count">15</span> notifications
+            Showing <span id="current-count"><?php echo $totalPending; ?></span> of <span id="total-count"><?php echo $totalPending; ?></span> notifications
         </div>
+        <?php endif; ?>
     </main>
 
     <!-- Help Modal -->
@@ -862,550 +702,322 @@
             initializeEventListeners();
             updateNotificationCounts();
             
-            // Set up keyboard shortcuts
+                        // Set up keyboard shortcuts
             document.addEventListener('keydown', function(e) {
+                // Ctrl+A to mark all as read
                 if (e.ctrlKey && e.key === 'a') {
                     e.preventDefault();
                     markAllAsRead();
-                } else if (e.key === 'r' || e.key === 'R') {
-                    if (!e.ctrlKey && !e.altKey) {
-                        e.preventDefault();
-                        refreshNotifications();
-                    }
+                }
+                // R to refresh
+                if (e.key === 'r' && !e.ctrlKey && !e.metaKey) {
+                    e.preventDefault();
+                    refreshNotifications();
                 }
             });
         });
 
         // Initialize event listeners
         function initializeEventListeners() {
-            // Add ripple effect to buttons
-            document.addEventListener('click', function(e) {
-                if (e.target.classList.contains('ripple-effect') || e.target.closest('.ripple-effect')) {
-                    createRipple(e);
-                }
+            // Tab click handlers
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active', 'border-sidebar-accent', 'text-sidebar-accent'));
+                    this.classList.add('active', 'border-sidebar-accent', 'text-sidebar-accent');
+                });
             });
         }
 
-        // Create ripple effect
-        function createRipple(event) {
-            const button = event.target.closest('.ripple-effect') || event.target;
-            const circle = document.createElement("span");
-            const diameter = Math.max(button.clientWidth, button.clientHeight);
-            const radius = diameter / 2;
-            
-            const rect = button.getBoundingClientRect();
-            circle.style.width = circle.style.height = diameter + "px";
-            circle.style.left = (event.clientX - rect.left - radius) + "px";
-            circle.style.top = (event.clientY - rect.top - radius) + "px";
-            circle.classList.add("ripple");
-            
-            const existingRipple = button.getElementsByClassName("ripple")[0];
-            if (existingRipple) {
-                existingRipple.remove();
-            }
-            
-            button.appendChild(circle);
-        }
-
-        // Filter functionality
+        // Filter notifications by type
         function filterNotifications(type) {
             currentFilter = type;
-            const items = document.querySelectorAll('.notification-item');
-            const tabs = document.querySelectorAll('.filter-tab');
-            
-            // Update active tab
-            tabs.forEach(tab => {
-                tab.classList.remove('active', 'border-sidebar-accent', 'text-sidebar-accent');
-                tab.classList.add('border-transparent', 'text-gray-500', 'hover:text-sidebar-text', 'hover:border-gray-300');
-                tab.setAttribute('aria-selected', 'false');
-            });
-            
-            event.target.classList.add('active', 'border-sidebar-accent', 'text-sidebar-accent');
-            event.target.classList.remove('border-transparent', 'text-gray-500', 'hover:text-sidebar-text', 'hover:border-gray-300');
-            event.target.setAttribute('aria-selected', 'true');
-            
-            applyFilters();
-        }
-
-        // Apply all filters
-        function applyFilters() {
-            const items = document.querySelectorAll('.notification-item');
-            let visibleCount = 0;
-            
-            items.forEach(item => {
-                let show = true;
-                
-                // Filter by type
-                if (currentFilter !== 'all' && !item.classList.contains(currentFilter)) {
-                    show = false;
-                }
-                
-                // Filter by unread only
-                if (unreadOnly) {
-                    const isUnread = item.querySelector('.h-3.w-3').classList.contains('bg-blue-600') ||
-                                   item.querySelector('.h-3.w-3').classList.contains('bg-purple-600') ||
-                                   item.querySelector('.h-3.w-3').classList.contains('bg-yellow-600') ||
-                                   item.querySelector('.h-3.w-3').classList.contains('bg-red-600');
-                    if (!isUnread) show = false;
-                }
-                
-                // Filter by search query
-                if (searchQuery) {
-                    const text = item.textContent.toLowerCase();
-                    if (!text.includes(searchQuery.toLowerCase())) {
-                        show = false;
-                    }
-                }
-                
-                if (show) {
-                    item.style.display = 'block';
-                    item.classList.add('notification-enter');
-                    visibleCount++;
-                } else {
-                    item.style.display = 'none';
-                    item.classList.remove('notification-enter');
-                }
-            });
-            
-            // Show/hide empty state
-            const emptyState = document.getElementById('empty-state');
-            const notificationsContainer = document.getElementById('notifications-container');
-            
-            if (visibleCount === 0) {
-                emptyState.classList.remove('hidden');
-                notificationsContainer.classList.add('hidden');
-            } else {
-                emptyState.classList.add('hidden');
-                notificationsContainer.classList.remove('hidden');
-            }
-            
-            document.getElementById('current-count').textContent = visibleCount;
-        }
-
-        // Search functionality
-        function searchNotifications(query) {
-            searchQuery = query;
-            applyFilters();
-        }
-
-        // Toggle unread only
-        function toggleUnreadOnly(checked) {
-            unreadOnly = checked;
             applyFilters();
         }
 
         // Sort notifications
         function sortNotifications(sortType) {
             currentSort = sortType;
-            const container = document.getElementById('notifications-container');
-            const items = Array.from(container.children);
-            
-            items.sort((a, b) => {
-                switch (sortType) {
-                    case 'newest':
-                        return parseInt(b.dataset.timestamp) - parseInt(a.dataset.timestamp);
-                    case 'oldest':
-                        return parseInt(a.dataset.timestamp) - parseInt(b.dataset.timestamp);
-                    case 'priority':
-                        const priorityOrder = { 'high': 3, 'medium': 2, 'low': 1 };
-                        return priorityOrder[b.dataset.priority] - priorityOrder[a.dataset.priority];
-                    case 'type':
-                        const typeOrder = { 'funeral': 1, 'lifeplan': 2, 'validation': 3 };
-                        const aType = a.classList.contains('funeral') ? 'funeral' : 
-                                     a.classList.contains('lifeplan') ? 'lifeplan' : 'validation';
-                        const bType = b.classList.contains('funeral') ? 'funeral' : 
-                                     b.classList.contains('lifeplan') ? 'lifeplan' : 'validation';
-                        return typeOrder[aType] - typeOrder[bType];
-                    default:
-                        return 0;
-                }
-            });
-            
-            items.forEach(item => container.appendChild(item));
+            applyFilters();
         }
 
-        // Mark as read functionality
-        function markAsRead(button) {
-            const notificationItem = button.closest('.notification-item');
-            const indicator = notificationItem.querySelector('.h-3.w-3');
-            const status = notificationItem.querySelector('.text-xs');
+        // Search notifications
+        function searchNotifications(query) {
+            searchQuery = query.toLowerCase();
+            applyFilters();
+        }
+
+        // Toggle unread only filter
+        function toggleUnreadOnly(checked) {
+            unreadOnly = checked;
+            applyFilters();
+        }
+
+        // Apply all active filters
+        function applyFilters() {
+            const notifications = document.querySelectorAll('.notification-item');
+            let visibleCount = 0;
             
-            // Remove all color classes
-            indicator.classList.remove('bg-blue-600', 'bg-purple-600', 'bg-yellow-600', 'bg-red-600');
-            indicator.classList.add('bg-gray-300');
-            status.textContent = 'Read';
+            notifications.forEach(notification => {
+                const type = notification.classList.contains('funeral') ? 'funeral' : 
+                             notification.classList.contains('lifeplan') ? 'lifeplan' : 'validation';
+                const isUnread = notification.querySelector('.bg-blue-600, .bg-purple-600, .bg-yellow-600') !== null;
+                const content = notification.textContent.toLowerCase();
+                
+                // Type filter
+                const typeMatch = currentFilter === 'all' || type === currentFilter;
+                
+                // Search filter
+                const searchMatch = searchQuery === '' || content.includes(searchQuery);
+                
+                // Unread filter
+                const unreadMatch = !unreadOnly || isUnread;
+                
+                // Combined visibility
+                const shouldShow = typeMatch && searchMatch && unreadMatch;
+                
+                notification.style.display = shouldShow ? 'block' : 'none';
+                if (shouldShow) visibleCount++;
+            });
+            
+            // Show/hide empty state
+            const emptyState = document.getElementById('empty-state');
+            if (visibleCount === 0) {
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+            }
             
             // Update counts
-            updateNotificationCounts();
-            showToast('Notification marked as read');
+            document.getElementById('current-count').textContent = visibleCount;
+            
+            // Sort notifications
+            sortNotificationElements();
         }
 
-        // Mark all as read
-        function markAllAsRead() {
-            const visibleItems = document.querySelectorAll('.notification-item:not([style*="display: none"])');
+        // Sort notification elements based on current sort
+        function sortNotificationElements() {
+            const container = document.getElementById('notifications-container');
+            const notifications = Array.from(document.querySelectorAll('.notification-item[style*="display: block"]'));
             
-            visibleItems.forEach(item => {
-                const indicator = item.querySelector('.h-3.w-3');
-                const status = item.querySelector('.text-xs');
+            notifications.sort((a, b) => {
+                const aPriority = a.getAttribute('data-priority');
+                const bPriority = b.getAttribute('data-priority');
+                const aTimestamp = parseInt(a.getAttribute('data-timestamp'));
+                const bTimestamp = parseInt(b.getAttribute('data-timestamp'));
                 
-                if (!indicator.classList.contains('bg-gray-300')) {
-                    indicator.classList.remove('bg-blue-600', 'bg-purple-600', 'bg-yellow-600', 'bg-red-600');
-                    indicator.classList.add('bg-gray-300');
-                    if (status.textContent === 'Unread') {
-                        status.textContent = 'Read';
-                    }
+                if (currentSort === 'priority') {
+                    // High priority first
+                    if (aPriority === 'high' && bPriority !== 'high') return -1;
+                    if (bPriority === 'high' && aPriority !== 'high') return 1;
+                    // Then by timestamp (newest first)
+                    return bTimestamp - aTimestamp;
+                } else if (currentSort === 'type') {
+                    // Group by type
+                    const aType = a.classList.contains('funeral') ? 1 : 
+                                 a.classList.contains('lifeplan') ? 2 : 3;
+                    const bType = b.classList.contains('funeral') ? 1 : 
+                                 b.classList.contains('lifeplan') ? 2 : 3;
+                    if (aType !== bType) return aType - bType;
+                    // Then by timestamp (newest first)
+                    return bTimestamp - aTimestamp;
+                } else if (currentSort === 'oldest') {
+                    // Oldest first
+                    return aTimestamp - bTimestamp;
+                } else {
+                    // Default: newest first
+                    return bTimestamp - aTimestamp;
                 }
             });
             
-            updateNotificationCounts();
-            showToast('All visible notifications marked as read');
+            // Re-append sorted elements
+            notifications.forEach(notification => {
+                container.appendChild(notification);
+            });
         }
 
-        // Update notification counts
-        function updateNotificationCounts() {
-            const totalUnread = document.querySelectorAll('.h-3.w-3:not(.bg-gray-300)').length;
-            document.getElementById('total-notifications').textContent = totalUnread;
+        // Mark a single notification as read
+        function markAsRead(button) {
+            const notification = button.closest('.notification-item');
+            const dot = notification.querySelector('.bg-blue-600, .bg-purple-600, .bg-yellow-600');
+            const statusText = notification.querySelector('.text-xs.text-gray-500');
             
-            // Update tab counts
-            const funeralUnread = document.querySelectorAll('.funeral .h-3.w-3:not(.bg-gray-300)').length;
-            const lifeplanUnread = document.querySelectorAll('.lifeplan .h-3.w-3:not(.bg-gray-300)').length;
-            const validationUnread = document.querySelectorAll('.validation .h-3.w-3:not(.bg-gray-300)').length;
-            
-            document.querySelector('[onclick="filterNotifications(\'funeral\')"] .bg-blue-500').textContent = funeralUnread;
-            document.querySelector('[onclick="filterNotifications(\'lifeplan\')"] .bg-purple-500').textContent = lifeplanUnread;
-            document.querySelector('[onclick="filterNotifications(\'validation\')"] .bg-yellow-500').textContent = validationUnread;
-            document.querySelector('[onclick="filterNotifications(\'all\')"] .bg-sidebar-accent').textContent = totalUnread;
-        }
-
-        // Action functions with confirmation
-        function viewBooking(type, id) {
-            showLoading();
-            setTimeout(() => {
-                hideLoading();
-                showToast(`Opening ${type} booking #${id}`);
-                // Simulate redirect
-            }, 1000);
-        }
-
-        function approveBooking(type, id, button) {
-            showConfirmation(
-                `Are you sure you want to approve this ${type} booking?`,
-                () => {
-                    showLoading();
-                    button.classList.add('button-loading');
-                    setTimeout(() => {
-                        hideLoading();
-                        button.classList.remove('button-loading');
-                        showToast(`${type} booking #${id} approved successfully`, 'success');
-                        // Remove or update the notification
-                        const notification = button.closest('.notification-item');
-                        notification.style.opacity = '0.5';
-                        notification.querySelector('h3').innerHTML = notification.querySelector('h3').innerHTML.replace('Request', 'Approved');
-                    }, 1500);
-                }
-            );
-        }
-
-        function rejectBooking(type, id, button) {
-            showConfirmation(
-                `Are you sure you want to decline this ${type} booking? This action cannot be undone.`,
-                () => {
-                    showLoading();
-                    button.classList.add('button-loading');
-                    setTimeout(() => {
-                        hideLoading();
-                        button.classList.remove('button-loading');
-                        showToast(`${type} booking #${id} declined`, 'error');
-                        // Remove the notification with animation
-                        const notification = button.closest('.notification-item');
-                        notification.style.transform = 'translateX(100%)';
-                        notification.style.opacity = '0';
-                        setTimeout(() => notification.remove(), 300);
-                    }, 1500);
-                }
-            );
-        }
-
-        function viewValidation(id) {
-            showLoading();
-            setTimeout(() => {
-                hideLoading();
-                showToast(`Opening ID validation review #${id}`);
-            }, 1000);
-        }
-
-        function approveValidation(id, button) {
-            showConfirmation(
-                'Are you sure you want to validate this ID document?',
-                () => {
-                    showLoading();
-                    button.classList.add('button-loading');
-                    setTimeout(() => {
-                        hideLoading();
-                        button.classList.remove('button-loading');
-                        showToast(`ID validation #${id} approved successfully`, 'success');
-                        // Update notification status
-                        const notification = button.closest('.notification-item');
-                        notification.style.opacity = '0.5';
-                        notification.querySelector('h3').innerHTML = notification.querySelector('h3').innerHTML.replace('Required', 'Approved');
-                    }, 1500);
-                }
-            );
-        }
-
-        function rejectValidation(id, button) {
-            showConfirmation(
-                'Are you sure you want to reject this ID document? The user will need to resubmit.',
-                () => {
-                    showLoading();
-                    button.classList.add('button-loading');
-                    setTimeout(() => {
-                        hideLoading();
-                        button.classList.remove('button-loading');
-                        showToast(`ID validation #${id} rejected`, 'error');
-                        // Update notification
-                        const notification = button.closest('.notification-item');
-                        notification.querySelector('h3').innerHTML = notification.querySelector('h3').innerHTML.replace('Required', 'Rejected');
-                        notification.querySelector('.w-1').classList.remove('bg-yellow-500');
-                        notification.querySelector('.w-1').classList.add('bg-red-500');
-                    }, 1500);
-                }
-            );
-        }
-
-        function contactClient(id) {
-            showToast(`Opening contact form for client #${id}`);
-            // Simulate opening contact modal or page
-        }
-
-        function scheduleCallback(id) {
-            showToast(`Opening callback scheduler for client #${id}`);
-            // Simulate opening calendar/scheduler
-        }
-
-        function activateLifePlan(id) {
-            showConfirmation(
-                'Are you sure you want to activate this life plan?',
-                () => {
-                    showLoading();
-                    setTimeout(() => {
-                        hideLoading();
-                        showToast(`Life plan #${id} activated successfully`, 'success');
-                    }, 1500);
-                }
-            );
-        }
-
-        function compareDocuments(id) {
-            showToast(`Opening document comparison for ID #${id}`);
-        }
-
-        function sendFeedbackForm(id) {
-            showToast(`Sending feedback form for service #${id}`);
-        }
-
-        function generateReport(id) {
-            showLoading();
-            setTimeout(() => {
-                hideLoading();
-                showToast(`Service report #${id} generated successfully`);
-            }, 2000);
-        }
-
-        function refreshNotifications() {
-            showLoading();
-            setTimeout(() => {
-                hideLoading();
-                showToast('Notifications refreshed successfully');
-                // Simulate new notifications or updates
+            if (dot) {
+                dot.remove();
+                statusText.textContent = 'Read';
+                
+                // Show toast
+                showToast('Notification marked as read');
+                
+                // Update counts
                 updateNotificationCounts();
-            }, 1500);
+            }
         }
 
-        function loadMoreNotifications() {
-            const button = document.getElementById('load-more-btn');
-            button.classList.add('button-loading');
-            button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Loading...';
+        // Mark all notifications as read
+        function markAllAsRead() {
+            showConfirmationModal(
+                'Are you sure you want to mark all notifications as read?',
+                function() {
+                    document.querySelectorAll('.notification-item').forEach(notification => {
+                        const dot = notification.querySelector('.bg-blue-600, .bg-purple-600, .bg-yellow-600');
+                        const statusText = notification.querySelector('.text-xs.text-gray-500');
+                        
+                        if (dot) {
+                            dot.remove();
+                            if (statusText) statusText.textContent = 'Read';
+                        }
+                    });
+                    
+                    // Show toast
+                    showToast('All notifications marked as read');
+                    
+                    // Update counts
+                    updateNotificationCounts();
+                    
+                    closeConfirmationModal();
+                }
+            );
+        }
+
+        // Refresh notifications
+        function refreshNotifications() {
+            showLoadingOverlay();
             
+            // Simulate API call with timeout
             setTimeout(() => {
-                button.classList.remove('button-loading');
-                button.innerHTML = '<i class="fas fa-chevron-down mr-2"></i>Load More Notifications';
-                showToast('More notifications loaded');
-                document.getElementById('current-count').textContent = '15';
-                document.getElementById('total-count').textContent = '15';
-            }, 2000);
+                // In a real app, this would fetch new data from the server
+                hideLoadingOverlay();
+                showToast('Notifications refreshed');
+            }, 1000);
         }
 
-        
+        // Load more notifications
+        function loadMoreNotifications() {
+            showLoadingOverlay();
+            
+            // Simulate API call with timeout
+            setTimeout(() => {
+                // In a real app, this would fetch more notifications from the server
+                hideLoadingOverlay();
+                showToast('More notifications loaded');
+            }, 1000);
+        }
 
+        // Reset all filters
         function resetFilters() {
-            // Reset all filter states
             currentFilter = 'all';
             currentSort = 'newest';
             searchQuery = '';
             unreadOnly = false;
             
             // Reset UI elements
+            document.querySelectorAll('.filter-tab').forEach((tab, index) => {
+                if (index === 0) {
+                    tab.classList.add('active', 'border-sidebar-accent', 'text-sidebar-accent');
+                } else {
+                    tab.classList.remove('active', 'border-sidebar-accent', 'text-sidebar-accent');
+                }
+            });
+            
+            document.getElementById('sort-select').value = 'newest';
             document.querySelector('input[type="text"]').value = '';
             document.querySelector('input[type="checkbox"]').checked = false;
-            document.getElementById('sort-select').value = 'newest';
             
-            // Reset active tab
-            document.querySelectorAll('.filter-tab').forEach(tab => {
-                tab.classList.remove('active', 'border-sidebar-accent', 'text-sidebar-accent');
-                tab.classList.add('border-transparent', 'text-gray-500', 'hover:text-sidebar-text', 'hover:border-gray-300');
-            });
-            document.querySelector('[onclick="filterNotifications(\'all\')"]').classList.add('active', 'border-sidebar-accent', 'text-sidebar-accent');
-            
+            // Reapply filters
             applyFilters();
-            showToast('Filters reset successfully');
         }
 
-        // Modal functions
+        // Update notification counts in the UI
+        function updateNotificationCounts() {
+            const unreadCounts = {
+                funeral: document.querySelectorAll('.notification-item.funeral .bg-blue-600').length,
+                lifeplan: document.querySelectorAll('.notification-item.lifeplan .bg-purple-600').length,
+                validation: document.querySelectorAll('.notification-item.validation .bg-yellow-600').length
+            };
+            
+            const totalUnread = unreadCounts.funeral + unreadCounts.lifeplan + unreadCounts.validation;
+            
+            // Update total count
+            document.getElementById('total-notifications').textContent = totalUnread;
+            
+            // Update tab counts
+            document.querySelector('.filter-tab:nth-child(1) span').textContent = totalUnread;
+            document.querySelector('.filter-tab:nth-child(2) span').textContent = unreadCounts.funeral;
+            document.querySelector('.filter-tab:nth-child(3) span').textContent = unreadCounts.lifeplan;
+            document.querySelector('.filter-tab:nth-child(4) span').textContent = unreadCounts.validation;
+        }
+
+        // Modal and toast functions
         function showHelpModal() {
             document.getElementById('help-modal').classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
         }
 
         function closeHelpModal() {
             document.getElementById('help-modal').classList.add('hidden');
-            document.body.style.overflow = 'auto';
         }
 
-        function showConfirmation(message, callback) {
+        function showConfirmationModal(message, callback) {
             document.getElementById('confirmation-message').textContent = message;
             document.getElementById('confirmation-modal').classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
             confirmationCallback = callback;
             
+            // Set up confirm button
             document.getElementById('confirm-action-btn').onclick = function() {
-                closeConfirmationModal();
-                if (confirmationCallback) {
-                    confirmationCallback();
-                    confirmationCallback = null;
-                }
+                if (confirmationCallback) confirmationCallback();
             };
         }
 
         function closeConfirmationModal() {
             document.getElementById('confirmation-modal').classList.add('hidden');
-            document.body.style.overflow = 'auto';
             confirmationCallback = null;
         }
 
-        // Loading functions
-        function showLoading() {
-            document.getElementById('loading-overlay').classList.remove('hidden');
-        }
-
-        function hideLoading() {
-            document.getElementById('loading-overlay').classList.add('hidden');
-        }
-
-        // Toast notification functions
-        function showToast(message, type = 'success') {
+        function showToast(message) {
             const toast = document.getElementById('toast');
             const toastMessage = document.getElementById('toast-message');
             
             toastMessage.textContent = message;
-            
-            // Update colors and icons based on type
-            toast.className = `fixed top-4 right-4 px-6 py-4 rounded-lg shadow-card transform transition-transform duration-300 z-50`;
-            const icon = toast.querySelector('i');
-            
-            if (type === 'success') {
-                toast.classList.add('bg-success', 'text-white');
-                icon.className = 'fas fa-check-circle mr-3';
-            } else if (type === 'error') {
-                toast.classList.add('bg-error', 'text-white');
-                icon.className = 'fas fa-exclamation-circle mr-3';
-            } else if (type === 'warning') {
-                toast.classList.add('bg-yellow-500', 'text-white');
-                icon.className = 'fas fa-exclamation-triangle mr-3';
-            } else {
-                toast.classList.add('bg-sidebar-accent', 'text-white');
-                icon.className = 'fas fa-info-circle mr-3';
-            }
-            
-            // Show toast
             toast.classList.remove('translate-x-full');
+            toast.classList.add('translate-x-0');
             
-            // Auto-hide after 5 seconds
-            setTimeout(() => {
-                if (!toast.classList.contains('translate-x-full')) {
-                    toast.classList.add('translate-x-full');
-                }
-            }, 5000);
+            // Auto-hide after 3 seconds
+            setTimeout(closeToast, 3000);
         }
 
         function closeToast() {
-            document.getElementById('toast').classList.add('translate-x-full');
+            const toast = document.getElementById('toast');
+            toast.classList.remove('translate-x-0');
+            toast.classList.add('translate-x-full');
         }
 
-        // Close modals when clicking outside
-        document.addEventListener('click', function(e) {
-            if (e.target.id === 'help-modal') {
-                closeHelpModal();
-            }
-            if (e.target.id === 'confirmation-modal') {
-                closeConfirmationModal();
-            }
-        });
+        // Loading overlay functions
+        function showLoadingOverlay() {
+            document.getElementById('loading-overlay').classList.remove('hidden');
+        }
 
-        // Initialize active tab styling
-        document.addEventListener('DOMContentLoaded', function() {
-            const activeTab = document.querySelector('.filter-tab.active');
-            if (activeTab) {
-                activeTab.classList.add('border-sidebar-accent', 'text-sidebar-accent');
-                activeTab.classList.remove('border-transparent', 'text-gray-500');
-            }
-            
-            // Set up other tabs
-            document.querySelectorAll('.filter-tab:not(.active)').forEach(tab => {
-                tab.classList.add('border-transparent', 'text-gray-500', 'hover:text-sidebar-text', 'hover:border-gray-300');
+        function hideLoadingOverlay() {
+            document.getElementById('loading-overlay').classList.add('hidden');
+        }
+
+        // Ripple effect for buttons
+        document.querySelectorAll('.ripple-effect').forEach(button => {
+            button.addEventListener('click', function(e) {
+                const rect = this.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const ripple = document.createElement('span');
+                ripple.classList.add('ripple');
+                ripple.style.left = `${x}px`;
+                ripple.style.top = `${y}px`;
+                
+                this.appendChild(ripple);
+                
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
             });
         });
-
-        // Accessibility improvements
-        document.addEventListener('keydown', function(e) {
-            // ESC key closes modals
-            if (e.key === 'Escape') {
-                if (!document.getElementById('help-modal').classList.contains('hidden')) {
-                    closeHelpModal();
-                }
-                if (!document.getElementById('confirmation-modal').classList.contains('hidden')) {
-                    closeConfirmationModal();
-                }
-                if (!document.getElementById('toast').classList.contains('translate-x-full')) {
-                    closeToast();
-                }
-            }
-        });
-
-        // Auto-refresh notifications every 30 seconds
-        setInterval(() => {
-            if (document.visibilityState === 'visible') {
-                // Silently check for new notifications
-                // In a real app, this would make an API call
-                console.log('Checking for new notifications...');
-            }
-        }, 30000);
-
-        // Show browser notification for high priority items
-        function showBrowserNotification(title, body) {
-            if ('Notification' in window && Notification.permission === 'granted') {
-                new Notification(title, {
-                    body: body,
-                    icon: '/favicon.ico',
-                    badge: '/favicon.ico'
-                });
-            }
-        }
-
-        // Request notification permission on load
-        if ('Notification' in window && Notification.permission === 'default') {
-            Notification.requestPermission();
-        }
     </script>
 </body>
 </html>
