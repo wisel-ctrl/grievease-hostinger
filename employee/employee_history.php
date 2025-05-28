@@ -4477,9 +4477,9 @@ document.getElementById('completeCustomServiceForm').addEventListener('submit', 
   
   // Get form values
   const serviceId = document.getElementById('completeCustomServiceId').value;
-  const completionDateInput = document.getElementById('completionDate').value;
-  const completionNotes = document.getElementById('completionNotes').value;
-  const balanceSettled = document.getElementById('finalBalanceSettled').checked;
+  const completionDateInput = document.getElementById('customCompletionDate').value;
+  const completionNotes = document.getElementById('customCompletionNotes').value;
+  const balanceSettled = document.getElementById('customFinalBalanceSettled').checked;
   
   if (!completionDateInput) {
     alert('Please specify a completion date.');
@@ -4497,7 +4497,7 @@ document.getElementById('completeCustomServiceForm').addEventListener('submit', 
   const completionDateTime = `${completionDateInput} ${currentTime}`;
 
   // Get all checked checkboxes within the completeServiceModal
-  const modal = document.getElementById('completeServiceModal');
+  const modal = document.getElementById('completeCustomServiceModal');
   const checkboxes = modal.querySelectorAll('input[name="complete_assigned_staff[]"]:checked');
   
   // Extract the employee IDs from the checkboxes
