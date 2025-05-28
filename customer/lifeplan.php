@@ -822,7 +822,7 @@ require_once '../db_connect.php'; // Database connection
                 </div>
 
                 <!-- Package Header -->
-                <div class="flex justify-between items-center mb-4 md:mb-6">
+                <div class="flex justify-between items-center mb-4 md:mb-4">
                     <h2 id="traditionalPackageName" class="text-xl md:text-2xl font-hedvig text-navy"></h2>
                     <div id="traditionalPackagePrice" class="text-2xl md:text-3xl font-hedvig text-yellow-600"></div>
                 </div>
