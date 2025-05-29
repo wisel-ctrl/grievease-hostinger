@@ -4927,7 +4927,7 @@ function viewCustomServiceDetails(serviceId) {
   document.getElementById('customServiceId').textContent = 'Loading...';
 
   // Fetch service details from server
-  fetch(`historyAPI/get_custom_service_full_details.php?sales_id=${serviceId}`)
+  fetch(`historyAPI/get_custom_service_full_details.php?customsales_id=${serviceId}`)
     .then(response => response.json())
     .then(data => {
       if (data.success) {

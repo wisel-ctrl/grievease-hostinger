@@ -3,12 +3,12 @@ require_once '../../db_connect.php';
 
 header('Content-Type: application/json');
 
-if (!isset($_GET['sales_id'])) {
+if (!isset($_GET['customsales_id'])) {
     echo json_encode(['success' => false, 'message' => 'No service ID provided']);
     exit;
 }
 
-$salesId = (int)$_GET['sales_id'];
+$salesId = (int)$_GET['customsales_id'];
 
 try {
     // Fetch basic service info from sales_tb and join with branch_tb and services_tb
