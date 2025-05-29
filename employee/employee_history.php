@@ -2332,6 +2332,7 @@ function saveCustomPayment() {
     const customers = <?php echo json_encode($customers); ?>;
     // Customer search functionality
 document.addEventListener('DOMContentLoaded', function() {
+  console.log('dom1');
     const customerSearch = document.getElementById('editCustomerSearch');
     const customerResults = document.getElementById('editCustomerResults');
     const selectedCustomerId = document.getElementById('editSelectedCustomerId');
@@ -3193,6 +3194,7 @@ function sortTable(columnIndex) {
 
 // Initialize search functionality (kept from original)
 document.addEventListener('DOMContentLoaded', function() {
+  console.log('dom2');
   setupSearch();
 });
 
@@ -3261,6 +3263,7 @@ function checkCustomerBeforeComplete(serviceId, hasCustomer) {
 
 // Add event listeners for disabled buttons
 document.addEventListener('DOMContentLoaded', function() {
+  console.log('dom3');
     // Handle assign staff buttons
     document.querySelectorAll('.assign-staff-btn').forEach(button => {
         button.addEventListener('click', function(e) {
@@ -3298,6 +3301,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Add event listener for the record payment button
 document.addEventListener('DOMContentLoaded', function() {
+  console.log('dom4');
   const recordPaymentBtn = document.getElementById('recordPaymentBtn');
   if (recordPaymentBtn) {
     recordPaymentBtn.addEventListener('click', function() {
