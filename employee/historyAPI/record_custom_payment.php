@@ -44,7 +44,7 @@ try {
 
     $stmt = $conn->prepare($query);
     $stmt->bind_param(
-        "iiidsss", 
+        "iisidddss", 
         $data['sales_id'],
         $data['customerID'],
         $data['client_name'],
