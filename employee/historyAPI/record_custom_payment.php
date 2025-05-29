@@ -8,68 +8,97 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] != 2) {
     exit();
 }
 
-// Get the raw POST data
-$json = file_get_contents('php://input');
-$data = json_decode($json, true);
-
-// Validate required fields
-if (!isset($data['sales_id']) || !isset($data['customerID']) || !isset($data['branch_id']) || 
-    !isset($data['payment_amount']) || !isset($data['method_of_payment']) || !isset($data['payment_date'])) {
-    echo json_encode(['success' => false, 'message' => 'Missing required fields']);
-    exit();
-}
+// Start transaction
+$conn->begin_transaction();
 
 try {
-    // Start transaction
-    $conn->begin_transaction();
+    $data = json_decode(file_get_contents('php://input'), true);
 
-    // Insert into custom_payments table
-    $stmt = $conn->prepare("INSERT INTO custom_payments (customsales_id, customerID, branch_id, payment_amount, method_of_payment, payment_date, notes) VALUES (?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("iiidsss", 
+    // Validate required fields
+    if (!isset($data['sales_id']) || !isset($data['customerID']) || !isset($data['branch_id']) || 
+        !isset($data['payment_amount']) || !isset($data['method_of_payment']) || !isset($data['payment_date'])) {
+        throw new Exception('Missing required fields');
+    }
+
+    // First, get current amount_paid
+    $getAmountQuery = "SELECT amount_paid FROM customsales_tb WHERE customsales_id = ?";
+    $getAmountStmt = $conn->prepare($getAmountQuery);
+    $getAmountStmt->bind_param("i", $data['sales_id']);
+    $getAmountStmt->execute();
+    $result = $getAmountStmt->get_result();
+    $currentAmountPaid = $result->fetch_assoc()['amount_paid'];
+    $newAmountPaid = $currentAmountPaid + $data['payment_amount'];
+
+    // Insert into custom_installment_tb
+    $query = "INSERT INTO custom_installment_tb (
+        customsales_id, 
+        customerID, 
+        branch_id, 
+        payment_amount, 
+        method_of_payment,  
+        notes
+    ) VALUES (?, ?, ?, ?, ?, ?)";
+
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param(
+        "iiidsss", 
         $data['sales_id'],
         $data['customerID'],
         $data['branch_id'],
         $data['payment_amount'],
         $data['method_of_payment'],
-        $data['payment_date'],
         $data['notes']
     );
-    $stmt->execute();
 
-    // Update the balance in custom_sales table
-    $stmt = $conn->prepare("UPDATE custom_sales SET balance = ?, amount_paid = amount_paid + ? WHERE customsales_id = ?");
-    $stmt->bind_param("ddi", 
+    if (!$stmt->execute()) {
+        throw new Exception('Failed to record payment: ' . $conn->error);
+    }
+
+    // Update custom_sales balance and amount_paid
+    $updateQuery = "UPDATE customsales_tb SET 
+                    balance = ?, 
+                    amount_paid = ? 
+                    WHERE customsales_id = ?";
+    $updateStmt = $conn->prepare($updateQuery);
+    $updateStmt->bind_param("ddi", 
         $data['after_payment_balance'],
-        $data['payment_amount'],
+        $newAmountPaid,
         $data['sales_id']
     );
-    $stmt->execute();
 
-    // Get the new total amount paid
-    $stmt = $conn->prepare("SELECT amount_paid FROM custom_sales WHERE customsales_id = ?");
-    $stmt->bind_param("i", $data['sales_id']);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $row = $result->fetch_assoc();
-    $new_amount_paid = $row['amount_paid'];
+    if (!$updateStmt->execute()) {
+        throw new Exception('Failed to update balance: ' . $conn->error);
+    }
 
-    // Commit transaction
+    // Update payment_status if balance is 0
+    if ($data['after_payment_balance'] == 0) {
+        $updateStatus = "UPDATE customsales_tb SET payment_status = 'Fully Paid' WHERE customsales_id = ?";
+        $stmt2 = $conn->prepare($updateStatus);
+        $stmt2->bind_param("i", $data['sales_id']);
+        
+        if (!$stmt2->execute()) {
+            throw new Exception('Failed to update payment status: ' . $conn->error);
+        }
+    }
+
+    // Commit the transaction
     $conn->commit();
-
+    
     echo json_encode([
         'success' => true,
         'message' => 'Payment recorded successfully',
-        'new_amount_paid' => $new_amount_paid
+        'new_amount_paid' => $newAmountPaid
     ]);
-
+    
 } catch (Exception $e) {
-    // Rollback transaction on error
+    // Roll back the transaction on error
     $conn->rollback();
+    
     echo json_encode([
         'success' => false,
-        'message' => 'Error recording payment: ' . $e->getMessage()
+        'message' => $e->getMessage()
     ]);
 }
 
 $conn->close();
-?> 
+?>
