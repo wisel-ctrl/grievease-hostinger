@@ -2261,7 +2261,7 @@ function saveCustomPayment() {
   };
 
   // Show loading state
-  const saveBtn = document.querySelector('#recordPaymentModal button[onclick="saveCustomPayment()"]');
+  const saveBtn = document.getElementById('recordPaymentBtn');
   const originalBtnText = saveBtn.innerHTML;
   saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
   saveBtn.disabled = true;
