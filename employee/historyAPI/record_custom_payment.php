@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once '../../db_connect.php';
+date_default_timezone_set('Asia/Manila');
 
 // Check if user is logged in and is an employee
 if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] != 2) {
@@ -39,12 +40,15 @@ try {
         after_payment_balance,
         payment_amount, 
         method_of_payment,  
-        notes
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        notes,
+        payment_timestamp
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+    $currentDateTime = date('Y-m-d H:i:s');
 
     $stmt = $conn->prepare($query);
     $stmt->bind_param(
-        "iisidddss", 
+        "iisidddsss", 
         $data['sales_id'],
         $data['customerID'],
         $data['client_name'],
@@ -53,7 +57,8 @@ try {
         $data['after_payment_balance'],
         $data['payment_amount'],
         $data['method_of_payment'],
-        $data['notes']
+        $data['notes'],
+        $currentDateTime
     );
 
     if (!$stmt->execute()) {

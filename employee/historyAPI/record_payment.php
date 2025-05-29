@@ -1,6 +1,6 @@
 <?php
 require_once '../../db_connect.php';
-
+date_default_timezone_set('Asia/Manila');
 // Start transaction
 $conn->begin_transaction();
 
@@ -26,12 +26,15 @@ try {
         After_Payment_Balance, 
         Payment_Amount, 
         Method_of_Payment, 
-        Notes
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        Notes,
+        Payment_Timestamp
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+    $currentDateTime = date('Y-m-d H:i:s');
 
     $stmt = $conn->prepare($query);
     $stmt->bind_param(
-        "iiisddsss", 
+        "iiisddssss", 
         $data['customerID'],
         $data['sales_id'],
         $data['branch_id'],
@@ -40,7 +43,8 @@ try {
         $data['after_payment_balance'],
         $data['payment_amount'],
         $data['method_of_payment'],
-        $data['notes']
+        $data['notes'],
+        $currentDateTime
     );
 
     if (!$stmt->execute()) {
