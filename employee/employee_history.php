@@ -4943,7 +4943,7 @@ function viewCustomServiceDetails(serviceId) {
         // Populate service components
         document.getElementById('customServiceCasket').textContent = data.casket || 'N/A';
         document.getElementById('customServiceFlowers').textContent = data.flower_arrangement || 'N/A';
-        document.getElementById('customServiceAdditional').textContent = data.additional_services || 'N/A';
+        document.getElementById('customServiceAdditional').textContent = data.inclusions || 'N/A';
 
         // Populate initial staff section
         if (data.initial_staff) {
