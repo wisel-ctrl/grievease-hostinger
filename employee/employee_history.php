@@ -2485,29 +2485,38 @@ function closeRecordPaymentModal() {
 
 // Function to handle the payment submission
 function savePayment() {
-  // Get form values
+  // Get all the necessary values
   const serviceId = document.getElementById('paymentServiceId').value;
   const customerID = document.getElementById('customerID').value;
   const branchID = document.getElementById('branchID').value;
   const clientName = document.getElementById('paymentClientName').value;
-  const currentBalance = document.getElementById('currentBalance').value.replace('$', '');
-  const paymentAmount = document.getElementById('paymentAmount').value;
+  const currentBalance = parseFloat(document.getElementById('currentBalance').value);
+  const paymentAmount = parseFloat(document.getElementById('paymentAmount').value);
   const paymentMethod = document.getElementById('paymentMethod').value;
   const paymentDate = document.getElementById('paymentDate').value;
   const notes = document.getElementById('paymentNotes').value;
-  
-  // Validate payment amount
-  if (!paymentAmount || parseFloat(paymentAmount) <= 0) {
-    alert('Please enter a valid payment amount.');
-    return;
-  }
 
   // Validate required fields
   if (!customerID || !branchID) {
     alert('Missing required information. Please try again.');
     return;
   }
-  
+
+  if (!paymentAmount || isNaN(paymentAmount) || paymentAmount <= 0) {
+    alert('Please enter a valid payment amount');
+    return;
+  }
+
+  if (!paymentMethod) {
+    alert('Please select a payment method');
+    return;
+  }
+
+  if (!paymentDate) {
+    alert('Please select a payment date');
+    return;
+  }
+
   const newBalance = currentBalance - paymentAmount;
 
   // Create payment data object
@@ -2520,15 +2529,16 @@ function savePayment() {
     after_payment_balance: newBalance,
     payment_amount: paymentAmount,
     method_of_payment: paymentMethod,
+    payment_date: paymentDate,
     notes: notes
   };
-  
+
   // Show loading state
-  const saveBtn = document.querySelector('#recordPaymentModal button[onclick="savePayment()"]');
+  const saveBtn = document.getElementById('recordPaymentBtn');
   const originalBtnText = saveBtn.innerHTML;
   saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
   saveBtn.disabled = true;
-  
+
   // Send data to server
   fetch('historyAPI/record_payment.php', {
     method: 'POST',
