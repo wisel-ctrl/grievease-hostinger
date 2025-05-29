@@ -2199,7 +2199,7 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
     <!-- Modal Footer -->
     <div class="p-6 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
       <button class="px-5 py-3 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-semibold hover:bg-navy transition-colors" onclick="closeRecordPaymentModal()">Cancel</button>
-      <button class="px-6 py-3 bg-sidebar-accent text-white rounded-lg font-semibold hover:bg-darkgold transition-colors flex items-center" onclick="savePayment()">
+      <button id="recordPaymentBtn" class="px-6 py-3 bg-sidebar-accent text-white rounded-lg font-semibold hover:bg-darkgold transition-colors flex items-center" data-mode="">
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
           <polyline points="20 6 9 17 4 12"></polyline>
         </svg>
@@ -2209,7 +2209,98 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
   </div>
 </div>
 
+<script>
 
+function saveCustomPayment() {
+  // Get all the necessary values
+  const serviceId = document.getElementById('paymentServiceId').value;
+  const customerID = document.getElementById('customerID').value;
+  const branchID = document.getElementById('branchID').value;
+  const clientName = document.getElementById('paymentClientName').value;
+  const currentBalance = parseFloat(document.getElementById('currentBalance').value);
+  const paymentAmount = parseFloat(document.getElementById('paymentAmount').value);
+  const paymentMethod = document.getElementById('paymentMethod').value;
+  const paymentDate = document.getElementById('paymentDate').value;
+  const notes = document.getElementById('paymentNotes').value;
+
+  // Validate required fields
+  if (!customerID || !branchID) {
+    alert('Missing required information. Please try again.');
+    return;
+  }
+
+  if (!paymentAmount || isNaN(paymentAmount) || paymentAmount <= 0) {
+    alert('Please enter a valid payment amount');
+    return;
+  }
+
+  if (!paymentMethod) {
+    alert('Please select a payment method');
+    return;
+  }
+
+  if (!paymentDate) {
+    alert('Please select a payment date');
+    return;
+  }
+
+  const newBalance = currentBalance - paymentAmount;
+
+  // Create payment data object
+  const paymentData = {
+    sales_id: serviceId,
+    customerID: customerID,
+    branch_id: branchID,
+    client_name: clientName,
+    before_balance: currentBalance,
+    after_payment_balance: newBalance,
+    payment_amount: paymentAmount,
+    method_of_payment: paymentMethod,
+    payment_date: paymentDate,
+    notes: notes
+  };
+
+  // Show loading state
+  const saveBtn = document.querySelector('#recordPaymentModal button[onclick="saveCustomPayment()"]');
+  const originalBtnText = saveBtn.innerHTML;
+  saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+  saveBtn.disabled = true;
+
+  // Send data to server
+  fetch('historyAPI/record_custom_payment.php', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(paymentData)
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+  .then(data => {
+    if (data.success) {
+      alert(`Payment recorded successfully! Total paid: ₱${data.new_amount_paid.toFixed(2)}`);
+      closeRecordPaymentModal();
+      // Refresh the page to show updated values
+      location.reload();
+    } else {
+      throw new Error(data.message || 'Failed to record payment');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('Error: ' + error.message);
+  })
+  .finally(() => {
+    // Restore button state
+    saveBtn.innerHTML = originalBtnText;
+    saveBtn.disabled = false;
+  });
+}
+</script>
 
   <script>
     function showTab(tabName) {
@@ -2324,6 +2415,9 @@ function populateCustomerDetails(customerId) {
 function openRecordPaymentModal(serviceId, clientName, balance) {
   // Get the modal element
   const modal = document.getElementById('recordPaymentModal');
+  
+  // Set the data-mode attribute
+  document.getElementById('recordPaymentBtn').setAttribute('data-mode', 'service');
   
   // Fetch customerID and branch_id
   fetch(`historyAPI/get_payment_details.php?sales_id=${serviceId}`)
@@ -3200,6 +3294,37 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+});
+
+// Add event listener for the record payment button
+document.addEventListener('DOMContentLoaded', function() {
+  const recordPaymentBtn = document.getElementById('recordPaymentBtn');
+  if (recordPaymentBtn) {
+    recordPaymentBtn.addEventListener('click', function() {
+      const mode = this.getAttribute('data-mode');
+      
+      if (!mode) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No payment mode specified'
+        });
+        return;
+      }
+      
+      if (mode === 'service') {
+        savePayment();
+      } else if (mode === 'custom') {
+        saveCustomPayment();
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Invalid payment mode'
+        });
+      }
+    });
+  }
 });
 
 </script>
@@ -4987,6 +5112,9 @@ function viewCustomServiceDetails(serviceId) {
 function openCustomRecordPaymentModal(serviceId, clientName, balance) {
   // Get the modal element
   const modal = document.getElementById('recordPaymentModal');
+  
+  // Set the data-mode attribute
+  document.getElementById('recordPaymentBtn').setAttribute('data-mode', 'custom');
   
   // Fetch customerID and branch_id
   fetch(`historyAPI/get_custom_payment_details.php?sales_id=${serviceId}`)
