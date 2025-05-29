@@ -33,18 +33,24 @@ try {
     $query = "INSERT INTO custom_installment_tb (
         customsales_id, 
         customerID, 
+        client_name,
         branch_id, 
+        before_balance,
+        after_payment_balance,
         payment_amount, 
         method_of_payment,  
         notes
-    ) VALUES (?, ?, ?, ?, ?, ?)";
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     $stmt = $conn->prepare($query);
     $stmt->bind_param(
         "iiidsss", 
         $data['sales_id'],
         $data['customerID'],
+        $data['client_name'],
         $data['branch_id'],
+        $data['before_balance'],
+        $data['after_payment_balance'],
         $data['payment_amount'],
         $data['method_of_payment'],
         $data['notes']
