@@ -17,7 +17,7 @@ if (!$conn) {
 $page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
 $branch = isset($_GET['branch']) && is_numeric($_GET['branch']) ? (int)$_GET['branch'] : 0;
 $searchTerm = isset($_GET['search']) ? trim($_GET['search']) : '';
-$recordsPerPage = 1;
+$recordsPerPage = 10;
 
 // Validate branch
 if ($branch === 0) {
