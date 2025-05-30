@@ -173,16 +173,16 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
     $paginationLinks = '';
     // First page (<<)
     if ($currentPage > 1) {
-        $paginationLinks .= '<a href="#" onclick="loadPage(' . $branch_id . ', 1, \'' . $sort . '\')" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&laquo;</a>';
+        $paginationLinks .= '<a href="#" onclick="loadPage(' . $branch_id . ', 1, \'' . $sort . '\')" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">«</a>';
     } else {
-        $paginationLinks .= '<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">&laquo;</button>';
+        $paginationLinks .= '<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">«</button>';
     }
     
     // Previous page (<)
     if ($currentPage > 1) {
-        $paginationLinks .= '<a href="#" onclick="loadPage(' . $branch_id . ', ' . ($currentPage - 1) . ', \'' . $sort . '\')" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&lt;</a>';
+        $paginationLinks .= '<a href="#" onclick="loadPage(' . $branch_id . ', ' . ($currentPage - 1) . ', \'' . $sort . '\')" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">‹</a>';
     } else {
-        $paginationLinks .= '<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">&lt;</button>';
+        $paginationLinks .= '<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">‹</button>';
     }
     
     // Page numbers
@@ -193,16 +193,16 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
     
     // Next page (>)
     if ($currentPage < $totalPages) {
-        $paginationLinks .= '<a href="#" onclick="loadPage(' . $branch_id . ', ' . ($currentPage + 1) . ', \'' . $sort . '\')" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&gt;</a>';
+        $paginationLinks .= '<a href="#" onclick="loadPage(' . $branch_id . ', ' . ($currentPage + 1) . ', \'' . $sort . '\')" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">›</a>';
     } else {
-        $paginationLinks .= '<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">&gt;</button>';
+        $paginationLinks .= '<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">›</button>';
     }
     
     // Last page (>>)
     if ($currentPage < $totalPages) {
-        $paginationLinks .= '<a href="#" onclick="loadPage(' . $branch_id . ', ' . $totalPages . ', \'' . $sort . '\')" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&raquo;</a>';
+        $paginationLinks .= '<a href="#" onclick="loadPage(' . $branch_id . ', ' . $totalPages . ', \'' . $sort . '\')" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">»</a>';
     } else {
-        $paginationLinks .= '<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">&raquo;</button>';
+        $paginationLinks .= '<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">»</button>';
     }
 
     header('Content-Type: application/json');
