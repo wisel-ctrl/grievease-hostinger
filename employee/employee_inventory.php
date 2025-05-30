@@ -725,7 +725,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
           </a>
         </li>
         <li>
-          <a href="history.php" class="sidebar-link flex items-center px-5 py-3 text-sidebar-text opacity-80 hover:opacity-100 no-underline transition-all duration-300 hover:bg-sidebar-hover">
+          <a href="employee_history.php" class="sidebar-link flex items-center px-5 py-3 text-sidebar-text opacity-80 hover:opacity-100 no-underline transition-all duration-300 hover:bg-sidebar-hover">
             <i class="fas fa-history w-5 text-center mr-3 text-sidebar-accent"></i>
             <span>Service History</span>
           </a>
