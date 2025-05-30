@@ -5238,12 +5238,12 @@ function updatePaginationControls(currentPage, totalPages) {
     
     // First page button
     paginationHTML += `<button onclick="goToPage(1)" class="px-3 py-1 ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
-        &lt;&lt;
+        «
     </button>`;
     
     // Previous page button
     paginationHTML += `<button onclick="goToPage(${currentPage - 1})" class="px-3 py-1 ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
-        &lt;
+        ‹
     </button>`;
     
     // Page numbers
@@ -5277,12 +5277,12 @@ function updatePaginationControls(currentPage, totalPages) {
     
     // Next page button
     paginationHTML += `<button onclick="goToPage(${currentPage + 1})" class="px-3 py-1 ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
-        &gt;
+        ›
     </button>`;
     
     // Last page button
     paginationHTML += `<button onclick="goToPage(${totalPages})" class="px-3 py-1 ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
-        &gt;&gt;
+        »
     </button>`;
     
     document.getElementById('paginationControls').innerHTML = paginationHTML;
@@ -5374,12 +5374,12 @@ function updateFullyPaidPaginationControls(currentPage, totalPages) {
     
     // First page button
     paginationHTML += `<button onclick="goToFullyPaidPage(1)" class="px-3 py-1 ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
-        &lt;&lt;
+        «
     </button>`;
     
     // Previous page button
     paginationHTML += `<button onclick="goToFullyPaidPage(${currentPage - 1})" class="px-3 py-1 ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
-        &lt;
+        ‹
     </button>`;
     
     // Page numbers
@@ -5413,12 +5413,12 @@ function updateFullyPaidPaginationControls(currentPage, totalPages) {
     
     // Next page button
     paginationHTML += `<button onclick="goToFullyPaidPage(${currentPage + 1})" class="px-3 py-1 ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
-        &gt;
+        ›
     </button>`;
     
     // Last page button
     paginationHTML += `<button onclick="goToFullyPaidPage(${totalPages})" class="px-3 py-1 ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
-        &gt;&gt;
+        »
     </button>`;
     
     document.getElementById('paginationControlsFullyPaid').innerHTML = paginationHTML;
@@ -5502,12 +5502,12 @@ function updateOutstandingPaginationControls(currentPage, totalPages) {
     
     // First page button
     paginationHTML += `<button onclick="goToOutstandingPage(1)" class="px-3 py-1 ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
-        <<
+        «
     </button>`;
     
     // Previous page button
     paginationHTML += `<button onclick="goToOutstandingPage(${currentPage - 1})" class="px-3 py-1 ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
-        <
+        ‹
     </button>`;
     
     // Page numbers
@@ -5541,12 +5541,12 @@ function updateOutstandingPaginationControls(currentPage, totalPages) {
     
     // Next page button
     paginationHTML += `<button onclick="goToOutstandingPage(${currentPage + 1})" class="px-3 py-1 ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
-        >
+        ›
     </button>`;
     
     // Last page button
     paginationHTML += `<button onclick="goToOutstandingPage(${totalPages})" class="px-3 py-1 ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
-        >>
+        »
     </button>`;
     
     document.getElementById('paginationOutstandingControls').innerHTML = paginationHTML;
@@ -5638,12 +5638,12 @@ function updateCustomPaginationControls(currentPage, totalPages) {
     
     // First page button
     paginationHTML += `<button onclick="goToCustomPage(1)" class="px-3 py-1 ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
-        &lt;&lt;
+        «
     </button>`;
     
     // Previous page button
     paginationHTML += `<button onclick="goToCustomPage(${currentPage - 1})" class="px-3 py-1 ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
-        &lt;
+        ‹
     </button>`;
     
     // Page numbers
@@ -5677,12 +5677,12 @@ function updateCustomPaginationControls(currentPage, totalPages) {
     
     // Next page button
     paginationHTML += `<button onclick="goToCustomPage(${currentPage + 1})" class="px-3 py-1 ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
-        &gt;
+        ›
     </button>`;
     
     // Last page button
     paginationHTML += `<button onclick="goToCustomPage(${totalPages})" class="px-3 py-1 ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
-        &gt;&gt;
+        »
     </button>`;
     
     document.getElementById('customPaginationControls').innerHTML = paginationHTML;
@@ -5788,12 +5788,12 @@ function updateCustomFullyPaidPaginationControls(currentPage, totalPages) {
     
     // First page button
     paginationHTML += `<button onclick="goToCustomFullyPaidPage(1)" class="px-3 py-1 ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
-        &lt;&lt;
+        «
     </button>`;
     
     // Previous page button
     paginationHTML += `<button onclick="goToCustomFullyPaidPage(${currentPage - 1})" class="px-3 py-1 ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
-        &lt;
+        ‹
     </button>`;
     
     // Page numbers
@@ -5827,12 +5827,12 @@ function updateCustomFullyPaidPaginationControls(currentPage, totalPages) {
     
     // Next page button
     paginationHTML += `<button onclick="goToCustomFullyPaidPage(${currentPage + 1})" class="px-3 py-1 ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
-        &gt;
+        ›
     </button>`;
     
     // Last page button
     paginationHTML += `<button onclick="goToCustomFullyPaidPage(${totalPages})" class="px-3 py-1 ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
-        &gt;&gt;
+        »
     </button>`;
     
     document.getElementById('customFullyPaidPaginationControls').innerHTML = paginationHTML;
@@ -5915,12 +5915,12 @@ function updateCustomOutstandingPaginationControls(currentPage, totalPages) {
     
     // First page button
     paginationHTML += `<button onclick="goToCustomOutstandingPage(1)" class="px-3 py-1 ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
-        &lt;&lt;
+        «
     </button>`;
     
     // Previous page button
     paginationHTML += `<button onclick="goToCustomOutstandingPage(${currentPage - 1})" class="px-3 py-1 ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
-        &lt;
+        ‹
     </button>`;
     
     // Page numbers
@@ -5954,12 +5954,12 @@ function updateCustomOutstandingPaginationControls(currentPage, totalPages) {
     
     // Next page button
     paginationHTML += `<button onclick="goToCustomOutstandingPage(${currentPage + 1})" class="px-3 py-1 ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
-        &gt;
+        ›
     </button>`;
     
     // Last page button
     paginationHTML += `<button onclick="goToCustomOutstandingPage(${totalPages})" class="px-3 py-1 ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
-        &gt;&gt;
+        »
     </button>`;
     
     document.getElementById('customOutstandingPaginationControls').innerHTML = paginationHTML;
