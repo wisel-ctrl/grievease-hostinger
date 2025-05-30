@@ -101,15 +101,13 @@ function generateInventoryRow($row) {
 
 // Check if it's an AJAX request
 if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
-    // AJAX request - return only the table content
-    
-    // Pagination setup
     $itemsPerPage = 5;
     $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
     $offset = ($currentPage - 1) * $itemsPerPage;
 
-    // Count total items
-    $count_query = "SELECT COUNT(*) as total FROM inventory_tb WHERE branch_id = ?";
+    $sort = isset($_GET['sort']) ? $_GET['sort'] : 'default';
+    
+    $count_query = "SELECT COUNT(*) as total FROM inventory_tb WHERE branch_id = ? AND status = 1";
     $count_stmt = $conn->prepare($count_query);
     $count_stmt->bind_param("i", $branch_id);
     $count_stmt->execute();
@@ -117,19 +115,42 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
     $totalItems = $count_result->fetch_assoc()['total'];
     $totalPages = ceil($totalItems / $itemsPerPage);
 
-    // Fetch inventory items for the employee's branch with pagination
     $inventory_query = "SELECT i.inventory_id, i.item_name, ic.category_name as category, 
-                   i.quantity, i.price, i.total_value, i.status
-                   FROM inventory_tb i
-                   JOIN inventory_category ic ON i.category_id = ic.category_id
-                   WHERE i.branch_id = ? AND i.status = 1
-                   LIMIT ? OFFSET ?";
+                       i.quantity, i.price, i.total_value, i.status
+                       FROM inventory_tb i
+                       JOIN inventory_category ic ON i.category_id = ic.category_id
+                       WHERE i.branch_id = ? AND i.status = 1";
+    
+    switch ($sort) {
+        case 'price_asc':
+            $inventory_query .= " ORDER BY i.price ASC";
+            break;
+        case 'price_desc':
+            $inventory_query .= " ORDER BY i.price DESC";
+            break;
+        case 'quantity_asc':
+            $inventory_query .= " ORDER BY i.quantity ASC";
+            break;
+        case 'quantity_desc':
+            $inventory_query .= " ORDER BY i.quantity DESC";
+            break;
+        case 'name_asc':
+            $inventory_query .= " ORDER BY i.item_name ASC";
+            break;
+        case 'name_desc':
+            $inventory_query .= " ORDER BY i.item_name DESC";
+            break;
+        default:
+            $inventory_query .= " ORDER BY i.inventory_id ASC";
+            break;
+    }
+
+    $inventory_query .= " LIMIT ? OFFSET ?";
     $inventory_stmt = $conn->prepare($inventory_query);
     $inventory_stmt->bind_param("iii", $branch_id, $itemsPerPage, $offset);
     $inventory_stmt->execute();
     $paginatedResult = $inventory_stmt->get_result();
 
-    // Generate table rows
     $rows = '';
     if ($paginatedResult->num_rows > 0) {
         while($row = $paginatedResult->fetch_assoc()) {
@@ -146,30 +167,44 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
         $rows .= '</tr>';
     }
 
-    // Generate pagination info
     $paginationInfo = 'Showing ' . min(($currentPage - 1) * $itemsPerPage + 1, $totalItems) . ' - ' . 
                      min($currentPage * $itemsPerPage, $totalItems) . ' of ' . $totalItems . ' items';
 
-    // Generate pagination links
     $paginationLinks = '';
+    // First page (<<)
     if ($currentPage > 1) {
-        $paginationLinks .= '<a href="#" onclick="'.(isset($_GET['search']) ? "searchInventory($branch_id, '".addslashes($_GET['search'])."', " : "loadPage($branch_id, ").($currentPage - 1).')" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&laquo;</a>';
+        $paginationLinks .= '<a href="#" onclick="loadPage(' . $branch_id . ', 1, \'' . $sort . '\')" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&laquo;</a>';
     } else {
         $paginationLinks .= '<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">&laquo;</button>';
     }
     
-    for ($i = 1; $i <= $totalPages; $i++) {
-        $activeClass = ($i == $currentPage) ? 'bg-sidebar-accent text-white' : '';
-        $paginationLinks .= '<a href="#" onclick="'.(isset($_GET['search']) ? "searchInventory($branch_id, '".addslashes($_GET['search'])."', " : "loadPage($branch_id, ").$i.')" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover '.$activeClass.'">'.$i.'</a>';
+    // Previous page (<)
+    if ($currentPage > 1) {
+        $paginationLinks .= '<a href="#" onclick="loadPage(' . $branch_id . ', ' . ($currentPage - 1) . ', \'' . $sort . '\')" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&lt;</a>';
+    } else {
+        $paginationLinks .= '<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">&lt;</button>';
     }
     
+    // Page numbers
+    for ($i = 1; $i <= $totalPages; $i++) {
+        $activeClass = ($i == $currentPage) ? 'bg-sidebar-accent text-white' : '';
+        $paginationLinks .= '<a href="#" onclick="loadPage(' . $branch_id . ', ' . $i . ', \'' . $sort . '\')" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover ' . $activeClass . '">' . $i . '</a>';
+    }
+    
+    // Next page (>)
     if ($currentPage < $totalPages) {
-        $paginationLinks .= '<a href="#" onclick="'.(isset($_GET['search']) ? "searchInventory($branch_id, '".addslashes($_GET['search'])."', " : "loadPage($branch_id, ").($currentPage + 1).')" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&raquo;</a>';
+        $paginationLinks .= '<a href="#" onclick="loadPage(' . $branch_id . ', ' . ($currentPage + 1) . ', \'' . $sort . '\')" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&gt;</a>';
+    } else {
+        $paginationLinks .= '<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">&gt;</button>';
+    }
+    
+    // Last page (>>)
+    if ($currentPage < $totalPages) {
+        $paginationLinks .= '<a href="#" onclick="loadPage(' . $branch_id . ', ' . $totalPages . ', \'' . $sort . '\')" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&raquo;</a>';
     } else {
         $paginationLinks .= '<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">&raquo;</button>';
     }
 
-    // Return JSON response
     header('Content-Type: application/json');
     echo json_encode([
         'rows' => $rows,
@@ -188,6 +223,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GrievEase - Inventory</title>
+  <?php include 'faviconLogo.php'; ?>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -302,6 +338,323 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
   </style>
 </head>
 <body class="flex bg-gray-50">
+    <!-- Archived Inventory Items Modal -->
+<div id="archivedItemsModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm" onclick="closeArchivedModal()"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-4xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-gray-500 hover:text-sidebar-accent transition-colors" onclick="closeArchivedModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <!-- Modal Header -->
+    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
+        <i class="fas fa-archive mr-2"></i> Archived Inventory Items
+      </h3>
+    </div>
+    
+    <!-- Search Bar -->
+    <div class="px-4 sm:px-6 pt-4 pb-2 border-b border-gray-200">
+      <div class="relative">
+        <input type="text" id="archivedItemsSearch" placeholder="Search archived items..." 
+               class="w-full pl-10 pr-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+          <i class="fas fa-search text-gray-400"></i>
+        </div>
+        <button id="clearArchivedSearch" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 hidden">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Modal Body -->
+    <div class="px-4 sm:px-6 py-4 sm:py-5">
+      <div id="archivedItemsContent" class="min-h-[200px]">
+        <!-- Content will be loaded via AJAX -->
+        <div class="flex justify-center items-center h-full">
+          <i class="fas fa-spinner fa-spin text-2xl text-gray-400"></i>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Modal Footer --> 
+    <div class="px-4 sm:px-6 py-3 sm:py-4 flex justify-end border-t border-gray-200 sticky bottom-0 bg-white">
+      <button type="button" class="px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200" onclick="closeArchivedModal()">
+        Close
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Add New Inventory Item Modal -->
+<div id="addInventoryModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm" onclick="closeAddInventoryModal()"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-gray-500 hover:text-sidebar-accent transition-colors" onclick="closeAddInventoryModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <!-- Modal Header -->
+    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
+        <i class="fas fa-boxes mr-2"></i> Add New Inventory Item
+      </h3>
+    </div>
+    
+    <!-- Modal Body -->
+    <div class="px-4 sm:px-6 py-4 sm:py-5">
+      <form id="addInventoryForm" class="space-y-3 sm:space-y-4" enctype="multipart/form-data">
+        <!-- Item Name -->
+        <div>
+          <label for="itemName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Item Name <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
+            <input type="text" id="itemName" name="itemName" required 
+                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
+                   placeholder="Item Name"
+                   minlength="2"
+                   oninput="validateNameInput(this)"
+                   onpaste="cleanPastedName(this)">
+            <div id="itemNameError" class="text-red-500 text-xs mt-1 hidden">Item name must contain only letters and spaces (minimum 2 characters)</div>
+          </div>
+        </div>
+        
+        <!-- Category -->
+        <div>
+          <label for="category_id" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Category <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
+            <select id="category_id" name="category_id" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              <option value="" disabled selected>Select a Category</option>
+              <?php
+              // Fetch categories from the database
+              $sql = "SELECT category_id, category_name FROM inventory_category";
+              $result = $conn->query($sql);
+              
+              if ($result->num_rows > 0) {
+                  while ($row = $result->fetch_assoc()) {
+                      echo '<option value="' . $row['category_id'] . '">' . htmlspecialchars($row['category_name']) . '</option>';
+                  }
+              } else {
+                  echo '<option value="" disabled>No Categories Available</option>';
+              }
+              ?>
+            </select>
+            <div id="categoryError" class="text-red-500 text-xs mt-1 hidden">Please select a category</div>
+          </div>
+        </div>
+        
+        <!-- Quantity -->
+        <div>
+          <label for="quantity" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Quantity <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
+            <input type="number" id="quantity" name="quantity" min="1" required 
+                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
+                   placeholder="Quantity"
+                   oninput="validateQuantity(this)">
+            <div id="quantityError" class="text-red-500 text-xs mt-1 hidden">Quantity must be 0 or more</div>
+          </div>
+        </div>
+        
+        <!-- Unit Price -->
+        <div>
+          <label for="unitPrice" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Unit Price <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <span class="text-gray-500">₱</span>
+            </div>
+            <input type="number" id="unitPrice" name="unitPrice" step="0.01" min="0.01" required 
+                   class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
+                   placeholder="0.00"
+                   oninput="validateUnitPrice(this)">
+            <div id="unitPriceError" class="text-red-500 text-xs mt-1 hidden">Price must be 0.00 or more</div>
+          </div>
+        </div>
+        
+        <!-- File Upload -->
+        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
+          <label for="itemImage" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Upload Item Image
+          </label>
+          <div class="relative">
+            <div id="imagePreviewContainer" class="hidden mb-3">
+              <img id="imagePreview" src="#" alt="Preview" class="max-h-40 rounded-lg border border-gray-300">
+            </div>
+            <div class="flex items-center border border-gray-300 rounded-lg px-3 py-2 focus-within:ring-1 focus-within:ring-sidebar-accent focus-within:border-sidebar-accent transition-all duration-200">
+              <input type="file" id="itemImage" name="itemImage" accept="image/*" 
+                     class="w-full focus:outline-none"
+                     onchange="previewImage(this)">
+            </div>
+            <div id="imageError" class="text-red-500 text-xs mt-1 hidden">Please upload a valid image file</div>
+          </div>
+        </div>
+        
+        <!-- Modal Footer --> 
+        <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+          <button type="button" class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeAddInventoryModal()">
+            Cancel
+          </button>
+          <button type="submit" id="submitInventoryBtn" class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center">
+            Add Item
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Inventory Item Modal -->
+<div id="editInventoryModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm" onclick="closeEditInventoryModal()"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-md mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-gray-500 hover:text-sidebar-accent transition-colors" onclick="closeEditInventoryModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <!-- Modal Header -->
+    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
+        <i class="fas fa-edit mr-2"></i> Edit Inventory Item
+      </h3>
+    </div>
+    
+    <!-- Modal Body -->
+    <div class="px-4 sm:px-6 py-4 sm:py-5">
+      <form id="editInventoryForm" class="space-y-3 sm:space-y-4" enctype="multipart/form-data">
+        <input type="hidden" id="editInventoryId" name="editInventoryId">
+        
+        <!-- Item Name -->
+        <div>
+          <label for="editItemName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Item Name <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
+            <input type="text" id="editItemName" name="editItemName" required 
+                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
+                   placeholder="Item Name"
+                   minlength="2"
+                   oninput="validateNameInput(this)"
+                   onpaste="cleanPastedName(this)">
+            <div id="editItemNameError" class="text-red-500 text-xs mt-1 hidden">Item name must contain only letters and spaces (minimum 2 characters)</div>
+          </div>
+        </div>
+        
+        <!-- Category -->
+        <div>
+          <label for="editCategoryId" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Category <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
+            <select id="editCategoryId" name="editCategoryId" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              <option value="" disabled selected>Select a Category</option>
+              <?php
+              // Fetch categories from the database
+              $sql = "SELECT category_id, category_name FROM inventory_category";
+              $result = $conn->query($sql);
+              
+              if ($result->num_rows > 0) {
+                  while ($row = $result->fetch_assoc()) {
+                      echo '<option value="' . $row['category_id'] . '">' . htmlspecialchars($row['category_name']) . '</option>';
+                  }
+              } else {
+                  echo '<option value="" disabled>No Categories Available</option>';
+              }
+              ?>
+            </select>
+            <div id="editCategoryError" class="text-red-500 text-xs mt-1 hidden">Please select a category</div>
+          </div>
+        </div>
+        
+        <!-- Quantity -->
+        <div>
+          <label for="editQuantity" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Quantity <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
+            <input type="number" id="editQuantity" name="editQuantity" min="0" required 
+                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
+                   placeholder="Quantity"
+                   oninput="validateQuantity(this)">
+            <div id="editQuantityError" class="text-red-500 text-xs mt-1 hidden">Quantity must be 0 or more</div>
+          </div>
+        </div>
+        
+        <!-- Unit Price -->
+        <div>
+          <label for="editUnitPrice" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Unit Price <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <span class="text-gray-500">₱</span>
+            </div>
+            <input type="number" id="editUnitPrice" name="editUnitPrice" step="0.01" min="0" required 
+                   class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
+                   placeholder="0.00"
+                   oninput="validateUnitPrice(this)">
+            <div id="editUnitPriceError" class="text-red-500 text-xs mt-1 hidden">Price must be 0.00 or more</div>
+          </div>
+        </div>
+        
+        <!-- Current Image Preview -->
+        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
+          <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Current Image
+          </label>
+          <div id="currentImageContainer" class="flex justify-center">
+            <img id="currentImagePreview" src="#" alt="Current Image" class="max-h-40 rounded-lg border border-gray-300">
+          </div>
+        </div>
+        
+        <!-- File Upload -->
+        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
+          <label for="editItemImage" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Upload New Image
+          </label>
+          <div class="relative">
+            <div id="editImagePreviewContainer" class="hidden mb-3">
+              <img id="editImagePreview" src="#" alt="Preview" class="max-h-40 rounded-lg border border-gray-300">
+            </div>
+            <div class="flex items-center border border-gray-300 rounded-lg px-3 py-2 focus-within:ring-1 focus-within:ring-sidebar-accent focus-within:border-sidebar-accent transition-all duration-200">
+              <input type="file" id="editItemImage" name="editItemImage" accept="image/*" 
+                     class="w-full focus:outline-none"
+                     onchange="previewEditImage(this)">
+            </div>
+            <div id="editImageError" class="text-red-500 text-xs mt-1 hidden">Please upload a valid image file</div>
+          </div>
+        </div>
+        
+        <!-- Modal Footer --> 
+        <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+          <button type="button" class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeEditInventoryModal()">
+            Cancel
+          </button>
+          <button type="submit" id="submitEditInventoryBtn" class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center">
+            Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
   <!-- Sidebar (same as before) -->
   <nav id="sidebar" class="w-64 h-screen bg-sidebar-bg font-hedvig fixed transition-all duration-300 overflow-y-auto z-10 scrollbar-thin shadow-sidebar animate-sidebar sidebar">
   <!-- Logo and Header with hamburger menu -->
@@ -825,135 +1178,6 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
 </div>
 
 
-<!-- Add Inventory Modal -->
-<div id="addInventoryModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
-  <!-- Modal Backdrop -->
-  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm" onclick="closeAddInventoryModal()"></div>
-  
-  <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
-    <!-- Close Button -->
-    <button type="button" class="absolute top-4 right-4 text-gray-500 hover:text-sidebar-accent transition-colors" onclick="closeAddInventoryModal()">
-      <i class="fas fa-times"></i>
-    </button>
-    
-    <!-- Modal Header -->
-    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
-      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
-        <i class="fas fa-boxes mr-2"></i> Add New Inventory Item
-      </h3>
-    </div>
-    
-    <!-- Modal Body -->
-    <div class="px-4 sm:px-6 py-4 sm:py-5">
-      <form id="addInventoryForm" class="space-y-3 sm:space-y-4" enctype="multipart/form-data">
-        <!-- Item Name -->
-        <div>
-          <label for="itemName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            Item Name <span class="text-red-500">*</span>
-          </label>
-          <div class="relative">
-            <input type="text" id="itemName" name="itemName" required 
-                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
-                   placeholder="Item Name"
-                   minlength="2"
-                   oninput="validateNameInput(this)"
-                   onpaste="cleanPastedName(this)">
-            <div id="itemNameError" class="text-red-500 text-xs mt-1 hidden">Item name must contain only letters and spaces (minimum 2 characters)</div>
-          </div>
-        </div>
-        
-        <!-- Category -->
-        <div>
-          <label for="category_id" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            Category <span class="text-red-500">*</span>
-          </label>
-          <div class="relative">
-            <select id="category_id" name="category_id" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
-              <option value="" disabled selected>Select a Category</option>
-              <?php
-              // Include database connection
-              include '../db_connect.php';
-
-              // Fetch categories from the database
-              $sql = "SELECT category_id, category_name FROM inventory_category";
-              $result = $conn->query($sql);
-              
-              if ($result->num_rows > 0) {
-                  while ($row = $result->fetch_assoc()) {
-                      echo '<option value="' . $row['category_id'] . '">' . htmlspecialchars($row['category_name']) . '</option>';
-                  }
-              } else {
-                  echo '<option value="" disabled>No Categories Available</option>';
-              }
-              ?>
-            </select>
-            <div id="categoryError" class="text-red-500 text-xs mt-1 hidden">Please select a category</div>
-          </div>
-        </div>
-        
-        <!-- Quantity -->
-        <div>
-          <label for="quantity" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            Quantity <span class="text-red-500">*</span>
-          </label>
-          <div class="relative">
-            <input type="number" id="quantity" name="quantity" min="1" required 
-                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
-                   placeholder="Quantity"
-                   oninput="validateQuantity(this)">
-            <div id="quantityError" class="text-red-500 text-xs mt-1 hidden">Quantity must be 0 or more</div>
-          </div>
-        </div>
-        
-        <!-- Unit Price -->
-        <div>
-          <label for="unitPrice" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            Unit Price <span class="text-red-500">*</span>
-          </label>
-          <div class="relative">
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <span class="text-gray-500">₱</span>
-            </div>
-            <input type="number" id="unitPrice" name="unitPrice" step="0.01" min="0.01" required 
-                   class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
-                   placeholder="0.00"
-                   oninput="validateUnitPrice(this)">
-            <div id="unitPriceError" class="text-red-500 text-xs mt-1 hidden">Price must be 0.00 or more</div>
-          </div>
-        </div>
-        
-        <!-- File Upload -->
-        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
-          <label for="itemImage" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            Upload Item Image
-          </label>
-          <div class="relative">
-            <div id="imagePreviewContainer" class="hidden mb-3">
-              <img id="imagePreview" src="#" alt="Preview" class="max-h-40 rounded-lg border border-gray-300">
-            </div>
-            <div class="flex items-center border border-gray-300 rounded-lg px-3 py-2 focus-within:ring-1 focus-within:ring-sidebar-accent focus-within:border-sidebar-accent transition-all duration-200">
-              <input type="file" id="itemImage" name="itemImage" accept="image/*" 
-                     class="w-full focus:outline-none"
-                     onchange="previewImage(this)">
-            </div>
-            <div id="imageError" class="text-red-500 text-xs mt-1 hidden">Please upload a valid image file</div>
-          </div>
-        </div>
-        
-        <!-- Modal Footer --> 
-        <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-          <button type="button" class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeAddInventoryModal()">
-            Cancel
-          </button>
-          <button type="submit" id="submitInventoryBtn" class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center">
-            Add Item
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
 
 <script>
 // Validate name input (letters only, capitalize first letter, no multiple spaces)
@@ -1024,145 +1248,6 @@ function validateUnitPrice(input) {
 
 </script>
 
-<!-- Edit Inventory Modal -->
-<div id="editInventoryModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
-  <!-- Modal Backdrop -->
-  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm" onclick="closeEditInventoryModal()"></div>
-  
-  <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-md mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
-    <!-- Close Button -->
-    <button type="button" class="absolute top-4 right-4 text-gray-500 hover:text-sidebar-accent transition-colors" onclick="closeEditInventoryModal()">
-      <i class="fas fa-times"></i>
-    </button>
-    
-    <!-- Modal Header -->
-    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
-      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
-        <i class="fas fa-edit mr-2"></i> Edit Inventory Item
-      </h3>
-    </div>
-    
-    <!-- Modal Body -->
-    <div class="px-4 sm:px-6 py-4 sm:py-5">
-      <form id="editInventoryForm" class="space-y-3 sm:space-y-4" enctype="multipart/form-data">
-        <input type="hidden" id="editInventoryId" name="editInventoryId">
-        
-        <!-- Item Name -->
-        <div>
-          <label for="editItemName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            Item Name <span class="text-red-500">*</span>
-          </label>
-          <div class="relative">
-            <input type="text" id="editItemName" name="editItemName" required 
-                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
-                   placeholder="Item Name"
-                   minlength="2"
-                   oninput="validateNameInput(this)"
-                   onpaste="cleanPastedName(this)">
-            <div id="editItemNameError" class="text-red-500 text-xs mt-1 hidden">Item name must contain only letters and spaces (minimum 2 characters)</div>
-          </div>
-        </div>
-        
-        <!-- Category -->
-        <div>
-          <label for="editCategoryId" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            Category <span class="text-red-500">*</span>
-          </label>
-          <div class="relative">
-            <select id="editCategoryId" name="editCategoryId" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
-              <option value="" disabled selected>Select a Category</option>
-              <?php
-              // Fetch categories from the database
-              $sql = "SELECT category_id, category_name FROM inventory_category";
-              $result = $conn->query($sql);
-              
-              if ($result->num_rows > 0) {
-                  while ($row = $result->fetch_assoc()) {
-                      echo '<option value="' . $row['category_id'] . '">' . htmlspecialchars($row['category_name']) . '</option>';
-                  }
-              } else {
-                  echo '<option value="" disabled>No Categories Available</option>';
-              }
-              ?>
-            </select>
-            <div id="editCategoryError" class="text-red-500 text-xs mt-1 hidden">Please select a category</div>
-          </div>
-        </div>
-        
-        <!-- Quantity -->
-        <div>
-          <label for="editQuantity" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            Quantity <span class="text-red-500">*</span>
-          </label>
-          <div class="relative">
-            <input type="number" id="editQuantity" name="editQuantity" min="0" required 
-                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
-                   placeholder="Quantity"
-                   oninput="validateQuantity(this)">
-            <div id="editQuantityError" class="text-red-500 text-xs mt-1 hidden">Quantity must be 0 or more</div>
-          </div>
-        </div>
-        
-        <!-- Unit Price -->
-        <div>
-          <label for="editUnitPrice" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            Unit Price <span class="text-red-500">*</span>
-          </label>
-          <div class="relative">
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <span class="text-gray-500">₱</span>
-            </div>
-            <input type="number" id="editUnitPrice" name="editUnitPrice" step="0.01" min="0" required 
-                   class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
-                   placeholder="0.00"
-                   oninput="validateUnitPrice(this)">
-            <div id="editUnitPriceError" class="text-red-500 text-xs mt-1 hidden">Price must be 0.00 or more</div>
-          </div>
-        </div>
-        
-        <!-- Current Image Preview -->
-        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
-          <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            Current Image
-          </label>
-          <div id="currentImageContainer" class="flex justify-center">
-            <img id="currentImagePreview" src="#" alt="Current Image" class="max-h-40 rounded-lg border border-gray-300">
-          </div>
-        </div>
-        
-        <!-- File Upload -->
-        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
-          <label for="editItemImage" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            Upload New Image
-          </label>
-          <div class="relative">
-            <div id="editImagePreviewContainer" class="hidden mb-3">
-              <img id="editImagePreview" src="#" alt="Preview" class="max-h-40 rounded-lg border border-gray-300">
-            </div>
-            <div class="flex items-center border border-gray-300 rounded-lg px-3 py-2 focus-within:ring-1 focus-within:ring-sidebar-accent focus-within:border-sidebar-accent transition-all duration-200">
-              <input type="file" id="editItemImage" name="editItemImage" accept="image/*" 
-                     class="w-full focus:outline-none"
-                     onchange="previewEditImage(this)">
-            </div>
-            <div id="editImageError" class="text-red-500 text-xs mt-1 hidden">Please upload a valid image file</div>
-          </div>
-        </div>
-        
-        <!-- Modal Footer --> 
-        <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-          <button type="button" class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeEditInventoryModal()">
-            Cancel
-          </button>
-          <button type="submit" id="submitEditInventoryBtn" class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center">
-            Save Changes
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
 <script>
 // Edit Modal specific functions
 function previewEditImage(input) {
@@ -1218,58 +1303,6 @@ document.getElementById('editInventoryForm').addEventListener('submit', function
   }
 });
 </script>
-
-<!-- Archived Items Modal -->
-<div id="archivedItemsModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
-  <!-- Modal Backdrop -->
-  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm" onclick="closeArchivedModal()"></div>
-  
-  <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-4xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
-    <!-- Close Button -->
-    <button type="button" class="absolute top-4 right-4 text-gray-500 hover:text-sidebar-accent transition-colors" onclick="closeArchivedModal()">
-      <i class="fas fa-times"></i>
-    </button>
-    
-    <!-- Modal Header -->
-    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
-      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
-        <i class="fas fa-archive mr-2"></i> Archived Inventory Items
-      </h3>
-    </div>
-    
-    <!-- Search Bar -->
-    <div class="px-4 sm:px-6 pt-4 pb-2 border-b border-gray-200">
-      <div class="relative">
-        <input type="text" id="archivedItemsSearch" placeholder="Search archived items..." 
-               class="w-full pl-10 pr-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
-        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-          <i class="fas fa-search text-gray-400"></i>
-        </div>
-        <button id="clearArchivedSearch" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 hidden">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
-    </div>
-    
-    <!-- Modal Body -->
-    <div class="px-4 sm:px-6 py-4 sm:py-5">
-      <div id="archivedItemsContent" class="min-h-[200px]">
-        <!-- Content will be loaded via AJAX -->
-        <div class="flex justify-center items-center h-full">
-          <i class="fas fa-spinner fa-spin text-2xl text-gray-400"></i>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Modal Footer --> 
-    <div class="px-4 sm:px-6 py-3 sm:py-4 flex justify-end border-t border-gray-200 sticky bottom-0 bg-white">
-      <button type="button" class="px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200" onclick="closeArchivedModal()">
-        Close
-      </button>
-    </div>
-  </div>
-</div>
 
 
 <script>
@@ -1967,6 +2000,132 @@ function setupInventorySearch(branchId) {
 // Initialize the search when the page loads
 document.addEventListener('DOMContentLoaded', function() {
     setupInventorySearch(<?php echo $branch_id; ?>);
+});
+
+
+// Toggle filter dropdown
+function setupFilterDropdowns(branchId) {
+    // Handle both mobile and desktop filter buttons
+    const filterButtons = [
+        document.getElementById(`filterButton_${branchId}`), // Mobile
+        document.getElementById(`filterButton_mobile${branchId}`) // Desktop
+    ];
+
+    const filterDropdowns = [
+        document.getElementById(`filterDropdown_${branchId}`), // Mobile
+        document.getElementById(`filterDropdown_mobile${branchId}`) // Desktop
+    ];
+
+    filterButtons.forEach((button, index) => {
+        if (button) {
+            button.addEventListener('click', function(e) {
+                e.stopPropagation(); // Prevent closing immediately
+                const dropdown = filterDropdowns[index];
+                if (dropdown) {
+                    // Toggle visibility
+                    dropdown.classList.toggle('hidden');
+                    // Update filter indicator
+                    const indicator = document.getElementById(`filterIndicator_${branchId}`);
+                    if (indicator) {
+                        indicator.classList.toggle('hidden', dropdown.classList.contains('hidden'));
+                    }
+                }
+            });
+        }
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        filterDropdowns.forEach(dropdown => {
+            if (dropdown && !dropdown.contains(e.target) && !filterButtons.some(btn => btn && btn.contains(e.target))) {
+                dropdown.classList.add('hidden');
+                // Update filter indicators
+                const indicator = document.getElementById(`filterIndicator_${branchId}`);
+                if (indicator) {
+                    indicator.classList.add('hidden');
+                }
+            }
+        });
+    });
+
+    // Handle filter option clicks
+    document.querySelectorAll(`.filter-option[data-branch="${branchId}"]`).forEach(option => {
+        option.addEventListener('click', function(e) {
+            e.stopPropagation(); // Prevent dropdown from closing
+            const sortType = this.getAttribute('data-sort');
+            applyFilter(branchId, sortType);
+            // Close dropdown after selection
+            filterDropdowns.forEach(dropdown => {
+                if (dropdown) {
+                    dropdown.classList.add('hidden');
+                }
+            });
+            // Update filter indicator
+            const indicator = document.getElementById(`filterIndicator_${branchId}`);
+            if (indicator) {
+                indicator.classList.remove('hidden');
+            }
+        });
+    });
+}
+
+// Apply filter and reload table
+function applyFilter(branchId, sortType) {
+    // Update the loadPage function to include sorting
+    loadPage(branchId, 1, sortType);
+}
+
+// Modified loadPage function to handle sorting
+function loadPage(branchId, page, sortType = 'default') {
+    const tableContainer = document.getElementById(`tableContainer${branchId}`);
+    const loadingIndicator = document.getElementById(`loadingIndicator${branchId}`);
+    const inventoryTable = document.getElementById(`inventoryTable_${branchId}`);
+    const paginationInfo = document.getElementById(`paginationInfo_${branchId}`);
+    const paginationLinks = document.getElementById(`paginationLinks_${branchId}`);
+
+    // Show loading indicator
+    loadingIndicator.classList.remove('hidden');
+    tableContainer.style.opacity = '0.5';
+
+    // Construct the URL with sort parameter
+    let url = `employee_inventory.php?ajax=1&page=${page}&branch_id=${branchId}`;
+    if (sortType !== 'default') {
+        url += `&sort=${sortType}`;
+    }
+
+    // Make AJAX request
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            // Update table content
+            inventoryTable.innerHTML = data.rows;
+            
+            // Update pagination info
+            paginationInfo.textContent = data.paginationInfo;
+            
+            // Update pagination links
+            paginationLinks.innerHTML = data.paginationLinks;
+            
+            // Hide loading indicator
+            loadingIndicator.classList.add('hidden');
+            tableContainer.style.opacity = '1';
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            loadingIndicator.classList.add('hidden');
+            tableContainer.style.opacity = '1';
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to load inventory data',
+            });
+        });
+}
+
+// Initialize filter dropdowns when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+    setupFilterDropdowns(<?php echo $branch_id; ?>);
+    loadPage(<?php echo $branch_id; ?>, 1);
 });
 
 </script>
