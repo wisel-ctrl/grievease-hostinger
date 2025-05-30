@@ -344,7 +344,9 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
           <h3 class="text-lg font-semibold text-sidebar-text">Ongoing Services</h3>
           <div class="flex gap-2">
             <div class="relative">
-              <input type="text" id="searchOngoing" placeholder="Search..." class="pl-9 pr-4 py-2 border border-sidebar-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+              <input type="text" id="searchOngoing" placeholder="Search..." 
+                     class="pl-9 pr-4 py-2 border border-sidebar-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent"
+                     onkeyup="debounceSearch()">
               <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                 <i class="fas fa-search text-gray-400"></i>
               </div>
@@ -491,32 +493,35 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
           ?>
 
           <div class="flex justify-between items-center p-4">
-            <div>
-              <p class="text-sm text-gray-600">
-                Showing <?php echo $offsetOngoing + 1; ?> to <?php echo min($offsetOngoing + $recordsPerPage, $totalRecords); ?> of <?php echo $totalRecords; ?> entries
-              </p>
+              <div>
+                <p class="text-sm text-gray-600" id="paginationInfo">
+                  Loading records...
+                </p>
+              </div>
+              <div class="flex space-x-2" id="paginationControls">
+                <!-- Pagination buttons will be loaded here -->
+              </div>
             </div>
-            <div class="flex space-x-2">
-              <?php if ($pageOngoing > 1): ?>
-                <a href="?page_ongoing=<?php echo $pageOngoing - 1; ?>" class="px-3 py-1 bg-sidebar-accent text-white rounded-md hover:bg-darkgold">Previous</a>
-              <?php endif; ?>
-              <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                <a href="?page_ongoing=<?php echo $i; ?>" class="px-3 py-1 <?php echo $i == $pageOngoing ? 'bg-sidebar-accent text-white' : 'bg-gray-200 text-gray-700'; ?> rounded-md hover:bg-darkgold hover:text-white"><?php echo $i; ?></a>
-              <?php endfor; ?>
-              <?php if ($pageOngoing < $totalPages): ?>
-                <a href="?page_ongoing=<?php echo $pageOngoing + 1; ?>" class="px-3 py-1 bg-sidebar-accent text-white rounded-md hover:bg-darkgold">Next</a>
-              <?php endif; ?>
-            </div>
-          </div>
         </div>
       </div>
+      
+      
+    <!-- Loading indicator (hidden by default) -->
+    <div id="loadingIndicator" class="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50 hidden">
+      <div class="bg-white p-6 rounded-lg shadow-lg flex items-center">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-sidebar-accent mr-4"></div>
+        <span>Loading data, please wait...</span>
+      </div>
+    </div>
 
       <!-- Past Services - Fully Paid Section -->
       <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
         <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
           <h3 class="text-lg font-semibold text-sidebar-text">Past Services - Fully Paid</h3>
           <div class="relative">
-            <input type="text" id="searchFullyPaid" placeholder="Search..." class="pl-9 pr-4 py-2 border border-sidebar-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+            <input type="text" id="searchFullyPaid" placeholder="Search..." 
+               class="pl-9 pr-4 py-2 border border-sidebar-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent"
+               onkeyup="debounceSearchFullyPaid()">
             <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
               <i class="fas fa-search text-gray-400"></i>
             </div>
@@ -640,32 +645,26 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
           ?>
 
           <div class="flex justify-between items-center p-4">
-            <div>
-              <p class="text-sm text-gray-600">
-                Showing <?php echo $offsetFullyPaid + 1; ?> to <?php echo min($offsetFullyPaid + $recordsPerPage, $totalRecordsFullyPaid); ?> of <?php echo $totalRecordsFullyPaid; ?> entries
-              </p>
-            </div>
-            <div class="flex space-x-2">
-              <?php if ($pageFullyPaid > 1): ?>
-                <a href="?page_fully_paid=<?php echo $pageFullyPaid - 1; ?>&page_ongoing=<?php echo $pageOngoing; ?>&page_outstanding=<?php echo $pageOutstanding; ?>" class="px-3 py-1 bg-sidebar-accent text-white rounded-md hover:bg-darkgold">Previous</a>
-              <?php endif; ?>
-              <?php for ($i = 1; $i <= $totalPagesFullyPaid; $i++): ?>
-                <a href="?page_fully_paid=<?php echo $i; ?>&page_ongoing=<?php echo $pageOngoing; ?>&page_outstanding=<?php echo $pageOutstanding; ?>" class="px-3 py-1 <?php echo $i == $pageFullyPaid ? 'bg-sidebar-accent text-white' : 'bg-gray-200 text-gray-700'; ?> rounded-md hover:bg-darkgold hover:text-white"><?php echo $i; ?></a>
-              <?php endfor; ?>
-              <?php if ($pageFullyPaid < $totalPagesFullyPaid): ?>
-                <a href="?page_fully_paid=<?php echo $pageFullyPaid + 1; ?>&page_ongoing=<?php echo $pageOngoing; ?>&page_outstanding=<?php echo $pageOutstanding; ?>" class="px-3 py-1 bg-sidebar-accent text-white rounded-md hover:bg-darkgold">Next</a>
-              <?php endif; ?>
+              <div>
+                <p class="text-sm text-gray-600" id="paginationInfoFullyPaid">
+                  Loading records...
+                </p>
+              </div>
+              <div class="flex space-x-2" id="paginationControlsFullyPaid">
+                <!-- Pagination buttons will be loaded here -->
+              </div>
             </div>
           </div>
         </div>
-      </div>
-
-      <!-- Past Services - With Outstanding Balance Section -->
+        
+        <!-- Past Services - With Outstanding Balance Section -->
       <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
         <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
           <h3 class="text-lg font-semibold text-sidebar-text">Past Services - With Outstanding Balance</h3>
           <div class="relative">
-            <input type="text" id="searchOutstanding" placeholder="Search..." class="pl-9 pr-4 py-2 border border-sidebar-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+            <input type="text" id="searchOutstanding" placeholder="Search..." 
+                   class="pl-9 pr-4 py-2 border border-sidebar-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent"
+                   onkeyup="debounceOutstandingSearch()">
             <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
               <i class="fas fa-search text-gray-400"></i>
             </div>
@@ -799,39 +798,46 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
 
           <div class="flex justify-between items-center p-4">
             <div>
-              <p class="text-sm text-gray-600">
-                Showing <?php echo $offsetOutstanding + 1; ?> to <?php echo min($offsetOutstanding + $recordsPerPage, $totalRecordsOutstanding); ?> of <?php echo $totalRecordsOutstanding; ?> entries
-              </p>
+                <p class="text-sm text-gray-600" id="paginationOutstandingInfo">
+                    Loading records...
+                </p>
             </div>
-            <div class="flex space-x-2">
-              <?php if ($pageOutstanding > 1): ?>
-                <a href="?page_outstanding=<?php echo $pageOutstanding - 1; ?>&page_ongoing=<?php echo $pageOngoing; ?>&page_fully_paid=<?php echo $pageFullyPaid; ?>" class="px-3 py-1 bg-sidebar-accent text-white rounded-md hover:bg-darkgold">Previous</a>
-              <?php endif; ?>
-              <?php for ($i = 1; $i <= $totalPagesOutstanding; $i++): ?>
-                <a href="?page_outstanding=<?php echo $i; ?>&page_ongoing=<?php echo $pageOngoing; ?>&page_fully_paid=<?php echo $pageFullyPaid; ?>" class="px-3 py-1 <?php echo $i == $pageOutstanding ? 'bg-sidebar-accent text-white' : 'bg-gray-200 text-gray-700'; ?> rounded-md hover:bg-darkgold hover:text-white"><?php echo $i; ?></a>
-              <?php endfor; ?>
-              <?php if ($pageOutstanding < $totalPagesOutstanding): ?>
-                <a href="?page_outstanding=<?php echo $pageOutstanding + 1; ?>&page_ongoing=<?php echo $pageOngoing; ?>&page_fully_paid=<?php echo $pageFullyPaid; ?>" class="px-3 py-1 bg-sidebar-accent text-white rounded-md hover:bg-darkgold">Next</a>
-              <?php endif; ?>
+            <div class="flex space-x-2" id="paginationOutstandingControls">
+                <!-- Pagination buttons will be loaded here -->
             </div>
-          </div>
+        </div>
         </div>
       </div>
+    
+    
+    <!-- Loading indicator (hidden by default) -->
+    <div id="loadingOutstandingIndicator" class="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50 hidden">
+        <div class="bg-white p-6 rounded-lg shadow-lg flex items-center">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-sidebar-accent mr-4"></div>
+            <span>Loading data, please wait...</span>
+        </div>
     </div>
+    </div>
+
+      
 
     <!-- Custom Sales Tab Content -->
     <div id="custom-content" class="tab-content hidden">
       <!-- Custom Ongoing Services Section -->
       <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
-        <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
-          <h3 class="text-lg font-semibold text-sidebar-text">Custom Ongoing Services</h3>
-          <div class="relative">
-            <input type="text" id="searchCustomOngoing" placeholder="Search..." class="pl-9 pr-4 py-2 border border-sidebar-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
-            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <i class="fas fa-search text-gray-400"></i>
+          <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
+            <h3 class="text-lg font-semibold text-sidebar-text">Custom Ongoing Services</h3>
+            <div class="flex gap-2">
+              <div class="relative">
+                <input type="text" id="searchCustomOngoing" placeholder="Search..." 
+                       class="pl-9 pr-4 py-2 border border-sidebar-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent"
+                       onkeyup="debounceCustomSearch()">
+                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                  <i class="fas fa-search text-gray-400"></i>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
         <div class="overflow-x-auto scrollbar-thin">
           <table class="w-full">
             <thead>
@@ -981,37 +987,31 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
           $stmt->close();
           ?>
           <div class="flex justify-between items-center p-4">
-            <div>
-              <p class="text-sm text-gray-600">
-                Showing <?php echo $offsetCustomOngoing + 1; ?> to <?php echo min($offsetCustomOngoing + $recordsPerPage, $totalRecordsCustomOngoing); ?> of <?php echo $totalRecordsCustomOngoing; ?> entries
-              </p>
+              <div>
+                <p class="text-sm text-gray-600" id="customPaginationInfo">
+                  Loading records...
+                </p>
+              </div>
+              <div class="flex space-x-2" id="customPaginationControls">
+                <!-- Pagination buttons will be loaded here -->
+              </div>
             </div>
-            <div class="flex space-x-2">
-              <?php if ($pageCustomOngoing > 1): ?>
-                <a href="?page_custom_ongoing=<?php echo $pageCustomOngoing - 1; ?>&page_ongoing=<?php echo $pageOngoing; ?>&page_fully_paid=<?php echo $pageFullyPaid; ?>&page_outstanding=<?php echo $pageOutstanding; ?>&page_custom_fully_paid=<?php echo $pageCustomFullyPaid; ?>&page_custom_outstanding=<?php echo $pageCustomOutstanding; ?>" class="px-3 py-1 bg-sidebar-accent text-white rounded-md hover:bg-darkgold">Previous</a>
-              <?php endif; ?>
-              <?php for ($i = 1; $i <= $totalPagesCustomOngoing; $i++): ?>
-                <a href="?page_custom_ongoing=<?php echo $i; ?>&page_ongoing=<?php echo $pageOngoing; ?>&page_fully_paid=<?php echo $pageFullyPaid; ?>&page_outstanding=<?php echo $pageOutstanding; ?>&page_custom_fully_paid=<?php echo $pageCustomFullyPaid; ?>&page_custom_outstanding=<?php echo $pageCustomOutstanding; ?>" class="px-3 py-1 <?php echo $i == $pageCustomOngoing ? 'bg-sidebar-accent text-white' : 'bg-gray-200 text-gray-700'; ?> rounded-md hover:bg-darkgold hover:text-white"><?php echo $i; ?></a>
-              <?php endfor; ?>
-              <?php if ($pageCustomOngoing < $totalPagesCustomOngoing): ?>
-                <a href="?page_custom_ongoing=<?php echo $pageCustomOngoing + 1; ?>&page_ongoing=<?php echo $pageOngoing; ?>&page_fully_paid=<?php echo $pageFullyPaid; ?>&page_outstanding=<?php echo $pageOutstanding; ?>&page_custom_fully_paid=<?php echo $pageCustomFullyPaid; ?>&page_custom_outstanding=<?php echo $pageCustomOutstanding; ?>" class="px-3 py-1 bg-sidebar-accent text-white rounded-md hover:bg-darkgold">Next</a>
-              <?php endif; ?>
-            </div>
-          </div>
         </div>
       </div>
 
       <!-- Custom Past Services - Fully Paid Section -->
       <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
-        <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
-          <h3 class="text-lg font-semibold text-sidebar-text">Custom Past Services - Fully Paid</h3>
-          <div class="relative">
-            <input type="text" id="searchCustomFullyPaid" placeholder="Search..." class="pl-9 pr-4 py-2 border border-sidebar-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
-            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <i class="fas fa-search text-gray-400"></i>
+          <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
+            <h3 class="text-lg font-semibold text-sidebar-text">Custom Past Services - Fully Paid</h3>
+            <div class="relative">
+              <input type="text" id="searchCustomFullyPaid" placeholder="Search..." 
+                     class="pl-9 pr-4 py-2 border border-sidebar-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent"
+                     onkeyup="debounceCustomFullyPaidSearch()">
+              <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <i class="fas fa-search text-gray-400"></i>
+              </div>
             </div>
           </div>
-        </div>
         <div class="overflow-x-auto scrollbar-thin">
           <table class="w-full">
             <thead>
@@ -1137,23 +1137,15 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
           ?>
 
           <div class="flex justify-between items-center p-4">
-            <div>
-              <p class="text-sm text-gray-600">
-                Showing <?php echo $offsetCustomFullyPaid + 1; ?> to <?php echo min($offsetCustomFullyPaid + $recordsPerPage, $totalRecordsCustomFullyPaid); ?> of <?php echo $totalRecordsCustomFullyPaid; ?> entries
-              </p>
+              <div>
+                <p class="text-sm text-gray-600" id="customFullyPaidPaginationInfo">
+                  Loading records...
+                </p>
+              </div>
+              <div class="flex space-x-2" id="customFullyPaidPaginationControls">
+                <!-- Pagination buttons will be loaded here -->
+              </div>
             </div>
-            <div class="flex space-x-2">
-              <?php if ($pageCustomFullyPaid > 1): ?>
-                <a href="?page_custom_fully_paid=<?php echo $pageCustomFullyPaid - 1; ?>&page_ongoing=<?php echo $pageOngoing; ?>&page_fully_paid=<?php echo $pageFullyPaid; ?>&page_outstanding=<?php echo $pageOutstanding; ?>&page_custom_ongoing=<?php echo $pageCustomOngoing; ?>&page_custom_outstanding=<?php echo $pageCustomOutstanding; ?>" class="px-3 py-1 bg-sidebar-accent text-white rounded-md hover:bg-darkgold">Previous</a>
-              <?php endif; ?>
-              <?php for ($i = 1; $i <= $totalPagesCustomFullyPaid; $i++): ?>
-                <a href="?page_custom_fully_paid=<?php echo $i; ?>&page_ongoing=<?php echo $pageOngoing; ?>&page_fully_paid=<?php echo $pageFullyPaid; ?>&page_outstanding=<?php echo $pageOutstanding; ?>&page_custom_ongoing=<?php echo $pageCustomOngoing; ?>&page_custom_outstanding=<?php echo $pageCustomOutstanding; ?>" class="px-3 py-1 <?php echo $i == $pageCustomFullyPaid ? 'bg-sidebar-accent text-white' : 'bg-gray-200 text-gray-700'; ?> rounded-md hover:bg-darkgold hover:text-white"><?php echo $i; ?></a>
-              <?php endfor; ?>
-              <?php if ($pageCustomFullyPaid < $totalPagesCustomFullyPaid): ?>
-                <a href="?page_custom_fully_paid=<?php echo $pageCustomFullyPaid + 1; ?>&page_ongoing=<?php echo $pageOngoing; ?>&page_fully_paid=<?php echo $pageFullyPaid; ?>&page_outstanding=<?php echo $pageOutstanding; ?>&page_custom_ongoing=<?php echo $pageCustomOngoing; ?>&page_custom_outstanding=<?php echo $pageCustomOutstanding; ?>" class="px-3 py-1 bg-sidebar-accent text-white rounded-md hover:bg-darkgold">Next</a>
-              <?php endif; ?>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -1162,7 +1154,9 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
         <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
           <h3 class="text-lg font-semibold text-sidebar-text">Custom Past Services - With Outstanding Balance</h3>
           <div class="relative">
-            <input type="text" id="searchCustomOutstanding" placeholder="Search..." class="pl-9 pr-4 py-2 border border-sidebar-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+            <input type="text" id="searchCustomOutstanding" placeholder="Search..." 
+               class="pl-9 pr-4 py-2 border border-sidebar-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent"
+               onkeyup="debounceCustomOutstandingSearch()">
             <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
               <i class="fas fa-search text-gray-400"></i>
             </div>
@@ -1304,27 +1298,20 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
 
           <div class="flex justify-between items-center p-4">
             <div>
-              <p class="text-sm text-gray-600">
-                Showing <?php echo $offsetCustomOutstanding + 1; ?> to <?php echo min($offsetCustomOutstanding + $recordsPerPage, $totalRecordsCustomOutstanding); ?> of <?php echo $totalRecordsCustomOutstanding; ?> entries
-              </p>
+                <p class="text-sm text-gray-600" id="customOutstandingPaginationInfo">
+                    Loading records...
+                </p>
             </div>
-            <div class="flex space-x-2">
-              <?php if ($pageCustomOutstanding > 1): ?>
-                <a href="?page_custom_outstanding=<?php echo $pageCustomOutstanding - 1; ?>&page_ongoing=<?php echo $pageOngoing; ?>&page_fully_paid=<?php echo $pageFullyPaid; ?>&page_outstanding=<?php echo $pageOutstanding; ?>&page_custom_ongoing=<?php echo $pageCustomOngoing; ?>&page_custom_fully_paid=<?php echo $pageCustomFullyPaid; ?>" class="px-3 py-1 bg-sidebar-accent text-white rounded-md hover:bg-darkgold">Previous</a>
-              <?php endif; ?>
-              <?php for ($i = 1; $i <= $totalPagesCustomOutstanding; $i++): ?>
-                <a href="?page_custom_outstanding=<?php echo $i; ?>&page_ongoing=<?php echo $pageOngoing; ?>&page_fully_paid=<?php echo $pageFullyPaid; ?>&page_outstanding=<?php echo $pageOutstanding; ?>&page_custom_ongoing=<?php echo $pageCustomOngoing; ?>&page_custom_fully_paid=<?php echo $pageCustomFullyPaid; ?>" class="px-3 py-1 <?php echo $i == $pageCustomOutstanding ? 'bg-sidebar-accent text-white' : 'bg-gray-200 text-gray-700'; ?> rounded-md hover:bg-darkgold hover:text-white"><?php echo $i; ?></a>
-              <?php endfor; ?>
-              <?php if ($pageCustomOutstanding < $totalPagesCustomOutstanding): ?>
-                <a href="?page_custom_outstanding=<?php echo $pageCustomOutstanding + 1; ?>&page_ongoing=<?php echo $pageOngoing; ?>&page_fully_paid=<?php echo $pageFullyPaid; ?>&page_outstanding=<?php echo $pageOutstanding; ?>&page_custom_ongoing=<?php echo $pageCustomOngoing; ?>&page_custom_fully_paid=<?php echo $pageCustomFullyPaid; ?>" class="px-3 py-1 bg-sidebar-accent text-white rounded-md hover:bg-darkgold">Next</a>
-              <?php endif; ?>
+            <div class="flex space-x-2" id="customOutstandingPaginationControls">
+                <!-- Pagination buttons will be loaded here -->
             </div>
-          </div>
+        </div>
         </div>
       </div>
 
               </div>
-            </div>
+              
+</div>
 
   <!-- Modal for Editing Service -->
 <div class="fixed inset-0 z-50 flex items-center justify-center hidden" id="editServiceModal">
@@ -5175,6 +5162,814 @@ function openCustomRecordPaymentModal(serviceId, clientName, balance) {
     });
 }
 // ... existing code ...
+</script>
+
+<script>
+// Global variables
+let currentOngoingPage = 1;
+let totalOngoingPages = 1;
+let ongoingSearchTerm = '';
+
+// Add this to your existing script
+let searchDebounceTimer;
+
+// Load data when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    loadOngoingServices(currentOngoingPage);
+});
+
+
+// Debounce function to prevent too many AJAX calls while typing
+function debounceSearch() {
+    clearTimeout(searchDebounceTimer);
+    searchDebounceTimer = setTimeout(() => {
+        searchOngoingServices();
+    }, 500); // 500ms delay after typing stops
+}
+
+// Function to handle search
+function searchOngoingServices() {
+    ongoingSearchTerm = document.getElementById('searchOngoing').value.trim();
+    loadOngoingServices(1); // Always reset to first page when searching
+}
+
+// Update the loadOngoingServices function to ensure it uses the search term
+function loadOngoingServices(page) {
+    showLoadingIndicator();
+    
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', `historyAjax/get_ongoing_services.php?page=${page}&branch=<?php echo $branch; ?>&search=${encodeURIComponent(ongoingSearchTerm)}`, true);
+    xhr.onload = function() {
+        hideLoadingIndicator();
+        
+        if (this.status === 200) {
+            try {
+                const response = JSON.parse(this.responseText);
+                
+                // Update table body
+                document.getElementById('ongoingServiceTableBody').innerHTML = response.html;
+                
+                // Update pagination info
+                const startRecord = ((page - 1) * <?php echo $recordsPerPage; ?>) + 1;
+                const endRecord = Math.min(page * <?php echo $recordsPerPage; ?>, response.totalRecords);
+                document.getElementById('paginationInfo').innerHTML = 
+                    `Showing ${startRecord} to ${endRecord} of ${response.totalRecords} entries`;
+                
+                // Update pagination controls
+                updatePaginationControls(page, response.totalPages);
+                
+                // Update global variables
+                currentOngoingPage = page;
+                totalOngoingPages = response.totalPages;
+            } catch (e) {
+                console.error('Error parsing response:', e);
+            }
+        }
+    };
+    xhr.onerror = function() {
+        hideLoadingIndicator();
+        console.error('Request failed');
+    };
+    xhr.send();
+}
+// Function to update pagination controls
+function updatePaginationControls(currentPage, totalPages) {
+    let paginationHTML = '';
+    
+    // First page button
+    paginationHTML += `<button onclick="goToPage(1)" class="px-3 py-1 ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
+        &lt;&lt;
+    </button>`;
+    
+    // Previous page button
+    paginationHTML += `<button onclick="goToPage(${currentPage - 1})" class="px-3 py-1 ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
+        &lt;
+    </button>`;
+    
+    // Page numbers
+    const maxVisiblePages = 5;
+    let startPage, endPage;
+    
+    if (totalPages <= maxVisiblePages) {
+        startPage = 1;
+        endPage = totalPages;
+    } else {
+        const maxPagesBeforeCurrent = Math.floor(maxVisiblePages / 2);
+        const maxPagesAfterCurrent = Math.ceil(maxVisiblePages / 2) - 1;
+        
+        if (currentPage <= maxPagesBeforeCurrent) {
+            startPage = 1;
+            endPage = maxVisiblePages;
+        } else if (currentPage + maxPagesAfterCurrent >= totalPages) {
+            startPage = totalPages - maxVisiblePages + 1;
+            endPage = totalPages;
+        } else {
+            startPage = currentPage - maxPagesBeforeCurrent;
+            endPage = currentPage + maxPagesAfterCurrent;
+        }
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+        paginationHTML += `<button onclick="goToPage(${i})" class="px-3 py-1 ${i === currentPage ? 'bg-sidebar-accent text-white' : 'bg-gray-200 text-gray-700 hover:bg-darkgold hover:text-white'} rounded-md">
+            ${i}
+        </button>`;
+    }
+    
+    // Next page button
+    paginationHTML += `<button onclick="goToPage(${currentPage + 1})" class="px-3 py-1 ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
+        &gt;
+    </button>`;
+    
+    // Last page button
+    paginationHTML += `<button onclick="goToPage(${totalPages})" class="px-3 py-1 ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
+        &gt;&gt;
+    </button>`;
+    
+    document.getElementById('paginationControls').innerHTML = paginationHTML;
+}
+
+// Function to handle page navigation
+function goToPage(page) {
+    if (page < 1 || page > totalOngoingPages || page === currentOngoingPage) return;
+    loadOngoingServices(page);
+}
+
+// Loading indicator functions
+function showLoadingIndicator() {
+    document.getElementById('loadingIndicator').classList.remove('hidden');
+}
+
+function hideLoadingIndicator() {
+    document.getElementById('loadingIndicator').classList.add('hidden');
+}
+
+// Global variables for Fully Paid table
+let currentFullyPaidPage = 1;
+let totalFullyPaidPages = 1;
+let fullyPaidSearchTerm = '';
+
+// Load data when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    loadOngoingServices(currentOngoingPage);
+    loadFullyPaidServices(currentFullyPaidPage); // Add this line
+});
+
+// Debounce function for Fully Paid search
+function debounceSearchFullyPaid() {
+    clearTimeout(searchDebounceTimer);
+    searchDebounceTimer = setTimeout(() => {
+        searchFullyPaidServices();
+    }, 500);
+}
+
+// Function to handle search for Fully Paid
+function searchFullyPaidServices() {
+    fullyPaidSearchTerm = document.getElementById('searchFullyPaid').value.trim();
+    loadFullyPaidServices(1); // Always reset to first page when searching
+}
+
+// Function to load Fully Paid services via AJAX
+function loadFullyPaidServices(page) {
+    showLoadingIndicator();
+    
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', `historyAjax/get_fully_paid_services.php?page=${page}&branch=<?php echo $branch; ?>&search=${encodeURIComponent(fullyPaidSearchTerm)}`, true);
+    xhr.onload = function() {
+        hideLoadingIndicator();
+        
+        if (this.status === 200) {
+            try {
+                const response = JSON.parse(this.responseText);
+                
+                // Update table body
+                document.getElementById('fullyPaidTableBody').innerHTML = response.html;
+                
+                // Update pagination info
+                const startRecord = ((page - 1) * <?php echo $recordsPerPage; ?>) + 1;
+                const endRecord = Math.min(page * <?php echo $recordsPerPage; ?>, response.totalRecords);
+                document.getElementById('paginationInfoFullyPaid').innerHTML = 
+                    `Showing ${startRecord} to ${endRecord} of ${response.totalRecords} entries`;
+                
+                // Update pagination controls
+                updateFullyPaidPaginationControls(page, response.totalPages);
+                
+                // Update global variables
+                currentFullyPaidPage = page;
+                totalFullyPaidPages = response.totalPages;
+            } catch (e) {
+                console.error('Error parsing response:', e);
+            }
+        }
+    };
+    xhr.onerror = function() {
+        hideLoadingIndicator();
+        console.error('Request failed');
+    };
+    xhr.send();
+}
+
+// Function to update pagination controls for Fully Paid
+function updateFullyPaidPaginationControls(currentPage, totalPages) {
+    let paginationHTML = '';
+    
+    // First page button
+    paginationHTML += `<button onclick="goToFullyPaidPage(1)" class="px-3 py-1 ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
+        &lt;&lt;
+    </button>`;
+    
+    // Previous page button
+    paginationHTML += `<button onclick="goToFullyPaidPage(${currentPage - 1})" class="px-3 py-1 ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
+        &lt;
+    </button>`;
+    
+    // Page numbers
+    const maxVisiblePages = 5;
+    let startPage, endPage;
+    
+    if (totalPages <= maxVisiblePages) {
+        startPage = 1;
+        endPage = totalPages;
+    } else {
+        const maxPagesBeforeCurrent = Math.floor(maxVisiblePages / 2);
+        const maxPagesAfterCurrent = Math.ceil(maxVisiblePages / 2) - 1;
+        
+        if (currentPage <= maxPagesBeforeCurrent) {
+            startPage = 1;
+            endPage = maxVisiblePages;
+        } else if (currentPage + maxPagesAfterCurrent >= totalPages) {
+            startPage = totalPages - maxVisiblePages + 1;
+            endPage = totalPages;
+        } else {
+            startPage = currentPage - maxPagesBeforeCurrent;
+            endPage = currentPage + maxPagesAfterCurrent;
+        }
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+        paginationHTML += `<button onclick="goToFullyPaidPage(${i})" class="px-3 py-1 ${i === currentPage ? 'bg-sidebar-accent text-white' : 'bg-gray-200 text-gray-700 hover:bg-darkgold hover:text-white'} rounded-md">
+            ${i}
+        </button>`;
+    }
+    
+    // Next page button
+    paginationHTML += `<button onclick="goToFullyPaidPage(${currentPage + 1})" class="px-3 py-1 ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
+        &gt;
+    </button>`;
+    
+    // Last page button
+    paginationHTML += `<button onclick="goToFullyPaidPage(${totalPages})" class="px-3 py-1 ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
+        &gt;&gt;
+    </button>`;
+    
+    document.getElementById('paginationControlsFullyPaid').innerHTML = paginationHTML;
+}
+
+// Function to handle page navigation for Fully Paid
+function goToFullyPaidPage(page) {
+    if (page < 1 || page > totalFullyPaidPages || page === currentFullyPaidPage) return;
+    loadFullyPaidServices(page);
+}
+
+
+// Global variables for Outstanding Balance Services
+let currentOutstandingPage = 1;
+let totalOutstandingPages = 1;
+let outstandingSearchTerm = '';
+let outstandingSearchDebounceTimer;
+
+// Load data when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    loadOutstandingServices(currentOutstandingPage);
+});
+
+// Debounce function for outstanding services search
+function debounceOutstandingSearch() {
+    clearTimeout(outstandingSearchDebounceTimer);
+    outstandingSearchDebounceTimer = setTimeout(() => {
+        searchOutstandingServices();
+    }, 500); // 500ms delay after typing stops
+}
+
+// Function to handle search for outstanding services
+function searchOutstandingServices() {
+    outstandingSearchTerm = document.getElementById('searchOutstanding').value.trim();
+    loadOutstandingServices(1); // Reset to first page when searching
+}
+
+// Function to load outstanding services
+function loadOutstandingServices(page) {
+    showOutstandingLoadingIndicator();
+    
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', `historyAjax/get_outstanding_services.php?page=${page}&branch=<?php echo $branch; ?>&search=${encodeURIComponent(outstandingSearchTerm)}`, true);
+    xhr.onload = function() {
+        hideOutstandingLoadingIndicator();
+        
+        if (this.status === 200) {
+            try {
+                const response = JSON.parse(this.responseText);
+                
+                // Update table body
+                document.getElementById('outstandingTableBody').innerHTML = response.html;
+                
+                // Update pagination info
+                const startRecord = ((page - 1) * <?php echo $recordsPerPage; ?>) + 1;
+                const endRecord = Math.min(page * <?php echo $recordsPerPage; ?>, response.totalRecords);
+                document.getElementById('paginationOutstandingInfo').innerHTML = 
+                    `Showing ${startRecord} to ${endRecord} of ${response.totalRecords} entries`;
+                
+                // Update pagination controls
+                updateOutstandingPaginationControls(page, response.totalPages);
+                
+                // Update global variables
+                currentOutstandingPage = page;
+                totalOutstandingPages = response.totalPages;
+            } catch (e) {
+                console.error('Error parsing response:', e);
+            }
+        }
+    };
+    xhr.onerror = function() {
+        hideOutstandingLoadingIndicator();
+        console.error('Request failed');
+    };
+    xhr.send();
+}
+
+// Function to update pagination controls for outstanding services
+function updateOutstandingPaginationControls(currentPage, totalPages) {
+    let paginationHTML = '';
+    
+    // First page button
+    paginationHTML += `<button onclick="goToOutstandingPage(1)" class="px-3 py-1 ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
+        <<
+    </button>`;
+    
+    // Previous page button
+    paginationHTML += `<button onclick="goToOutstandingPage(${currentPage - 1})" class="px-3 py-1 ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
+        <
+    </button>`;
+    
+    // Page numbers
+    const maxVisiblePages = 5;
+    let startPage, endPage;
+    
+    if (totalPages <= maxVisiblePages) {
+        startPage = 1;
+        endPage = totalPages;
+    } else {
+        const maxPagesBeforeCurrent = Math.floor(maxVisiblePages / 2);
+        const maxPagesAfterCurrent = Math.ceil(maxVisiblePages / 2) - 1;
+        
+        if (currentPage <= maxPagesBeforeCurrent) {
+            startPage = 1;
+            endPage = maxVisiblePages;
+        } else if (currentPage + maxPagesAfterCurrent >= totalPages) {
+            startPage = totalPages - maxVisiblePages + 1;
+            endPage = totalPages;
+        } else {
+            startPage = currentPage - maxPagesBeforeCurrent;
+            endPage = currentPage + maxPagesAfterCurrent;
+        }
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+        paginationHTML += `<button onclick="goToOutstandingPage(${i})" class="px-3 py-1 ${i === currentPage ? 'bg-sidebar-accent text-white' : 'bg-gray-200 text-gray-700 hover:bg-darkgold hover:text-white'} rounded-md">
+            ${i}
+        </button>`;
+    }
+    
+    // Next page button
+    paginationHTML += `<button onclick="goToOutstandingPage(${currentPage + 1})" class="px-3 py-1 ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
+        >
+    </button>`;
+    
+    // Last page button
+    paginationHTML += `<button onclick="goToOutstandingPage(${totalPages})" class="px-3 py-1 ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
+        >>
+    </button>`;
+    
+    document.getElementById('paginationOutstandingControls').innerHTML = paginationHTML;
+}
+
+// Function to handle page navigation for outstanding services
+function goToOutstandingPage(page) {
+    if (page < 1 || page > totalOutstandingPages || page === currentOutstandingPage) return;
+    loadOutstandingServices(page);
+}
+
+// Loading indicator functions for outstanding services
+function showOutstandingLoadingIndicator() {
+    document.getElementById('loadingOutstandingIndicator').classList.remove('hidden');
+}
+
+function hideOutstandingLoadingIndicator() {
+    document.getElementById('loadingOutstandingIndicator').classList.add('hidden');
+}
+
+
+// Global variables for custom ongoing services
+let currentCustomOngoingPage = 1;
+let totalCustomOngoingPages = 1;
+let customOngoingSearchTerm = '';
+
+// Load custom ongoing services when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    loadCustomOngoingServices(currentCustomOngoingPage);
+});
+
+// Debounce function for custom ongoing search
+function debounceCustomSearch() {
+    clearTimeout(searchDebounceTimer);
+    searchDebounceTimer = setTimeout(() => {
+        searchCustomOngoingServices();
+    }, 500);
+}
+
+// Function to handle search for custom ongoing services
+function searchCustomOngoingServices() {
+    customOngoingSearchTerm = document.getElementById('searchCustomOngoing').value.trim();
+    loadCustomOngoingServices(1); // Reset to first page when searching
+}
+
+// Function to load custom ongoing services via AJAX
+function loadCustomOngoingServices(page) {
+    showLoadingIndicator();
+    
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', `historyAjax/get_custom_ongoing_services.php?page=${page}&branch=<?php echo $branch; ?>&search=${encodeURIComponent(customOngoingSearchTerm)}`, true);
+    xhr.onload = function() {
+        hideLoadingIndicator();
+        
+        if (this.status === 200) {
+            try {
+                const response = JSON.parse(this.responseText);
+                
+                // Update table body
+                document.getElementById('customOngoingServiceTableBody').innerHTML = response.html;
+                
+                // Update pagination info
+                const startRecord = ((page - 1) * <?php echo $recordsPerPage; ?>) + 1;
+                const endRecord = Math.min(page * <?php echo $recordsPerPage; ?>, response.totalRecords);
+                document.getElementById('customPaginationInfo').innerHTML = 
+                    `Showing ${startRecord} to ${endRecord} of ${response.totalRecords} entries`;
+                
+                // Update pagination controls
+                updateCustomPaginationControls(page, response.totalPages);
+                
+                // Update global variables
+                currentCustomOngoingPage = page;
+                totalCustomOngoingPages = response.totalPages;
+            } catch (e) {
+                console.error('Error parsing response:', e);
+            }
+        }
+    };
+    xhr.onerror = function() {
+        hideLoadingIndicator();
+        console.error('Request failed');
+    };
+    xhr.send();
+}
+
+// Function to update custom ongoing pagination controls
+function updateCustomPaginationControls(currentPage, totalPages) {
+    let paginationHTML = '';
+    
+    // First page button
+    paginationHTML += `<button onclick="goToCustomPage(1)" class="px-3 py-1 ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
+        &lt;&lt;
+    </button>`;
+    
+    // Previous page button
+    paginationHTML += `<button onclick="goToCustomPage(${currentPage - 1})" class="px-3 py-1 ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
+        &lt;
+    </button>`;
+    
+    // Page numbers
+    const maxVisiblePages = 5;
+    let startPage, endPage;
+    
+    if (totalPages <= maxVisiblePages) {
+        startPage = 1;
+        endPage = totalPages;
+    } else {
+        const maxPagesBeforeCurrent = Math.floor(maxVisiblePages / 2);
+        const maxPagesAfterCurrent = Math.ceil(maxVisiblePages / 2) - 1;
+        
+        if (currentPage <= maxPagesBeforeCurrent) {
+            startPage = 1;
+            endPage = maxVisiblePages;
+        } else if (currentPage + maxPagesAfterCurrent >= totalPages) {
+            startPage = totalPages - maxVisiblePages + 1;
+            endPage = totalPages;
+        } else {
+            startPage = currentPage - maxPagesBeforeCurrent;
+            endPage = currentPage + maxPagesAfterCurrent;
+        }
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+        paginationHTML += `<button onclick="goToCustomPage(${i})" class="px-3 py-1 ${i === currentPage ? 'bg-sidebar-accent text-white' : 'bg-gray-200 text-gray-700 hover:bg-darkgold hover:text-white'} rounded-md">
+            ${i}
+        </button>`;
+    }
+    
+    // Next page button
+    paginationHTML += `<button onclick="goToCustomPage(${currentPage + 1})" class="px-3 py-1 ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
+        &gt;
+    </button>`;
+    
+    // Last page button
+    paginationHTML += `<button onclick="goToCustomPage(${totalPages})" class="px-3 py-1 ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
+        &gt;&gt;
+    </button>`;
+    
+    document.getElementById('customPaginationControls').innerHTML = paginationHTML;
+}
+
+// Function to handle page navigation for custom ongoing
+function goToCustomPage(page) {
+    if (page < 1 || page > totalCustomOngoingPages || page === currentCustomOngoingPage) return;
+    loadCustomOngoingServices(page);
+}
+
+
+// Global variables for custom fully paid services
+let currentCustomFullyPaidPage = 1;
+let totalCustomFullyPaidPages = 1;
+let customFullyPaidSearchTerm = '';
+let customFullyPaidSortColumn = null;
+let customFullyPaidSortDirection = 'asc';
+
+// Load custom fully paid services when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    loadCustomFullyPaidServices(currentCustomFullyPaidPage);
+});
+
+// Debounce function for custom fully paid search
+let searchDebounceTimerFullyPaid;
+function debounceCustomFullyPaidSearch() {
+    clearTimeout(searchDebounceTimerFullyPaid);
+    searchDebounceTimerFullyPaid = setTimeout(() => {
+        searchCustomFullyPaidServices();
+    }, 500);
+}
+
+// Function to handle search for custom fully paid services
+function searchCustomFullyPaidServices() {
+    customFullyPaidSearchTerm = document.getElementById('searchCustomFullyPaid').value.trim();
+    loadCustomFullyPaidServices(1); // Reset to first page when searching
+}
+
+// Function to handle sorting for custom fully paid services
+function sortCustomFullyPaidTable(columnIndex) {
+    // If clicking the same column, toggle the direction
+    if (customFullyPaidSortColumn === columnIndex) {
+        customFullyPaidSortDirection = customFullyPaidSortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+        // If clicking a new column, default to ascending
+        customFullyPaidSortColumn = columnIndex;
+        customFullyPaidSortDirection = 'asc';
+    }
+    loadCustomFullyPaidServices(currentCustomFullyPaidPage);
+}
+
+// Function to load custom fully paid services via AJAX
+function loadCustomFullyPaidServices(page) {
+    showLoadingIndicator();
+    
+    const xhr = new XMLHttpRequest();
+    let url = `historyAjax/get_custom_fully_paid_services.php?page=${page}&branch=<?php echo $branch; ?>&search=${encodeURIComponent(customFullyPaidSearchTerm)}`;
+    
+    // Add sorting parameters if set
+    if (customFullyPaidSortColumn !== null) {
+        url += `&sort_column=${customFullyPaidSortColumn}&sort_direction=${customFullyPaidSortDirection}`;
+    }
+    
+    xhr.open('GET', url, true);
+    xhr.onload = function() {
+        hideLoadingIndicator();
+        
+        if (this.status === 200) {
+            try {
+                const response = JSON.parse(this.responseText);
+                
+                // Update table body
+                document.getElementById('customFullyPaidTableBody').innerHTML = response.html;
+                
+                // Update pagination info
+                const startRecord = ((page - 1) * <?php echo $recordsPerPage; ?>) + 1;
+                const endRecord = Math.min(page * <?php echo $recordsPerPage; ?>, response.totalRecords);
+                document.getElementById('customFullyPaidPaginationInfo').innerHTML = 
+                    `Showing ${startRecord} to ${endRecord} of ${response.totalRecords} entries`;
+                
+                // Update pagination controls
+                updateCustomFullyPaidPaginationControls(page, response.totalPages);
+                
+                // Update global variables
+                currentCustomFullyPaidPage = page;
+                totalCustomFullyPaidPages = response.totalPages;
+            } catch (e) {
+                console.error('Error parsing response:', e);
+            }
+        }
+    };
+    xhr.onerror = function() {
+        hideLoadingIndicator();
+        console.error('Request failed');
+    };
+    xhr.send();
+}
+
+// Function to update custom fully paid pagination controls
+function updateCustomFullyPaidPaginationControls(currentPage, totalPages) {
+    let paginationHTML = '';
+    
+    // First page button
+    paginationHTML += `<button onclick="goToCustomFullyPaidPage(1)" class="px-3 py-1 ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
+        &lt;&lt;
+    </button>`;
+    
+    // Previous page button
+    paginationHTML += `<button onclick="goToCustomFullyPaidPage(${currentPage - 1})" class="px-3 py-1 ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
+        &lt;
+    </button>`;
+    
+    // Page numbers
+    const maxVisiblePages = 5;
+    let startPage, endPage;
+    
+    if (totalPages <= maxVisiblePages) {
+        startPage = 1;
+        endPage = totalPages;
+    } else {
+        const maxPagesBeforeCurrent = Math.floor(maxVisiblePages / 2);
+        const maxPagesAfterCurrent = Math.ceil(maxVisiblePages / 2) - 1;
+        
+        if (currentPage <= maxPagesBeforeCurrent) {
+            startPage = 1;
+            endPage = maxVisiblePages;
+        } else if (currentPage + maxPagesAfterCurrent >= totalPages) {
+            startPage = totalPages - maxVisiblePages + 1;
+            endPage = totalPages;
+        } else {
+            startPage = currentPage - maxPagesBeforeCurrent;
+            endPage = currentPage + maxPagesAfterCurrent;
+        }
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+        paginationHTML += `<button onclick="goToCustomFullyPaidPage(${i})" class="px-3 py-1 ${i === currentPage ? 'bg-sidebar-accent text-white' : 'bg-gray-200 text-gray-700 hover:bg-darkgold hover:text-white'} rounded-md">
+            ${i}
+        </button>`;
+    }
+    
+    // Next page button
+    paginationHTML += `<button onclick="goToCustomFullyPaidPage(${currentPage + 1})" class="px-3 py-1 ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
+        &gt;
+    </button>`;
+    
+    // Last page button
+    paginationHTML += `<button onclick="goToCustomFullyPaidPage(${totalPages})" class="px-3 py-1 ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
+        &gt;&gt;
+    </button>`;
+    
+    document.getElementById('customFullyPaidPaginationControls').innerHTML = paginationHTML;
+}
+
+// Function to handle page navigation for custom fully paid
+function goToCustomFullyPaidPage(page) {
+    if (page < 1 || page > totalCustomFullyPaidPages || page === currentCustomFullyPaidPage) return;
+    loadCustomFullyPaidServices(page);
+}
+
+
+// Global variables for custom outstanding services
+let currentCustomOutstandingPage = 1;
+let totalCustomOutstandingPages = 1;
+let customOutstandingSearchTerm = '';
+
+// Load custom outstanding services when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    loadCustomOutstandingServices(currentCustomOutstandingPage);
+});
+
+// Debounce function for custom outstanding search
+function debounceCustomOutstandingSearch() {
+    clearTimeout(searchDebounceTimer);
+    searchDebounceTimer = setTimeout(() => {
+        searchCustomOutstandingServices();
+    }, 500);
+}
+
+// Function to handle search for custom outstanding services
+function searchCustomOutstandingServices() {
+    customOutstandingSearchTerm = document.getElementById('searchCustomOutstanding').value.trim();
+    loadCustomOutstandingServices(1); // Reset to first page when searching
+}
+
+// Function to load custom outstanding services via AJAX
+function loadCustomOutstandingServices(page) {
+    showLoadingIndicator();
+    
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', `historyAjax/get_custom_outstanding_services.php?page=${page}&branch=<?php echo $branch; ?>&search=${encodeURIComponent(customOutstandingSearchTerm)}`, true);
+    xhr.onload = function() {
+        hideLoadingIndicator();
+        
+        if (this.status === 200) {
+            try {
+                const response = JSON.parse(this.responseText);
+                
+                // Update table body
+                document.getElementById('customOutstandingTableBody').innerHTML = response.html;
+                
+                // Update pagination info
+                const startRecord = ((page - 1) * <?php echo $recordsPerPage; ?>) + 1;
+                const endRecord = Math.min(page * <?php echo $recordsPerPage; ?>, response.totalRecords);
+                document.getElementById('customOutstandingPaginationInfo').innerHTML = 
+                    `Showing ${startRecord} to ${endRecord} of ${response.totalRecords} entries`;
+                
+                // Update pagination controls
+                updateCustomOutstandingPaginationControls(page, response.totalPages);
+                
+                // Update global variables
+                currentCustomOutstandingPage = page;
+                totalCustomOutstandingPages = response.totalPages;
+            } catch (e) {
+                console.error('Error parsing response:', e);
+            }
+        }
+    };
+    xhr.onerror = function() {
+        hideLoadingIndicator();
+        console.error('Request failed');
+    };
+    xhr.send();
+}
+
+// Function to update custom outstanding pagination controls
+function updateCustomOutstandingPaginationControls(currentPage, totalPages) {
+    let paginationHTML = '';
+    
+    // First page button
+    paginationHTML += `<button onclick="goToCustomOutstandingPage(1)" class="px-3 py-1 ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
+        &lt;&lt;
+    </button>`;
+    
+    // Previous page button
+    paginationHTML += `<button onclick="goToCustomOutstandingPage(${currentPage - 1})" class="px-3 py-1 ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
+        &lt;
+    </button>`;
+    
+    // Page numbers
+    const maxVisiblePages = 5;
+    let startPage, endPage;
+    
+    if (totalPages <= maxVisiblePages) {
+        startPage = 1;
+        endPage = totalPages;
+    } else {
+        const maxPagesBeforeCurrent = Math.floor(maxVisiblePages / 2);
+        const maxPagesAfterCurrent = Math.ceil(maxVisiblePages / 2) - 1;
+        
+        if (currentPage <= maxPagesBeforeCurrent) {
+            startPage = 1;
+            endPage = maxVisiblePages;
+        } else if (currentPage + maxPagesAfterCurrent >= totalPages) {
+            startPage = totalPages - maxVisiblePages + 1;
+            endPage = totalPages;
+        } else {
+            startPage = currentPage - maxPagesBeforeCurrent;
+            endPage = currentPage + maxPagesAfterCurrent;
+        }
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+        paginationHTML += `<button onclick="goToCustomOutstandingPage(${i})" class="px-3 py-1 ${i === currentPage ? 'bg-sidebar-accent text-white' : 'bg-gray-200 text-gray-700 hover:bg-darkgold hover:text-white'} rounded-md">
+            ${i}
+        </button>`;
+    }
+    
+    // Next page button
+    paginationHTML += `<button onclick="goToCustomOutstandingPage(${currentPage + 1})" class="px-3 py-1 ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
+        &gt;
+    </button>`;
+    
+    // Last page button
+    paginationHTML += `<button onclick="goToCustomOutstandingPage(${totalPages})" class="px-3 py-1 ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
+        &gt;&gt;
+    </button>`;
+    
+    document.getElementById('customOutstandingPaginationControls').innerHTML = paginationHTML;
+}
+
+// Function to handle page navigation for custom outstanding
+function goToCustomOutstandingPage(page) {
+    if (page < 1 || page > totalCustomOutstandingPages || page === currentCustomOutstandingPage) return;
+    loadCustomOutstandingServices(page);
+}
 </script>
 
 </body> 
