@@ -3417,6 +3417,7 @@ function showTab(tabName) {
   const allContents = document.querySelectorAll('.tab-content');
   console.log('Found tab contents:', allContents.length); // Debug log
   allContents.forEach(content => {
+    content.style.display = 'none';
     content.classList.add('hidden');
   });
   
@@ -3432,6 +3433,7 @@ function showTab(tabName) {
   const tabContent = document.getElementById(tabName + '-content');
   console.log('Selected content element:', tabContent); // Debug log
   if (tabContent) {
+    tabContent.style.display = 'block';
     tabContent.classList.remove('hidden');
   }
   
@@ -3443,6 +3445,12 @@ function showTab(tabName) {
     activeButton.classList.remove('text-gray-600', 'border-transparent');
   }
 }
+
+// Initialize tabs on page load
+document.addEventListener('DOMContentLoaded', function() {
+  // Show standard tab by default
+  showTab('standard');
+});
 </script>
 
 </body> 
