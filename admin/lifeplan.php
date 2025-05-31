@@ -125,6 +125,7 @@ $totalPages = ceil($totalBeneficiaries / $recordsPerPage);
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="tailwind.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
       .modal-scroll-container {
     scrollbar-width: thin;
@@ -276,7 +277,7 @@ $totalPages = ceil($totalBeneficiaries / $recordsPerPage);
         </select>
 
         <!-- Archive Button -->
-        <button class="px-4 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover whitespace-nowrap">
+        <button id="openArchiveModal" class="px-4 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover whitespace-nowrap">
           <i class="fas fa-archive text-sidebar-accent"></i>
           <span>Archive</span>
         </button>
@@ -317,9 +318,9 @@ $totalPages = ceil($totalBeneficiaries / $recordsPerPage);
           </div>
         </div>
         <!-- Archive Icon Button -->
-        <button class="w-10 h-10 flex items-center justify-center text-sidebar-accent">
-                        <i class="fas fa-archive text-xl"></i>
-                    </button>
+        <button id="openArchiveModalMobile" class="w-10 h-10 flex items-center justify-center text-sidebar-accent">
+          <i class="fas fa-archive text-xl"></i>
+        </button>
       </div>
     </div>
   </div>
@@ -1335,95 +1336,135 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Submit payment handler - Integrated version
     submitPaymentBtn.addEventListener('click', function() {
-        const amount = parseFloat(document.getElementById('paymentAmount').value);
-        const date = document.getElementById('paymentDate').value;
-        const notes = document.getElementById('paymentNotes').value;
-        
-        // Validation from existing code
-        if (!amount || !date) {
-            alert('Please fill in all required fields');
-            return;
-        }
-        
-        // Additional validation from enhanced code
-        if (isNaN(amount) || amount <= 0) {
-            alert('Please enter a valid payment amount');
-            return;
-        }
-        
-        if (!currentLifeplanId || !currentCustomerId) {
-            alert('Error: Missing required data. Please try again.');
-            return;
-        }
-        
-        // Calculate new values
-        const newAmountPaid = currentAmountPaid + amount;
-        const newBalance = Math.max(0, currentBalance - amount); // Ensure balance doesn't go negative
-        
-        // Prepare data for submission
-        const paymentData = {
-            lifeplan_id: currentLifeplanId,
-            customer_id: currentCustomerId,
-            installment_amount: amount,
-            current_balance: currentBalance,
-            new_balance: newBalance,
-            payment_date: date,
-            notes: notes,
-            amount_paid: newAmountPaid
-        };
-        
-        // Disable button to prevent multiple submissions (from enhanced code)
-        submitPaymentBtn.disabled = true;
-        submitPaymentBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-        
-        // Send payment data to server (enhanced functionality)
-        fetch('lifeplan_process/record_payment.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(paymentData)
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Success message from existing code
-                alert('Payment recorded successfully!');
-                
-                // Update the UI with new values (enhanced functionality)
-                document.getElementById('totalPaid').textContent = '₱' + newAmountPaid.toFixed(2);
-                document.getElementById('remainingBalance').textContent = '₱' + newBalance.toFixed(2);
-                
-                // Update current values in case user wants to make another payment
-                currentAmountPaid = newAmountPaid;
-                currentBalance = newBalance;
-                
-                // Reset form (from existing code)
-                document.getElementById('paymentAmount').value = '';
-                document.getElementById('paymentDate').value = '';
-                document.getElementById('paymentNotes').value = '';
-                
-                // Set default date to today (from existing code)
-                document.getElementById('paymentDate').valueAsDate = new Date();
-                
-                
-                modal.classList.add('hidden');
-                
-                // Optionally refresh the table data
-                location.reload();
-            } else {
-                alert('Error recording payment: ' + (data.message || 'Unknown error'));
+    Swal.fire({
+        title: 'Confirm Payment',
+        text: 'Are you sure you want to record this payment?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, record it!',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const amount = parseFloat(document.getElementById('paymentAmount').value);
+            const date = document.getElementById('paymentDate').value;
+            const notes = document.getElementById('paymentNotes').value;
+            
+            // Validation from existing code
+            if (!amount || !date) {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Please fill in all required fields',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+                return;
             }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred while recording the payment');
-        })
-        .finally(() => {
-            submitPaymentBtn.disabled = false;
-            submitPaymentBtn.textContent = 'Record Payment';
-        });
+            
+            // Additional validation from enhanced code
+            if (isNaN(amount) || amount <= 0) {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Please enter a valid payment amount',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+            
+            if (!currentLifeplanId || !currentCustomerId) {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Error: Missing required data. Please try again.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+            
+            // Calculate new values
+            const newAmountPaid = currentAmountPaid + amount;
+            const newBalance = Math.max(0, currentBalance - amount); // Ensure balance doesn't go negative
+            
+            // Prepare data for submission
+            const paymentData = {
+                lifeplan_id: currentLifeplanId,
+                customer_id: currentCustomerId,
+                installment_amount: amount,
+                current_balance: currentBalance,
+                new_balance: newBalance,
+                payment_date: date,
+                notes: notes,
+                amount_paid: newAmountPaid
+            };
+            
+            // Disable button to prevent multiple submissions (from enhanced code)
+            submitPaymentBtn.disabled = true;
+            submitPaymentBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            
+            // Send payment data to server (enhanced functionality)
+            fetch('lifeplan_process/record_payment.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(paymentData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Success message from existing code
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Payment recorded successfully!',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        // Update the UI with new values (enhanced functionality)
+                        document.getElementById('totalPaid').textContent = '₱' + newAmountPaid.toFixed(2);
+                        document.getElementById('remainingBalance').textContent = '₱' + newBalance.toFixed(2);
+                        
+                        // Update current values in case user wants to make another payment
+                        currentAmountPaid = newAmountPaid;
+                        currentBalance = newBalance;
+                        
+                        // Reset form (from existing code)
+                        document.getElementById('paymentAmount').value = '';
+                        document.getElementById('paymentDate').value = '';
+                        document.getElementById('paymentNotes').value = '';
+                        
+                        // Set default date to today (from existing code)
+                        document.getElementById('paymentDate').valueAsDate = new Date();
+                        
+                        modal.classList.add('hidden');
+                        
+                        // Optionally refresh the table data
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Error recording payment: ' + (data.message || 'Unknown error'),
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'An error occurred while recording the payment',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            })
+            .finally(() => {
+                submitPaymentBtn.disabled = false;
+                submitPaymentBtn.textContent = 'Record Payment';
+            });
+        }
     });
+});
     
     // Reset payment form (helper function)
     function resetPaymentForm() {
@@ -1437,48 +1478,65 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 <script>
-    // Add this to your existing JavaScript
 document.addEventListener('DOMContentLoaded', function() {
-    // Archive/Delete button functionality
     document.querySelectorAll('.delete-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             const lifeplanId = this.getAttribute('data-id');
             const beneficiaryName = this.closest('tr').querySelector('td:first-child').textContent.trim();
             
-            if (confirm(`Are you sure you want to archive the lifeplan for ${beneficiaryName}?`)) {
-                // Show loading indicator
-                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-                
-                // Send request to archive the record
-                fetch('lifeplan_process/archive_lifeplan.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        lifeplan_id: lifeplanId
+            Swal.fire({
+                title: 'Confirm Archive',
+                text: `Are you sure you want to archive the lifeplan for ${beneficiaryName}?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d4a933',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, archive it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                    
+                    fetch('lifeplan_process/archive_lifeplan.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            lifeplan_id: lifeplanId
+                        })
                     })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Remove the row from the table
-                        this.closest('tr').remove();
-                        // Optionally show a success message
-                        alert('LifePlan archived successfully!');
-                    } else {
-                        alert('Error archiving LifePlan: ' + (data.message || 'Unknown error'));
-                        // Reset button icon
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            this.closest('tr').remove();
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success',
+                                text: 'LifePlan archived successfully!',
+                                confirmButtonColor: '#d4a933'
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'Error archiving LifePlan: ' + (data.message || 'Unknown error'),
+                                confirmButtonColor: '#d4a933'
+                            });
+                            this.innerHTML = '<i class="fas fa-archive"></i>';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'An error occurred while archiving the LifePlan',
+                            confirmButtonColor: '#d4a933'
+                        });
                         this.innerHTML = '<i class="fas fa-archive"></i>';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('An error occurred while archiving the LifePlan');
-                    // Reset button icon
-                    this.innerHTML = '<i class="fas fa-archive"></i>';
-                });
-            }
+                    });
+                }
+            });
         });
     });
 });
@@ -1571,54 +1629,81 @@ window.addEventListener('click', function(event) {
     
     // Save LifePlan changes
     document.getElementById('saveLifePlan').addEventListener('click', function() {
-        const lifeplanId = document.getElementById('lifeplanId').value;
-        const formData = new FormData();
-        
-        // Add all form fields to FormData
-        formData.append('lifeplan_id', lifeplanId);
-        formData.append('customerID', document.getElementById('customerID').value);
-        formData.append('fname', document.getElementById('fname').value);
-        formData.append('mname', document.getElementById('mname').value);
-        formData.append('lname', document.getElementById('lname').value);
-        formData.append('suffix', document.getElementById('suffix').value);
-        formData.append('email', document.getElementById('email').value);
-        formData.append('phone', document.getElementById('phone').value);
-        
-        // Beneficiary fields
-        formData.append('benefeciary_fname', document.getElementById('benefeciary_fname').value);
-        formData.append('benefeciary_mname', document.getElementById('benefeciary_mname').value);
-        formData.append('benefeciary_lname', document.getElementById('benefeciary_lname').value);
-        formData.append('benefeciary_suffix', document.getElementById('benefeciary_suffix').value);
-        formData.append('benefeciary_dob', document.getElementById('benefeciary_dob').value);
-        formData.append('benefeciary_address', document.getElementById('benefeciary_address').value);
-        formData.append('relationship_to_client', document.getElementById('relationship_to_client').value);
-        
-        // Plan fields
-        formData.append('service_id', document.getElementById('service_id').value);
-        formData.append('payment_duration', document.getElementById('payment_duration').value);
-        formData.append('custom_price', document.getElementById('custom_price').value);
-        formData.append('payment_status', document.getElementById('payment_status').value);
-        
-        // Send the data to the server
-        fetch('lifeplan_process/update_lifeplan.php', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('LifePlan updated successfully!');
-                // Refresh the page or update the table row
-                location.reload();
-            } else {
-                alert('Error updating LifePlan: ' + (data.message || 'Unknown error'));
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred while updating the LifePlan');
-        });
+    Swal.fire({
+        title: 'Are you sure?',
+        text: 'Do you want to save the changes to this LifePlan?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, save it!',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const lifeplanId = document.getElementById('lifeplanId').value;
+            const formData = new FormData();
+            
+            // Add all form fields to FormData
+            formData.append('lifeplan_id', lifeplanId);
+            formData.append('customerID', document.getElementById('customerID').value);
+            formData.append('fname', document.getElementById('fname').value);
+            formData.append('mname', document.getElementById('mname').value);
+            formData.append('lname', document.getElementById('lname').value);
+            formData.append('suffix', document.getElementById('suffix').value);
+            formData.append('email', document.getElementById('email').value);
+            formData.append('phone', document.getElementById('phone').value);
+            
+            // Beneficiary fields
+            formData.append('benefeciary_fname', document.getElementById('benefeciary_fname').value);
+            formData.append('benefeciary_mname', document.getElementById('benefeciary_mname').value);
+            formData.append('benefeciary_lname', document.getElementById('benefeciary_lname').value);
+            formData.append('benefeciary_suffix', document.getElementById('benefeciary_suffix').value);
+            formData.append('benefeciary_dob', document.getElementById('benefeciary_dob').value);
+            formData.append('benefeciary_address', document.getElementById('benefeciary_address').value);
+            formData.append('relationship_to_client', document.getElementById('relationship_to_client').value);
+            
+            // Plan fields
+            formData.append('service_id', document.getElementById('service_id').value);
+            formData.append('payment_duration', document.getElementById('payment_duration').value);
+            formData.append('custom_price', document.getElementById('custom_price').value);
+            formData.append('payment_status', document.getElementById('payment_status').value);
+            
+            // Send the data to the server
+            fetch('lifeplan_process/update_lifeplan.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'LifePlan updated successfully!',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        // Refresh the page or update the table row
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Error updating LifePlan: ' + (data.message || 'Unknown error'),
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'An error occurred while updating the LifePlan',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            });
+        }
     });
+});
     
     // Function to fetch LifePlan data
     function fetchLifePlanData(lifeplanId) {
@@ -1723,7 +1808,6 @@ document.addEventListener('DOMContentLoaded', function() {
             archiveModal.classList.add('hidden');
         }
     });
-
     // Function to fetch archived lifeplans
     function fetchArchivedLifePlans() {
         archivedLifePlansBody.innerHTML = `
@@ -1793,48 +1877,75 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     // Add event listeners to unarchive buttons
                     document.querySelectorAll('.unarchive-btn').forEach(btn => {
-                        btn.addEventListener('click', function() {
-                            const lifeplanId = this.getAttribute('data-id');
-                            const beneficiaryName = this.closest('tr').querySelector('td:first-child').textContent.trim();
-                            
-                            if (confirm(`Are you sure you want to unarchive the lifeplan for ${beneficiaryName}?`)) {
-                                // Show loading indicator
-                                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-                                
-                                // Send request to unarchive the record
-                                fetch('lifeplan_process/unarchive_lifeplan.php', {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json',
-                                    },
-                                    body: JSON.stringify({
-                                        lifeplan_id: lifeplanId
-                                    })
-                                })
-                                .then(response => response.json())
-                                .then(data => {
-                                    if (data.success) {
-                                        // Remove the row from the table
-                                        this.closest('tr').remove();
-                                        // Show success message
-                                        alert('LifePlan unarchived successfully!');
-                                        // Refresh the main table if needed
-                                        location.reload();
-                                    } else {
-                                        alert('Error unarchiving LifePlan: ' + (data.message || 'Unknown error'));
-                                        // Reset button
-                                        this.innerHTML = '<i class="fas fa-undo"></i> Unarchive';
-                                    }
-                                })
-                                .catch(error => {
-                                    console.error('Error:', error);
-                                    alert('An error occurred while unarchiving the LifePlan');
-                                    // Reset button
-                                    this.innerHTML = '<i class="fas fa-undo"></i> Unarchive';
-                                });
-                            }
+    btn.addEventListener('click', function() {
+        const lifeplanId = this.getAttribute('data-id');
+        const beneficiaryName = this.closest('tr').querySelector('td:first-child').textContent.trim();
+        
+        Swal.fire({
+            title: 'Are you sure?',
+            text: `Do you want to unarchive the lifeplan for ${beneficiaryName}?`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, unarchive it!',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Show loading indicator
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                
+                // Send request to unarchive the record
+                fetch('lifeplan_process/unarchive_lifeplan.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        lifeplan_id: lifeplanId
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Remove the row from the table
+                        this.closest('tr').remove();
+                        // Show success message
+                        Swal.fire({
+                            title: 'Success!',
+                            text: 'LifePlan unarchived successfully!',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            // Refresh the main table
+                            location.reload();
                         });
+                    } else {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Error unarchiving LifePlan: ' + (data.message || 'Unknown error'),
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                        // Reset button
+                        this.innerHTML = '<i class="fas fa-undo"></i> Unarchive';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'An error occurred while unarchiving the LifePlan',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
                     });
+                    // Reset button
+                    this.innerHTML = '<i class="fas fa-undo"></i> Unarchive';
+                });
+            }
+        });
+    });
+});
                 } else {
                     archivedLifePlansBody.innerHTML = `
                         <tr>
@@ -2028,13 +2139,24 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert('LifePlan successfully converted to sale!');
-                // Close modal
-                convertModal.classList.add('hidden');
-                // Optionally refresh the page or update the table
-                location.reload();
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'LifePlan successfully converted to sale!',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    // Close modal
+                    convertModal.classList.add('hidden');
+                    // Optionally refresh the page or update the table
+                    location.reload();
+                });
             } else {
-                alert('Error converting to sale: ' + (data.message || 'Unknown error'));
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Error converting to sale: ' + (data.message || 'Unknown error'),
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
             }
         })
         .catch(error => {
