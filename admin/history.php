@@ -1322,7 +1322,7 @@ $offsetOutstanding = ($outstandingPage - 1) * $recordsPerPage;
               </th>
               <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
                 <div class="flex items-center gap-1.5">
-                  <i class="fas fa-toggle-on text-sidebar-accent"></i> Status
+                  <i class="fas fa-map-marker-alt text-sidebar-accent"></i> Branch 
                 </div>
               </th>
               <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
@@ -1387,7 +1387,7 @@ $offsetOutstanding = ($outstandingPage - 1) * $recordsPerPage;
               </th>
               <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
                 <div class="flex items-center gap-1.5">
-                  <i class="fas fa-toggle-on text-sidebar-accent"></i> Status
+                  <i class="fas fa-map-marker-alt text-sidebar-accent"></i> Branch
                 </div>
               </th>
               <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
