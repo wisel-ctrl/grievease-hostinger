@@ -139,969 +139,983 @@ $offsetOutstanding = ($outstandingPage - 1) * $recordsPerPage;
     </div>
   </div>
 
-  <!-- Ongoing Services Section -->
-<div id="ongoing-services-management" class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden">
-  <!-- Header Section - Made responsive with better stacking -->
-  <div class="bg-sidebar-hover p-4 border-b border-sidebar-border">
-    <!-- Desktop layout for big screens - Title on left, controls on right -->
-    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
-      <!-- Title and Counter -->
-      <div class="flex items-center gap-3 mb-4 lg:mb-0">
-        <h4 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Ongoing Services</h4>
+  <!-- Tabs Navigation -->
+  <div class="mb-6">
+    <ul class="flex border-b border-gray-200">
+      <li>
+        <button id="standard-tab" class="px-4 py-2 text-sm font-medium text-sidebar-text border-b-2 border-sidebar-accent focus:outline-none tab-button active" onclick="showTab('standard')">Standard Sales</button>
+      </li>
+      <li>
+        <button id="custom-tab" class="px-4 py-2 text-sm font-medium text-gray-600 border-b-2 border-transparent hover:border-gray-300 focus:outline-none tab-button" onclick="showTab('custom')">Custom Sales</button>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Standard Sales Tab Content -->
+  <div id="standard-content" class="tab-content">
+    <!-- Ongoing Services Section -->
+    <div id="ongoing-services-management" class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden">
+      <!-- Header Section - Made responsive with better stacking -->
+      <div class="bg-sidebar-hover p-4 border-b border-sidebar-border">
+        <!-- Desktop layout for big screens - Title on left, controls on right -->
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+          <!-- Title and Counter -->
+          <div class="flex items-center gap-3 mb-4 lg:mb-0">
+            <h4 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Ongoing Services</h4>
+            
+            <?php
+            // Count total ongoing services (status = 'Pending')
+            $countQuery = "SELECT COUNT(*) as total FROM sales_tb WHERE status = 'Pending'";
+    $countResult = $conn->query($countQuery);
+    $totalOngoing = $countResult->fetch_assoc()['total'];
+            ?>
+            
+            <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+              <?php echo $totalOngoing . ($totalOngoing != 1 ? "" : ""); ?>
+            </span>
+          </div>
+          
+          <!-- Controls for big screens - aligned right -->
+          <div class="hidden lg:flex items-center gap-3">
+            <!-- Search Input -->
+            <div class="relative">
+              <input type="text" id="searchOngoing" 
+                    placeholder="Search services..." 
+                    class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+              <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
+            </div>
+
+            <!-- Filter Dropdown -->
+            <div class="relative filter-dropdown">
+              <button id="filterToggle" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover">
+                <i class="fas fa-filter text-sidebar-accent"></i>
+                <span>Filters</span>
+                <?php if(isset($sortFilter) && $sortFilter): ?>
+                  <span class="h-2 w-2 bg-sidebar-accent rounded-full"></span>
+                <?php endif; ?>
+              </button>
+              
+              <!-- Filter Window -->
+              <div id="filterDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
+                <div class="space-y-4">
+                  <!-- Sort Options -->
+                  <div>
+                    <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
+                    <div class="space-y-1">
+                      <div class="flex items-center cursor-pointer" data-sort="id_asc">
+                        <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                          ID: Ascending
+                        </span>
+                      </div>
+                      <div class="flex items-center cursor-pointer" data-sort="id_desc">
+                        <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                          ID: Descending
+                        </span>
+                      </div>
+                      <div class="flex items-center cursor-pointer" data-sort="client_asc">
+                        <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                          Client: A-Z
+                        </span>
+                      </div>
+                      <div class="flex items-center cursor-pointer" data-sort="client_desc">
+                        <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                          Client: Z-A
+                        </span>
+                      </div>
+                      <div class="flex items-center cursor-pointer" data-sort="date_asc">
+                        <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                          Date: Oldest First
+                        </span>
+                      </div>
+                      <div class="flex items-center cursor-pointer" data-sort="date_desc">
+                        <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                          Date: Newest First
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
         
-        <?php
-        // Count total ongoing services (status = 'Pending')
-        $countQuery = "SELECT COUNT(*) as total FROM sales_tb WHERE status = 'Pending'";
-$countResult = $conn->query($countQuery);
-$totalOngoing = $countResult->fetch_assoc()['total'];
-        ?>
-        
-        <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-          <?php echo $totalOngoing . ($totalOngoing != 1 ? "" : ""); ?>
-        </span>
+        <!-- Mobile/Tablet Controls - Only visible on smaller screens -->
+        <div class="lg:hidden w-full mt-4">
+          <!-- First row: Search bar with filter and archive icons on the right -->
+          <div class="flex items-center w-full gap-3 mb-4">
+            <!-- Search Input - Takes most of the space -->
+            <div class="relative flex-grow">
+              <input type="text" id="searchOngoing" 
+                      placeholder="Search services..." 
+                      class="pl-8 pr-3 py-2.5 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+              <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+            </div>
+
+            <!-- Icon-only buttons for filter and archive -->
+            <div class="flex items-center gap-3">
+              <!-- Filter Icon Button -->
+              <div class="relative filter-dropdown">
+                <button id="serviceFilterToggle" class="w-10 h-10 flex items-center justify-center text-sidebar-accent">
+                  <i class="fas fa-filter text-xl"></i>
+                  <span id="filterIndicator" class="hidden absolute top-1 right-1 h-2 w-2 bg-sidebar-accent rounded-full"></span>
+                </button>
+                
+                <!-- Filter Window - Positioned below the icon -->
+                <div id="serviceFilterDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
+                  <div class="space-y-4">
+                    <!-- Sort Options -->
+                    <div>
+                      <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
+                      <div class="space-y-2">
+                        <div class="flex items-center cursor-pointer" data-sort="id_asc">
+                          <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">
+                            ID: Ascending
+                          </span>
+                        </div>
+                        <div class="flex items-center cursor-pointer" data-sort="id_desc">
+                          <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">
+                            ID: Descending
+                          </span>
+                        </div>
+                        <div class="flex items-center cursor-pointer" data-sort="client_asc">
+                          <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">
+                            Client: A-Z
+                          </span>
+                        </div>
+                        <div class="flex items-center cursor-pointer" data-sort="client_desc">
+                          <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">
+                            Client: Z-A
+                          </span>
+                        </div>
+                        <div class="flex items-center cursor-pointer" data-sort="date_asc">
+                          <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">
+                            Date: Oldest First
+                          </span>
+                        </div>
+                        <div class="flex items-center cursor-pointer" data-sort="date_desc">
+                          <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">
+                            Date: Newest First
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
       </div>
       
-      <!-- Controls for big screens - aligned right -->
-      <div class="hidden lg:flex items-center gap-3">
-        <!-- Search Input -->
-        <div class="relative">
-          <input type="text" id="searchOngoing" 
-                placeholder="Search services..." 
-                class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-          <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
+      <!-- Responsive Table Container with improved spacing -->
+      <div class="overflow-x-auto scrollbar-thin" id="ongoingServiceTableContainer">
+        <div id="ongoingLoadingIndicator" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center">
+          <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
         </div>
-
-        <!-- Filter Dropdown -->
-        <div class="relative filter-dropdown">
-          <button id="filterToggle" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover">
-            <i class="fas fa-filter text-sidebar-accent"></i>
-            <span>Filters</span>
-            <?php if(isset($sortFilter) && $sortFilter): ?>
-              <span class="h-2 w-2 bg-sidebar-accent rounded-full"></span>
-            <?php endif; ?>
-          </button>
-          
-          <!-- Filter Window -->
-          <div id="filterDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
-            <div class="space-y-4">
-              <!-- Sort Options -->
-              <div>
-                <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
-                <div class="space-y-1">
-                  <div class="flex items-center cursor-pointer" data-sort="id_asc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      ID: Ascending
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="id_desc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      ID: Descending
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="client_asc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      Client: A-Z
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="client_desc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      Client: Z-A
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="date_asc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      Date: Oldest First
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="date_desc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      Date: Newest First
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Mobile/Tablet Controls - Only visible on smaller screens -->
-    <div class="lg:hidden w-full mt-4">
-      <!-- First row: Search bar with filter and archive icons on the right -->
-      <div class="flex items-center w-full gap-3 mb-4">
-        <!-- Search Input - Takes most of the space -->
-        <div class="relative flex-grow">
-          <input type="text" id="searchOngoing" 
-                  placeholder="Search services..." 
-                  class="pl-8 pr-3 py-2.5 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-          <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
-        </div>
-
-        <!-- Icon-only buttons for filter and archive -->
-        <div class="flex items-center gap-3">
-          <!-- Filter Icon Button -->
-          <div class="relative filter-dropdown">
-            <button id="serviceFilterToggle" class="w-10 h-10 flex items-center justify-center text-sidebar-accent">
-              <i class="fas fa-filter text-xl"></i>
-              <span id="filterIndicator" class="hidden absolute top-1 right-1 h-2 w-2 bg-sidebar-accent rounded-full"></span>
-            </button>
-            
-            <!-- Filter Window - Positioned below the icon -->
-            <div id="serviceFilterDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
-              <div class="space-y-4">
-                <!-- Sort Options -->
-                <div>
-                  <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
-                  <div class="space-y-2">
-                    <div class="flex items-center cursor-pointer" data-sort="id_asc">
-                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">
-                        ID: Ascending
-                      </span>
-                    </div>
-                    <div class="flex items-center cursor-pointer" data-sort="id_desc">
-                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">
-                        ID: Descending
-                      </span>
-                    </div>
-                    <div class="flex items-center cursor-pointer" data-sort="client_asc">
-                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">
-                        Client: A-Z
-                      </span>
-                    </div>
-                    <div class="flex items-center cursor-pointer" data-sort="client_desc">
-                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">
-                        Client: Z-A
-                      </span>
-                    </div>
-                    <div class="flex items-center cursor-pointer" data-sort="date_asc">
-                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">
-                        Date: Oldest First
-                      </span>
-                    </div>
-                    <div class="flex items-center cursor-pointer" data-sort="date_desc">
-                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">
-                        Date: Newest First
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </div>
-  </div>
-  
-  <!-- Responsive Table Container with improved spacing -->
-  <div class="overflow-x-auto scrollbar-thin" id="ongoingServiceTableContainer">
-    <div id="ongoingLoadingIndicator" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center">
-      <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
-    </div>
-    
-    <!-- Responsive Table with improved spacing and horizontal scroll for small screens -->
-    <div class="min-w-full">
-      <table class="w-full">
-        <thead>
-          <tr class="bg-gray-50 border-b border-sidebar-border">
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(0)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-hashtag text-sidebar-accent"></i> ID 
-              </div>
-            </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(1)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-user text-sidebar-accent"></i> Client 
-              </div>
-            </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(2)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-user-alt text-sidebar-accent"></i> Deceased 
-              </div>
-            </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(3)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-tag text-sidebar-accent"></i> Service Type 
-              </div>
-            </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(4)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-calendar text-sidebar-accent"></i> Date of Burial 
-              </div>
-            </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(5)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-toggle-on text-sidebar-accent"></i> Status 
-              </div>
-            </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(6)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-peso-sign text-sidebar-accent"></i> Outstanding Balance 
-              </div>
-            </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-cogs text-sidebar-accent"></i> Actions
-              </div>
-            </th>
-          </tr>
-        </thead>
-        <tbody id="ongoingServiceTableBody">
-          <?php
-          // Query for Ongoing Services (status = 'Pending')
-          // Modify your ongoingQuery to include a check for assigned staff
-          $ongoingQuery = "SELECT s.sales_id, s.fname, s.mname, s.lname, s.suffix, 
-                s.fname_deceased, s.mname_deceased, s.lname_deceased, s.suffix_deceased,
-                sv.service_name, s.date_of_burial, s.balance, s.status, s.customerID, s.payment_status,
-                (SELECT COUNT(*) FROM employee_service_payments esp WHERE esp.sales_id = s.sales_id) AS staff_assigned
-                FROM sales_tb s
-                JOIN services_tb sv ON s.service_id = sv.service_id
-                WHERE s.status = 'Pending'
-                LIMIT $offsetOngoing, $recordsPerPage";
-          $ongoingResult = $conn->query($ongoingQuery);
-          
-          if ($ongoingResult->num_rows > 0) {
-            while($row = $ongoingResult->fetch_assoc()) {
-              $clientName = htmlspecialchars($row['fname'] . ' ' . 
-                          ($row['mname'] ? $row['mname'] . ' ' : '') . 
-                          $row['lname'] . 
-                          ($row['suffix'] ? ' ' . $row['suffix'] : ''));
-                          
-              $deceasedName = htmlspecialchars($row['fname_deceased'] . ' ' . 
-                              ($row['mname_deceased'] ? $row['mname_deceased'] . ' ' : '') . 
-                              $row['lname_deceased'] . 
-                              ($row['suffix_deceased'] ? ' ' . $row['suffix_deceased'] : ''));
-              ?>
-              <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
-                <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">#<?php echo $row['sales_id']; ?></td>
-                <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo $clientName; ?></td>
-                <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo $deceasedName; ?></td>
-                <td class="px-4 py-3.5 text-sm text-sidebar-text">
-                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
-                    <?php echo htmlspecialchars($row['service_name']); ?>
-                  </span>
-                </td>
-                <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['date_of_burial']); ?></td>
-                <td class="px-4 py-3.5 text-sm">
-                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-500 border border-orange-200">
-                    <i class="fas fa-pause-circle mr-1"></i> <?php echo htmlspecialchars($row['status']); ?>
-                  </span>
-                </td>
-                <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱<?php echo number_format($row['balance'], 2); ?></td>
-                <td class="px-4 py-3.5 text-sm">
-                  <div class="flex space-x-2">
-                    <button class="p-2 bg-yellow-100 text-yellow-600 rounded-lg hover:bg-yellow-200 transition-all tooltip" title="Edit Service" onclick="openEditServiceModal('<?php echo $row['sales_id']; ?>')">
-                      <i class="fas fa-edit"></i>
-                    </button>
-                    <?php if ($row['staff_assigned'] == 0): ?>
-                      <button class="p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-all tooltip assign-staff-btn" 
-                              title="Assign Staff"
-                              onclick="checkCustomerBeforeAssign('<?php echo $row['sales_id']; ?>', <?php echo $row['customerID'] ? 'true' : 'false'; ?>)"
-                              <?php echo !$row['customerID'] ? 'disabled' : ''; ?>>
-                        <i class="fas fa-users"></i>
-                      </button>
-                    <?php endif; ?>
-                    <button class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip complete-btn" 
-                            title="Complete Service"
-                            onclick="checkCustomerBeforeComplete('<?php echo $row['sales_id']; ?>', <?php echo $row['customerID'] ? 'true' : 'false'; ?>)"
-                            <?php echo !$row['customerID'] ? 'disabled' : ''; ?>>
-                      <i class="fas fa-check"></i>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-              <?php
-            }
-          } else {
-            ?>
-            <tr>
-              <td colspan="8" class="p-6 text-sm text-center">
-                <div class="flex flex-col items-center">
-                  <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
-                  <p class="text-gray-500">No ongoing services found</p>
-                </div>
-              </td>
-            </tr>
-            <?php
-          }
-          ?>
-        </tbody>
-      </table>
-    </div>
-  </div>
-  
-  <!-- Sticky Pagination Footer with improved spacing -->
-<div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
-    <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
-        Showing <?php echo ($offsetOngoing + 1) . ' - ' . min($offsetOngoing + $recordsPerPage, $totalOngoing); ?> of <?php echo $totalOngoing; ?> services
-    </div>
-    <div id="paginationContainer" class="flex space-x-2">
-        <?php 
-        $totalPagesOngoing = ceil($totalOngoing / $recordsPerPage);
         
-        if ($totalPagesOngoing > 1): 
-        ?>
-            <!-- First page button (double arrow) -->
-            <a href="?page=1" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
+        <!-- Responsive Table with improved spacing and horizontal scroll for small screens -->
+        <div class="min-w-full">
+          <table class="w-full">
+            <thead>
+              <tr class="bg-gray-50 border-b border-sidebar-border">
+                <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(0)">
+                  <div class="flex items-center gap-1.5">
+                    <i class="fas fa-hashtag text-sidebar-accent"></i> ID 
+                  </div>
+                </th>
+                <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(1)">
+                  <div class="flex items-center gap-1.5">
+                    <i class="fas fa-user text-sidebar-accent"></i> Client 
+                  </div>
+                </th>
+                <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(2)">
+                  <div class="flex items-center gap-1.5">
+                    <i class="fas fa-user-alt text-sidebar-accent"></i> Deceased 
+                  </div>
+                </th>
+                <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(3)">
+                  <div class="flex items-center gap-1.5">
+                    <i class="fas fa-tag text-sidebar-accent"></i> Service Type 
+                  </div>
+                </th>
+                <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(4)">
+                  <div class="flex items-center gap-1.5">
+                    <i class="fas fa-calendar text-sidebar-accent"></i> Date of Burial 
+                  </div>
+                </th>
+                <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(5)">
+                  <div class="flex items-center gap-1.5">
+                    <i class="fas fa-toggle-on text-sidebar-accent"></i> Status 
+                  </div>
+                </th>
+                <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(6)">
+                  <div class="flex items-center gap-1.5">
+                    <i class="fas fa-peso-sign text-sidebar-accent"></i> Outstanding Balance 
+                  </div>
+                </th>
+                <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
+                  <div class="flex items-center gap-1.5">
+                    <i class="fas fa-cogs text-sidebar-accent"></i> Actions
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody id="ongoingServiceTableBody">
+              <?php
+              // Query for Ongoing Services (status = 'Pending')
+              // Modify your ongoingQuery to include a check for assigned staff
+              $ongoingQuery = "SELECT s.sales_id, s.fname, s.mname, s.lname, s.suffix, 
+                    s.fname_deceased, s.mname_deceased, s.lname_deceased, s.suffix_deceased,
+                    sv.service_name, s.date_of_burial, s.balance, s.status, s.customerID, s.payment_status,
+                    (SELECT COUNT(*) FROM employee_service_payments esp WHERE esp.sales_id = s.sales_id) AS staff_assigned
+                    FROM sales_tb s
+                    JOIN services_tb sv ON s.service_id = sv.service_id
+                    WHERE s.status = 'Pending'
+                    LIMIT $offsetOngoing, $recordsPerPage";
+              $ongoingResult = $conn->query($ongoingQuery);
+              
+              if ($ongoingResult->num_rows > 0) {
+                while($row = $ongoingResult->fetch_assoc()) {
+                  $clientName = htmlspecialchars($row['fname'] . ' ' . 
+                              ($row['mname'] ? $row['mname'] . ' ' : '') . 
+                              $row['lname'] . 
+                              ($row['suffix'] ? ' ' . $row['suffix'] : ''));
+                          
+                  $deceasedName = htmlspecialchars($row['fname_deceased'] . ' ' . 
+                                  ($row['mname_deceased'] ? $row['mname_deceased'] . ' ' : '') . 
+                                  $row['lname_deceased'] . 
+                                  ($row['suffix_deceased'] ? ' ' . $row['suffix_deceased'] : ''));
+                  ?>
+                  <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
+                    <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">#<?php echo $row['sales_id']; ?></td>
+                    <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo $clientName; ?></td>
+                    <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo $deceasedName; ?></td>
+                    <td class="px-4 py-3.5 text-sm text-sidebar-text">
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
+                        <?php echo htmlspecialchars($row['service_name']); ?>
+                      </span>
+                    </td>
+                    <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['date_of_burial']); ?></td>
+                    <td class="px-4 py-3.5 text-sm">
+                      <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-500 border border-orange-200">
+                        <i class="fas fa-pause-circle mr-1"></i> <?php echo htmlspecialchars($row['status']); ?>
+                      </span>
+                    </td>
+                    <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱<?php echo number_format($row['balance'], 2); ?></td>
+                    <td class="px-4 py-3.5 text-sm">
+                      <div class="flex space-x-2">
+                        <button class="p-2 bg-yellow-100 text-yellow-600 rounded-lg hover:bg-yellow-200 transition-all tooltip" title="Edit Service" onclick="openEditServiceModal('<?php echo $row['sales_id']; ?>')">
+                          <i class="fas fa-edit"></i>
+                        </button>
+                        <?php if ($row['staff_assigned'] == 0): ?>
+                          <button class="p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-all tooltip assign-staff-btn" 
+                                  title="Assign Staff"
+                                  onclick="checkCustomerBeforeAssign('<?php echo $row['sales_id']; ?>', <?php echo $row['customerID'] ? 'true' : 'false'; ?>)"
+                                  <?php echo !$row['customerID'] ? 'disabled' : ''; ?>>
+                            <i class="fas fa-users"></i>
+                          </button>
+                        <?php endif; ?>
+                        <button class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip complete-btn" 
+                                title="Complete Service"
+                                onclick="checkCustomerBeforeComplete('<?php echo $row['sales_id']; ?>', <?php echo $row['customerID'] ? 'true' : 'false'; ?>)"
+                                <?php echo !$row['customerID'] ? 'disabled' : ''; ?>>
+                          <i class="fas fa-check"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <?php
+                }
+              } else {
+                ?>
+                <tr>
+                  <td colspan="8" class="p-6 text-sm text-center">
+                    <div class="flex flex-col items-center">
+                      <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
+                      <p class="text-gray-500">No ongoing services found</p>
+                    </div>
+                  </td>
+                </tr>
+                <?php
+              }
+              ?>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <!-- Sticky Pagination Footer with improved spacing -->
+    <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
+            Showing <?php echo ($offsetOngoing + 1) . ' - ' . min($offsetOngoing + $recordsPerPage, $totalOngoing); ?> of <?php echo $totalOngoing; ?> services
+        </div>
+        <div id="paginationContainer" class="flex space-x-2">
+            <?php 
+            $totalPagesOngoing = ceil($totalOngoing / $recordsPerPage);
+            
+            if ($totalPagesOngoing > 1): 
+            ?>
+                <!-- First page button (double arrow) -->
+                <a href="?page=1" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
+                    &laquo;
+                </a>
+                
+                <!-- Previous page button (single arrow) -->
+                <a href="?page=<?php echo max(1, $page - 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
+                    &lsaquo;
+                </a>
+                
+                <?php
+                // Show exactly 3 page numbers
+                if ($totalPagesOngoing <= 3) {
+                    // If total pages is 3 or less, show all pages
+                    $start_page = 1;
+                    $end_page = $totalPagesOngoing;
+                } else {
+                    // With more than 3 pages, determine which 3 to show
+                    if ($page == 1) {
+                        // At the beginning, show first 3 pages
+                        $start_page = 1;
+                        $end_page = 3;
+                    } elseif ($page == $totalPagesOngoing) {
+                        // At the end, show last 3 pages
+                        $start_page = $totalPagesOngoing - 2;
+                        $end_page = $totalPagesOngoing;
+                    } else {
+                        // In the middle, show current page with one before and after
+                        $start_page = $page - 1;
+                        $end_page = $page + 1;
+                        
+                        // Handle edge cases
+                        if ($start_page < 1) {
+                            $start_page = 1;
+                            $end_page = 3;
+                        }
+                        if ($end_page > $totalPagesOngoing) {
+                            $end_page = $totalPagesOngoing;
+                            $start_page = $totalPagesOngoing - 2;
+                        }
+                    }
+                }
+                
+                // Generate the page buttons
+                for ($i = $start_page; $i <= $end_page; $i++): 
+                ?>
+                    <a href="?page=<?php echo $i; ?>" class="px-3.5 py-1.5 rounded text-sm <?php echo ($i == $page) ? 'bg-sidebar-accent text-white' : 'border border-sidebar-border hover:bg-sidebar-hover'; ?>">
+                        <?php echo $i; ?>
+                    </a>
+                <?php 
+                endfor; 
+                ?>
+                
+                <!-- Next page button (single arrow) -->
+                <a href="?page=<?php echo min($totalPagesOngoing, $page + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($page == $totalPagesOngoing) ? 'opacity-50 pointer-events-none' : ''; ?>">
+                    &rsaquo;
+                </a>
+                
+                <!-- Last page button (double arrow) -->
+                <a href="?page=<?php echo $totalPagesOngoing; ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($page == $totalPagesOngoing) ? 'opacity-50 pointer-events-none' : ''; ?>">
+                    &raquo;
+                </a>
+            <?php endif; ?>
+        </div>
+    </div>
+    </div>
+
+    <!-- Past Services - Fully Paid Section -->
+    <div id="past-services-fully-paid" class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden">
+      <!-- Header Section - Made responsive with better stacking -->
+      <div class="bg-sidebar-hover p-4 border-b border-sidebar-border">
+        <!-- Desktop layout for big screens - Title on left, controls on right -->
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+          <!-- Title and Counter -->
+          <div class="flex items-center gap-3 mb-4 lg:mb-0">
+            <h4 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Past Services - Fully Paid</h4>
+            
+            <?php
+            // Count total fully paid services
+            $countQuery = "SELECT COUNT(*) as total FROM sales_tb WHERE status = 'Completed' AND payment_status = 'Fully Paid' AND balance = 0";
+    $countResult = $conn->query($countQuery);
+    $totalServices = $countResult->fetch_assoc()['total'];
+            ?>
+            
+            <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+              <?php echo $totalServices . ($totalServices != 1 ? "" : ""); ?>
+            </span>
+          </div>
+          
+          <!-- Controls for big screens - aligned right -->
+          <div class="hidden lg:flex items-center gap-3">
+            <!-- Search Input -->
+            <div class="relative">
+              <input type="text" id="searchFullyPaid" 
+                    placeholder="Search services..." 
+                    class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent"
+                    oninput="debouncedFilterFullyPaid()">
+              <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
+            </div>
+
+            <!-- Filter Dropdown -->
+            <div class="relative filter-dropdown">
+              <button id="filterToggleFullyPaid" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover">
+                <i class="fas fa-filter text-sidebar-accent"></i>
+                <span>Filters</span>
+                <?php if(isset($sortFilter) && $sortFilter): ?>
+                  <span class="h-2 w-2 bg-sidebar-accent rounded-full"></span>
+                <?php endif; ?>
+              </button>
+              
+              <!-- Filter Window -->
+              <div id="filterDropdownFullyPaid" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
+                <div class="space-y-4">
+                  <!-- Sort Options -->
+                  <div>
+                    <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
+                    <div class="space-y-1">
+                      <div class="flex items-center cursor-pointer" data-sort="id_asc">
+                        <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                          ID: Ascending
+                        </span>
+                      </div>
+                      <div class="flex items-center cursor-pointer" data-sort="id_desc">
+                        <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                          ID: Descending
+                        </span>
+                      </div>
+                      <div class="flex items-center cursor-pointer" data-sort="client_asc">
+                        <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                          Client: A-Z
+                        </span>
+                      </div>
+                      <div class="flex items-center cursor-pointer" data-sort="client_desc">
+                        <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                          Client: Z-A
+                        </span>
+                      </div>
+                      <div class="flex items-center cursor-pointer" data-sort="deceased_asc">
+                        <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                          Deceased: A-Z
+                        </span>
+                      </div>
+                      <div class="flex items-center cursor-pointer" data-sort="deceased_desc">
+                        <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                          Deceased: Z-A
+                        </span>
+                      </div>
+                      <div class="flex items-center cursor-pointer" data-sort="date_asc">
+                        <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                          Date: Oldest First
+                        </span>
+                      </div>
+                      <div class="flex items-center cursor-pointer" data-sort="date_desc">
+                        <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                          Date: Newest First
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Mobile/Tablet Controls - Only visible on smaller screens -->
+        <div class="lg:hidden w-full mt-4">
+          <!-- First row: Search bar with filter icon on the right -->
+          <div class="flex items-center w-full gap-3 mb-4">
+            <!-- Search Input - Takes most of the space -->
+            <div class="relative flex-grow">
+              <input type="text" id="searchFullyPaidMobile" 
+                      placeholder="Search services..." 
+                      class="pl-8 pr-3 py-2.5 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent"
+                      oninput="debouncedFilterFullyPaid()">
+              <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+            </div>
+
+            <!-- Icon-only button for filter -->
+            <div class="flex items-center gap-3">
+              <!-- Filter Icon Button -->
+              <div class="relative filter-dropdown">
+                <button id="filterToggleFullyPaidMobile" class="w-10 h-10 flex items-center justify-center text-sidebar-accent">
+                  <i class="fas fa-filter text-xl"></i>
+                  <span id="filterIndicatorFullyPaid" class="hidden absolute top-1 right-1 h-2 w-2 bg-sidebar-accent rounded-full"></span>
+                </button>
+                
+                <!-- Filter Window - Positioned below the icon -->
+                <div id="filterDropdownFullyPaidMobile" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
+                  <div class="space-y-4">
+                    <!-- Sort Options -->
+                    <div>
+                      <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
+                      <div class="space-y-2">
+                        <div class="flex items-center cursor-pointer" data-sort="id_asc">
+                          <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">
+                            ID: Ascending
+                          </span>
+                        </div>
+                        <div class="flex items-center cursor-pointer" data-sort="id_desc">
+                          <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">
+                            ID: Descending
+                          </span>
+                        </div>
+                        <div class="flex items-center cursor-pointer" data-sort="client_asc">
+                          <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">
+                            Client: A-Z
+                          </span>
+                        </div>
+                        <div class="flex items-center cursor-pointer" data-sort="client_desc">
+                          <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">
+                            Client: Z-A
+                          </span>
+                        </div>
+                        <div class="flex items-center cursor-pointer" data-sort="date_asc">
+                          <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">
+                            Date: Oldest First
+                          </span>
+                        </div>
+                        <div class="flex items-center cursor-pointer" data-sort="date_desc">
+                          <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">
+                            Date: Newest First
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Responsive Table Container with improved spacing -->
+      <div class="overflow-x-auto scrollbar-thin" id="fullyPaidTableContainer">
+        <div id="loadingIndicatorFullyPaid" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center">
+          <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
+        </div>
+        
+        <!-- Responsive Table with improved spacing and horizontal scroll for small screens -->
+        <div class="min-w-full">
+          <table class="w-full">
+            <thead>
+              <tr class="bg-gray-50 border-b border-sidebar-border">
+                <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(0)">
+                  <div class="flex items-center gap-1.5">
+                    <i class="fas fa-hashtag text-sidebar-accent"></i> ID 
+                  </div>
+                </th>
+                <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(1)">
+                  <div class="flex items-center gap-1.5">
+                    <i class="fas fa-user text-sidebar-accent"></i> Client
+                  </div>
+                </th>
+                <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(2)">
+                  <div class="flex items-center gap-1.5">
+                    <i class="fas fa-user-alt text-sidebar-accent"></i> Deceased
+                  </div>
+                </th>
+                <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(3)">
+                  <div class="flex items-center gap-1.5">
+                    <i class="fas fa-tag text-sidebar-accent"></i> Service Type
+                  </div>
+                </th>
+                <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(4)">
+                  <div class="flex items-center gap-1.5">
+                    <i class="fas fa-calendar text-sidebar-accent"></i> Date of Burial
+                  </div>
+                </th>
+                <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(5)">
+                  <div class="flex items-center gap-1.5">
+                    <i class="fas fa-toggle-on text-sidebar-accent"></i> Status
+                  </div>
+                </th>
+                <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
+                  <div class="flex items-center gap-1.5">
+                    <i class="fas fa-cogs text-sidebar-accent"></i> Actions
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody id="fullyPaidTableBody">
+              <?php
+              // Query for Past Services - Fully Paid (status = 'Completed' AND payment_status = 'Fully Paid' AND balance = 0)
+              $fullyPaidQuery = "SELECT s.sales_id, s.fname, s.mname, s.lname, s.suffix, 
+                      s.fname_deceased, s.mname_deceased, s.lname_deceased, s.suffix_deceased,
+                      sv.service_name, s.date_of_burial, s.balance, s.status, s.payment_status
+                      FROM sales_tb s
+                      JOIN services_tb sv ON s.service_id = sv.service_id
+                      WHERE s.status = 'Completed' AND s.payment_status = 'Fully Paid' AND s.balance = 0
+                      LIMIT $offsetFullyPaid, $recordsPerPage";
+              $fullyPaidResult = $conn->query($fullyPaidQuery);
+              
+              if ($fullyPaidResult->num_rows > 0) {
+                while($row = $fullyPaidResult->fetch_assoc()) {
+                  $clientName = htmlspecialchars($row['fname'] . ' ' . 
+                              ($row['mname'] ? $row['mname'] . ' ' : '') . 
+                              $row['lname'] . 
+                              ($row['suffix'] ? ' ' . $row['suffix'] : ''));
+                          
+                  $deceasedName = htmlspecialchars($row['fname_deceased'] . ' ' . 
+                                  ($row['mname_deceased'] ? $row['mname_deceased'] . ' ' : '') . 
+                                  $row['lname_deceased'] . 
+                                  ($row['suffix_deceased'] ? ' ' . $row['suffix_deceased'] : ''));
+                  ?>
+                  <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
+                    <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">#<?php echo $row['sales_id']; ?></td>
+                    <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo $clientName; ?></td>
+                    <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo $deceasedName; ?></td>
+                    <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['service_name']); ?></td>
+                    <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['date_of_burial']); ?></td>
+                    <td class="px-4 py-3.5 text-sm">
+                      <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-500 border border-green-200">
+                        <i class="fas fa-check-circle mr-1"></i> <?php echo htmlspecialchars($row['status']); ?>
+                      </span>
+                    </td>
+                    <td class="px-4 py-3.5 text-sm">
+                      <div class="flex space-x-2">
+                        <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details" onclick="viewServiceDetails('<?php echo $row['sales_id']; ?>')">
+                          <i class="fas fa-eye"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <?php
+                }
+              } else {
+                ?>
+                <tr>
+                  <td colspan="7" class="px-4 py-6 text-sm text-center">
+                    <div class="flex flex-col items-center">
+                      <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
+                      <p class="text-gray-500">No fully paid past services found</p>
+                    </div>
+                  </td>
+                </tr>
+                <?php
+              }
+              ?>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <!-- Sticky Pagination Footer with improved spacing -->
+    <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div id="paginationInfoFullyPaid" class="text-sm text-gray-500 text-center sm:text-left">
+            <?php 
+            if ($totalServices > 0) {
+                $start = $offsetFullyPaid + 1;
+                $end = min($offsetFullyPaid + $recordsPerPage, $totalServices);
+                
+                echo "Showing {$start} - {$end} of {$totalServices} services";
+            } else {
+                echo "No services found";
+            }
+            ?>
+        </div>
+        <div id="paginationContainerFullyPaid" class="flex space-x-2">
+            <?php
+            // Calculate total pages before the if condition
+            $totalPagesFullyPaid = ceil($totalServices / $recordsPerPage);
+            
+            // Always show pagination controls, even if there's only one page
+            // First page button (double arrow)
+            ?>
+            <a href="?fullyPaidPage=1" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($fullyPaidPage == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
                 &laquo;
             </a>
             
             <!-- Previous page button (single arrow) -->
-            <a href="?page=<?php echo max(1, $page - 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
+            <a href="?fullyPaidPage=<?php echo max(1, $fullyPaidPage - 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($fullyPaidPage == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
                 &lsaquo;
             </a>
             
             <?php
-            // Show exactly 3 page numbers
-            if ($totalPagesOngoing <= 3) {
+            // Show exactly 3 page numbers when possible
+            if ($totalPagesFullyPaid <= 3) {
                 // If total pages is 3 or less, show all pages
-                $start_page = 1;
-                $end_page = $totalPagesOngoing;
+                $startPage = 1;
+                $endPage = max(1, $totalPagesFullyPaid);
             } else {
                 // With more than 3 pages, determine which 3 to show
-                if ($page == 1) {
+                if ($fullyPaidPage == 1) {
                     // At the beginning, show first 3 pages
-                    $start_page = 1;
-                    $end_page = 3;
-                } elseif ($page == $totalPagesOngoing) {
+                    $startPage = 1;
+                    $endPage = 3;
+                } elseif ($fullyPaidPage == $totalPagesFullyPaid) {
                     // At the end, show last 3 pages
-                    $start_page = $totalPagesOngoing - 2;
-                    $end_page = $totalPagesOngoing;
+                    $startPage = $totalPagesFullyPaid - 2;
+                    $endPage = $totalPagesFullyPaid;
                 } else {
                     // In the middle, show current page with one before and after
-                    $start_page = $page - 1;
-                    $end_page = $page + 1;
+                    $startPage = $fullyPaidPage - 1;
+                    $endPage = $fullyPaidPage + 1;
                     
                     // Handle edge cases
-                    if ($start_page < 1) {
-                        $start_page = 1;
-                        $end_page = 3;
+                    if ($startPage < 1) {
+                        $startPage = 1;
+                        $endPage = 3;
                     }
-                    if ($end_page > $totalPagesOngoing) {
-                        $end_page = $totalPagesOngoing;
-                        $start_page = $totalPagesOngoing - 2;
+                    if ($endPage > $totalPagesFullyPaid) {
+                        $endPage = $totalPagesFullyPaid;
+                        $startPage = max(1, $totalPagesFullyPaid - 2);
                     }
                 }
             }
             
             // Generate the page buttons
-            for ($i = $start_page; $i <= $end_page; $i++): 
-            ?>
-                <a href="?page=<?php echo $i; ?>" class="px-3.5 py-1.5 rounded text-sm <?php echo ($i == $page) ? 'bg-sidebar-accent text-white' : 'border border-sidebar-border hover:bg-sidebar-hover'; ?>">
-                    <?php echo $i; ?>
-                </a>
-            <?php 
-            endfor; 
+            for ($i = $startPage; $i <= $endPage; $i++) {
+                $active_class = ($i == $fullyPaidPage) ? 'bg-sidebar-accent text-white' : 'border border-sidebar-border hover:bg-sidebar-hover';
+                echo '<a href="?fullyPaidPage=' . $i . '" class="px-3.5 py-1.5 rounded text-sm ' . $active_class . '">' . $i . '</a>';
+            }
             ?>
             
             <!-- Next page button (single arrow) -->
-            <a href="?page=<?php echo min($totalPagesOngoing, $page + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($page == $totalPagesOngoing) ? 'opacity-50 pointer-events-none' : ''; ?>">
+            <a href="?fullyPaidPage=<?php echo min(max(1, $totalPagesFullyPaid), $fullyPaidPage + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($fullyPaidPage >= $totalPagesFullyPaid) ? 'opacity-50 pointer-events-none' : ''; ?>">
                 &rsaquo;
             </a>
             
             <!-- Last page button (double arrow) -->
-            <a href="?page=<?php echo $totalPagesOngoing; ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($page == $totalPagesOngoing) ? 'opacity-50 pointer-events-none' : ''; ?>">
+            <a href="?fullyPaidPage=<?php echo max(1, $totalPagesFullyPaid); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($fullyPaidPage >= $totalPagesFullyPaid) ? 'opacity-50 pointer-events-none' : ''; ?>">
                 &raquo;
             </a>
-        <?php endif; ?>
-    </div>
-</div>
-</div>
-
-  <!-- Past Services - Fully Paid Section -->
-<div id="past-services-fully-paid" class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden">
-  <!-- Header Section - Made responsive with better stacking -->
-  <div class="bg-sidebar-hover p-4 border-b border-sidebar-border">
-    <!-- Desktop layout for big screens - Title on left, controls on right -->
-    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
-      <!-- Title and Counter -->
-      <div class="flex items-center gap-3 mb-4 lg:mb-0">
-        <h4 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Past Services - Fully Paid</h4>
-        
-        <?php
-        // Count total fully paid services
-        $countQuery = "SELECT COUNT(*) as total FROM sales_tb WHERE status = 'Completed' AND payment_status = 'Fully Paid' AND balance = 0";
-$countResult = $conn->query($countQuery);
-$totalServices = $countResult->fetch_assoc()['total'];
-        ?>
-        
-        <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-          <?php echo $totalServices . ($totalServices != 1 ? "" : ""); ?>
-        </span>
-      </div>
-      
-      <!-- Controls for big screens - aligned right -->
-      <div class="hidden lg:flex items-center gap-3">
-        <!-- Search Input -->
-        <div class="relative">
-          <input type="text" id="searchFullyPaid" 
-                placeholder="Search services..." 
-                class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent"
-                oninput="debouncedFilterFullyPaid()">
-          <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
-        </div>
-
-        <!-- Filter Dropdown -->
-        <div class="relative filter-dropdown">
-          <button id="filterToggleFullyPaid" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover">
-            <i class="fas fa-filter text-sidebar-accent"></i>
-            <span>Filters</span>
-            <?php if(isset($sortFilter) && $sortFilter): ?>
-              <span class="h-2 w-2 bg-sidebar-accent rounded-full"></span>
-            <?php endif; ?>
-          </button>
-          
-          <!-- Filter Window -->
-          <div id="filterDropdownFullyPaid" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
-            <div class="space-y-4">
-              <!-- Sort Options -->
-              <div>
-                <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
-                <div class="space-y-1">
-                  <div class="flex items-center cursor-pointer" data-sort="id_asc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      ID: Ascending
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="id_desc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      ID: Descending
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="client_asc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      Client: A-Z
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="client_desc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      Client: Z-A
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="deceased_asc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      Deceased: A-Z
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="deceased_desc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      Deceased: Z-A
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="date_asc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      Date: Oldest First
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="date_desc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      Date: Newest First
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Mobile/Tablet Controls - Only visible on smaller screens -->
-    <div class="lg:hidden w-full mt-4">
-      <!-- First row: Search bar with filter icon on the right -->
-      <div class="flex items-center w-full gap-3 mb-4">
-        <!-- Search Input - Takes most of the space -->
-        <div class="relative flex-grow">
-          <input type="text" id="searchFullyPaidMobile" 
-                  placeholder="Search services..." 
-                  class="pl-8 pr-3 py-2.5 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent"
-                  oninput="debouncedFilterFullyPaid()">
-          <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
-        </div>
-
-        <!-- Icon-only button for filter -->
-        <div class="flex items-center gap-3">
-          <!-- Filter Icon Button -->
-          <div class="relative filter-dropdown">
-            <button id="filterToggleFullyPaidMobile" class="w-10 h-10 flex items-center justify-center text-sidebar-accent">
-              <i class="fas fa-filter text-xl"></i>
-              <span id="filterIndicatorFullyPaid" class="hidden absolute top-1 right-1 h-2 w-2 bg-sidebar-accent rounded-full"></span>
-            </button>
-            
-            <!-- Filter Window - Positioned below the icon -->
-            <div id="filterDropdownFullyPaidMobile" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
-              <div class="space-y-4">
-                <!-- Sort Options -->
-                <div>
-                  <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
-                  <div class="space-y-2">
-                    <div class="flex items-center cursor-pointer" data-sort="id_asc">
-                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">
-                        ID: Ascending
-                      </span>
-                    </div>
-                    <div class="flex items-center cursor-pointer" data-sort="id_desc">
-                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">
-                        ID: Descending
-                      </span>
-                    </div>
-                    <div class="flex items-center cursor-pointer" data-sort="client_asc">
-                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">
-                        Client: A-Z
-                      </span>
-                    </div>
-                    <div class="flex items-center cursor-pointer" data-sort="client_desc">
-                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">
-                        Client: Z-A
-                      </span>
-                    </div>
-                    <div class="flex items-center cursor-pointer" data-sort="date_asc">
-                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">
-                        Date: Oldest First
-                      </span>
-                    </div>
-                    <div class="flex items-center cursor-pointer" data-sort="date_desc">
-                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">
-                        Date: Newest First
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-  <!-- Responsive Table Container with improved spacing -->
-  <div class="overflow-x-auto scrollbar-thin" id="fullyPaidTableContainer">
-    <div id="loadingIndicatorFullyPaid" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center">
-      <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
-    </div>
-    
-    <!-- Responsive Table with improved spacing and horizontal scroll for small screens -->
-    <div class="min-w-full">
-      <table class="w-full">
-        <thead>
-          <tr class="bg-gray-50 border-b border-sidebar-border">
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(0)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-hashtag text-sidebar-accent"></i> ID 
-              </div>
-            </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(1)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-user text-sidebar-accent"></i> Client
-              </div>
-            </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(2)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-user-alt text-sidebar-accent"></i> Deceased
-              </div>
-            </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(3)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-tag text-sidebar-accent"></i> Service Type
-              </div>
-            </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(4)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-calendar text-sidebar-accent"></i> Date of Burial
-              </div>
-            </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(5)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-toggle-on text-sidebar-accent"></i> Status
-              </div>
-            </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-cogs text-sidebar-accent"></i> Actions
-              </div>
-            </th>
-          </tr>
-        </thead>
-        <tbody id="fullyPaidTableBody">
-          <?php
-          // Query for Past Services - Fully Paid (status = 'Completed' AND payment_status = 'Fully Paid' AND balance = 0)
-          $fullyPaidQuery = "SELECT s.sales_id, s.fname, s.mname, s.lname, s.suffix, 
-                  s.fname_deceased, s.mname_deceased, s.lname_deceased, s.suffix_deceased,
-                  sv.service_name, s.date_of_burial, s.balance, s.status, s.payment_status
-                  FROM sales_tb s
-                  JOIN services_tb sv ON s.service_id = sv.service_id
-                  WHERE s.status = 'Completed' AND s.payment_status = 'Fully Paid' AND s.balance = 0
-                  LIMIT $offsetFullyPaid, $recordsPerPage";
-          $fullyPaidResult = $conn->query($fullyPaidQuery);
-          
-          if ($fullyPaidResult->num_rows > 0) {
-            while($row = $fullyPaidResult->fetch_assoc()) {
-              $clientName = htmlspecialchars($row['fname'] . ' ' . 
-                          ($row['mname'] ? $row['mname'] . ' ' : '') . 
-                          $row['lname'] . 
-                          ($row['suffix'] ? ' ' . $row['suffix'] : ''));
-                          
-              $deceasedName = htmlspecialchars($row['fname_deceased'] . ' ' . 
-                              ($row['mname_deceased'] ? $row['mname_deceased'] . ' ' : '') . 
-                              $row['lname_deceased'] . 
-                              ($row['suffix_deceased'] ? ' ' . $row['suffix_deceased'] : ''));
-              ?>
-              <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
-                <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">#<?php echo $row['sales_id']; ?></td>
-                <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo $clientName; ?></td>
-                <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo $deceasedName; ?></td>
-                <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['service_name']); ?></td>
-                <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['date_of_burial']); ?></td>
-                <td class="px-4 py-3.5 text-sm">
-                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-500 border border-green-200">
-                    <i class="fas fa-check-circle mr-1"></i> <?php echo htmlspecialchars($row['status']); ?>
-                  </span>
-                </td>
-                <td class="px-4 py-3.5 text-sm">
-                  <div class="flex space-x-2">
-                    <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details" onclick="viewServiceDetails('<?php echo $row['sales_id']; ?>')">
-                      <i class="fas fa-eye"></i>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-              <?php
-            }
-          } else {
-            ?>
-            <tr>
-              <td colspan="7" class="px-4 py-6 text-sm text-center">
-                <div class="flex flex-col items-center">
-                  <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
-                  <p class="text-gray-500">No fully paid past services found</p>
-                </div>
-              </td>
-            </tr>
-            <?php
-          }
-          ?>
-        </tbody>
-      </table>
-    </div>
-  </div>
-  
-  <!-- Sticky Pagination Footer with improved spacing -->
-<div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
-    <div id="paginationInfoFullyPaid" class="text-sm text-gray-500 text-center sm:text-left">
-        <?php 
-        if ($totalServices > 0) {
-            $start = $offsetFullyPaid + 1;
-            $end = min($offsetFullyPaid + $recordsPerPage, $totalServices);
-            
-            echo "Showing {$start} - {$end} of {$totalServices} services";
-        } else {
-            echo "No services found";
-        }
-        ?>
-    </div>
-    <div id="paginationContainerFullyPaid" class="flex space-x-2">
-        <?php
-        // Calculate total pages before the if condition
-        $totalPagesFullyPaid = ceil($totalServices / $recordsPerPage);
-        
-        // Always show pagination controls, even if there's only one page
-        // First page button (double arrow)
-        ?>
-        <a href="?fullyPaidPage=1" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($fullyPaidPage == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
-            &laquo;
-        </a>
-        
-        <!-- Previous page button (single arrow) -->
-        <a href="?fullyPaidPage=<?php echo max(1, $fullyPaidPage - 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($fullyPaidPage == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
-            &lsaquo;
-        </a>
-        
-        <?php
-        // Show exactly 3 page numbers when possible
-        if ($totalPagesFullyPaid <= 3) {
-            // If total pages is 3 or less, show all pages
-            $startPage = 1;
-            $endPage = max(1, $totalPagesFullyPaid);
-        } else {
-            // With more than 3 pages, determine which 3 to show
-            if ($fullyPaidPage == 1) {
-                // At the beginning, show first 3 pages
-                $startPage = 1;
-                $endPage = 3;
-            } elseif ($fullyPaidPage == $totalPagesFullyPaid) {
-                // At the end, show last 3 pages
-                $startPage = $totalPagesFullyPaid - 2;
-                $endPage = $totalPagesFullyPaid;
-            } else {
-                // In the middle, show current page with one before and after
-                $startPage = $fullyPaidPage - 1;
-                $endPage = $fullyPaidPage + 1;
-                
-                // Handle edge cases
-                if ($startPage < 1) {
-                    $startPage = 1;
-                    $endPage = 3;
-                }
-                if ($endPage > $totalPagesFullyPaid) {
-                    $endPage = $totalPagesFullyPaid;
-                    $startPage = max(1, $totalPagesFullyPaid - 2);
-                }
-            }
-        }
-        
-        // Generate the page buttons
-        for ($i = $startPage; $i <= $endPage; $i++) {
-            $active_class = ($i == $fullyPaidPage) ? 'bg-sidebar-accent text-white' : 'border border-sidebar-border hover:bg-sidebar-hover';
-            echo '<a href="?fullyPaidPage=' . $i . '" class="px-3.5 py-1.5 rounded text-sm ' . $active_class . '">' . $i . '</a>';
-        }
-        ?>
-        
-        <!-- Next page button (single arrow) -->
-        <a href="?fullyPaidPage=<?php echo min(max(1, $totalPagesFullyPaid), $fullyPaidPage + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($fullyPaidPage >= $totalPagesFullyPaid) ? 'opacity-50 pointer-events-none' : ''; ?>">
-            &rsaquo;
-        </a>
-        
-        <!-- Last page button (double arrow) -->
-        <a href="?fullyPaidPage=<?php echo max(1, $totalPagesFullyPaid); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($fullyPaidPage >= $totalPagesFullyPaid) ? 'opacity-50 pointer-events-none' : ''; ?>">
-            &raquo;
-        </a>
-    </div>
-</div>
-</div>
-
-  <!-- Past Services - With Outstanding Balance Section -->
-<div class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden branch-container">
-    <!-- Header Section - Made responsive with better stacking -->
-    <div class="bg-sidebar-hover p-4 border-b border-sidebar-border">
-        <!-- Desktop layout for big screens - Title on left, controls on right -->
-        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
-            <!-- Title and Counter -->
-            <div class="flex items-center gap-3 mb-4 lg:mb-0">
-                <h3 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Past Services - With Outstanding Balance</h3>
-
-                <?php
-                // Count total with outstanding balance
-$countQuery = "SELECT COUNT(*) as total FROM sales_tb WHERE status = 'Completed' AND payment_status = 'With Balance'";
-$countResult = $conn->query($countQuery);
-$totalOutstanding = $countResult->fetch_assoc()['total'];
-?>
-                
-                <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-                  <?php echo $totalWithBalance . ($totalWithBalance != 1 ? "" : ""); ?>
-                </span>
-            </div>
-            
-            <!-- Controls for big screens - aligned right -->
-            <div class="hidden lg:flex items-center gap-3">
-                <!-- Search Input -->
-                <div class="relative">
-                    <input type="text" id="searchOutstanding" 
-                           placeholder="Search records..." 
-                           class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent"
-                           oninput="debouncedOutstandingFilter()">
-                    <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
-                </div>
-
-                <!-- Filter Dropdown -->
-        <div class="relative filter-dropdown">
-          <button id="filterToggle" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover">
-            <i class="fas fa-filter text-sidebar-accent"></i>
-            <span>Filters</span>
-            <?php if(isset($sortFilter) && $sortFilter): ?>
-              <span class="h-2 w-2 bg-sidebar-accent rounded-full"></span>
-            <?php endif; ?>
-          </button>
-          
-          <!-- Filter Window -->
-          <div id="filterDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
-            <div class="space-y-4">
-              <!-- Sort Options -->
-              <div>
-                <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
-                <div class="space-y-1">
-                  <div class="flex items-center cursor-pointer" data-sort="id_asc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      ID: Ascending
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="id_desc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      ID: Descending
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="client_asc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      Client: A-Z
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="client_desc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      Client: Z-A
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="date_asc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      Date: Oldest First
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="date_desc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      Date: Newest First
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-
-            </div>
-        </div>
-    
-        <!-- Mobile/Tablet Controls - Only visible on smaller screens -->
-        <div class="lg:hidden w-full mt-4">
-            <!-- First row: Search bar with archive icon on the right -->
-            <div class="flex items-center w-full gap-3 mb-4">
-                <!-- Search Input - Takes most of the space -->
-                <div class="relative flex-grow">
-                    <input type="text" id="searchOutstanding" 
-                           placeholder="Search records..." 
-                           class="pl-8 pr-3 py-2.5 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent"
-                           oninput="debouncedOutstandingFilter()">
-                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
-                </div>
-
-            </div>
         </div>
     </div>
-    
-    <!-- Responsive Table Container with improved spacing -->
-    <div class="overflow-x-auto scrollbar-thin" id="outstandingTableContainer">
-        <div id="outstandingLoadingIndicator" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center">
-            <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
-        </div>
-        
-        <!-- Responsive Table with improved spacing and horizontal scroll for small screens -->
-        <div class="min-w-full">
-            <table class="w-full">
-                <thead>
-                    <tr class="bg-gray-50 border-b border-sidebar-border">
-                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortOutstandingTable(0)">
-                            <div class="flex items-center gap-1.5">
-                                <i class="fas fa-hashtag text-sidebar-accent"></i> ID 
-                            </div>
-                        </th>
-                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortOutstandingTable(1)">
-                            <div class="flex items-center gap-1.5">
-                                <i class="fas fa-user text-sidebar-accent"></i> Client
-                            </div>
-                        </th>
-                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortOutstandingTable(2)">
-                            <div class="flex items-center gap-1.5">
-                                <i class="fas fa-user-circle text-sidebar-accent"></i> Deceased
-                            </div>
-                        </th>
-                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortOutstandingTable(3)">
-                            <div class="flex items-center gap-1.5">
-                                <i class="fas fa-tag text-sidebar-accent"></i> Service Type 
-                            </div>
-                        </th>
-                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortOutstandingTable(4)">
-                            <div class="flex items-center gap-1.5">
-                                <i class="fas fa-calendar text-sidebar-accent"></i> Date of Burial 
-                            </div>
-                        </th>
-                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortOutstandingTable(5)">
-                            <div class="flex items-center gap-1.5">
-                                <i class="fas fa-toggle-on text-sidebar-accent"></i> Status 
-                            </div>
-                        </th>
-                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortOutstandingTable(6)">
-                            <div class="flex items-center gap-1.5">
-                                <i class="fas fa-peso-sign text-sidebar-accent"></i> Outstanding Balance 
-                            </div>
-                        </th>
-                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
-                            <div class="flex items-center gap-1.5">
-                                <i class="fas fa-cogs text-sidebar-accent"></i> Actions
-                            </div>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody id="outstandingTableBody">
+    </div>
+
+    <!-- Past Services - With Outstanding Balance Section -->
+    <div class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden branch-container">
+        <!-- Header Section - Made responsive with better stacking -->
+        <div class="bg-sidebar-hover p-4 border-b border-sidebar-border">
+            <!-- Desktop layout for big screens - Title on left, controls on right -->
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                <!-- Title and Counter -->
+                <div class="flex items-center gap-3 mb-4 lg:mb-0">
+                    <h3 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Past Services - With Outstanding Balance</h3>
+
                     <?php
-                    // Query for Past Services - With Balance (status = 'Completed' AND payment_status = 'With Balance')
-                    $withBalanceQuery = "SELECT s.sales_id, s.fname, s.mname, s.lname, s.suffix, 
-                    s.fname_deceased, s.mname_deceased, s.lname_deceased, s.suffix_deceased,
-                    sv.service_name, s.date_of_burial, s.balance, s.status, s.payment_status
-                    FROM sales_tb s
-                    JOIN services_tb sv ON s.service_id = sv.service_id
-                    WHERE s.status = 'Completed' AND s.payment_status = 'With Balance'
-                    LIMIT $offsetOutstanding, $recordsPerPage";
-                    $withBalanceResult = $conn->query($withBalanceQuery);
+                    // Count total with outstanding balance
+    $countQuery = "SELECT COUNT(*) as total FROM sales_tb WHERE status = 'Completed' AND payment_status = 'With Balance'";
+    $countResult = $conn->query($countQuery);
+    $totalOutstanding = $countResult->fetch_assoc()['total'];
+                    ?>
                     
-                    if ($withBalanceResult->num_rows > 0) {
-                        while($row = $withBalanceResult->fetch_assoc()) {
-                            $clientName = htmlspecialchars($row['fname'] . ' ' . 
-                                        ($row['mname'] ? $row['mname'] . ' ' : '') . 
-                                        $row['lname'] . 
-                                        ($row['suffix'] ? ' ' . $row['suffix'] : ''));
-                                        
-                            $deceasedName = htmlspecialchars($row['fname_deceased'] . ' ' . 
-                                        ($row['mname_deceased'] ? $row['mname_deceased'] . ' ' : '') . 
-                                        $row['lname_deceased'] . 
-                                        ($row['suffix_deceased'] ? ' ' . $row['suffix_deceased'] : ''));
+                    <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+                      <?php echo $totalWithBalance . ($totalWithBalance != 1 ? "" : ""); ?>
+                    </span>
+                </div>
+                
+                <!-- Controls for big screens - aligned right -->
+                <div class="hidden lg:flex items-center gap-3">
+                    <!-- Search Input -->
+                    <div class="relative">
+                        <input type="text" id="searchOutstanding" 
+                               placeholder="Search records..." 
+                               class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent"
+                               oninput="debouncedOutstandingFilter()">
+                        <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
+                    </div>
+
+                    <!-- Filter Dropdown -->
+            <div class="relative filter-dropdown">
+              <button id="filterToggle" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover">
+                <i class="fas fa-filter text-sidebar-accent"></i>
+                <span>Filters</span>
+                <?php if(isset($sortFilter) && $sortFilter): ?>
+                  <span class="h-2 w-2 bg-sidebar-accent rounded-full"></span>
+                <?php endif; ?>
+              </button>
+              
+              <!-- Filter Window -->
+              <div id="filterDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
+                <div class="space-y-4">
+                  <!-- Sort Options -->
+                  <div>
+                    <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
+                    <div class="space-y-1">
+                      <div class="flex items-center cursor-pointer" data-sort="id_asc">
+                        <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                          ID: Ascending
+                        </span>
+                      </div>
+                      <div class="flex items-center cursor-pointer" data-sort="id_desc">
+                        <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                          ID: Descending
+                        </span>
+                      </div>
+                      <div class="flex items-center cursor-pointer" data-sort="client_asc">
+                        <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                          Client: A-Z
+                        </span>
+                      </div>
+                      <div class="flex items-center cursor-pointer" data-sort="client_desc">
+                        <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                          Client: Z-A
+                        </span>
+                      </div>
+                      <div class="flex items-center cursor-pointer" data-sort="date_asc">
+                        <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                          Date: Oldest First
+                        </span>
+                      </div>
+                      <div class="flex items-center cursor-pointer" data-sort="date_desc">
+                        <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                          Date: Newest First
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+                </div>
+            </div>
+        
+            <!-- Mobile/Tablet Controls - Only visible on smaller screens -->
+            <div class="lg:hidden w-full mt-4">
+                <!-- First row: Search bar with archive icon on the right -->
+                <div class="flex items-center w-full gap-3 mb-4">
+                    <!-- Search Input - Takes most of the space -->
+                    <div class="relative flex-grow">
+                        <input type="text" id="searchOutstanding" 
+                               placeholder="Search records..." 
+                               class="pl-8 pr-3 py-2.5 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent"
+                               oninput="debouncedOutstandingFilter()">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        
+        <!-- Responsive Table Container with improved spacing -->
+        <div class="overflow-x-auto scrollbar-thin" id="outstandingTableContainer">
+            <div id="outstandingLoadingIndicator" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center">
+                <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
+            </div>
+            
+            <!-- Responsive Table with improved spacing and horizontal scroll for small screens -->
+            <div class="min-w-full">
+                <table class="w-full">
+                    <thead>
+                        <tr class="bg-gray-50 border-b border-sidebar-border">
+                            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortOutstandingTable(0)">
+                                <div class="flex items-center gap-1.5">
+                                    <i class="fas fa-hashtag text-sidebar-accent"></i> ID 
+                                </div>
+                            </th>
+                            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortOutstandingTable(1)">
+                                <div class="flex items-center gap-1.5">
+                                    <i class="fas fa-user text-sidebar-accent"></i> Client
+                                </div>
+                            </th>
+                            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortOutstandingTable(2)">
+                                <div class="flex items-center gap-1.5">
+                                    <i class="fas fa-user-circle text-sidebar-accent"></i> Deceased
+                                </div>
+                            </th>
+                            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortOutstandingTable(3)">
+                                <div class="flex items-center gap-1.5">
+                                    <i class="fas fa-tag text-sidebar-accent"></i> Service Type 
+                                </div>
+                            </th>
+                            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortOutstandingTable(4)">
+                                <div class="flex items-center gap-1.5">
+                                    <i class="fas fa-calendar text-sidebar-accent"></i> Date of Burial 
+                                </div>
+                            </th>
+                            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortOutstandingTable(5)">
+                                <div class="flex items-center gap-1.5">
+                                    <i class="fas fa-toggle-on text-sidebar-accent"></i> Status 
+                                </div>
+                            </th>
+                            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortOutstandingTable(6)">
+                                <div class="flex items-center gap-1.5">
+                                    <i class="fas fa-peso-sign text-sidebar-accent"></i> Outstanding Balance 
+                                </div>
+                            </th>
+                            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
+                                <div class="flex items-center gap-1.5">
+                                    <i class="fas fa-cogs text-sidebar-accent"></i> Actions
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="outstandingTableBody">
+                        <?php
+                        // Query for Past Services - With Balance (status = 'Completed' AND payment_status = 'With Balance')
+                        $withBalanceQuery = "SELECT s.sales_id, s.fname, s.mname, s.lname, s.suffix, 
+                        s.fname_deceased, s.mname_deceased, s.lname_deceased, s.suffix_deceased,
+                        sv.service_name, s.date_of_burial, s.balance, s.status, s.payment_status
+                        FROM sales_tb s
+                        JOIN services_tb sv ON s.service_id = sv.service_id
+                        WHERE s.status = 'Completed' AND s.payment_status = 'With Balance'
+                        LIMIT $offsetOutstanding, $recordsPerPage";
+                        $withBalanceResult = $conn->query($withBalanceQuery);
+                        
+                        if ($withBalanceResult->num_rows > 0) {
+                            while($row = $withBalanceResult->fetch_assoc()) {
+                                $clientName = htmlspecialchars($row['fname'] . ' ' . 
+                                            ($row['mname'] ? $row['mname'] . ' ' : '') . 
+                                            $row['lname'] . 
+                                            ($row['suffix'] ? ' ' . $row['suffix'] : ''));
+                                            
+                                $deceasedName = htmlspecialchars($row['fname_deceased'] . ' ' . 
+                                            ($row['mname_deceased'] ? $row['mname_deceased'] . ' ' : '') . 
+                                            $row['lname_deceased'] . 
+                                            ($row['suffix_deceased'] ? ' ' . $row['suffix_deceased'] : ''));
+                                ?>
+                                <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
+                                    <td class="px-4 py-4 text-sm text-sidebar-text font-medium">#<?php echo $row['sales_id']; ?></td>
+                                    <td class="px-4 py-4 text-sm text-sidebar-text"><?php echo $clientName; ?></td>
+                                    <td class="px-4 py-4 text-sm text-sidebar-text"><?php echo $deceasedName; ?></td>
+                                    <td class="px-4 py-4 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['service_name']); ?></td>
+                                    <td class="px-4 py-4 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['date_of_burial']); ?></td>
+                                    <td class="px-4 py-4 text-sm">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-500 border border-yellow-200">
+                                            <i class="fas fa-exclamation-circle mr-1"></i> <?php echo htmlspecialchars($row['payment_status']); ?>
+                                        </span>
+                                    </td>
+                                    <td class="px-4 py-4 text-sm font-medium text-sidebar-text">₱<?php echo number_format($row['balance'], 2); ?></td>
+                                    <td class="px-4 py-4 text-sm">
+                                        <div class="flex space-x-2">
+                                            <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details" onclick="viewServiceDetails('<?php echo $row['sales_id']; ?>')">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="p-2 bg-orange-100 text-orange-600 rounded-lg hover:bg-orange-200 transition-all tooltip" title="Record Payment" onclick="openRecordPaymentModal('<?php echo $row['sales_id']; ?>','<?php echo $clientName; ?>','<?php echo $row['balance']; ?>')">
+                                                <i class="fas fa-money-bill-wave"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <?php
+                            }
+                        } else {
                             ?>
-                            <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
-                                <td class="px-4 py-4 text-sm text-sidebar-text font-medium">#<?php echo $row['sales_id']; ?></td>
-                                <td class="px-4 py-4 text-sm text-sidebar-text"><?php echo $clientName; ?></td>
-                                <td class="px-4 py-4 text-sm text-sidebar-text"><?php echo $deceasedName; ?></td>
-                                <td class="px-4 py-4 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['service_name']); ?></td>
-                                <td class="px-4 py-4 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['date_of_burial']); ?></td>
-                                <td class="px-4 py-4 text-sm">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-500 border border-yellow-200">
-                                        <i class="fas fa-exclamation-circle mr-1"></i> <?php echo htmlspecialchars($row['payment_status']); ?>
-                                    </span>
-                                </td>
-                                <td class="px-4 py-4 text-sm font-medium text-sidebar-text">₱<?php echo number_format($row['balance'], 2); ?></td>
-                                <td class="px-4 py-4 text-sm">
-                                    <div class="flex space-x-2">
-                                        <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details" onclick="viewServiceDetails('<?php echo $row['sales_id']; ?>')">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button class="p-2 bg-orange-100 text-orange-600 rounded-lg hover:bg-orange-200 transition-all tooltip" title="Record Payment" onclick="openRecordPaymentModal('<?php echo $row['sales_id']; ?>','<?php echo $clientName; ?>','<?php echo $row['balance']; ?>')">
-                                            <i class="fas fa-money-bill-wave"></i>
-                                        </button>
+                            <tr>
+                                <td colspan="8" class="px-4 py-6 text-sm text-center">
+                                    <div class="flex flex-col items-center">
+                                        <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
+                                        <p class="text-gray-500">No past services with outstanding balance found</p>
                                     </div>
                                 </td>
                             </tr>
                             <?php
                         }
-                    } else {
                         ?>
-                        <tr>
-                            <td colspan="8" class="px-4 py-6 text-sm text-center">
-                                <div class="flex flex-col items-center">
-                                    <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
-                                    <p class="text-gray-500">No past services with outstanding balance found</p>
-                                </div>
-                            </td>
-                        </tr>
-                        <?php
-                    }
-                    ?>
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
-  
-    <!-- Sticky Pagination Footer with improved spacing -->
-<div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
-    <div id="paginationInfoPastWithBal" class="text-sm text-gray-500 text-center sm:text-left">
+      
+      <!-- Sticky Pagination Footer with improved spacing -->
+    <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div id="paginationInfoPastWithBal" class="text-sm text-gray-500 text-center sm:text-left">
     <?php 
         // Get the number of records on the current page
         if ($totalOutstanding > 0) {
@@ -1113,305 +1127,249 @@ $totalOutstanding = $countResult->fetch_assoc()['total'];
             echo "No records found";
         }
     ?>
-    </div>
-    
-    <div id="paginationContainerPastWithBal" class="flex space-x-2">
+        </div>
+        
+        <div id="paginationContainerPastWithBal" class="flex space-x-2">
     <?php
         $totalPagesOutstanding = ceil($totalOutstanding / $recordsPerPage);
         
         // Make sure we have something to paginate
         if ($totalOutstanding > 0):
     ?>
-        <!-- First page button -->
-        <a href="?outstandingPage=1" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($outstandingPage <= 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
-            &laquo;
-        </a>
-        
-        <!-- Previous page button -->
-        <a href="?outstandingPage=<?php echo max(1, $outstandingPage - 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($outstandingPage <= 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
-            &lsaquo;
-        </a>
-        
-        <?php
-        // Show exactly 3 page numbers
-        if ($totalPagesOutstanding <= 3) {
-            // If total pages is 3 or less, show all pages
-            $startPage = 1;
-            $endPage = $totalPagesOutstanding;
-        } else {
-            // With more than 3 pages, determine which 3 to show
-            if ($outstandingPage == 1) {
-                // At the beginning, show first 3 pages
+            <!-- First page button -->
+            <a href="?outstandingPage=1" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($outstandingPage <= 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
+                &laquo;
+            </a>
+            
+            <!-- Previous page button -->
+            <a href="?outstandingPage=<?php echo max(1, $outstandingPage - 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($outstandingPage <= 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
+                &lsaquo;
+            </a>
+            
+            <?php
+            // Show exactly 3 page numbers
+            if ($totalPagesOutstanding <= 3) {
+                // If total pages is 3 or less, show all pages
                 $startPage = 1;
-                $endPage = 3;
-            } elseif ($outstandingPage == $totalPagesOutstanding) {
-                // At the end, show last 3 pages
-                $startPage = $totalPagesOutstanding - 2;
                 $endPage = $totalPagesOutstanding;
             } else {
-                // In the middle, show current page with one before and after
-                $startPage = $outstandingPage - 1;
-                $endPage = $outstandingPage + 1;
-                
-                // Handle edge cases
-                if ($startPage < 1) {
+                // With more than 3 pages, determine which 3 to show
+                if ($outstandingPage == 1) {
+                    // At the beginning, show first 3 pages
                     $startPage = 1;
                     $endPage = 3;
-                }
-                if ($endPage > $totalPagesOutstanding) {
-                    $endPage = $totalPagesOutstanding;
+                } elseif ($outstandingPage == $totalPagesOutstanding) {
+                    // At the end, show last 3 pages
                     $startPage = $totalPagesOutstanding - 2;
+                    $endPage = $totalPagesOutstanding;
+                } else {
+                    // In the middle, show current page with one before and after
+                    $startPage = $outstandingPage - 1;
+                    $endPage = $outstandingPage + 1;
+                    
+                    // Handle edge cases
+                    if ($startPage < 1) {
+                        $startPage = 1;
+                        $endPage = 3;
+                    }
+                    if ($endPage > $totalPagesOutstanding) {
+                        $endPage = $totalPagesOutstanding;
+                        $startPage = $totalPagesOutstanding - 2;
+                    }
                 }
             }
-        }
-        
-        // Generate the page buttons
-        for ($i = $startPage; $i <= $endPage; $i++):
-            $active_class = ($i == $outstandingPage) ? 'bg-sidebar-accent text-white' : 'border border-sidebar-border hover:bg-sidebar-hover';
-        ?>
-            <a href="?outstandingPage=<?php echo $i; ?>" class="px-3.5 py-1.5 rounded text-sm <?php echo $active_class; ?>">
-                <?php echo $i; ?>
+            
+            // Generate the page buttons
+            for ($i = $startPage; $i <= $endPage; $i++):
+                $active_class = ($i == $outstandingPage) ? 'bg-sidebar-accent text-white' : 'border border-sidebar-border hover:bg-sidebar-hover';
+            ?>
+                <a href="?outstandingPage=<?php echo $i; ?>" class="px-3.5 py-1.5 rounded text-sm <?php echo $active_class; ?>">
+                    <?php echo $i; ?>
+                </a>
+            <?php endfor; ?>
+            
+            <!-- Next page button -->
+            <a href="?outstandingPage=<?php echo min($totalPagesOutstanding, $outstandingPage + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($outstandingPage >= $totalPagesOutstanding) ? 'opacity-50 pointer-events-none' : ''; ?>">
+                &rsaquo;
             </a>
-        <?php endfor; ?>
-        
-        <!-- Next page button -->
-        <a href="?outstandingPage=<?php echo min($totalPagesOutstanding, $outstandingPage + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($outstandingPage >= $totalPagesOutstanding) ? 'opacity-50 pointer-events-none' : ''; ?>">
-            &rsaquo;
-        </a>
-        
-        <!-- Last page button -->
-        <a href="?outstandingPage=<?php echo $totalPagesOutstanding; ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($outstandingPage >= $totalPagesOutstanding) ? 'opacity-50 pointer-events-none' : ''; ?>">
-            &raquo;
-        </a>
-    <?php endif; ?>
+            
+            <!-- Last page button -->
+            <a href="?outstandingPage=<?php echo $totalPagesOutstanding; ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($outstandingPage >= $totalPagesOutstanding) ? 'opacity-50 pointer-events-none' : ''; ?>">
+                &raquo;
+            </a>
+        <?php endif; ?>
+      </div>
     </div>
-</div>
-</div>
+  </div>
 
-  <!-- Modal for Editing Service -->
-<div class="fixed inset-0 z-50 flex items-center justify-center hidden" id="editServiceModal">
-  <!-- Modal Backdrop -->
-  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
-  
-  <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] flex flex-col">
-    <!-- Close Button -->
-    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeEditServiceModal()">
-      <i class="fas fa-times"></i>
-    </button>
-    
-    <!-- Modal Header -->
-    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
-      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
-        Edit Service
-      </h3>
-    </div>
-    
-    <!-- Modal Body - Single Column Layout -->
-    <div class="px-4 sm:px-6 py-4 sm:py-5 overflow-y-auto modal-scroll-container">
-      <form id="serviceForm" class="space-y-3 sm:space-y-6">
-        <input type="hidden" id="salesId" name="sales_id">
-        
-        <!-- Customer Information Section -->
-        <div class="pb-4 border-b border-gray-200">
-          <h4 class="text-lg font-semibold flex items-center text-gray-800 mb-4">
-            Customer Information
-          </h4>
-
-          <!-- Customer Selection -->
-          <div class="form-group mb-4">
-            <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              Search Customer
-            </label>
-            <div class="relative">
-              <input 
-                type="text" 
-                id="customerSearch" 
-                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                placeholder="Type customer name..."
-                autocomplete="off"
-              >
-              <div id="customerResults" class="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto hidden">
-                <!-- Results will appear here -->
-              </div>
-            </div>
-            <input type="hidden" id="selectedCustomerId" name="customer_id">
-          </div>
-
-          <!-- Customer Name Fields - 2x2 grid maintained for better layout -->
-          <div class="grid grid-cols-2 gap-4 mb-4">
-            <div class="form-group">
-              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                First Name
-              </label>
-              <input 
-                type="text" 
-                id="firstName" 
-                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                placeholder="First Name"
-              >
-            </div>
-            <div class="form-group">
-              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                Last Name
-              </label>
-              <input 
-                type="text" 
-                id="lastName" 
-                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                placeholder="Last Name"
-              >
-            </div>
-            <div class="form-group">
-              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                Middle Name
-              </label>
-              <input 
-                type="text" 
-                id="middleName" 
-                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                placeholder="Middle Name"
-              >
-            </div>
-            <div class="form-group">
-              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                Suffix
-              </label>
-              <select id="nameSuffix" name="nameSuffix" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
-                                    <option value="">None</option>
-                                    <option value="Jr.">Jr.</option>
-                                    <option value="Sr.">Sr.</option>
-                                    <option value="I">I</option>
-                                    <option value="II">II</option>
-                                    <option value="III">III</option>
-                                    <option value="IV">IV</option>
-                                    <option value="V">V</option>
-                                </select>
-            </div>
-          </div>
-
-          <!-- Contact Information - 2 columns -->
-          <div class="grid grid-cols-2 gap-4 mb-4">
-            <div class="form-group">
-              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                Email
-              </label>
-              <input 
-                type="email" 
-                id="email" 
-                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                placeholder="Enter Email"
-              >
-            </div>
-            <div class="form-group">
-              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                Phone
-              </label>
-              <input 
-                type="tel" 
-                id="phone" 
-                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                placeholder="Enter Phone Number"
-              >
-            </div>
-          </div>
-
-          <!-- Service Selection & Price - 2 columns -->
-          <div class="grid grid-cols-2 gap-4 mb-4">
-            <div class="form-group">
-              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                Select Service
-              </label>
-              <select 
-                id="serviceSelect" 
-                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-              >
-                <option value="">Choose Service</option>
-                <!-- Options will be populated dynamically -->
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                Service Price
-              </label>
-              <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <span class="text-gray-500">₱</span>
-                </div>
-                <input 
-                  type="number" 
-                  id="servicePrice" 
-                  class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                  placeholder="Enter Service Price"
-                >
-              </div>
-            </div>
-          </div>
-
-          <!-- Branch Selection -->
-          <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border-l-4 border-gold">
-            <label class="block text-xs font-medium text-gray-700 mb-2">Branch</label>
-            <div class="flex flex-wrap gap-6">
-              <label class="flex items-center space-x-2 cursor-pointer">
-                <input type="radio" name="branch" value="2" class="hidden peer">
-                <div class="w-5 h-5 rounded-full border-2 border-gold flex items-center justify-center peer-checked:bg-gold peer-checked:border-darkgold transition-colors"></div>
-                <span class="text-gray-700 font-medium">Pila</span>
-              </label>
-              <label class="flex items-center space-x-2 cursor-pointer">
-                <input type="radio" name="branch" value="1" class="hidden peer">
-                <div class="w-5 h-5 rounded-full border-2 border-gold flex items-center justify-center peer-checked:bg-gold peer-checked:border-darkgold transition-colors"></div>
-                <span class="text-gray-700 font-medium">Paete</span>
-              </label>
+  <!-- Custom Sales Tab Content -->
+  <div id="custom-content" class="tab-content hidden">
+    <!-- Ongoing Custom Services Section -->
+    <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
+      <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
+        <h3 class="text-lg font-semibold text-sidebar-text">Ongoing Custom Services</h3>
+        <div class="flex gap-2">
+          <div class="relative">
+            <input type="text" id="searchCustomOngoing" placeholder="Search..." 
+                   class="pl-9 pr-4 py-2 border border-sidebar-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent"
+                   onkeyup="debounceSearch()">
+            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <i class="fas fa-search text-gray-400"></i>
             </div>
           </div>
         </div>
-        
-        <!-- Deceased Information Section -->
-        <div class="pt-2">
-          <h4 class="text-lg font-semibold flex items-center text-gray-800 mb-4">
-            Deceased Information
-          </h4>
+      </div>
+      <div class="overflow-x-auto scrollbar-thin">
+        <table class="w-full">
+          <thead>
+            <tr class="bg-gray-50 border-b border-sidebar-border">
+              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+                <div class="flex items-center gap-1.5">
+                  <i class="fas fa-hashtag text-sidebar-accent"></i> ID 
+                </div>
+              </th>
+              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+                <div class="flex items-center gap-1.5">
+                  <i class="fas fa-user text-sidebar-accent"></i> Client 
+                </div>
+              </th>
+              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+                <div class="flex items-center gap-1.5">
+                  <i class="fas fa-user-alt text-sidebar-accent"></i> Deceased 
+                </div>
+              </th>
+              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+                <div class="flex items-center gap-1.5">
+                  <i class="fas fa-tag text-sidebar-accent"></i> Service Type 
+                </div>
+              </th>
+              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+                <div class="flex items-center gap-1.5">
+                  <i class="fas fa-calendar text-sidebar-accent"></i> Date of Burial 
+                </div>
+              </th>
+              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+                <div class="flex items-center gap-1.5">
+                  <i class="fas fa-toggle-on text-sidebar-accent"></i> Status 
+                </div>
+              </th>
+              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+                <div class="flex items-center gap-1.5">
+                  <i class="fas fa-peso-sign text-sidebar-accent"></i> Outstanding Balance 
+                </div>
+              </th>
+              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
+                <div class="flex items-center gap-1.5">
+                  <i class="fas fa-cogs text-sidebar-accent"></i> Actions
+                </div>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td colspan="8" class="p-6 text-sm text-center">
+                <div class="flex flex-col items-center">
+                  <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
+                  <p class="text-gray-500">No custom services found</p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for Editing Service -->
+  <div class="fixed inset-0 z-50 flex items-center justify-center hidden" id="editServiceModal">
+    <!-- Modal Backdrop -->
+    <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+    
+    <!-- Modal Content -->
+    <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] flex flex-col">
+      <!-- Close Button -->
+      <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeEditServiceModal()">
+        <i class="fas fa-times"></i>
+      </button>
+      
+      <!-- Modal Header -->
+      <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+        <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
+          Edit Service
+        </h3>
+      </div>
+      
+      <!-- Modal Body - Single Column Layout -->
+      <div class="px-4 sm:px-6 py-4 sm:py-5 overflow-y-auto modal-scroll-container">
+        <form id="serviceForm" class="space-y-3 sm:space-y-6">
+          <input type="hidden" id="salesId" name="sales_id">
           
-          <!-- Deceased Name Fields - 2x2 grid maintained for better layout -->
-          <div class="grid grid-cols-2 gap-4 mb-4">
-            <div class="form-group">
+          <!-- Customer Information Section -->
+          <div class="pb-4 border-b border-gray-200">
+            <h4 class="text-lg font-semibold flex items-center text-gray-800 mb-4">
+              Customer Information
+            </h4>
+
+            <!-- Customer Selection -->
+            <div class="form-group mb-4">
               <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                First Name
+                Search Customer
               </label>
-              <input 
-                type="text" 
-                id="deceasedFirstName" 
-                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                placeholder="First Name"
-              >
+              <div class="relative">
+                <input 
+                  type="text" 
+                  id="customerSearch" 
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                  placeholder="Type customer name..."
+                  autocomplete="off"
+                >
+                <div id="customerResults" class="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto hidden">
+                  <!-- Results will appear here -->
+                </div>
+              </div>
+              <input type="hidden" id="selectedCustomerId" name="customer_id">
             </div>
-            <div class="form-group">
-              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                Last Name
-              </label>
-              <input 
-                type="text" 
-                id="deceasedLastName" 
-                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                placeholder="Last Name"
-              >
-            </div>
-            <div class="form-group">
-              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                Middle Name
-              </label>
-              <input 
-                type="text" 
-                id="deceasedMiddleName" 
-                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                placeholder="Middle Name"
-              >
-            </div>
-            <div class="form-group">
-              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                Suffix
-              </label>
-              <select id="deceasedSuffix" name="deceasedSuffix" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+
+            <!-- Customer Name Fields - 2x2 grid maintained for better layout -->
+            <div class="grid grid-cols-2 gap-4 mb-4">
+              <div class="form-group">
+                <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  First Name
+                </label>
+                <input 
+                  type="text" 
+                  id="firstName" 
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                  placeholder="First Name"
+                >
+              </div>
+              <div class="form-group">
+                <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  Last Name
+                </label>
+                <input 
+                  type="text" 
+                  id="lastName" 
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                  placeholder="Last Name"
+                >
+              </div>
+              <div class="form-group">
+                <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  Middle Name
+                </label>
+                <input 
+                  type="text" 
+                  id="middleName" 
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                  placeholder="Middle Name"
+                >
+              </div>
+              <div class="form-group">
+                <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  Suffix
+                </label>
+                <select id="nameSuffix" name="nameSuffix" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                                     <option value="">None</option>
                                     <option value="Jr.">Jr.</option>
                                     <option value="Sr.">Sr.</option>
@@ -1421,128 +1379,262 @@ $totalOutstanding = $countResult->fetch_assoc()['total'];
                                     <option value="IV">IV</option>
                                     <option value="V">V</option>
                                 </select>
+              </div>
             </div>
-          </div>
 
-          <!-- Deceased Address - Dropdown System -->
-          <div class="form-group mb-4">
-            <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              Deceased Address
-            </label>
-            
-            <!-- Region Dropdown -->
-            <div class="mb-3">
-              <label class="block text-xs font-medium text-gray-500 mb-1">Region</label>
-              <select 
-                id="regionSelect" 
-                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                onchange="loadProvinces()"
-              >
-                <option value="">Select Region</option>
-                <!-- Regions will be loaded dynamically -->
-              </select>
-            </div>
-            
-            <!-- Province Dropdown -->
-            <div class="mb-3">
-              <label class="block text-xs font-medium text-gray-500 mb-1">Province</label>
-              <select 
-                id="provinceSelect" 
-                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                disabled
-                onchange="loadCities()"
-              >
-                <option value="">Select Province</option>
-                <!-- Provinces will be loaded dynamically -->
-              </select>
-            </div>
-            
-            <!-- City/Municipality Dropdown -->
-            <div class="mb-3">
-              <label class="block text-xs font-medium text-gray-500 mb-1">City/Municipality</label>
-              <select 
-                id="citySelect" 
-                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                disabled
-                onchange="loadBarangays()"
-              >
-                <option value="">Select City/Municipality</option>
-                <!-- Cities will be loaded dynamically -->
-              </select>
-            </div>
-            
-            <!-- Barangay Dropdown -->
-            <div class="mb-3">
-              <label class="block text-xs font-medium text-gray-500 mb-1">Barangay</label>
-              <select 
-                id="barangaySelect" 
-                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                disabled
-              >
-                <option value="">Select Barangay</option>
-                <!-- Barangays will be loaded dynamically -->
-              </select>
-            </div>
-            
-            <!-- Street and Zip Code -->
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label class="block text-xs font-medium text-gray-500 mb-1">Street</label>
+            <!-- Contact Information - 2 columns -->
+            <div class="grid grid-cols-2 gap-4 mb-4">
+              <div class="form-group">
+                <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  Email
+                </label>
                 <input 
-                  type="text" 
-                  id="streetInput" 
+                  type="email" 
+                  id="email" 
                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                  placeholder="Street name, building, etc."
+                  placeholder="Enter Email"
                 >
               </div>
-              <div>
-                <label class="block text-xs font-medium text-gray-500 mb-1">Zip Code</label>
+              <div class="form-group">
+                <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  Phone
+                </label>
                 <input 
-                  type="text" 
-                  id="zipCodeInput" 
+                  type="tel" 
+                  id="phone" 
                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                  placeholder="Zip Code"
+                  placeholder="Enter Phone Number"
                 >
               </div>
             </div>
-          </div>
 
-          <!-- Deceased Dates - 3 columns for dates -->
-          <div class="grid grid-cols-3 gap-4 mb-4">
-            <div class="form-group">
-              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                Birth Date
-              </label>
-              <input 
-                type="date" 
-                id="birthDate" 
-                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-              >
+            <!-- Service Selection & Price - 2 columns -->
+            <div class="grid grid-cols-2 gap-4 mb-4">
+              <div class="form-group">
+                <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  Select Service
+                </label>
+                <select 
+                  id="serviceSelect" 
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                >
+                  <option value="">Choose Service</option>
+                  <!-- Options will be populated dynamically -->
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  Service Price
+                </label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <span class="text-gray-500">₱</span>
+                  </div>
+                  <input 
+                    type="number" 
+                    id="servicePrice" 
+                    class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                    placeholder="Enter Service Price"
+                  >
+                </div>
+              </div>
             </div>
-            <div class="form-group">
-              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                Date of Death
-              </label>
-              <input 
-                type="date" 
-                id="deathDate" 
-                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-              >
-            </div>
-            <div class="form-group">
-              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                Date of Burial
-              </label>
-              <input 
-                type="date" 
-                id="burialDate" 
-                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-              >
+
+            <!-- Branch Selection -->
+            <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border-l-4 border-gold">
+              <label class="block text-xs font-medium text-gray-700 mb-2">Branch</label>
+              <div class="flex flex-wrap gap-6">
+                <label class="flex items-center space-x-2 cursor-pointer">
+                  <input type="radio" name="branch" value="2" class="hidden peer">
+                  <div class="w-5 h-5 rounded-full border-2 border-gold flex items-center justify-center peer-checked:bg-gold peer-checked:border-darkgold transition-colors"></div>
+                  <span class="text-gray-700 font-medium">Pila</span>
+                </label>
+                <label class="flex items-center space-x-2 cursor-pointer">
+                  <input type="radio" name="branch" value="1" class="hidden peer">
+                  <div class="w-5 h-5 rounded-full border-2 border-gold flex items-center justify-center peer-checked:bg-gold peer-checked:border-darkgold transition-colors"></div>
+                  <span class="text-gray-700 font-medium">Paete</span>
+                </label>
+              </div>
             </div>
           </div>
+          
+          <!-- Deceased Information Section -->
+          <div class="pt-2">
+            <h4 class="text-lg font-semibold flex items-center text-gray-800 mb-4">
+              Deceased Information
+            </h4>
+            
+            <!-- Deceased Name Fields - 2x2 grid maintained for better layout -->
+            <div class="grid grid-cols-2 gap-4 mb-4">
+              <div class="form-group">
+                <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  First Name
+                </label>
+                <input 
+                  type="text" 
+                  id="deceasedFirstName" 
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                  placeholder="First Name"
+                >
+              </div>
+              <div class="form-group">
+                <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  Last Name
+                </label>
+                <input 
+                  type="text" 
+                  id="deceasedLastName" 
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                  placeholder="Last Name"
+                >
+              </div>
+              <div class="form-group">
+                <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  Middle Name
+                </label>
+                <input 
+                  type="text" 
+                  id="deceasedMiddleName" 
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                  placeholder="Middle Name"
+                >
+              </div>
+              <div class="form-group">
+                <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  Suffix
+                </label>
+                <select id="deceasedSuffix" name="deceasedSuffix" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                    <option value="">None</option>
+                                    <option value="Jr.">Jr.</option>
+                                    <option value="Sr.">Sr.</option>
+                                    <option value="I">I</option>
+                                    <option value="II">II</option>
+                                    <option value="III">III</option>
+                                    <option value="IV">IV</option>
+                                    <option value="V">V</option>
+                                </select>
+              </div>
+            </div>
 
-          <!-- Death Certificate Upload -->
-          <div class="form-group mt-4">
+            <!-- Deceased Address - Dropdown System -->
+            <div class="form-group mb-4">
+              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                Deceased Address
+              </label>
+              
+              <!-- Region Dropdown -->
+              <div class="mb-3">
+                <label class="block text-xs font-medium text-gray-500 mb-1">Region</label>
+                <select 
+                  id="regionSelect" 
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                  onchange="loadProvinces()"
+                >
+                  <option value="">Select Region</option>
+                  <!-- Regions will be loaded dynamically -->
+                </select>
+              </div>
+              
+              <!-- Province Dropdown -->
+              <div class="mb-3">
+                <label class="block text-xs font-medium text-gray-500 mb-1">Province</label>
+                <select 
+                  id="provinceSelect" 
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                  disabled
+                  onchange="loadCities()"
+                >
+                  <option value="">Select Province</option>
+                  <!-- Provinces will be loaded dynamically -->
+                </select>
+              </div>
+              
+              <!-- City/Municipality Dropdown -->
+              <div class="mb-3">
+                <label class="block text-xs font-medium text-gray-500 mb-1">City/Municipality</label>
+                <select 
+                  id="citySelect" 
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                  disabled
+                  onchange="loadBarangays()"
+                >
+                  <option value="">Select City/Municipality</option>
+                  <!-- Cities will be loaded dynamically -->
+                </select>
+              </div>
+              
+              <!-- Barangay Dropdown -->
+              <div class="mb-3">
+                <label class="block text-xs font-medium text-gray-500 mb-1">Barangay</label>
+                <select 
+                  id="barangaySelect" 
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                  disabled
+                >
+                  <option value="">Select Barangay</option>
+                  <!-- Barangays will be loaded dynamically -->
+                </select>
+              </div>
+              
+              <!-- Street and Zip Code -->
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-medium text-gray-500 mb-1">Street</label>
+                  <input 
+                    type="text" 
+                    id="streetInput" 
+                    class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                    placeholder="Street name, building, etc."
+                  >
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-gray-500 mb-1">Zip Code</label>
+                  <input 
+                    type="text" 
+                    id="zipCodeInput" 
+                    class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                    placeholder="Zip Code"
+                  >
+                </div>
+              </div>
+            </div>
+
+            <!-- Deceased Dates - 3 columns for dates -->
+            <div class="grid grid-cols-3 gap-4 mb-4">
+              <div class="form-group">
+                <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  Birth Date
+                </label>
+                <input 
+                  type="date" 
+                  id="birthDate" 
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                >
+              </div>
+              <div class="form-group">
+                <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  Date of Death
+                </label>
+                <input 
+                  type="date" 
+                  id="deathDate" 
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                >
+              </div>
+              <div class="form-group">
+                <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  Date of Burial
+                </label>
+                <input 
+                  type="date" 
+                  id="burialDate" 
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                >
+              </div>
+            </div>
+
+            <!-- Death Certificate Upload -->
+            <div class="form-group mt-4">
             <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
               Death Certificate
             </label>
@@ -3313,6 +3405,29 @@ function validateNotesInput(input) {
     }
 }
 
+</script>
+
+<script>
+function showTab(tabName) {
+  // Hide all tab contents
+  document.querySelectorAll('.tab-content').forEach(content => {
+    content.classList.add('hidden');
+  });
+  
+  // Remove active class from all tab buttons
+  document.querySelectorAll('.tab-button').forEach(button => {
+    button.classList.remove('active', 'border-sidebar-accent', 'text-sidebar-text');
+    button.classList.add('text-gray-600', 'border-transparent');
+  });
+  
+  // Show selected tab content
+  document.getElementById(tabName + '-content').classList.remove('hidden');
+  
+  // Add active class to selected tab button
+  const activeButton = document.getElementById(tabName + '-tab');
+  activeButton.classList.add('active', 'border-sidebar-accent', 'text-sidebar-text');
+  activeButton.classList.remove('text-gray-600', 'border-transparent');
+}
 </script>
 
 </body> 
