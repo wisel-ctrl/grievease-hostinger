@@ -127,10 +127,10 @@ $paginationInfo = "Showing $start - $end of $totalRecords expenses";
 $paginationHtml = '';
 if ($totalPages > 1) {
     // First page button
-    $paginationHtml .= '<a href="#" onclick="changeBranchPage('.$branchId.', 1); return false;" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover '.($page == 1 ? 'opacity-50 pointer-events-none' : '').'">&laquo;</a>';
+    $paginationHtml .= '<a href="#" onclick="loadExpenses('.$branchId.', 1); return false;" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover '.($page == 1 ? 'opacity-50 pointer-events-none' : '').'">«</a>';
     
     // Previous page button
-    $paginationHtml .= '<a href="#" onclick="changeBranchPage('.$branchId.', '.max(1, $page - 1).'); return false;" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover '.($page == 1 ? 'opacity-50 pointer-events-none' : '').'">&lsaquo;</a>';
+    $paginationHtml .= '<a href="#" onclick="loadExpenses('.$branchId.', '.max(1, $page - 1).'); return false;" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover '.($page == 1 ? 'opacity-50 pointer-events-none' : '').'">‹</a>';
     
     // Page numbers
     $start_page = max(1, $page - 1);
@@ -144,16 +144,15 @@ if ($totalPages > 1) {
     
     for ($i = $start_page; $i <= $end_page; $i++) {
         $active_class = ($i == $page) ? 'bg-sidebar-accent text-white' : 'border border-sidebar-border hover:bg-sidebar-hover';
-        $paginationHtml .= '<a href="#" onclick="changeBranchPage('.$branchId.', '.$i.'); return false;" class="px-3.5 py-1.5 rounded text-sm '.$active_class.'">'.$i.'</a>';
+        $paginationHtml .= '<a href="#" onclick="loadExpenses('.$branchId.', '.$i.'); return false;" class="px-3.5 py-1.5 rounded text-sm '.$active_class.'">'.$i.'</a>';
     }
     
     // Next page button
-    $paginationHtml .= '<a href="#" onclick="changeBranchPage('.$branchId.', '.min($totalPages, $page + 1).'); return false;" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover '.($page == $totalPages ? 'opacity-50 pointer-events-none' : '').'">&rsaquo;</a>';
+    $paginationHtml .= '<a href="#" onclick="loadExpenses('.$branchId.', '.min($totalPages, $page + 1).'); return false;" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover '.($page == $totalPages ? 'opacity-50 pointer-events-none' : '').'">›</a>';
     
     // Last page button
-    $paginationHtml .= '<a href="#" onclick="changeBranchPage('.$branchId.', '.$totalPages.'); return false;" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover '.($page == $totalPages ? 'opacity-50 pointer-events-none' : '').'">&raquo;</a>';
+    $paginationHtml .= '<a href="#" onclick="loadExpenses('.$branchId.', '.$totalPages.'); return false;" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover '.($page == $totalPages ? 'opacity-50 pointer-events-none' : '').'">»</a>';
 }
-
 // Return JSON response
 header('Content-Type: application/json');
 echo json_encode([

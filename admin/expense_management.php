@@ -875,7 +875,6 @@ if ($branchResult->num_rows > 0) {
         </div>
     </div>
     
-    <!-- Sticky Pagination Footer with improved spacing -->
 <!-- Sticky Pagination Footer with improved spacing -->
 <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
     <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
@@ -883,7 +882,6 @@ if ($branchResult->num_rows > 0) {
         if ($totalBranchExpenses > 0) {
             $start = $branchOffset + 1;
             $end = min($branchOffset + $recordsPerPage, $totalBranchExpenses);
-        
             echo "Showing {$start} - {$end} of {$totalBranchExpenses} expenses";
         } else {
             echo "No expenses found";
@@ -893,15 +891,15 @@ if ($branchResult->num_rows > 0) {
     <div id="paginationContainer" class="flex space-x-2">
         <?php if ($totalBranchPages > 1): ?>
             <!-- First page button (double arrow) -->
-            <a href="#" onclick="changeBranchPage(<?php echo $branchId; ?>, 1); return false;" 
+            <a href="#" onclick="loadExpenses(<?php echo $branchId; ?>, 1); return false;" 
                class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($branchPage == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
-                &laquo;
+                «
             </a>
             
             <!-- Previous page button (single arrow) -->
-            <a href="#" onclick="changeBranchPage(<?php echo $branchId; ?>, <?php echo max(1, $branchPage - 1); ?>); return false;" 
+            <a href="#" onclick="loadExpenses(<?php echo $branchId; ?>, <?php echo max(1, $branchPage - 1); ?>); return false;" 
                class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($branchPage == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
-                &lsaquo;
+                ‹
             </a>
             
             <?php
@@ -940,20 +938,20 @@ if ($branchResult->num_rows > 0) {
             // Generate the page buttons
             for ($i = $start_page; $i <= $end_page; $i++) {
                 $active_class = ($i == $branchPage) ? 'bg-sidebar-accent text-white' : 'border border-sidebar-border hover:bg-sidebar-hover';
-                echo '<a href="#" onclick="changeBranchPage(' . $branchId . ', ' . $i . '); return false;" class="px-3.5 py-1.5 rounded text-sm ' . $active_class . '">' . $i . '</a>';
+                echo '<a href="#" onclick="loadExpenses(' . $branchId . ', ' . $i . '); return false;" class="px-3.5 py-1.5 rounded text-sm ' . $active_class . '">' . $i . '</a>';
             }
             ?>
             
             <!-- Next page button (single arrow) -->
-            <a href="#" onclick="changeBranchPage(<?php echo $branchId; ?>, <?php echo min($totalBranchPages, $branchPage + 1); ?>); return false;" 
+            <a href="#" onclick="loadExpenses(<?php echo $branchId; ?>, <?php echo min($totalBranchPages, $branchPage + 1); ?>); return false;" 
                class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($branchPage == $totalBranchPages) ? 'opacity-50 pointer-events-none' : ''; ?>">
-                &rsaquo;
+                ›
             </a>
             
             <!-- Last page button (double arrow) -->
-            <a href="#" onclick="changeBranchPage(<?php echo $branchId; ?>, <?php echo $totalBranchPages; ?>); return false;" 
+            <a href="#" onclick="loadExpenses(<?php echo $branchId; ?>, <?php echo $totalBranchPages; ?>); return false;" 
                class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($branchPage == $totalBranchPages) ? 'opacity-50 pointer-events-none' : ''; ?>">
-                &raquo;
+                »
             </a>
         <?php endif; ?>
     </div>
@@ -1407,9 +1405,8 @@ $conn->close();
 
   <script>
       
-      // Global variables to store current filters
+// Global variables to store current filters
 let currentFilters = {};
-
 
 // Function to search expenses in real-time
 function searchExpenses(branchId) {
@@ -1437,7 +1434,8 @@ function setFilter(branchId, filterType, filterValue) {
         filterWindow.classList.add('hidden');
     }
     
-    loadExpenses(branchId);
+    // Reset to page 1 when filters change
+    loadExpenses(branchId, 1);
 }
 
 // Debounce function to limit how often a function is called
@@ -1451,8 +1449,8 @@ function debounce(callback, time) {
 function loadExpenses(branchId, page = 1) {
     const loadingIndicator = document.getElementById(`loadingIndicator${branchId}`);
     const tableContainer = document.getElementById(`tableContainer${branchId}`);
-    const paginationInfo = document.querySelector(`#branch-${branchId} #paginationInfo`);
-    const paginationContainer = document.querySelector(`#branch-${branchId} #paginationContainer`);
+    const paginationInfo = tableContainer.parentElement.querySelector('#paginationInfo');
+    const paginationContainer = tableContainer.parentElement.querySelector('#paginationContainer');
     
     loadingIndicator.classList.remove('hidden');
     
@@ -1503,7 +1501,6 @@ function loadExpenses(branchId, page = 1) {
     });
 }
 
-
 function toggleFilterWindow(branchId) {
     const filterWindow = document.getElementById(`filterWindow${branchId}`);
     if (filterWindow) {
@@ -1511,7 +1508,7 @@ function toggleFilterWindow(branchId) {
     }
 }
 
-// Add this to your main script
+// Close filter dropdown when clicking outside
 document.addEventListener('click', function(event) {
     if (!event.target.closest('.filter-dropdown')) {
         document.querySelectorAll('.filter-window').forEach(window => {
@@ -1519,15 +1516,16 @@ document.addEventListener('click', function(event) {
         });
     }
 });
-// Function to change page
-function changeBranchPage(branchId, page) {
-    loadExpenses(branchId, page);
-    
-    // Update URL without reloading
-    const urlParams = new URLSearchParams(window.location.search);
-    urlParams.set(`page_${branchId}`, page);
-    window.history.pushState({}, '', `${window.location.pathname}?${urlParams.toString()}`);
+
+function updateFilterIndicator(branchId) {
+    const hasFilters = currentFilters[branchId] && 
+                      (currentFilters[branchId].category || currentFilters[branchId].status);
+    const indicator = document.getElementById(`filterIndicator${branchId}`);
+    if (indicator) {
+        indicator.classList.toggle('hidden', !hasFilters);
+    }
 }
+
 
 function setFilter(branchId, filterType, filterValue) {
     currentFilters[branchId] = currentFilters[branchId] || {};
@@ -1549,29 +1547,6 @@ function setFilter(branchId, filterType, filterValue) {
     loadExpenses(branchId);
 }
 
-function updateFilterIndicator(branchId) {
-    const hasFilters = currentFilters[branchId] && 
-                      (currentFilters[branchId].category || currentFilters[branchId].status);
-    const indicator = document.getElementById(`filterIndicator${branchId}`);
-    if (indicator) {
-        indicator.classList.toggle('hidden', !hasFilters);
-    }
-}
-
-// Function to change branch page
-function changeBranchPage(branchId, page) {
-    // Get current URL parameters
-    const urlParams = new URLSearchParams(window.location.search);
-    
-    // Update the branch-specific page parameter
-    urlParams.set(`page_${branchId}`, page);
-    
-    // Update the URL without reloading (for modern browsers)
-    window.history.pushState({}, '', `${window.location.pathname}?${urlParams.toString()}`);
-    
-    // Reload the page to show the new data
-    window.location.reload();
-}
     // Function to handle expense name dropdown change in edit modal
 function handleEditExpenseNameChange(select) {
     const expenseInput = document.getElementById('editExpenseDescription');
