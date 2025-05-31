@@ -2162,7 +2162,7 @@ $offsetOutstanding = ($outstandingPage - 1) * $recordsPerPage;
 </div>
 
 
-  <script src="script.js"></script>
+  
   <script>
 // Pass PHP data to JavaScript
 const customers = <?php echo json_encode($customers); ?>;
