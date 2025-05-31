@@ -3411,25 +3411,33 @@ function validateNotesInput(input) {
 
 <script>
 function showTab(tabName) {
+  console.log('Switching to tab:', tabName); // Debug log
+  
   // Hide all tab contents
-  document.querySelectorAll('.tab-content').forEach(content => {
+  const allContents = document.querySelectorAll('.tab-content');
+  console.log('Found tab contents:', allContents.length); // Debug log
+  allContents.forEach(content => {
     content.classList.add('hidden');
   });
   
   // Remove active class from all tab buttons
-  document.querySelectorAll('.tab-button').forEach(button => {
+  const allButtons = document.querySelectorAll('.tab-button');
+  console.log('Found tab buttons:', allButtons.length); // Debug log
+  allButtons.forEach(button => {
     button.classList.remove('active', 'border-sidebar-accent', 'text-sidebar-text');
     button.classList.add('text-gray-600', 'border-transparent');
   });
   
   // Show selected tab content
   const tabContent = document.getElementById(tabName + '-content');
+  console.log('Selected content element:', tabContent); // Debug log
   if (tabContent) {
     tabContent.classList.remove('hidden');
   }
   
   // Add active class to selected tab button
   const activeButton = document.getElementById(tabName + '-tab');
+  console.log('Selected button element:', activeButton); // Debug log
   if (activeButton) {
     activeButton.classList.add('active', 'border-sidebar-accent', 'text-sidebar-text');
     activeButton.classList.remove('text-gray-600', 'border-transparent');
