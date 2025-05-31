@@ -1280,6 +1280,141 @@ $offsetOutstanding = ($outstandingPage - 1) * $recordsPerPage;
         </table>
       </div>
     </div>
+
+    <!-- Custom Past Services - Fully Paid Section -->
+    <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
+      <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
+        <h3 class="text-lg font-semibold text-sidebar-text">Custom Past Services - Fully Paid</h3>
+        <div class="flex gap-2">
+          <div class="relative">
+            <input type="text" id="searchCustomFullyPaid" placeholder="Search..." 
+                   class="pl-9 pr-4 py-2 border border-sidebar-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent"
+                   onkeyup="debounceSearch()">
+            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <i class="fas fa-search text-gray-400"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr class="bg-gray-50 border-b border-sidebar-border">
+              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+                <div class="flex items-center gap-1.5">
+                  <i class="fas fa-hashtag text-sidebar-accent"></i> ID
+                </div>
+              </th>
+              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+                <div class="flex items-center gap-1.5">
+                  <i class="fas fa-user text-sidebar-accent"></i> Customer Name
+                </div>
+              </th>
+              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+                <div class="flex items-center gap-1.5">
+                  <i class="fas fa-user text-sidebar-accent"></i> Deceased Name
+                </div>
+              </th>
+              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+                <div class="flex items-center gap-1.5">
+                  <i class="fas fa-calendar text-sidebar-accent"></i> Date of Burial
+                </div>
+              </th>
+              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+                <div class="flex items-center gap-1.5">
+                  <i class="fas fa-toggle-on text-sidebar-accent"></i> Status
+                </div>
+              </th>
+              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
+                <div class="flex items-center gap-1.5">
+                  <i class="fas fa-cogs text-sidebar-accent"></i> Actions
+                </div>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td colspan="6" class="p-6 text-sm text-center">
+                <div class="flex flex-col items-center">
+                  <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
+                  <p class="text-gray-500">No fully paid custom services found</p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Custom Past Services - With Balance Section -->
+    <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
+      <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
+        <h3 class="text-lg font-semibold text-sidebar-text">Custom Past Services - With Balance</h3>
+        <div class="flex gap-2">
+          <div class="relative">
+            <input type="text" id="searchCustomWithBalance" placeholder="Search..." 
+                   class="pl-9 pr-4 py-2 border border-sidebar-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent"
+                   onkeyup="debounceSearch()">
+            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <i class="fas fa-search text-gray-400"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr class="bg-gray-50 border-b border-sidebar-border">
+              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+                <div class="flex items-center gap-1.5">
+                  <i class="fas fa-hashtag text-sidebar-accent"></i> ID
+                </div>
+              </th>
+              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+                <div class="flex items-center gap-1.5">
+                  <i class="fas fa-user text-sidebar-accent"></i> Customer Name
+                </div>
+              </th>
+              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+                <div class="flex items-center gap-1.5">
+                  <i class="fas fa-user text-sidebar-accent"></i> Deceased Name
+                </div>
+              </th>
+              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+                <div class="flex items-center gap-1.5">
+                  <i class="fas fa-calendar text-sidebar-accent"></i> Date of Burial
+                </div>
+              </th>
+              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+                <div class="flex items-center gap-1.5">
+                  <i class="fas fa-toggle-on text-sidebar-accent"></i> Status
+                </div>
+              </th>
+              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+                <div class="flex items-center gap-1.5">
+                  <i class="fas fa-peso-sign text-sidebar-accent"></i> Outstanding Balance
+                </div>
+              </th>
+              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
+                <div class="flex items-center gap-1.5">
+                  <i class="fas fa-cogs text-sidebar-accent"></i> Actions
+                </div>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td colspan="7" class="p-6 text-sm text-center">
+                <div class="flex flex-col items-center">
+                  <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
+                  <p class="text-gray-500">No custom services with balance found</p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 
             
