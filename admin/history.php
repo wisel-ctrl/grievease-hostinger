@@ -1280,6 +1280,8 @@ $offsetOutstanding = ($outstandingPage - 1) * $recordsPerPage;
     </div>
   </div>
 
+            </div>
+
   <!-- Modal for Editing Service -->
   <div class="fixed inset-0 z-50 flex items-center justify-center hidden" id="editServiceModal">
     <!-- Modal Backdrop -->
