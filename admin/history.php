@@ -1203,7 +1203,8 @@ $offsetOutstanding = ($outstandingPage - 1) * $recordsPerPage;
   </div>
 
   <!-- Custom Sales Tab Content -->
-  <div id="custom-content" class="tab-content">
+  <div id="custom-content" class="tab-content border border-red-500">
+
     <!-- Ongoing Custom Services Section -->
     <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
       <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
