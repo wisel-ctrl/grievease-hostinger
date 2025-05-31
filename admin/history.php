@@ -3424,12 +3424,17 @@ function showTab(tabName) {
   });
   
   // Show selected tab content
-  document.getElementById(tabName + '-content').classList.remove('hidden');
+  const tabContent = document.getElementById(tabName + '-content');
+  if (tabContent) {
+    tabContent.classList.remove('hidden');
+  }
   
   // Add active class to selected tab button
   const activeButton = document.getElementById(tabName + '-tab');
-  activeButton.classList.add('active', 'border-sidebar-accent', 'text-sidebar-text');
-  activeButton.classList.remove('text-gray-600', 'border-transparent');
+  if (activeButton) {
+    activeButton.classList.add('active', 'border-sidebar-accent', 'text-sidebar-text');
+    activeButton.classList.remove('text-gray-600', 'border-transparent');
+  }
 }
 </script>
 
