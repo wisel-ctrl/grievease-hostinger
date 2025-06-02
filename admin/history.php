@@ -4606,7 +4606,46 @@ document.getElementById('editCustomServiceForm').addEventListener('submit', func
     });
 });
 
+function toggleCustomAddressChange() {
+    const addressChangeSection = document.getElementById('customAddressChangeSection');
+    const currentAddressDisplay = document.getElementById('currentAddressDisplay');
+    
+    if (addressChangeSection.classList.contains('hidden')) {
+        // Show the address change section
+        addressChangeSection.classList.remove('hidden');
+        // Hide the current address display
+        currentAddressDisplay.classList.add('hidden');
+        // Load regions when showing the address change section
+        loadRegions();
+    } else {
+        // Hide the address change section
+        addressChangeSection.classList.add('hidden');
+        // Show the current address display
+        currentAddressDisplay.classList.remove('hidden');
+    }
+}
+
+// Function to cancel custom address change
+function cancelCustomAddressChange() {
+    const addressChangeSection = document.getElementById('customAddressChangeSection');
+    const currentAddressDisplay = document.getElementById('currentAddressDisplay');
+    
+    // Hide the address change section
+    addressChangeSection.classList.add('hidden');
+    // Show the current address display
+    currentAddressDisplay.classList.remove('hidden');
+    
+    // Reset the dropdowns to their default state
+    document.getElementById('customRegionSelect').value = '';
+    document.getElementById('customProvinceSelect').value = '';
+    document.getElementById('customCitySelect').value = '';
+    document.getElementById('customBarangaySelect').value = '';
+    document.getElementById('customStreetInput').value = '';
+    document.getElementById('customZipcodeInput').value = '';
+}
+
 </script>
+
 
 </body> 
 </html>
