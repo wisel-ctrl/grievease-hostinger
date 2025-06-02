@@ -2595,8 +2595,8 @@ document.addEventListener('click', function(e) {
         document.getElementById('customerResults').classList.add('hidden');
     }
 });
-</script>
-  <script>
+</script> 
+<script>
     // Function to open the modal and populate fields with service data
     function openRecordPaymentModal(serviceId, clientName, balance) {
   // Get the modal element
@@ -3839,6 +3839,31 @@ document.addEventListener('DOMContentLoaded', function() {
   // Show standard tab by default
   showTab('standard');
 });
+</script>
+
+<script>
+// Function to toggle address change section
+function toggleAddressChange() {
+  const addressChangeSection = document.getElementById('addressChangeSection');
+  if (addressChangeSection) {
+    addressChangeSection.classList.toggle('hidden');
+  }
+}
+
+// Function to cancel address change
+function cancelAddressChange() {
+  const addressChangeSection = document.getElementById('addressChangeSection');
+  if (addressChangeSection) {
+    addressChangeSection.classList.add('hidden');
+    // Reset the form fields
+    document.getElementById('regionSelect').value = '';
+    document.getElementById('provinceSelect').value = '';
+    document.getElementById('citySelect').value = '';
+    document.getElementById('barangaySelect').value = '';
+    document.getElementById('streetInput').value = '';
+    document.getElementById('zipCodeInput').value = '';
+  }
+}
 </script>
 
 </body> 
