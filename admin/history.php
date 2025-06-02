@@ -1728,15 +1728,15 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
                   Suffix
                 </label>
                 <select id="nameSuffix" name="nameSuffix" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
-                                    <option value="">None</option>
-                                    <option value="Jr.">Jr.</option>
-                                    <option value="Sr.">Sr.</option>
-                                    <option value="I">I</option>
-                                    <option value="II">II</option>
-                                    <option value="III">III</option>
-                                    <option value="IV">IV</option>
-                                    <option value="V">V</option>
-                                </select>
+                  <option value="">None</option>
+                  <option value="Jr.">Jr.</option>
+                  <option value="Sr.">Sr.</option>
+                  <option value="I">I</option>
+                  <option value="II">II</option>
+                  <option value="III">III</option>
+                  <option value="IV">IV</option>
+                  <option value="V">V</option>
+                </select>
               </div>
             </div>
 
@@ -1862,97 +1862,128 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
                   Suffix
                 </label>
                 <select id="deceasedSuffix" name="deceasedSuffix" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
-                                    <option value="">None</option>
-                                    <option value="Jr.">Jr.</option>
-                                    <option value="Sr.">Sr.</option>
-                                    <option value="I">I</option>
-                                    <option value="II">II</option>
-                                    <option value="III">III</option>
-                                    <option value="IV">IV</option>
-                                    <option value="V">V</option>
-                                </select>
+                  <option value="">None</option>
+                  <option value="Jr.">Jr.</option>
+                  <option value="Sr.">Sr.</option>
+                  <option value="I">I</option>
+                  <option value="II">II</option>
+                  <option value="III">III</option>
+                  <option value="IV">IV</option>
+                  <option value="V">V</option>
+                </select>
               </div>
             </div>
 
-            <!-- Deceased Address - Dropdown System -->
+            <!-- Deceased Address - Display and Change Section -->
             <div class="form-group mb-4">
               <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                 Deceased Address
               </label>
               
-              <!-- Region Dropdown -->
-              <div class="mb-3">
-                <label class="block text-xs font-medium text-gray-500 mb-1">Region</label>
-                <select 
-                  id="regionSelect" 
-                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                  onchange="loadProvinces()"
+              <!-- Current Address Display (readonly) -->
+              <div class="mb-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                <label class="block text-xs font-medium text-gray-500 mb-1">Current Address</label>
+                <input 
+                  type="text" 
+                  id="currentAddressDisplay" 
+                  class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                  readonly
                 >
-                  <option value="">Select Region</option>
-                  <!-- Regions will be loaded dynamically -->
-                </select>
+                <button 
+                  type="button" 
+                  class="mt-2 text-xs text-sidebar-accent hover:text-darkgold transition-colors underline"
+                  onclick="toggleAddressChange()"
+                >
+                  Change Address
+                </button>
               </div>
               
-              <!-- Province Dropdown -->
-              <div class="mb-3">
-                <label class="block text-xs font-medium text-gray-500 mb-1">Province</label>
-                <select 
-                  id="provinceSelect" 
-                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                  disabled
-                  onchange="loadCities()"
-                >
-                  <option value="">Select Province</option>
-                  <!-- Provinces will be loaded dynamically -->
-                </select>
-              </div>
-              
-              <!-- City/Municipality Dropdown -->
-              <div class="mb-3">
-                <label class="block text-xs font-medium text-gray-500 mb-1">City/Municipality</label>
-                <select 
-                  id="citySelect" 
-                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                  disabled
-                  onchange="loadBarangays()"
-                >
-                  <option value="">Select City/Municipality</option>
-                  <!-- Cities will be loaded dynamically -->
-                </select>
-              </div>
-              
-              <!-- Barangay Dropdown -->
-              <div class="mb-3">
-                <label class="block text-xs font-medium text-gray-500 mb-1">Barangay</label>
-                <select 
-                  id="barangaySelect" 
-                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                  disabled
-                >
-                  <option value="">Select Barangay</option>
-                  <!-- Barangays will be loaded dynamically -->
-                </select>
-              </div>
-              
-              <!-- Street and Zip Code -->
-              <div class="grid grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-xs font-medium text-gray-500 mb-1">Street</label>
-                  <input 
-                    type="text" 
-                    id="streetInput" 
+              <!-- Address Change Section (initially hidden) -->
+              <div id="addressChangeSection" class="hidden">
+                <!-- Region Dropdown -->
+                <div class="mb-3">
+                  <label class="block text-xs font-medium text-gray-500 mb-1">Region</label>
+                  <select 
+                    id="regionSelect" 
                     class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                    placeholder="Street name, building, etc."
+                    onchange="loadProvinces()"
                   >
+                    <option value="">Select Region</option>
+                    <!-- Regions will be loaded dynamically -->
+                  </select>
                 </div>
-                <div>
-                  <label class="block text-xs font-medium text-gray-500 mb-1">Zip Code</label>
-                  <input 
-                    type="text" 
-                    id="zipCodeInput" 
+                
+                <!-- Province Dropdown -->
+                <div class="mb-3">
+                  <label class="block text-xs font-medium text-gray-500 mb-1">Province</label>
+                  <select 
+                    id="provinceSelect" 
                     class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                    placeholder="Zip Code"
+                    disabled
+                    onchange="loadCities()"
                   >
+                    <option value="">Select Province</option>
+                    <!-- Provinces will be loaded dynamically -->
+                  </select>
+                </div>
+                
+                <!-- City/Municipality Dropdown -->
+                <div class="mb-3">
+                  <label class="block text-xs font-medium text-gray-500 mb-1">City/Municipality</label>
+                  <select 
+                    id="citySelect" 
+                    class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                    disabled
+                    onchange="loadBarangays()"
+                  >
+                    <option value="">Select City/Municipality</option>
+                    <!-- Cities will be loaded dynamically -->
+                  </select>
+                </div>
+                
+                <!-- Barangay Dropdown -->
+                <div class="mb-3">
+                  <label class="block text-xs font-medium text-gray-500 mb-1">Barangay</label>
+                  <select 
+                    id="barangaySelect" 
+                    class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                    disabled
+                  >
+                    <option value="">Select Barangay</option>
+                    <!-- Barangays will be loaded dynamically -->
+                  </select>
+                </div>
+                
+                <!-- Street and Zip Code -->
+                <div class="grid grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Street</label>
+                    <input 
+                      type="text" 
+                      id="streetInput" 
+                      class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                      placeholder="Street name, building, etc."
+                    >
+                  </div>
+                  <div>
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Zip Code</label>
+                    <input 
+                      type="text" 
+                      id="zipCodeInput" 
+                      class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                      placeholder="Zip Code"
+                    >
+                  </div>
+                </div>
+                
+                <div class="flex justify-end mt-3">
+                  <button 
+                    type="button" 
+                    class="text-xs text-gray-500 hover:text-gray-700 transition-colors"
+                    onclick="cancelAddressChange()"
+                  >
+                    Cancel
+                  </button>
                 </div>
               </div>
             </div>
@@ -1991,43 +2022,44 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
               </div>
             </div>
 
-            <!-- Death Certificate Upload -->
+            <!-- Death Certificate Upload - Updated to match modal 2 -->
             <div class="form-group mt-4">
-            <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              Death Certificate
-            </label>
-            <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg">
-              <div class="space-y-1 text-center">
-                <div class="flex text-sm text-gray-600">
-                  <label for="deathCertificate" class="relative cursor-pointer bg-white rounded-md font-medium text-sidebar-accent hover:text-opacity-80 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-sidebar-accent">
-                    <span>Upload a file</span>
-                    <input 
-                      id="deathCertificate" 
-                      name="deathCertificate" 
-                      type="file" 
-                      class="sr-only"
-                      accept=".pdf,.jpg,.jpeg,.png"
-                    >
-                  </label>
-                  <p class="pl-1">or drag and drop</p>
+              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                Death Certificate
+              </label>
+              <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg">
+                <div class="space-y-1 text-center">
+                  <div class="flex text-sm text-gray-600">
+                    <label for="deathCertificate" class="relative cursor-pointer bg-white rounded-md font-medium text-sidebar-accent hover:text-opacity-80 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-sidebar-accent">
+                      <span>Upload a file</span>
+                      <input 
+                        id="deathCertificate" 
+                        name="deathCertificate" 
+                        type="file" 
+                        class="sr-only"
+                        accept=".pdf,.jpg,.jpeg,.png"
+                      >
+                    </label>
+                    <p class="pl-1">or drag and drop</p>
+                  </div>
+                  <p class="text-xs text-gray-500">PNG, JPG, PDF up to 10MB</p>
                 </div>
-                <p class="text-xs text-gray-500">PNG, JPG, PDF up to 10MB</p>
               </div>
+              <p id="file-name" class="mt-2 text-sm text-gray-500"></p>
             </div>
-            <p id="file-name" class="mt-2 text-sm text-gray-500"></p>
           </div>
-        </div>
-      </form>
-    </div>
-    
-    <!-- Modal Footer -->
-    <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-      <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeEditServiceModal()">
-        Cancel
-      </button>
-      <button class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="saveServiceChanges()">
-        Save Changes
-      </button>
+        </form>
+      </div>
+      
+      <!-- Modal Footer -->
+      <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+        <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeEditServiceModal()">
+          Cancel
+        </button>
+        <button class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="saveServiceChanges()">
+          Save Changes
+        </button>
+      </div>
     </div>
   </div>
 </div>
