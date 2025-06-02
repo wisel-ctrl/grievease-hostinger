@@ -1419,16 +1419,77 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
               </th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td colspan="6" class="p-6 text-sm text-center">
-                <div class="flex flex-col items-center">
-                  <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
-                  <p class="text-gray-500">No fully paid custom services found</p>
-                </div>
-              </td>
-            </tr>
-          </tbody>
+          <tbody id="customFullyPaidTableBody">
+              <?php
+              // Query for Custom Fully Paid Services
+              $customFullyPaidQuery = "SELECT 
+                cs.customsales_id,
+                CONCAT_WS(' ', 
+                  u.first_name, 
+                  COALESCE(u.middle_name, ''), 
+                  u.last_name, 
+                  COALESCE(u.suffix, '')
+                ) AS client_name,
+                CONCAT_WS(' ', 
+                  cs.fname_deceased, 
+                  COALESCE(cs.mname_deceased, ''), 
+                  cs.lname_deceased, 
+                  COALESCE(cs.suffix_deceased, '')
+                ) AS deceased_name,
+                cs.discounted_price,
+                cs.date_of_burial,
+                b. branch_name,
+                cs.status,
+                cs.payment_status
+              FROM customsales_tb AS cs
+              JOIN users AS u ON cs.customer_id = u.id
+              JOIN branch_tb as b ON cs.branch_id = b.branch_id
+              WHERE cs.status = 'Completed' AND cs.payment_status = 'Fully Paid'
+              LIMIT ?, ?";
+              $stmt = $conn->prepare($customFullyPaidQuery);
+              $stmt->bind_param("ii", $offsetCustomFullyPaid, $recordsPerPage);
+              $stmt->execute();
+              $customFullyPaidResult = $stmt->get_result();
+
+              if ($customFullyPaidResult->num_rows > 0) {
+                while($row = $customFullyPaidResult->fetch_assoc()) {
+                  ?>
+                  <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
+                    <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">#<?php echo $row['customsales_id']; ?></td>
+                    <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['client_name']); ?></td>
+                    <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['deceased_name']); ?></td>
+                    <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo '₱' . number_format($row['discounted_price'], 2); ?></td>
+                    <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['date_of_burial']); ?></td>
+                    <td class="px-4 py-3.5 text-sm">
+                      <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-500 border border-green-200">
+                        <?php echo ucfirst(strtolower(htmlspecialchars($row['branch_name']))); ?>
+                      </span>
+                    </td>
+                    <td class="px-4 py-3.5 text-sm">
+                      <div class="flex space-x-2">
+                        <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details" onclick="viewCustomServiceDetails('<?php echo $row['customsales_id']; ?>', 'custom')">
+                          <i class="fas fa-eye"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <?php
+                }
+              } else {
+                ?>
+                <tr>
+                  <td colspan="7" class="px-4 py-6 text-sm text-center">
+                    <div class="flex flex-col items-center">
+                      <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
+                      <p class="text-gray-500">No custom fully paid services found</p>
+                    </div>
+                  </td>
+                </tr>
+                <?php
+              }
+              $stmt->close();
+              ?>
+            </tbody>
         </table>
       </div>
     </div>
