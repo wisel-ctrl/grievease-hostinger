@@ -2579,63 +2579,21 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
             Customer Information
           </h4>
           
-          <!-- Name Fields - 2 columns -->
-          <div class="grid grid-cols-2 gap-4 mb-4">
-            <div class="form-group">
-              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                First Name
-              </label>
-              <input 
-                type="text" 
-                id="editCustomFirstName" 
-                name="editCustomFirstName"
-                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                placeholder="Enter First Name"
-              >
-            </div>
-            <div class="form-group">
-              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                Last Name
-              </label>
-              <input 
-                type="text" 
-                id="editCustomLastName" 
-                name="editCustomLastName"
-                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                placeholder="Enter Last Name"
-              >
-            </div>
+          <!-- Full Name -->
+          <div class="form-group mb-4">
+            <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              Full Name
+            </label>
+            <input 
+              type="text" 
+              id="editCustomFullName" 
+              name="editCustomFullName"
+              class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+              placeholder="Enter Full Name"
+            >
           </div>
           
-          <!-- Middle Name and Suffix - 2 columns -->
-          <div class="grid grid-cols-2 gap-4 mb-4">
-            <div class="form-group">
-              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                Middle Name
-              </label>
-              <input 
-                type="text" 
-                id="editCustomMiddleName" 
-                name="editCustomMiddleName"
-                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                placeholder="Enter Middle Name"
-              >
-            </div>
-            <div class="form-group">
-              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                Suffix
-              </label>
-              <input 
-                type="text" 
-                id="editCustomNameSuffix" 
-                name="editCustomNameSuffix"
-                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                placeholder="Enter Suffix"
-              >
-            </div>
-          </div>
-          
-          <!-- Contact Information - 2 columns -->
+          <!-- Email and Phone -->
           <div class="grid grid-cols-2 gap-4 mb-4">
             <div class="form-group">
               <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
@@ -2670,20 +2628,47 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
             Service Details
           </h4>
           
-          <!-- Service Type and Price - 2 columns -->
-          <div class="grid grid-cols-2 gap-4 mb-4">
+          <!-- Service Items -->
+          <div class="space-y-4 mb-4">
             <div class="form-group">
               <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                Service Type
+                Casket
               </label>
               <input 
                 type="text" 
-                id="editCustomServiceType" 
-                name="editCustomServiceType"
+                id="editCustomCasket" 
+                name="editCustomCasket"
                 class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                placeholder="Enter Service Type"
+                placeholder="Enter Casket Details"
               >
             </div>
+            
+            <div class="form-group">
+              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                Flower Arrangement
+              </label>
+              <input 
+                type="text" 
+                id="editCustomFlowerArrangement" 
+                name="editCustomFlowerArrangement"
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                placeholder="Enter Flower Arrangement Details"
+              >
+            </div>
+            
+            <div class="form-group">
+              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                Additional Services
+              </label>
+              <input 
+                type="text" 
+                id="editCustomAdditionalServices" 
+                name="editCustomAdditionalServices"
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                placeholder="Enter Additional Services"
+              >
+            </div>
+            
             <div class="form-group">
               <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                 Service Price
@@ -2796,6 +2781,134 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
                 class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
               >
             </div>
+          </div>
+          
+          <!-- Deceased Address -->
+          <div class="form-group mb-4">
+            <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              Deceased Address
+            </label>
+            
+            <!-- Current Address Display (readonly) -->
+            <div class="mb-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
+              <label class="block text-xs font-medium text-gray-500 mb-1">Current Address</label>
+              <input 
+                type="text" 
+                id="editCustomCurrentAddressDisplay" 
+                class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                readonly
+              >
+              <button 
+                type="button" 
+                class="mt-2 text-xs text-sidebar-accent hover:text-darkgold transition-colors underline"
+                onclick="toggleAddressChange()"
+              >
+                Change Address
+              </button>
+            </div>
+            
+            <!-- Address Change Section (initially hidden) -->
+            <div id="editCustomAddressChangeSection" class="hidden">
+              <!-- Region Dropdown -->
+              <div class="mb-3">
+                <label class="block text-xs font-medium text-gray-500 mb-1">Region</label>
+                <select 
+                  id="editCustomRegionSelect" 
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                  onchange="loadProvinces()"
+                >
+                  <option value="">Select Region</option>
+                  <!-- Regions will be loaded dynamically -->
+                </select>
+              </div>
+              
+              <!-- Province Dropdown -->
+              <div class="mb-3">
+                <label class="block text-xs font-medium text-gray-500 mb-1">Province</label>
+                <select 
+                  id="editCustomProvinceSelect" 
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                  disabled
+                  onchange="loadCities()"
+                >
+                  <option value="">Select Province</option>
+                  <!-- Provinces will be loaded dynamically -->
+                </select>
+              </div>
+              
+              <!-- City/Municipality Dropdown -->
+              <div class="mb-3">
+                <label class="block text-xs font-medium text-gray-500 mb-1">City/Municipality</label>
+                <select 
+                  id="editCustomCitySelect" 
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                  disabled
+                  onchange="loadBarangays()"
+                >
+                  <option value="">Select City/Municipality</option>
+                  <!-- Cities will be loaded dynamically -->
+                </select>
+              </div>
+              
+              <!-- Barangay Dropdown -->
+              <div class="mb-3">
+                <label class="block text-xs font-medium text-gray-500 mb-1">Barangay</label>
+                <select 
+                  id="editCustomBarangaySelect" 
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                  disabled
+                >
+                  <option value="">Select Barangay</option>
+                  <!-- Barangays will be loaded dynamically -->
+                </select>
+              </div>
+              
+              <!-- Street and Zip Code -->
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-medium text-gray-500 mb-1">Street</label>
+                  <input 
+                    type="text" 
+                    id="editCustomStreetInput" 
+                    class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                    placeholder="Street name, building, etc."
+                  >
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-gray-500 mb-1">Zip Code</label>
+                  <input 
+                    type="text" 
+                    id="editCustomZipCodeInput" 
+                    class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                    placeholder="Zip Code"
+                  >
+                </div>
+              </div>
+              
+              <div class="flex justify-end mt-3">
+                <button 
+                  type="button" 
+                  class="text-xs text-gray-500 hover:text-gray-700 transition-colors"
+                  onclick="cancelAddressChange()"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Death Certificate Upload -->
+          <div class="form-group mb-4">
+            <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              Death Certificate
+            </label>
+            <input 
+              type="file" 
+              id="editCustomDeathCertificate" 
+              name="editCustomDeathCertificate"
+              class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+              accept=".pdf,.jpg,.jpeg,.png"
+            >
           </div>
         </div>
         
@@ -4427,14 +4540,19 @@ function openEditCustomServiceModal(serviceId) {
         .then(data => {
             if (data.success) {
                 document.getElementById('customSalesId').value = data.customsales_id;
-                document.getElementById('editCustomFirstName').value = data.fname || '';
-                document.getElementById('editCustomMiddleName').value = data.mname || '';
-                document.getElementById('editCustomLastName').value = data.lname || '';
-                document.getElementById('editCustomNameSuffix').value = data.suffix || '';
+                // Combined full name for customer
+                document.getElementById('editCustomFullName').value = 
+                    `${data.fname || ''} ${data.mname || ''} ${data.lname || ''} ${data.suffix || ''}`.trim();
                 document.getElementById('editCustomEmail').value = data.email || '';
                 document.getElementById('editCustomPhone').value = data.phone || '';
-                document.getElementById('editCustomServiceType').value = data.service_name || '';
+                
+                // Service details
+                document.getElementById('editCustomCasket').value = data.casket || '';
+                document.getElementById('editCustomFlowerArrangement').value = data.flower_arrangement || '';
+                document.getElementById('editCustomAdditionalServices').value = data.additional_services || '';
                 document.getElementById('editCustomServicePrice').value = data.discounted_price || '';
+                
+                // Deceased information
                 document.getElementById('editCustomDeceasedFirstName').value = data.fname_deceased || '';
                 document.getElementById('editCustomDeceasedMiddleName').value = data.mname_deceased || '';
                 document.getElementById('editCustomDeceasedLastName').value = data.lname_deceased || '';
@@ -4442,9 +4560,11 @@ function openEditCustomServiceModal(serviceId) {
                 document.getElementById('editCustomBirthDate').value = data.date_of_birth || '';
                 document.getElementById('editCustomDeathDate').value = data.date_of_death || '';
                 document.getElementById('editCustomBurialDate').value = data.date_of_burial || '';
+                
                 if (data.deceased_address) {
-                    document.getElementById('currentAddressDisplay').value = data.deceased_address;
+                    document.getElementById('editCustomCurrentAddressDisplay').value = data.deceased_address;
                 }
+                
                 document.getElementById('editCustomServiceModal').classList.remove('hidden');
                 toggleBodyScroll(true);
             } else {
