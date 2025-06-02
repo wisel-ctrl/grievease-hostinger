@@ -2844,7 +2844,7 @@ function openEditServiceModal(serviceId) {
         document.getElementById('birthDate').value = data.date_of_birth || '';
         document.getElementById('deathDate').value = data.date_of_death || '';
         document.getElementById('burialDate').value = data.date_of_burial || '';
-        document.getElementById('streetInput').value = data.deceased_address || '';
+        document.getElementById('currentAddressDisplay').value = data.deceased_address || '';
         document.getElementById('email').value = data.email || '';
         document.getElementById('phone').value = data.phone || '';
         
