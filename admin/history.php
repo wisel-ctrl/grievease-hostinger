@@ -2939,7 +2939,7 @@ function saveServiceChanges() {
     birthDate: document.getElementById('birthDate').value,
     deathDate: document.getElementById('deathDate').value,
     burialDate: document.getElementById('burialDate').value,
-    streetInput: document.getElementById('streetInput').value,
+    deceasedAddress: document.getElementById('currentAddressDisplay').value,
     branch: document.querySelector('input[name="branch"]:checked')?.value,
     deathCertificate: document.getElementById('deathCertificate').files[0]?.name || 'No file selected'
   };
@@ -2947,7 +2947,7 @@ function saveServiceChanges() {
   // Log the form data to console
   console.log('Service Form Data:', formData);
   
-  fetch('update_history_sales.php', {
+  fetch('history/update_history_sales.php', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
