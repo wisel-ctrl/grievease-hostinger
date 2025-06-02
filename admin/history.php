@@ -1304,7 +1304,7 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
               WHERE cs.status = 'Pending'
                     LIMIT ?, ?";
               $stmt = $conn->prepare($customOngoingQuery);
-              $stmt->bind_param("iii", $branch, $offsetCustomOngoing, $recordsPerPage); 
+              $stmt->bind_param("ii", $offsetCustomOngoing, $recordsPerPage); 
               $stmt->execute();
               $customOngoingResult = $stmt->get_result();
               
