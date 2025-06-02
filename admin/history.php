@@ -86,6 +86,13 @@ $offsetFullyPaid = ($fullyPaidPage - 1) * $recordsPerPage;
 $outstandingPage = isset($_GET['outstandingPage']) ? max(1, intval($_GET['outstandingPage'])) : 1;
 $offsetOutstanding = ($outstandingPage - 1) * $recordsPerPage;
 
+$pageCustomOngoing = isset($_GET['page_custom_ongoing']) ? (int)$_GET['page_custom_ongoing'] : 1;
+$pageCustomFullyPaid = isset($_GET['page_custom_fully_paid']) ? (int)$_GET['page_custom_fully_paid'] : 1;
+$pageCustomOutstanding = isset($_GET['page_custom_outstanding']) ? (int)$_GET['page_custom_outstanding'] : 1;
+
+$offsetCustomOngoing = ($pageCustomOngoing - 1) * $recordsPerPage;
+$offsetCustomFullyPaid = ($pageCustomFullyPaid - 1) * $recordsPerPage;
+$offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
 ?>
 
 <!DOCTYPE html>
