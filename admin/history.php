@@ -2549,7 +2549,276 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
   </div>
 </div>
 
-
+<!-- Edit Custom Service Modal -->
+<div class="fixed inset-0 z-50 flex items-center justify-center hidden" id="editCustomServiceModal">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] flex flex-col">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeEditCustomModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <!-- Modal Header -->
+    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
+        Edit Custom Service
+      </h3>
+    </div>
+    
+    <!-- Modal Body - Single Column Layout -->
+    <div class="px-4 sm:px-6 py-4 sm:py-5 overflow-y-auto modal-scroll-container">
+      <form id="editCustomServiceForm" class="space-y-3 sm:space-y-6">
+        <input type="hidden" id="customSalesId" name="customsales_id">
+        
+        <!-- Customer Information Section -->
+        <div class="pb-4 border-b border-gray-200">
+          <h4 class="text-lg font-semibold flex items-center text-gray-800 mb-4">
+            Customer Information
+          </h4>
+          
+          <!-- Name Fields - 2 columns -->
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <div class="form-group">
+              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                First Name
+              </label>
+              <input 
+                type="text" 
+                id="editCustomFirstName" 
+                name="editCustomFirstName"
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                placeholder="Enter First Name"
+              >
+            </div>
+            <div class="form-group">
+              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                Last Name
+              </label>
+              <input 
+                type="text" 
+                id="editCustomLastName" 
+                name="editCustomLastName"
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                placeholder="Enter Last Name"
+              >
+            </div>
+          </div>
+          
+          <!-- Middle Name and Suffix - 2 columns -->
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <div class="form-group">
+              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                Middle Name
+              </label>
+              <input 
+                type="text" 
+                id="editCustomMiddleName" 
+                name="editCustomMiddleName"
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                placeholder="Enter Middle Name"
+              >
+            </div>
+            <div class="form-group">
+              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                Suffix
+              </label>
+              <input 
+                type="text" 
+                id="editCustomNameSuffix" 
+                name="editCustomNameSuffix"
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                placeholder="Enter Suffix"
+              >
+            </div>
+          </div>
+          
+          <!-- Contact Information - 2 columns -->
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <div class="form-group">
+              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                Email
+              </label>
+              <input 
+                type="email" 
+                id="editCustomEmail" 
+                name="editCustomEmail"
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                placeholder="Enter Email"
+              >
+            </div>
+            <div class="form-group">
+              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                Phone
+              </label>
+              <input 
+                type="tel" 
+                id="editCustomPhone" 
+                name="editCustomPhone"
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                placeholder="Enter Phone Number"
+              >
+            </div>
+          </div>
+        </div>
+        
+        <!-- Service Details Section -->
+        <div class="pt-4">
+          <h4 class="text-lg font-semibold flex items-center text-gray-800 mb-4">
+            Service Details
+          </h4>
+          
+          <!-- Service Type and Price - 2 columns -->
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <div class="form-group">
+              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                Service Type
+              </label>
+              <input 
+                type="text" 
+                id="editCustomServiceType" 
+                name="editCustomServiceType"
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                placeholder="Enter Service Type"
+              >
+            </div>
+            <div class="form-group">
+              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                Service Price
+              </label>
+              <input 
+                type="number" 
+                id="editCustomServicePrice" 
+                name="editCustomServicePrice"
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                placeholder="Enter Service Price"
+              >
+            </div>
+          </div>
+        </div>
+        
+        <!-- Deceased Information Section -->
+        <div class="pt-4">
+          <h4 class="text-lg font-semibold flex items-center text-gray-800 mb-4">
+            Deceased Information
+          </h4>
+          
+          <!-- Name Fields - 2 columns -->
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <div class="form-group">
+              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                First Name
+              </label>
+              <input 
+                type="text" 
+                id="editCustomDeceasedFirstName" 
+                name="editCustomDeceasedFirstName"
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                placeholder="Enter First Name"
+              >
+            </div>
+            <div class="form-group">
+              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                Last Name
+              </label>
+              <input 
+                type="text" 
+                id="editCustomDeceasedLastName" 
+                name="editCustomDeceasedLastName"
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                placeholder="Enter Last Name"
+              >
+            </div>
+          </div>
+          
+          <!-- Middle Name and Suffix - 2 columns -->
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <div class="form-group">
+              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                Middle Name
+              </label>
+              <input 
+                type="text" 
+                id="editCustomDeceasedMiddleName" 
+                name="editCustomDeceasedMiddleName"
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                placeholder="Enter Middle Name"
+              >
+            </div>
+            <div class="form-group">
+              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                Suffix
+              </label>
+              <input 
+                type="text" 
+                id="editCustomDeceasedSuffix" 
+                name="editCustomDeceasedSuffix"
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                placeholder="Enter Suffix"
+              >
+            </div>
+          </div>
+          
+          <!-- Dates - 3 columns -->
+          <div class="grid grid-cols-3 gap-4 mb-4">
+            <div class="form-group">
+              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                Birth Date
+              </label>
+              <input 
+                type="date" 
+                id="editCustomBirthDate" 
+                name="editCustomBirthDate"
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+              >
+            </div>
+            <div class="form-group">
+              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                Death Date
+              </label>
+              <input 
+                type="date" 
+                id="editCustomDeathDate" 
+                name="editCustomDeathDate"
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+              >
+            </div>
+            <div class="form-group">
+              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                Burial Date
+              </label>
+              <input 
+                type="date" 
+                id="editCustomBurialDate" 
+                name="editCustomBurialDate"
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+              >
+            </div>
+          </div>
+        </div>
+        
+        <!-- Form Actions -->
+        <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+          <button 
+            type="button" 
+            onclick="closeEditCustomModal()"
+            class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sidebar-accent"
+          >
+            Cancel
+          </button>
+          <button 
+            type="submit"
+            class="px-4 py-2 text-sm font-medium text-white bg-sidebar-accent border border-transparent rounded-md hover:bg-darkgold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sidebar-accent"
+          >
+            Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
   
   <script>
 // Pass PHP data to JavaScript
@@ -2794,7 +3063,6 @@ function toggleBodyScroll(isOpen) {
 }
 
 // Function to open the Edit Service Modal
-// Function to open the Edit Service Modal
 function openEditServiceModal(serviceId) {
   
   // Fetch service details via AJAX
@@ -2848,7 +3116,6 @@ function openEditServiceModal(serviceId) {
         document.getElementById('email').value = data.email || '';
         document.getElementById('phone').value = data.phone || '';
         
-        // Select the branch radio button
         // Select the branch radio button - FIXED VERSION
         if (data.branch_id) {
           const branchRadios = document.getElementsByName('branch');
@@ -4152,8 +4419,74 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// ... existing code ...
+// Function to open the Edit Custom Service Modal
+function openEditCustomModal(serviceId) {
+    loadRegions();
+    fetch(`../employee/historyAPI/get_custom_service_details.php?customsales_id=${serviceId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('customSalesId').value = data.customsales_id;
+                document.getElementById('editCustomFirstName').value = data.fname || '';
+                document.getElementById('editCustomMiddleName').value = data.mname || '';
+                document.getElementById('editCustomLastName').value = data.lname || '';
+                document.getElementById('editCustomNameSuffix').value = data.suffix || '';
+                document.getElementById('editCustomEmail').value = data.email || '';
+                document.getElementById('editCustomPhone').value = data.phone || '';
+                document.getElementById('editCustomServiceType').value = data.service_name || '';
+                document.getElementById('editCustomServicePrice').value = data.discounted_price || '';
+                document.getElementById('editCustomDeceasedFirstName').value = data.fname_deceased || '';
+                document.getElementById('editCustomDeceasedMiddleName').value = data.mname_deceased || '';
+                document.getElementById('editCustomDeceasedLastName').value = data.lname_deceased || '';
+                document.getElementById('editCustomDeceasedSuffix').value = data.suffix_deceased || '';
+                document.getElementById('editCustomBirthDate').value = data.date_of_birth || '';
+                document.getElementById('editCustomDeathDate').value = data.date_of_death || '';
+                document.getElementById('editCustomBurialDate').value = data.date_of_burial || '';
+                if (data.deceased_address) {
+                    document.getElementById('currentAddressDisplay').value = data.deceased_address;
+                }
+                document.getElementById('editCustomServiceModal').classList.remove('hidden');
+                toggleBodyScroll(true);
+            } else {
+                alert('Failed to fetch service details: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while fetching service details');
+        });
+}
+
+// Function to close the Edit Custom Service Modal
+function closeEditCustomModal() {
+    document.getElementById('editCustomServiceModal').classList.add('hidden');
+    toggleBodyScroll(false);
+}
+
+document.getElementById('editCustomServiceForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    fetch('history/update_custom_service.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Service updated successfully');
+            closeEditCustomModal();
+            location.reload();
+        } else {
+            alert('Failed to update service: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while updating the service');
+    });
+});
+
 </script>
 
-</body 
+</body> 
 </html>
