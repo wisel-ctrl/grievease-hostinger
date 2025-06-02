@@ -1322,7 +1322,7 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
                 </td>
                 <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['date_of_burial']); ?></td>
                 <td class="px-4 py-3.5 text-sm text-sidebar-text">
-                  <?php echo htmlspecialchars($row['branch_name']); ?>
+                  <?php echo ucfirst(strtolower(htmlspecialchars($row['branch_name']))); ?>
                 </td>
                 <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱<?php echo number_format($row['balance'], 2); ?></td>
                 <td class="px-4 py-3.5 text-sm">
