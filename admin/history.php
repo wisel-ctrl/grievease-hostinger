@@ -2815,7 +2815,7 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
                 <select 
                   id="editCustomRegionSelect" 
                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                  onchange="loadProvinces()"
+                  onchange="loadCustomProvinces()"
                 >
                   <option value="">Select Region</option>
                   <!-- Regions will be loaded dynamically -->
@@ -2829,7 +2829,7 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
                   id="editCustomProvinceSelect" 
                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
                   disabled
-                  onchange="loadCities()"
+                  onchange="loadCustomCities()"
                 >
                   <option value="">Select Province</option>
                   <!-- Provinces will be loaded dynamically -->
@@ -2843,7 +2843,7 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
                   id="editCustomCitySelect" 
                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
                   disabled
-                  onchange="loadBarangays()"
+                  onchange="loadCustomBarangays()"
                 >
                   <option value="">Select City/Municipality</option>
                   <!-- Cities will be loaded dynamically -->
@@ -4614,7 +4614,8 @@ function toggleCustomAddressChange() {
         // Show the address change section
         addressChangeSection.classList.remove('hidden');
         
-        loadRegions();
+        initializeCustomAddressFields();
+        loadCustomRegions();
     } else {
         // Hide the address change section
         addressChangeSection.classList.add('hidden');
@@ -4642,6 +4643,315 @@ function cancelCustomAddressChange() {
     document.getElementById('editCustomZipCodeInput').value = '';
 }
 
+function loadCustomRegions() {
+    const regionSelect = document.getElementById('editCustomRegionSelect');
+    if (!regionSelect) {
+        console.error('Region select element not found');
+        return;
+    }
+    
+    // Clear existing options
+    regionSelect.innerHTML = '<option value="">Select Region</option>';
+    
+    fetch('../employee/historyAPI/addressDB.php?action=getRegions')
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                console.error('Error:', data.error);
+                return;
+            }
+            console.log('Regions data:', data);
+            data.forEach(region => {
+                const option = document.createElement('option');
+                option.value = region.region_id;
+                option.textContent = region.region_name;
+                regionSelect.appendChild(option);
+            });
+            console.log('Regions loaded:', regionSelect.options.length);
+        })
+        .catch(error => console.error('Error loading regions:', error));
+}
+
+// Function to load provinces based on selected region
+function loadCustomProvinces() {
+    const regionSelect = document.getElementById('editCustomRegionSelect');
+    if (!regionSelect) return;
+    
+    const regionId = regionSelect.value;
+    console.log('Loading provinces for region:', regionId);
+    const provinceSelect = document.getElementById('editCustomProvinceSelect');
+    if (!provinceSelect) {
+        console.error('Province select element not found');
+        return;
+    }
+    
+    // Clear existing options
+    provinceSelect.innerHTML = '<option value="">Select Province</option>';
+    
+    if (!regionId) return;
+    
+    fetch(`../employee/historyAPI/addressDB.php?action=getProvinces&region_id=${regionId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                console.error('Error:', data.error);
+                return;
+            }
+            console.log('Provinces data:', data);
+            data.forEach(province => {
+                const option = document.createElement('option');
+                option.value = province.province_id;
+                option.textContent = province.province_name;
+                provinceSelect.appendChild(option);
+            });
+            console.log('Provinces loaded:', provinceSelect.options.length);
+            
+            // Enable the province select after loading options
+            provinceSelect.disabled = false;
+        })
+        .catch(error => console.error('Error loading provinces:', error));
+}
+
+// Function to load municipalities based on selected province
+function loadCustomCities() {
+    const provinceSelect = document.getElementById('editCustomProvinceSelect');
+    if (!provinceSelect) return;
+    
+    const provinceId = provinceSelect.value;
+    console.log('Loading cities for province:', provinceId);
+    const citySelect = document.getElementById('editCustomCitySelect');
+    if (!citySelect) {
+        console.error('City select element not found');
+        return;
+    }
+    
+    // Clear existing options
+    citySelect.innerHTML = '<option value="">Select City/Municipality</option>';
+    
+    if (!provinceId) return;
+    
+    fetch(`../employee/historyAPI/addressDB.php?action=getMunicipalities&province_id=${provinceId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                console.error('Error:', data.error);
+                return;
+            }
+            console.log('Cities data:', data);
+            data.forEach(city => {
+                const option = document.createElement('option');
+                option.value = city.municipality_id;
+                option.textContent = city.municipality_name;
+                citySelect.appendChild(option);
+            });
+            console.log('Cities loaded:', citySelect.options.length);
+            
+            // Enable the city select after loading options
+            citySelect.disabled = false;
+        })
+        .catch(error => console.error('Error loading cities:', error));
+}
+
+// Function to load barangays based on selected municipality
+function loadCustomBarangays() {
+    const citySelect = document.getElementById('editCustomCitySelect');
+    if (!citySelect) return;
+    
+    const municipalityId = citySelect.value;
+    console.log('Loading barangays for municipality:', municipalityId);
+    const barangaySelect = document.getElementById('editCustomBarangaySelect');
+    if (!barangaySelect) {
+        console.error('Barangay select element not found');
+        return;
+    }
+    
+    // Clear existing options
+    barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+    
+    if (!municipalityId) return;
+    
+    fetch(`../employee/historyAPI/addressDB.php?action=getBarangays&municipality_id=${municipalityId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                console.error('Error:', data.error);
+                return;
+            }
+            console.log('Barangays data:', data);
+            data.forEach(barangay => {
+                const option = document.createElement('option');
+                option.value = barangay.barangay_id;
+                option.textContent = barangay.barangay_name;
+                barangaySelect.appendChild(option);
+            });
+            console.log('Barangays loaded:', barangaySelect.options.length);
+            
+            // Enable the barangay select after loading options
+            barangaySelect.disabled = false;
+        })
+        .catch(error => console.error('Error loading barangays:', error));
+}
+
+// Function to update the current address display
+function updateCustomCurrentAddress() {
+    const region = document.getElementById('editCustomRegionSelect');
+    const province = document.getElementById('editCustomProvinceSelect');
+    const city = document.getElementById('editCustomCitySelect');
+    const barangay = document.getElementById('editCustomBarangaySelect');
+    const street = document.getElementById('editCustomStreetInput');
+    const zipcode = document.getElementById('editCustomZipCodeInput');
+    
+    if (!region || !province || !city || !barangay || !street || !zipcode) {
+        console.error('One or more address elements not found');
+        return;
+    }
+    
+    let address = '';
+    
+    // Add street if available
+    if (street.value.trim()) {
+        address += street.value.trim();
+    }
+    
+    // Add barangay if selected
+    if (barangay.value) {
+        if (address) address += ', ';
+        address += barangay.options[barangay.selectedIndex].text;
+    }
+    
+    // Add city if selected
+    if (city.value) {
+        if (address) address += ', ';
+        address += city.options[city.selectedIndex].text;
+    }
+    
+    // Add province if selected
+    if (province.value) {
+        if (address) address += ', ';
+        address += province.options[province.selectedIndex].text;
+    }
+    
+    // Add region if selected
+    if (region.value) {
+        if (address) address += ', ';
+        address += region.options[region.selectedIndex].text;
+    }
+    
+    // Add zipcode if available
+    if (zipcode.value.trim()) {
+        if (address) address += ' ';
+        address += zipcode.value.trim();
+    }
+    
+    const currentAddressDisplay = document.getElementById('editCustomCurrentAddressDisplay');
+    if (currentAddressDisplay) {
+        currentAddressDisplay.value = address;
+        console.log('Updated address:', address);
+    } else {
+        console.error('Current address display element not found');
+    }
+}
+
+
+// Initialize address fields
+function initializeCustomAddressFields() {
+    console.log('Initializing custom address fields');
+    
+    // Get all select elements and input fields
+    const regionSelect = document.getElementById('editCustomRegionSelect');
+    const provinceSelect = document.getElementById('editCustomProvinceSelect');
+    const citySelect = document.getElementById('editCustomCitySelect');
+    const barangaySelect = document.getElementById('editCustomBarangaySelect');
+    const streetInput = document.getElementById('editCustomStreetInput');
+    const zipcodeInput = document.getElementById('editCustomZipCodeInput');
+    
+    // Verify all elements exist
+    if (!regionSelect || !provinceSelect || !citySelect || !barangaySelect || !streetInput || !zipcodeInput) {
+        console.error('One or more address elements not found');
+        return;
+    }
+    
+    // Initially disable dependent dropdowns
+    provinceSelect.disabled = true;
+    citySelect.disabled = true;
+    barangaySelect.disabled = true;
+    
+    // Clear all fields
+    regionSelect.innerHTML = '<option value="">Select Region</option>';
+    provinceSelect.innerHTML = '<option value="">Select Province</option>';
+    citySelect.innerHTML = '<option value="">Select City/Municipality</option>';
+    barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+    streetInput.value = '';
+    zipcodeInput.value = '';
+    
+    // Load initial regions
+    loadCustomRegions();
+    
+    // Add change event listeners for cascading dropdowns
+    regionSelect.addEventListener('change', function() {
+        console.log('Region changed:', this.value);
+        if (this.value) {
+            loadCustomProvinces();
+            provinceSelect.disabled = false;
+        } else {
+            provinceSelect.innerHTML = '<option value="">Select Province</option>';
+            provinceSelect.disabled = true;
+        }
+        citySelect.innerHTML = '<option value="">Select City/Municipality</option>';
+        citySelect.disabled = true;
+        barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+        barangaySelect.disabled = true;
+        updateCustomCurrentAddress();
+    });
+    
+    provinceSelect.addEventListener('change', function() {
+        console.log('Province changed:', this.value);
+        if (this.value) {
+            loadCustomCities();
+            citySelect.disabled = false;
+        } else {
+            citySelect.innerHTML = '<option value="">Select City/Municipality</option>';
+            citySelect.disabled = true;
+        }
+        barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+        barangaySelect.disabled = true;
+        updateCustomCurrentAddress();
+    });
+    
+    citySelect.addEventListener('change', function() {
+        console.log('City changed:', this.value);
+        if (this.value) {
+            loadCustomBarangays();
+            barangaySelect.disabled = false;
+        } else {
+            barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+            barangaySelect.disabled = true;
+        }
+        updateCustomCurrentAddress();
+    });
+    
+    barangaySelect.addEventListener('change', function() {
+        console.log('Barangay changed:', this.value);
+        updateCustomCurrentAddress();
+    });
+    
+    // Add input event listeners for street and zipcode
+    streetInput.addEventListener('input', function() {
+        console.log('Street changed:', this.value);
+        updateCustomCurrentAddress();
+    });
+    
+    zipcodeInput.addEventListener('input', function() {
+        console.log('Zipcode changed:', this.value);
+        updateCustomCurrentAddress();
+    });
+}
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, initializing custom address fields');
+    // We'll initialize the fields only when the "Change Address" button is clicked
+});
 </script>
 
 </body> 
