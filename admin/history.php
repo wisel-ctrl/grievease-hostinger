@@ -1584,7 +1584,7 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
               WHERE cs.status = 'Completed' AND cs.payment_status = 'With Balance'
               LIMIT ?, ?";
               $stmt = $conn->prepare($customOutstandingQuery);
-              $stmt->bind_param("iii", $branch, $offsetCustomOutstanding, $recordsPerPage);
+              $stmt->bind_param("ii", $offsetCustomOutstanding, $recordsPerPage);
               $stmt->execute();
               $customOutstandingResult = $stmt->get_result();
 
