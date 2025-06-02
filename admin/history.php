@@ -2801,7 +2801,7 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
               <button 
                 type="button" 
                 class="mt-2 text-xs text-sidebar-accent hover:text-darkgold transition-colors underline"
-                onclick="toggleAddressChange()"
+                onclick="toggleCustomAddressChange()"
               >
                 Change Address
               </button>
@@ -2889,7 +2889,7 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
                 <button 
                   type="button" 
                   class="text-xs text-gray-500 hover:text-gray-700 transition-colors"
-                  onclick="cancelAddressChange()"
+                  onclick="cancelCustomAddressChange()"
                 >
                   Cancel
                 </button>
@@ -4607,8 +4607,8 @@ document.getElementById('editCustomServiceForm').addEventListener('submit', func
 });
 
 function toggleCustomAddressChange() {
-    const addressChangeSection = document.getElementById('customAddressChangeSection');
-    const currentAddressDisplay = document.getElementById('currentAddressDisplay');
+    const addressChangeSection = document.getElementById('editCustomAddressChangeSection');
+    const currentAddressDisplay = document.getElementById('editCustomCurrentAddressDisplay');
     
     if (addressChangeSection.classList.contains('hidden')) {
         // Show the address change section
@@ -4627,8 +4627,8 @@ function toggleCustomAddressChange() {
 
 // Function to cancel custom address change
 function cancelCustomAddressChange() {
-    const addressChangeSection = document.getElementById('customAddressChangeSection');
-    const currentAddressDisplay = document.getElementById('currentAddressDisplay');
+    const addressChangeSection = document.getElementById('editCustomAddressChangeSection');
+    const currentAddressDisplay = document.getElementById('editCustomCurrentAddressDisplay');
     
     // Hide the address change section
     addressChangeSection.classList.add('hidden');
@@ -4645,7 +4645,6 @@ function cancelCustomAddressChange() {
 }
 
 </script>
-
 
 </body> 
 </html>
