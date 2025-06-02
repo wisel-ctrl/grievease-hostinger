@@ -1322,9 +1322,7 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
                 </td>
                 <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['date_of_burial']); ?></td>
                 <td class="px-4 py-3.5 text-sm text-sidebar-text">
-                  <button onclick="viewCustomServiceDetails(<?php echo $row['customsales_id']; ?>)" class="text-sidebar-accent hover:text-darkgold transition-colors">
-                    <i class="fas fa-eye"></i> View Details
-                  </button>
+                  <?php echo htmlspecialchars($row['branch_name']); ?>
                 </td>
                 <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱<?php echo number_format($row['balance'], 2); ?></td>
                 <td class="px-4 py-3.5 text-sm">
