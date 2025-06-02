@@ -2960,6 +2960,7 @@ function saveServiceChanges() {
   if (data.success) {
     alert('Service updated successfully!');
     closeEditServiceModal();
+    cancelAddressChange();
   } else {
     alert('Error: ' + data.message);
   }
