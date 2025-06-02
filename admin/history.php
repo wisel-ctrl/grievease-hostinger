@@ -4544,12 +4544,12 @@ function openEditCustomServiceModal(serviceId) {
                 document.getElementById('editCustomFullName').value = 
                     `${data.fname || ''} ${data.mname || ''} ${data.lname || ''} ${data.suffix || ''}`.trim();
                 document.getElementById('editCustomEmail').value = data.email || '';
-                document.getElementById('editCustomPhone').value = data.phone || '';
+                document.getElementById('editCustomPhone').value = data.phone_number || '';
                 
                 // Service details
-                document.getElementById('editCustomCasket').value = data.casket || '';
-                document.getElementById('editCustomFlowerArrangement').value = data.flower_arrangement || '';
-                document.getElementById('editCustomAdditionalServices').value = data.additional_services || '';
+                document.getElementById('editCustomCasket').value = data.casket_name || '';
+                document.getElementById('editCustomFlowerArrangement').value = data.flower_design || '';
+                document.getElementById('editCustomAdditionalServices').value = data.inclusion || '';
                 document.getElementById('editCustomServicePrice').value = data.discounted_price || '';
                 
                 // Deceased information
