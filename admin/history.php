@@ -2877,10 +2877,12 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
                 <div>
                   <label class="block text-xs font-medium text-gray-500 mb-1">Zip Code</label>
                   <input 
-                    type="text" 
+                    type="number" 
                     id="editCustomZipCodeInput" 
                     class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
                     placeholder="Zip Code"
+                    inputmode="numeric"
+                    pattern="[0-9]*"
                   >
                 </div>
               </div>
