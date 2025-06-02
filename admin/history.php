@@ -4420,7 +4420,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Function to open the Edit Custom Service Modal
-function openEditCustomModal(serviceId) {
+function openEditCustomServiceModal(serviceId) {
     loadRegions();
     fetch(`../employee/historyAPI/get_custom_service_details.php?customsales_id=${serviceId}`)
         .then(response => response.json())
