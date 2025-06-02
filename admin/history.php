@@ -4613,9 +4613,7 @@ function toggleCustomAddressChange() {
     if (addressChangeSection.classList.contains('hidden')) {
         // Show the address change section
         addressChangeSection.classList.remove('hidden');
-        // Hide the current address display
-        currentAddressDisplay.classList.add('hidden');
-        // Load regions when showing the address change section
+        
         loadRegions();
     } else {
         // Hide the address change section
@@ -4636,12 +4634,12 @@ function cancelCustomAddressChange() {
     currentAddressDisplay.classList.remove('hidden');
     
     // Reset the dropdowns to their default state
-    document.getElementById('customRegionSelect').value = '';
-    document.getElementById('customProvinceSelect').value = '';
-    document.getElementById('customCitySelect').value = '';
-    document.getElementById('customBarangaySelect').value = '';
-    document.getElementById('customStreetInput').value = '';
-    document.getElementById('customZipcodeInput').value = '';
+    document.getElementById('editCustomRegionSelect').value = '';
+    document.getElementById('editCustomProvinceSelect').value = '';
+    document.getElementById('editCustomCitySelect').value = '';
+    document.getElementById('editCustomBarangaySelect').value = '';
+    document.getElementById('editCustomStreetInput').value = '';
+    document.getElementById('editCustomZipCodeInput').value = '';
 }
 
 </script>
