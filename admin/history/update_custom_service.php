@@ -83,8 +83,17 @@ try {
             $row = $result->fetch_assoc();
             $oldFile = $row['death_cert_image'] ?? null;
 
-            if ($oldFile && file_exists($deathCertUploadPath . $oldFile)) {
-                unlink($deathCertUploadPath . $oldFile);
+            if ($oldFile) {
+                // Remove "uploads/" prefix if it exists
+                $fileNameOnly = str_replace('uploads/', '', $oldFile);
+
+                // Build full file path
+                $fullPath = $deathCertUploadPath . $fileNameOnly;
+
+                // Delete the file if it exists
+                if (file_exists($fullPath)) {
+                    unlink($fullPath);
+                }
             }
         } else {
             throw new Exception('Failed to upload file');
