@@ -38,7 +38,7 @@ try {
     // $inclusion = trim($_POST['editCustomAdditionalServices'] ?? '');
     if (isset($POST['editCustomAdditionalServices'])) {
         // Convert textarea input (newline separated) to JSON array
-        $inclusions = explode("\n", $data['editCustomAdditionalServices']);
+        $inclusions = explode("\n", $POST['editCustomAdditionalServices']);
         $inclusions = array_map('trim', $inclusions);
         $inclusions = array_filter($inclusions);
     }
