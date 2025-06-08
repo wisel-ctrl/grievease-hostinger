@@ -35,7 +35,13 @@ try {
     $date_of_death = $_POST['editCustomDeathDate'] ?? null;
     $date_of_burial = $_POST['editCustomBurialDate'] ?? null;
     $flower_design = trim($_POST['editCustomFlowerArrangement'] ?? '');
-    $inclusion = trim($_POST['editCustomAdditionalServices'] ?? '');
+    // $inclusion = trim($_POST['editCustomAdditionalServices'] ?? '');
+    if (isset($POST['editCustomAdditionalServices'])) {
+        // Convert textarea input (newline separated) to JSON array
+        $inclusions = explode("\n", $data['editCustomAdditionalServices']);
+        $inclusions = array_map('trim', $inclusions);
+        $inclusions = array_filter($inclusions);
+    }
     $discounted_price = floatval($_POST['editCustomServicePrice'] ?? 0);
     $with_cremate = isset($_POST['editCustomWithCremation']) ? 'yes' : 'no';
 
