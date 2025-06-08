@@ -4645,14 +4645,14 @@ function openEditCustomServiceModal(serviceId) {
           console.log("Fetched data:", data);
             if (data.success) {
                 document.getElementById('customSalesId').value = data.customsales_id;
-                document.getElementById('selectedCustomCustomerId').value = data.customer_id;
+                document.getElementById('selectedCustomCustomerId').value = data.customerID;
                 console.log("customer finds: ",customers);
 
                 // Set customer information if exists
-                if (data.customer_id) {
-                    const customer = customers.find(c => c.id == data.customer_id);
+                if (data.customerID) {
+                    const customer = customers.find(c => c.id == data.customerID);
                     console.log("Matched customer:", customer); 
-                    console.log(typeof c.id, c.id, typeof data.customer_id, data.customer_id);
+                    console.log(typeof c.id, c.id, typeof data.customerID, data.customerID);
 
                     if (customer) {
                         document.getElementById('customCustomerSearch').value = customer.full_name;
