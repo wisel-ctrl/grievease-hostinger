@@ -4640,6 +4640,7 @@ function openEditCustomServiceModal(serviceId) {
                 // Set customer information if exists
                 if (data.customer_id) {
                     const customer = customers.find(c => c.id == data.customer_id);
+                    console.log("customer finds: ",customer);
                     if (customer) {
                         document.getElementById('customCustomerSearch').value = customer.full_name;
                         document.getElementById('selectedCustomCustomerId').value = customer.id;
