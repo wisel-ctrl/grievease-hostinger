@@ -2643,8 +2643,9 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
                 type="text" 
                 id="editCustomCasket" 
                 name="editCustomCasket"
-                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
                 placeholder="Enter Casket Details"
+                readonly
               >
             </div>
             
@@ -4742,55 +4743,139 @@ function closeEditCustomModal() {
     toggleBodyScroll(false);
 }
 
-document.getElementById('editCustomServiceForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    // Show loading indicator
-    const submitBtn = this.querySelector('button[type="submit"]');
-    const originalBtnText = submitBtn.innerHTML;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-    submitBtn.disabled = true;
-    
-    const formData = new FormData(this);
-    
-    for (let [key, value] of formData.entries()) {
-    console.log(key, value);
+// Date validation functions
+function validateDates() {
+  const birthDate = new Date(document.getElementById('editCustomBirthDate').value);
+  const deathDate = new Date(document.getElementById('editCustomDeathDate').value);
+  const burialDate = new Date(document.getElementById('editCustomBurialDate').value);
+  const today = new Date();
+  
+  // Validate birth date (can't be in future)
+  if (birthDate > today) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Invalid Birth Date',
+      text: 'Birth date cannot be in the future',
+    });
+    return false;
+  }
+  
+  // Validate death date (must be after birth date)
+  if (deathDate < birthDate) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Invalid Death Date',
+      text: 'Death date cannot be before birth date',
+    });
+    return false;
+  }
+  
+  // Validate burial date (must be after death date)
+  if (burialDate < deathDate) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Invalid Burial Date',
+      text: 'Burial date cannot be before death date',
+    });
+    return false;
+  }
+  
+  return true;
 }
 
-    fetch('history/update_custom_service.php', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return response.json();
-    })
-    .then(data => {
-        if (data.success) {
-            // Show success notification
-            showNotification('success', 'Service updated successfully');
-            closeEditCustomModal();
-            
-            // Refresh the page or update the table as needed
-            setTimeout(() => {
-                location.reload();
-            }, 1500);
-        } else {
-            throw new Error(data.message || 'Failed to update service');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showNotification('error', error.message || 'An error occurred while updating the service');
-    })
-    .finally(() => {
-        // Restore button state
-        submitBtn.innerHTML = originalBtnText;
-        submitBtn.disabled = false;
+// Price validation function
+function validatePrice() {
+  const price = parseFloat(document.getElementById('editCustomServicePrice').value);
+  
+  if (price <= 0 || isNaN(price)) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Invalid Price',
+      text: 'Price must be a positive number',
     });
+    return false;
+  }
+  
+  return true;
+}
+
+// Form submission handler with validations
+document.getElementById('editCustomServiceForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  
+  // Validate price first
+  if (!validatePrice()) {
+    return;
+  }
+  
+  // Validate dates
+  if (!validateDates()) {
+    return;
+  }
+  
+  const submitBtn = this.querySelector('button[type="submit"]');
+  const originalBtnText = submitBtn.innerHTML;
+  submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+  submitBtn.disabled = true;
+  
+  const formData = new FormData(this);
+  
+  fetch('history/update_custom_service.php', {
+    method: 'POST',
+    body: formData
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+  .then(data => {
+    if (data.success) {
+      Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: 'Service updated successfully',
+        timer: 1500,
+        showConfirmButton: false
+      }).then(() => {
+        closeEditCustomModal();
+        location.reload();
+      });
+    } else {
+      throw new Error(data.message || 'Failed to update service');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: error.message || 'An error occurred while updating the service',
+    });
+  })
+  .finally(() => {
+    submitBtn.innerHTML = originalBtnText;
+    submitBtn.disabled = false;
+  });
 });
+
+// Real-time validation for price field
+document.getElementById('editCustomServicePrice').addEventListener('input', function() {
+  const submitBtn = document.querySelector('#editCustomServiceForm button[type="submit"]');
+  const price = parseFloat(this.value);
+  
+  if (price <= 0 || isNaN(price)) {
+    submitBtn.disabled = true;
+  } else {
+    submitBtn.disabled = false;
+  }
+});
+
+// Date change event listeners for real-time validation
+document.getElementById('editCustomBirthDate').addEventListener('change', validateDates);
+document.getElementById('editCustomDeathDate').addEventListener('change', validateDates);
+document.getElementById('editCustomBurialDate').addEventListener('change', validateDates);
 
 // Helper function to show notifications
 function showNotification(type, message) {
