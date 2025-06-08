@@ -126,6 +126,7 @@ try {
 
     $stmt = $conn->prepare($sql);
 
+    // Start with base types (12 parameters)
     $types = "sssssssssdss";
     $params = [
         $fname_deceased,
@@ -142,11 +143,14 @@ try {
         $with_cremate,
     ];
 
+    // Add death cert image if exists
     if ($death_cert_image !== null) {
-        $types = "sssssssssdsss";
+        $types .= "s"; // Add one more string type
         $params[] = $death_cert_image;
     }
 
+    // Always add the two ID parameters at the end
+    $types .= "ii"; // customsales_id and customer_id are integers
     $params[] = $customsales_id;
     $params[] = $customer_id;
 
