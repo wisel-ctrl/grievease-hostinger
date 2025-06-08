@@ -38,9 +38,9 @@ try {
     // $inclusion = trim($_POST['editCustomAdditionalServices'] ?? '');
     if (isset($_POST['editCustomAdditionalServices'])) {
         // Convert textarea input (newline separated) to JSON array
-        $inclusions = explode("\n", $_POST['editCustomAdditionalServices']);
-        $inclusions = array_map('trim', $inclusions);
-        $inclusions = array_filter($inclusions);
+        $inclusion = explode("\n", $_POST['editCustomAdditionalServices']);
+        $inclusion = array_map('trim', $inclusion);
+        $inclusion = array_filter($inclusion);
     }
     $discounted_price = floatval($_POST['editCustomServicePrice'] ?? 0);
     $with_cremate = isset($_POST['editCustomWithCremation']) ? 'yes' : 'no';
