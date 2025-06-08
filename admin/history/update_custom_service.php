@@ -34,7 +34,7 @@ try {
     $flower_design = trim($_POST['editCustomFlowerArrangement'] ?? '');
     $inclusion = trim($_POST['editCustomAdditionalServices'] ?? '');
     $discounted_price = floatval($_POST['editCustomServicePrice'] ?? 0);
-    $with_cremate = isset($_POST['editCustomWithCremation']) ? 1 : 0;
+    $with_cremate = isset($_POST['editCustomWithCremation']) ? 'yes' : 'no';
 
     // Handle address
     $deceased_address = '';
@@ -114,7 +114,7 @@ try {
 
     $stmt = $conn->prepare($sql);
 
-    $types = "ssssssssdssii";
+    $types = "sssssssssdss";
     $params = [
         $fname_deceased,
         $mname_deceased,
@@ -131,7 +131,7 @@ try {
     ];
 
     if ($death_cert_image !== null) {
-        $types = "ssssssssdsssii";
+        $types = "sssssssssdsss";
         $params[] = $death_cert_image;
     }
 
