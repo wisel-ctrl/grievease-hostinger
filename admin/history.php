@@ -4554,6 +4554,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Function to handle customer search in custom modal
 function setupCustomCustomerSearch() {
+  console.log("setupCustomCustomerSearch called");
   const customerSearch = document.getElementById('customCustomerSearch');
   const customerResults = document.getElementById('customCustomerResults');
   
