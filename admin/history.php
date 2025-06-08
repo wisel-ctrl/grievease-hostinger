@@ -2812,6 +2812,7 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
               <input 
                 type="text" 
                 id="editCustomCurrentAddressDisplay" 
+                name="editCustomCurrentAddressDisplay"
                 class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
                 readonly
               >
