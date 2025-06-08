@@ -2687,6 +2687,18 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
                 placeholder="Enter Additional Services"
               >
             </div>
+
+            <div class="form-group flex items-center">
+              <input 
+                type="checkbox" 
+                id="editCustomWithCremation" 
+                name="editCustomWithCremation"
+                class="h-4 w-4 text-sidebar-accent focus:ring-sidebar-accent border-gray-300 rounded"
+              >
+              <label class="ml-2 block text-xs font-medium text-gray-700">
+                With Cremation
+              </label>
+            </div>
             
             <div class="form-group">
               <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
@@ -4664,6 +4676,7 @@ function openEditCustomServiceModal(serviceId) {
                 document.getElementById('editCustomCasket').value = data.casket_name || '';
                 document.getElementById('editCustomFlowerArrangement').value = data.flower_design || '';
                 document.getElementById('editCustomAdditionalServices').value = data.inclusion || '';
+                document.getElementById('editCustomWithCremation').checked = data.with_cremate === 'yes';
                 document.getElementById('editCustomServicePrice').value = data.discounted_price || '';
                 
                 // Deceased information
