@@ -2579,6 +2579,24 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
             Customer Information
           </h4>
           
+          <div class="form-group mb-4">
+            <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              Search Customer
+            </label>
+            <div class="relative">
+              <input 
+                type="text" 
+                id="customCustomerSearch" 
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                placeholder="Type customer name..."
+                autocomplete="off"
+              >
+              <div id="customCustomerResults" class="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto hidden">
+                <!-- Results will appear here -->
+              </div>
+            </div>
+          </div>
+
           <!-- Full Name -->
           <div class="form-group mb-4">
             <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
@@ -4534,6 +4552,81 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+// Function to handle customer search in custom modal
+function setupCustomCustomerSearch() {
+  const customerSearch = document.getElementById('customCustomerSearch');
+  const customerResults = document.getElementById('customCustomerResults');
+  
+  if (!customerSearch || !customerResults) return;
+  
+  customerSearch.addEventListener('input', function(e) {
+    const searchTerm = e.target.value.toLowerCase();
+    
+    if (searchTerm.length < 2) {
+      customerResults.classList.add('hidden');
+      return;
+    }
+
+    const filteredCustomers = customers.filter(customer => 
+      customer.full_name.toLowerCase().includes(searchTerm)
+    ).slice(0, 10); // Limit to 10 results
+
+    if (filteredCustomers.length > 0) {
+      customerResults.innerHTML = filteredCustomers.map(customer => `
+        <div class="cursor-default select-none relative py-2 pl-3 pr-9 hover:bg-gray-100" 
+             data-id="${customer.id}" 
+             onclick="selectCustomCustomer(this, '${customer.id}', '${customer.full_name.replace(/'/g, "\\'")}')">
+          ${customer.full_name}
+        </div>
+      `).join('');
+      customerResults.classList.remove('hidden');
+    } else {
+      customerResults.innerHTML = '<div class="py-2 pl-3 pr-9 text-gray-500">No customers found</div>';
+      customerResults.classList.remove('hidden');
+    }
+  });
+  
+  // Close dropdown when clicking outside
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('#customCustomerSearch') && !e.target.closest('#customCustomerResults')) {
+      customerResults.classList.add('hidden');
+    }
+  });
+}
+
+// Function to select a customer in custom modal
+function selectCustomCustomer(element, id, fullName) {
+  document.getElementById('customCustomerSearch').value = fullName;
+  document.getElementById('selectedCustomCustomerId').value = id;
+  document.getElementById('customCustomerResults').classList.add('hidden');
+  
+  // Fetch customer details and populate the form
+  fetchCustomerDetails(id);
+}
+
+// Function to fetch customer details and populate the form
+function fetchCustomerDetails(customerId) {
+  fetch(`history/get_customer_details.php?id=${customerId}`)
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        document.getElementById('editCustomFullName').value = data.full_name || '';
+        document.getElementById('editCustomEmail').value = data.email || '';
+        document.getElementById('editCustomPhone').value = data.phone || '';
+      } else {
+        console.error('Failed to fetch customer details:', data.message);
+      }
+    })
+    .catch(error => {
+      console.error('Error fetching customer details:', error);
+    });
+}
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+  setupCustomCustomerSearch();
+});
+
 // Function to open the Edit Custom Service Modal
 function openEditCustomServiceModal(serviceId) {
     loadRegions();
@@ -4541,7 +4634,18 @@ function openEditCustomServiceModal(serviceId) {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                document.getElementById('customSalesId').value = data.customsales_id;
+                // Set customer information if exists
+                if (data.customer_id) {
+                    const customer = customers.find(c => c.id == data.customer_id);
+                    if (customer) {
+                        document.getElementById('customCustomerSearch').value = customer.full_name;
+                        document.getElementById('selectedCustomCustomerId').value = customer.id;
+                    }
+                } else {
+                    document.getElementById('customCustomerSearch').value = '';
+                    document.getElementById('selectedCustomCustomerId').value = '';
+                }
+                
                 // Combined full name for customer
                 document.getElementById('editCustomFullName').value = 
                     `${data.fname || ''} ${data.mname || ''} ${data.lname || ''} ${data.suffix || ''}`.trim();
