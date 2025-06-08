@@ -36,9 +36,9 @@ try {
     $date_of_burial = $_POST['editCustomBurialDate'] ?? null;
     $flower_design = trim($_POST['editCustomFlowerArrangement'] ?? '');
     // $inclusion = trim($_POST['editCustomAdditionalServices'] ?? '');
-    if (isset($POST['editCustomAdditionalServices'])) {
+    if (isset($_POST['editCustomAdditionalServices'])) {
         // Convert textarea input (newline separated) to JSON array
-        $inclusions = explode("\n", $POST['editCustomAdditionalServices']);
+        $inclusions = explode("\n", $_POST['editCustomAdditionalServices']);
         $inclusions = array_map('trim', $inclusions);
         $inclusions = array_filter($inclusions);
     }
