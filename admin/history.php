@@ -4580,9 +4580,11 @@ function setupCustomCustomerSearch() {
         </div>
       `).join('');
       customerResults.classList.remove('hidden');
+      console.log("success");
     } else {
       customerResults.innerHTML = '<div class="py-2 pl-3 pr-9 text-gray-500">No customers found</div>';
       customerResults.classList.remove('hidden');
+      console.log("not found");
     }
   });
   
