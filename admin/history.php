@@ -4625,6 +4625,7 @@ function fetchCustomerDetails(customerId) {
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
   setupCustomCustomerSearch();
+  console.log("new function called");
 });
 
 // Function to open the Edit Custom Service Modal
