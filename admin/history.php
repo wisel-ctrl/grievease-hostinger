@@ -4652,7 +4652,7 @@ function openEditCustomServiceModal(serviceId) {
                 if (data.customerID) {
                     const customer = customers.find(c => c.id == data.customerID);
                     console.log("Matched customer:", customer); 
-                    console.log(typeof c.id, c.id, typeof data.customerID, data.customerID);
+                    
 
                     if (customer) {
                         document.getElementById('customCustomerSearch').value = customer.full_name;
