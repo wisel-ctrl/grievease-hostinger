@@ -37,10 +37,12 @@ try {
     $flower_design = trim($_POST['editCustomFlowerArrangement'] ?? '');
     // $inclusion = trim($_POST['editCustomAdditionalServices'] ?? '');
     if (isset($_POST['editCustomAdditionalServices'])) {
-        // Convert textarea input (newline separated) to JSON array
-        $inclusion = explode("\n", $_POST['editCustomAdditionalServices']);
-        $inclusion = array_map('trim', $inclusion);
-        $inclusion = array_filter($inclusion);
+        $inclusionArr = explode("\n", $_POST['editCustomAdditionalServices']);
+        $inclusionArr = array_map('trim', $inclusionArr);
+        $inclusionArr = array_filter($inclusionArr);
+        $inclusion = json_encode(array_values($inclusionArr));  // Convert array to JSON string
+    } else {
+        $inclusion = '';  // default empty string if not provided
     }
     $discounted_price = floatval($_POST['editCustomServicePrice'] ?? 0);
     $with_cremate = isset($_POST['editCustomWithCremation']) ? 'yes' : 'no';
