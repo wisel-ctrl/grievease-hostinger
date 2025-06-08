@@ -2935,6 +2935,12 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
             <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
               Death Certificate
             </label>
+            
+            <!-- Preview container -->
+            <div id="deathCertPreviewContainer" class="mb-2 hidden">
+              <img id="deathCertPreview" src="" alt="Death Certificate Preview" class="max-w-full h-auto max-h-48 border border-gray-300 rounded-lg">
+            </div>
+            
             <input 
               type="file" 
               id="editCustomDeathCertificate" 
@@ -4665,6 +4671,18 @@ function openEditCustomServiceModal(serviceId) {
                     document.getElementById('customCustomerSearch').value = '';
                     document.getElementById('selectedCustomCustomerId').value = '';
                 }
+
+                const previewContainer = document.getElementById('deathCertPreviewContainer');
+                const previewImg = document.getElementById('deathCertPreview');
+                
+                if (data.death_cert_image) {
+                    // Construct the correct path to the image
+                    const imagePath = `../customer/bookings/${data.death_cert_image}`;
+                    previewImg.src = imagePath;
+                    previewContainer.classList.remove('hidden');
+                } else {
+                    previewContainer.classList.add('hidden');
+                }
                 
                 // Combined full name for customer
                 document.getElementById('editCustomFullName').value = 
@@ -4703,6 +4721,31 @@ function openEditCustomServiceModal(serviceId) {
             alert('An error occurred while fetching service details');
         });
 }
+
+document.getElementById('editCustomDeathCertificate').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    const previewContainer = document.getElementById('deathCertPreviewContainer');
+    const previewImg = document.getElementById('deathCertPreview');
+    
+    if (file) {
+        if (file.type.match('image.*')) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                previewContainer.classList.remove('hidden');
+            };
+            
+            reader.readAsDataURL(file);
+        } else {
+            // Handle PDF or other file types differently
+            previewContainer.classList.add('hidden');
+            // You might want to show a PDF icon or some indication
+        }
+    } else {
+        previewContainer.classList.add('hidden');
+    }
+});
 
 // Function to close the Edit Custom Service Modal
 function closeEditCustomModal() {
