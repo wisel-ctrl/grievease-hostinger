@@ -2572,6 +2572,7 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
     <div class="px-4 sm:px-6 py-4 sm:py-5 overflow-y-auto modal-scroll-container">
       <form id="editCustomServiceForm" class="space-y-3 sm:space-y-6">
         <input type="hidden" id="customSalesId" name="customsales_id">
+        <input type="hidden" id="selectedCustomCustomerId" name="customer_id">
         
         <!-- Customer Information Section -->
         <div class="pb-4 border-b border-gray-200">
