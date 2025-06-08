@@ -2596,21 +2596,7 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
                 <!-- Results will appear here -->
               </div>
             </div>
-          </div>
-
-          <!-- Full Name -->
-          <div class="form-group mb-4">
-            <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              Full Name
-            </label>
-            <input 
-              type="text" 
-              id="editCustomFullName" 
-              name="editCustomFullName"
-              class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-              placeholder="Enter Full Name"
-            >
-          </div>
+          </div>         
           
           <!-- Email and Phone -->
           <div class="grid grid-cols-2 gap-4 mb-4">
@@ -4632,7 +4618,7 @@ function fetchCustomerDetails(customerId) {
     .then(response => response.json())
     .then(data => {
       if (data.success) {
-        document.getElementById('editCustomFullName').value = data.full_name || '';
+        // Removed setting full name field
         document.getElementById('editCustomEmail').value = data.email || '';
         document.getElementById('editCustomPhone').value = data.phone || '';
       } else {
@@ -4677,7 +4663,6 @@ function openEditCustomServiceModal(serviceId) {
                 const previewImg = document.getElementById('deathCertPreview');
                 
                 if (data.death_cert_image) {
-                    // Construct the correct path to the image
                     const imagePath = `../customer/booking/${data.death_cert_image}`;
                     previewImg.src = imagePath;
                     previewContainer.classList.remove('hidden');
@@ -4685,9 +4670,7 @@ function openEditCustomServiceModal(serviceId) {
                     previewContainer.classList.add('hidden');
                 }
                 
-                // Combined full name for customer
-                document.getElementById('editCustomFullName').value = 
-                    `${data.fname || ''} ${data.mname || ''} ${data.lname || ''} ${data.suffix || ''}`.trim();
+                // Removed setting the combined full name for customer
                 document.getElementById('editCustomEmail').value = data.email || '';
                 document.getElementById('editCustomPhone').value = data.phone_number || '';
                 
