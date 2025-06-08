@@ -4755,26 +4755,65 @@ function closeEditCustomModal() {
 
 document.getElementById('editCustomServiceForm').addEventListener('submit', function(e) {
     e.preventDefault();
+    
+    // Show loading indicator
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalBtnText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+    submitBtn.disabled = true;
+    
     const formData = new FormData(this);
+    
     fetch('history/update_custom_service.php', {
         method: 'POST',
         body: formData
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
     .then(data => {
         if (data.success) {
-            alert('Service updated successfully');
+            // Show success notification
+            showNotification('success', 'Service updated successfully');
             closeEditCustomModal();
-            location.reload();
+            
+            // Refresh the page or update the table as needed
+            setTimeout(() => {
+                location.reload();
+            }, 1500);
         } else {
-            alert('Failed to update service: ' + data.message);
+            throw new Error(data.message || 'Failed to update service');
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('An error occurred while updating the service');
+        showNotification('error', error.message || 'An error occurred while updating the service');
+    })
+    .finally(() => {
+        // Restore button state
+        submitBtn.innerHTML = originalBtnText;
+        submitBtn.disabled = false;
     });
 });
+
+// Helper function to show notifications
+function showNotification(type, message) {
+    // You can implement your own notification system here
+    // For example using Toastr, SweetAlert, or a custom div
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 px-4 py-2 rounded-md shadow-md text-white ${
+        type === 'success' ? 'bg-green-500' : 'bg-red-500'
+    }`;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.remove();
+    }, 5000);
+}
 
 function toggleCustomAddressChange() {
     const addressChangeSection = document.getElementById('editCustomAddressChangeSection');
