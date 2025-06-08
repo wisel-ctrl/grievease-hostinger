@@ -4683,7 +4683,7 @@ function openEditCustomServiceModal(serviceId) {
                 // Service details
                 document.getElementById('editCustomCasket').value = data.casket_name || '';
                 document.getElementById('editCustomFlowerArrangement').value = data.flower_design || '';
-                document.getElementById('editCustomAdditionalServices').value = data.inclusion || '';
+                document.getElementById('editCustomAdditionalServices').value = data.inclusion.join(', ') || '';
                 document.getElementById('editCustomWithCremation').checked = data.with_cremate === 'yes';
                 document.getElementById('editCustomServicePrice').value = data.discounted_price || '';
                 
