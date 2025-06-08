@@ -60,7 +60,7 @@ try {
     if (isset($_FILES['editCustomDeathCertificate']) && $_FILES['editCustomDeathCertificate']['error'] === UPLOAD_ERR_OK) {
         $file = $_FILES['editCustomDeathCertificate'];
         $fileExt = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-        $fileName = 'uploads/'.uniqid('death_cert_', true) . '.' . $fileExt;
+        $fileName = uniqid('death_cert_', true) . '.' . $fileExt;
         $targetPath = $deathCertUploadPath . $fileName;
 
         // Check file type
@@ -75,7 +75,7 @@ try {
 
         // Move uploaded file
         if (move_uploaded_file($file['tmp_name'], $targetPath)) {
-            $death_cert_image = $fileName;
+            $death_cert_image = 'uploads/'.$fileName;
 
             // Delete old file if exists
             $sql = "SELECT death_cert_image FROM customsales_tb WHERE customsales_id = ?";
