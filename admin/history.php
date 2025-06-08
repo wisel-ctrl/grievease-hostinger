@@ -4677,7 +4677,7 @@ function openEditCustomServiceModal(serviceId) {
                 
                 if (data.death_cert_image) {
                     // Construct the correct path to the image
-                    const imagePath = `../customer/bookings/${data.death_cert_image}`;
+                    const imagePath = `../customer/booking/${data.death_cert_image}`;
                     previewImg.src = imagePath;
                     previewContainer.classList.remove('hidden');
                 } else {
