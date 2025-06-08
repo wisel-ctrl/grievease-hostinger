@@ -6,7 +6,7 @@ $response = ['success' => false, 'message' => ''];
 // Define upload settings
 $allowedDeathCertTypes = ['jpg', 'jpeg', 'png', 'pdf'];
 $maxDeathCertSize = 500 * 1024 * 1024; // 500MB
-$deathCertUploadPath = '../../customer/booking/';
+$deathCertUploadPath = '../../customer/booking/uploads/';
 
 try {
     // Check if the request is POST
