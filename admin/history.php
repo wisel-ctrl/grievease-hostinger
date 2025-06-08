@@ -4658,6 +4658,7 @@ function openEditCustomServiceModal(serviceId) {
         .then(data => {
             if (data.success) {
                 document.getElementById('customSalesId').value = data.customsales_id;
+                document.getElementById('selectedCustomCustomerId').value = data.customer_id;
 
                 // Set customer information if exists
                 if (data.customer_id) {
