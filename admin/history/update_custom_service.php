@@ -60,7 +60,7 @@ try {
     if (isset($_FILES['editCustomDeathCertificate']) && $_FILES['editCustomDeathCertificate']['error'] === UPLOAD_ERR_OK) {
         $file = $_FILES['editCustomDeathCertificate'];
         $fileExt = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-        $fileName = uniqid('death_cert_', true) . '.' . $fileExt;
+        $fileName = 'uploads/'.uniqid('death_cert_', true) . '.' . $fileExt;
         $targetPath = $deathCertUploadPath . $fileName;
 
         // Check file type
