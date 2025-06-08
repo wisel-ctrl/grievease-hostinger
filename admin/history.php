@@ -4642,6 +4642,7 @@ function openEditCustomServiceModal(serviceId) {
     fetch(`../employee/historyAPI/get_custom_service_details.php?customsales_id=${serviceId}`)
         .then(response => response.json())
         .then(data => {
+          console.log("Fetched data:", data);
             if (data.success) {
                 document.getElementById('customSalesId').value = data.customsales_id;
                 document.getElementById('selectedCustomCustomerId').value = data.customer_id;
@@ -4650,7 +4651,9 @@ function openEditCustomServiceModal(serviceId) {
                 // Set customer information if exists
                 if (data.customer_id) {
                     const customer = customers.find(c => c.id == data.customer_id);
-                    console.log("customer finds: ",customer);
+                    console.log("Matched customer:", customer); 
+                    console.log(typeof c.id, c.id, typeof data.customer_id, data.customer_id);
+
                     if (customer) {
                         document.getElementById('customCustomerSearch').value = customer.full_name;
                         document.getElementById('selectedCustomCustomerId').value = customer.id;
