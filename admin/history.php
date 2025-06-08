@@ -4765,6 +4765,10 @@ document.getElementById('editCustomServiceForm').addEventListener('submit', func
     
     const formData = new FormData(this);
     
+    for (let [key, value] of formData.entries()) {
+    console.log(key, value);
+}
+
     fetch('history/update_custom_service.php', {
         method: 'POST',
         body: formData
