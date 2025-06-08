@@ -4634,6 +4634,8 @@ function openEditCustomServiceModal(serviceId) {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
+                document.getElementById('customSalesId').value = data.customsales_id;
+
                 // Set customer information if exists
                 if (data.customer_id) {
                     const customer = customers.find(c => c.id == data.customer_id);
