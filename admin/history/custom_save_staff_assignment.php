@@ -2,6 +2,9 @@
 ini_set('display_errors', 0);
 error_reporting(E_ALL);
 
+date_default_timezone_set('Asia/Manila');
+$current_datetime = date('Y-m-d H:i:s');
+
 function exception_error_handler($severity, $message, $file, $line) {
     error_log("Error: $message in $file on line $line");
     return true;
@@ -36,7 +39,7 @@ try {
     // Use a single prepared statement and execute multiple times
     $stmt = $conn->prepare("INSERT INTO employee_service_payments 
                            (sales_id, employeeID, service_stage, income, notes, sales_type, payment_date) 
-                           VALUES (?, ?, ?, ?, ?, ?,NOW())");
+                           VALUES (?, ?, ?, ?, ?, ?, ?)");
     
     if ($stmt === false) {
         throw new Exception('Failed to prepare SQL statement: ' . $conn->error);
@@ -52,13 +55,14 @@ try {
         $notes = $data['notes'] ?? '';
         $service_type = 'custom';
         
-        $stmt->bind_param("iisdss", 
+        $stmt->bind_param("iisdsss", 
             $data['customsales_id'],
             $staff['employee_id'],
             $service_stage,
             $staff['salary'],
+            $notes,
             $service_type,
-            $notes
+            $current_datetime
         );
         
         if ($stmt->execute()) {
