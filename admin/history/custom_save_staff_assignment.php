@@ -34,8 +34,8 @@ try {
     $conn->begin_transaction();
 
     // Use a single prepared statement and execute multiple times
-    $stmt = $conn->prepare("INSERT INTO employee_custom_service_payments 
-                           (sales_id, employeeID, service_stage, income, notes, service_type,payment_date) 
+    $stmt = $conn->prepare("INSERT INTO employee_service_payments 
+                           (sales_id, employeeID, service_stage, income, notes, service_type, payment_date) 
                            VALUES (?, ?, ?, ?, ?, ?,NOW())");
     
     if ($stmt === false) {
