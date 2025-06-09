@@ -2962,6 +2962,114 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
     </div>
   </div>
 </div>
+
+<div id="assignCustomStaffModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] flex flex-col">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeAssignCustomStaffModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <!-- Modal Header -->
+    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
+        Assign Staff to Custom Service
+      </h3>
+    </div>
+    
+    <!-- Modal Body -->
+    <div class="px-4 sm:px-6 py-4 sm:py-5 overflow-y-auto modal-scroll-container">
+      <form id="assignCustomStaffForm" class="space-y-3 sm:space-y-4">
+        <input type="hidden" id="assignCustomServiceId">
+        
+        <?php
+        // This will be populated by JavaScript when the modal opens
+        $branch_id = 0;
+        
+        // Function to generate employee checkboxes by position
+        function generateCustomEmployeeCheckboxes($position, $employees) {
+            $positionLower = strtolower($position);
+            $icon = '';
+            $iconClass = 'mr-2 text-sidebar-accent';
+            
+            if ($positionLower === 'embalmer') {
+                $icon = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="'.$iconClass.'"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>';
+            } elseif ($positionLower === 'driver') {
+                $icon = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="'.$iconClass.'"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>';
+            } else {
+                $icon = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="'.$iconClass.'"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>';
+            }
+            
+            echo '<div class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200 mb-4">';
+            echo '<h4 class="text-sm sm:text-lg font-bold mb-3 sm:mb-4 text-gray-700 flex items-center">';
+            echo $icon . ucfirst($positionLower) . 's';
+            echo '</h4>';
+            echo '<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">';
+            
+            if (!empty($employees)) {
+                $count = 1;
+                foreach ($employees as $employee) {
+                    $fullName = htmlspecialchars($employee['fname'] . ' ' . $employee['mname'] . ' ' . $employee['lname']);
+                    $employeeId = htmlspecialchars($employee['employee_id']);
+                    
+                    echo '<div class="flex items-center">';
+                    echo '<input type="checkbox" id="custom'.$positionLower.$count.'" name="assigned_custom_staff[]" value="'.$employeeId.'" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">';
+                    echo '<label for="custom'.$positionLower.$count.'" class="text-gray-700">'.$fullName.'</label>';
+                    echo '</div>';
+                    
+                    $count++;
+                }
+            } else {
+                echo '<p class="text-gray-500 col-span-2">No '.$positionLower.'s available</p>';
+            }
+            
+            echo '</div></div>';
+        }
+        
+        // These sections will be populated via AJAX when the modal opens
+        ?>
+        
+        <!-- Changed to a single column layout with consistent spacing -->
+        <div class="space-y-3 sm:space-y-4">
+          <div id="customEmbalmersSection" class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
+            <!-- Embalmers will be loaded here -->
+          </div>
+          
+          <div id="customDriversSection" class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
+            <!-- Drivers will be loaded here -->
+          </div>
+          
+          <div id="customPersonnelSection" class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
+            <!-- Personnel will be loaded here -->
+          </div>
+          
+          <div>
+            <label for="customAssignmentNotes" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              Notes
+            </label>
+            <div class="relative">
+              <textarea id="customAssignmentNotes" rows="5" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"></textarea>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    
+    <!-- Modal Footer --> 
+    <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeAssignCustomStaffModal()">
+        Cancel
+      </button>
+      <button class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="saveCustomStaffAssignment()">
+        Save Assignment
+      </button>
+    </div>
+  </div>
+</div>
   
   <script>
 // Pass PHP data to JavaScript
@@ -5254,6 +5362,121 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM loaded, initializing custom address fields');
     // We'll initialize the fields only when the "Change Address" button is clicked
 });
+
+function openAssignCustomStaffModal(customsales_id) {
+    // Set the custom service ID in the form
+    document.getElementById('assignCustomServiceId').value = customsales_id;
+    
+    // Show the modal
+    document.getElementById('assignCustomStaffModal').classList.remove('hidden');
+    
+    // Fetch the branch_id and employees via AJAX
+    fetch('history/get_employee_for_customsales.php?customsales_id=' + customsales_id)
+        .then(response => response.json())
+        .then(data => {
+            // Populate the sections
+            populateCustomEmployeeSection('customEmbalmersSection', 'Embalmer', data.embalmers);
+            populateCustomEmployeeSection('customDriversSection', 'Driver', data.drivers);
+            populateCustomEmployeeSection('customPersonnelSection', 'Personnel', data.personnel);
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+function populateCustomEmployeeSection(sectionId, position, employees) {
+    console.group(`populateCustomEmployeeSection - ${position}`);
+    console.log('Section ID:', sectionId);
+    console.log('Position:', position);
+    console.log('Employees data received:', employees);
+
+    const section = document.getElementById(sectionId);
+    const positionLower = position.toLowerCase();
+    let icon = '';
+    
+    if (positionLower === 'embalmer') {
+        icon = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-sidebar-accent"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>';
+    } else if (positionLower === 'driver') {
+        icon = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-sidebar-accent"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>';
+    } else {
+        icon = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-sidebar-accent"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>';
+    }
+    
+    let html = `<h4 class="text-lg font-bold mb-4 text-gray-700 flex items-center">
+        ${icon}${position}s
+    </h4>
+    <div class="grid grid-cols-2 gap-4">`;
+    
+    if (employees && employees.length > 0) {
+        console.log(`Processing ${employees.length} ${positionLower}(s)`);
+        
+        employees.forEach((employee, index) => {
+            console.group(`Employee ${index + 1}`);
+            console.log('Raw employee data:', employee);
+
+            // Format each name part
+            const formatName = (name) => {
+                if (!name || name.toLowerCase() === 'null') {
+                    console.log(`Empty name part detected (converted to empty string)`);
+                    return '';
+                }
+                return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+            };
+
+            const firstName = formatName(employee.fname);
+            const middleName = formatName(employee.mname);
+            const lastName = formatName(employee.lname);
+
+            console.log('Formatted name parts:', {
+                firstName,
+                middleName,
+                lastName
+            });
+
+            // Combine names with proper spacing
+            let fullName = [firstName, middleName, lastName]
+                .filter(name => name && name.trim() !== '')
+                .join(' ');
+
+            console.log('Full name:', fullName);
+            console.log('Employee ID:', employee.employeeID);
+            
+            const checkboxId = `custom${positionLower}${index+1}`;
+            console.log('Checkbox attributes:', {
+                id: checkboxId,
+                name: 'assigned_custom_staff[]',
+                value: employee.employeeID
+            });
+
+            html += `<div class="flex items-center">
+                <input type="checkbox" id="${checkboxId}" name="assigned_custom_staff[]" value="${employee.employeeID}" class="mr-2">
+                <label for="${checkboxId}" class="text-gray-700">${fullName}</label>
+            </div>`;
+            
+            console.groupEnd();
+        });
+    } else {
+        console.log(`No ${positionLower}s available`);
+        html += `<p class="text-gray-500 col-span-2">No ${positionLower}s available</p>`;
+    }
+    
+    html += `</div>`;
+    
+    console.log('Generated HTML:', html);
+    section.innerHTML = html;
+    
+    console.log('Section populated successfully');
+    console.groupEnd();
+}
+
+function closeAssignCustomStaffModal() {
+    document.getElementById('assignCustomStaffModal').classList.add('hidden');
+}
+
+function saveCustomStaffAssignment() {
+    // Implementation for saving custom staff assignment
+    // Similar to saveStaffAssignment but with custom field names
+    console.log('Saving custom staff assignment...');
+    // Add your save logic here
+}
 </script>
 
 </body> 
