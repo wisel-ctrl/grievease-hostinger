@@ -3071,6 +3071,101 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
   </div>
 </div>
   
+<div class="fixed inset-0 z-50 flex items-center justify-center hidden" id="completeCustomServiceModal">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] flex flex-col">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeCompleteCustomModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <!-- Modal Header -->
+    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
+        Complete Custom Service
+      </h3>
+    </div>
+    
+    <!-- Modal Body -->
+    <div class="px-4 sm:px-6 py-4 sm:py-5 overflow-y-auto modal-scroll-container">
+      <form id="completeCustomServiceForm" class="space-y-4">
+        <input type="hidden" id="completeCustomServiceId" name="customsales_id">
+        
+        <!-- Completion Date -->
+        <div class="form-group">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Completion Date</label>
+          <input 
+            type="date" 
+            id="customCompletionDate" 
+            name="completion_date"
+            class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+          >
+        </div>
+
+        <!-- Assigned Staff Review -->
+        <div id="customCompleteDriversSection" class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+          <h4 class="text-sm font-semibold text-gray-700 mb-3">Assigned Drivers</h4>
+          <div id="customCompleteDriversList">
+            <!-- Assigned drivers will be populated here -->
+          </div>
+        </div>
+
+        <div id="customCompletePersonnelSection" class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+          <h4 class="text-sm font-semibold text-gray-700 mb-3">Assigned Personnel</h4>
+          <div id="customCompletePersonnelList">
+            <!-- Assigned personnel will be populated here -->
+          </div>
+        </div>
+
+        <!-- Notes -->
+        <div class="form-group">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Completion Notes</label>
+          <textarea 
+            id="customCompletionNotes" 
+            name="completion_notes"
+            class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+            placeholder="Add any notes about the service completion..."
+            rows="3"
+          ></textarea>
+        </div>
+
+        <!-- Final Balance Settlement -->
+        <div class="form-group">
+          <label class="flex items-center space-x-2">
+            <input 
+              type="checkbox" 
+              id="customFinalBalanceSettled" 
+              name="final_balance_settled"
+              class="rounded border-gray-300 text-sidebar-accent focus:ring-sidebar-accent"
+            >
+            <span class="text-sm text-gray-700">Final balance has been settled</span>
+          </label>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+          <button 
+            type="button" 
+            onclick="closeCompleteCustomModal()"
+            class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sidebar-accent"
+          >
+            Cancel
+          </button>
+          <button 
+            type="submit"
+            class="px-4 py-2 text-sm font-medium text-white bg-sidebar-accent border border-transparent rounded-md hover:bg-darkgold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sidebar-accent"
+          >
+            Complete Service
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
   <script>
 // Pass PHP data to JavaScript
 const customers = <?php echo json_encode($customers); ?>;
@@ -5538,6 +5633,88 @@ function saveCustomStaffAssignment() {
             alert('An error occurred while saving the assignment. See console for details.');
         });
 }
+
+function openCompleteCustomModal(serviceId) {
+  // Set service ID and default values
+  document.getElementById('completeCustomServiceId').value = serviceId;
+  
+  // Set current date in yyyy-mm-dd format
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  document.getElementById('customCompletionDate').value = `${year}-${month}-${day}`;
+  document.getElementById('customCompletionNotes').value = '';
+  document.getElementById('customFinalBalanceSettled').checked = false;
+  
+  // Fetch the employees via AJAX
+  fetch('history/get_employee_for_customsales.php?customsales_id=' + serviceId)
+    .then(response => response.json())
+    .then(data => {
+      // Populate the sections with drivers and personnel
+      populateCustomCompleteEmployeeSection('customCompleteDriversList', 'Driver', data.drivers);
+      populateCustomCompleteEmployeeSection('customCompletePersonnelList', 'Personnel', data.personnel);
+      
+      // Show the modal
+      document.getElementById('completeCustomServiceModal').classList.remove('hidden');
+      toggleBodyScroll(true);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('An error occurred while fetching employee data');
+    });
+}
+
+// Function to close the Complete Custom Service Modal
+function closeCompleteCustomModal() {
+  document.getElementById('completeCustomServiceModal').classList.add('hidden');
+  toggleBodyScroll(false);
+}
+
+// Function to populate employee sections for custom service completion
+function populateCustomCompleteEmployeeSection(sectionId, position, employees) {
+  const section = document.getElementById(sectionId);
+  section.innerHTML = ''; // Clear existing content
+  
+  if (employees && employees.length > 0) {
+    employees.forEach((employee, index) => {
+      // Format each name part
+      const formatName = (name) => {
+        if (!name || name.toLowerCase() === 'null') return '';
+        return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+      };
+
+      const firstName = formatName(employee.fname);
+      const middleName = formatName(employee.mname);
+      const lastName = formatName(employee.lname);
+
+      // Combine names with proper spacing
+      const fullName = [firstName, middleName, lastName]
+        .filter(name => name && name.trim() !== '')
+        .join(' ');
+      
+      const div = document.createElement('div');
+      div.className = 'flex items-center justify-between p-2 bg-white rounded border border-gray-200 mb-2';
+      
+      const nameSpan = document.createElement('span');
+      nameSpan.className = 'text-gray-700';
+      nameSpan.textContent = fullName;
+      
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.name = 'complete_assigned_staff[]';
+      checkbox.value = employee.employeeID;
+      checkbox.className = 'text-sidebar-accent focus:ring-sidebar-accent';
+      
+      div.appendChild(nameSpan);
+      div.appendChild(checkbox);
+      section.appendChild(div);
+    });
+  } else {
+    section.innerHTML = `<p class="text-gray-500">No ${position.toLowerCase()}s assigned</p>`;
+  }
+}
+
 </script>
 
 </body> 
