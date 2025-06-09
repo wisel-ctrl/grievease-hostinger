@@ -5472,10 +5472,71 @@ function closeAssignCustomStaffModal() {
 }
 
 function saveCustomStaffAssignment() {
-    // Implementation for saving custom staff assignment
-    // Similar to saveStaffAssignment but with custom field names
-    console.log('Saving custom staff assignment...');
-    // Add your save logic here
+    const customServiceId = document.getElementById('assignCustomServiceId').value;
+    const notes = document.getElementById('customAssignmentNotes').value;
+    
+    // Get all checked checkboxes within the assignCustomStaffModal
+    const modal = document.getElementById('assignCustomStaffModal');
+    const checkboxes = modal.querySelectorAll('input[name="assigned_custom_staff[]"]:checked');
+    
+    // Extract the employee IDs from the checkboxes
+    const assignedStaff = Array.from(checkboxes).map(checkbox => {
+        return checkbox.value;
+    }).filter(id => id); // Filter out any undefined/empty values
+
+    if (assignedStaff.length === 0) {
+        alert('Please select at least one staff member');
+        return;
+    }
+
+    // Get base salaries for selected employees
+    fetch('get_employee_salaries.php?employee_ids=' + assignedStaff.join(','))
+        .then(response => response.json())
+        .then(salaries => {
+            // Prepare the data to send
+            const assignmentData = {
+                customsales_id: customServiceId,
+                staff_data: assignedStaff.map(employeeId => ({
+                    employee_id: employeeId,
+                    salary: salaries[employeeId] || 0 // Default to 0 if salary not found
+                })),
+                notes: notes
+            };
+
+            console.log('Sending custom assignment data:', assignmentData);
+            
+            // Send data to server
+            return fetch('history/custom_save_staff_assignment.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(assignmentData)
+            });
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.text().then(text => {
+                    console.error('Server response:', text);
+                    throw new Error('Server error: ' + response.status);
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                alert('Staff assigned successfully to custom service!');
+                closeAssignCustomStaffModal();
+                // Optionally refresh the page or update the UI
+                location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error details:', error);
+            alert('An error occurred while saving the assignment. See console for details.');
+        });
 }
 </script>
 
