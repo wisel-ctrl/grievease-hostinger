@@ -1535,6 +1535,11 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
               </th>
               <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
                 <div class="flex items-center gap-1.5">
+                  <i class="fas fa-peso-sign text-sidebar-accent"></i> Service Price
+                </div>
+              </th>
+              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+                <div class="flex items-center gap-1.5">
                   <i class="fas fa-calendar text-sidebar-accent"></i> Date of Burial
                 </div>
               </th>
