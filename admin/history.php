@@ -5715,6 +5715,86 @@ function populateCustomCompleteEmployeeSection(sectionId, position, employees) {
   }
 }
 
+document.getElementById('completeCustomServiceForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  
+  // Get form values
+  const serviceId = document.getElementById('completeCustomServiceId').value;
+  const completionDateInput = document.getElementById('customCompletionDate').value;
+  const completionNotes = document.getElementById('customCompletionNotes').value;
+  const balanceSettled = document.getElementById('customFinalBalanceSettled').checked;
+  
+  if (!completionDateInput) {
+    alert('Please specify a completion date.');
+    return;
+  }
+  
+  // Get current time
+  const now = new Date();
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const seconds = String(now.getSeconds()).padStart(2, '0');
+  const currentTime = `${hours}:${minutes}:${seconds}`;
+  
+  // Combine date and time for SQL timestamp format (yyyy-mm-dd HH:MM:SS)
+  const completionDateTime = `${completionDateInput} ${currentTime}`;
+
+  // Get all checked checkboxes within the completeServiceModal
+  const modal = document.getElementById('completeCustomServiceModal');
+  const checkboxes = modal.querySelectorAll('input[name="complete_assigned_staff[]"]:checked');
+  
+  // Extract the employee IDs from the checkboxes
+  const assignedStaff = Array.from(checkboxes).map(checkbox => {
+    return checkbox.value;
+  }).filter(id => id); // Filter out any undefined/empty values
+
+  if (assignedStaff.length === 0) {
+    alert('Please select at least one staff member who completed this service.');
+    return;
+  }
+
+  // First get the salaries for the selected employees
+  fetch('get_employee_salaries.php?employee_ids=' + assignedStaff.join(','))
+    .then(response => response.json())
+    .then(salaries => {
+      // Prepare the data to send with salary information
+      const completionData = {
+        customsales_id: serviceId,
+        staff_data: assignedStaff.map(employeeId => ({
+          employee_id: employeeId,
+          salary: salaries[employeeId] || 0 // Default to 0 if salary not found
+        })),
+        notes: completionNotes,
+        service_stage: 'completion',
+        completion_date: completionDateTime,
+        balance_settled: balanceSettled
+      };
+
+      // Send data to server
+      return fetch('history/custom_save_staff_completion.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(completionData)
+      });
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        alert('Service completed successfully!');
+        closeCompleteCustomModal();
+        location.reload();
+      } else {
+        alert('Error: ' + data.message);
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('An error occurred while completing the service');
+    });
+});
+
 </script>
 
 </body> 
