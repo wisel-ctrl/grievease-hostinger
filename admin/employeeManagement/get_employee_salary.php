@@ -27,16 +27,15 @@ try {
 try {
     // Query to get service payments and service details
     $query = "
-        SELECT 
+                SELECT 
             esp.payment_date,
-            s.service_name,
+            IFNULL(s.service_name, 'Customize Package') AS service_name,
             esp.income AS service_income
-             
         FROM 
             employee_service_payments esp
-        JOIN 
+        LEFT JOIN 
             sales_tb st ON esp.sales_id = st.sales_id
-        JOIN 
+        LEFT JOIN 
             services_tb s ON st.service_id = s.service_id
         JOIN 
             employee_tb e ON esp.employeeID = e.EmployeeID
@@ -44,7 +43,7 @@ try {
             esp.employeeID = ?
             AND esp.payment_date BETWEEN ? AND ?
         ORDER BY 
-            esp.payment_date DESC
+            esp.payment_date DESC;
     ";
     
     $stmt = $conn->prepare($query);
