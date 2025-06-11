@@ -3477,7 +3477,7 @@ function savePayment() {
   };
   
   // Show loading state
-  const saveBtn = document.querySelector('#recordPaymentModal button[onclick="savePayment()"]');
+  const saveBtn = document.getElementById('recordPaymentBtn');
   const originalBtnText = saveBtn.innerHTML;
   saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
   saveBtn.disabled = true;
