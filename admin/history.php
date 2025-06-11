@@ -2547,7 +2547,7 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
       <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeRecordPaymentModal()">
         Cancel
       </button>
-      <button class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="savePayment()">
+      <button class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" data-mode="">
         Record Payment
       </button>
     </div>
@@ -3370,6 +3370,8 @@ document.addEventListener('click', function(e) {
   // Get the modal element
   const modal = document.getElementById('recordPaymentModal');
 
+  document.getElementById('recordPaymentBtn').setAttribute('data-mode', 'traditional');
+  
   const today = new Date().toISOString().split('T')[0];
   const paymentDateInput = document.getElementById('paymentDate');
   paymentDateInput.value = today;
@@ -6059,6 +6061,118 @@ function openCustomRecordPaymentModal(serviceId, clientName, balance) {
       alert('An error occurred while fetching payment details');
     });
 }
+
+function saveCustomPayment() {
+  // Get all the necessary values
+  const serviceId = document.getElementById('paymentServiceId').value;
+  const customerID = document.getElementById('customerID').value;
+  const branchID = document.getElementById('branchID').value;
+  const clientName = document.getElementById('paymentClientName').value;
+  const currentBalance = parseFloat(document.getElementById('currentBalance').value);
+  const paymentAmount = parseFloat(document.getElementById('paymentAmount').value);
+  const paymentMethod = document.getElementById('paymentMethod').value;
+  const paymentDate = document.getElementById('paymentDate').value;
+  const notes = document.getElementById('paymentNotes').value;
+
+  // Validate required fields
+  if (!customerID || !branchID) {
+    alert('Missing required information. Please try again.');
+    return;
+  }
+
+  if (!paymentAmount || isNaN(paymentAmount) || paymentAmount <= 0) {
+    alert('Please enter a valid payment amount');
+    return;
+  }
+
+  if (!paymentMethod) {
+    alert('Please select a payment method');
+    return;
+  }
+
+  if (!paymentDate) {
+    alert('Please select a payment date');
+    return;
+  }
+
+  const newBalance = currentBalance - paymentAmount;
+
+  // Create payment data object
+  const paymentData = {
+    sales_id: serviceId,
+    customerID: customerID,
+    branch_id: branchID,
+    client_name: clientName,
+    before_balance: currentBalance,
+    after_payment_balance: newBalance,
+    payment_amount: paymentAmount,
+    method_of_payment: paymentMethod,
+    payment_date: paymentDate,
+    notes: notes
+  };
+
+  // Show loading state
+  const saveBtn = document.getElementById('recordPaymentBtn');
+  const originalBtnText = saveBtn.innerHTML;
+  saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+  saveBtn.disabled = true;
+
+  // Send data to server
+  fetch('historyAPI/record_custom_payment.php', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(paymentData)
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+  .then(data => {
+    if (data.success) {
+      alert(`Payment recorded successfully! Total paid: ₱${data.new_amount_paid.toFixed(2)}`);
+      closeRecordPaymentModal();
+      // Refresh the page to show updated values
+      location.reload();
+    } else {
+      throw new Error(data.message || 'Failed to record payment');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('Error: ' + error.message);
+  })
+  .finally(() => {
+    // Restore button state
+    saveBtn.innerHTML = originalBtnText;
+    saveBtn.disabled = false;
+  });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  const recordPaymentBtn = document.getElementById('recordPaymentBtn');
+  if (recordPaymentBtn) {
+    recordPaymentBtn.addEventListener('click', function() {
+      const mode = this.getAttribute('data-mode');
+      
+      if (!mode) {
+        alert('No payment mode specified');
+        return;
+      }
+      
+      if (mode === 'traditional') {
+        savePayment();
+      } else if (mode === 'custom') {
+        saveCustomPayment();
+      } else {
+        alert('Invalid payment mode');
+      }
+    });
+  }
+});
 
 </script>
 
