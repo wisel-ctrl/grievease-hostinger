@@ -4,7 +4,7 @@ require_once '../../db_connect.php';
 date_default_timezone_set('Asia/Manila');
 
 // Check if user is logged in and is an employee
-if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] != 1) {
+if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] != 2) {
     echo json_encode(['success' => false, 'message' => 'Unauthorized access']);
     exit();
 }
