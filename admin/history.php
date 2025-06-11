@@ -5967,7 +5967,9 @@ function viewCustomServiceDetails(serviceId) {
         document.getElementById('customServiceId').textContent = data.customsales_id;
         document.getElementById('customServiceClientName').textContent = data.client_name;
         document.getElementById('customServicePrice').textContent = 
-          data.discounted_price ? `₱${parseFloat(data.discounted_price).toFixed(2)}` : '₱0.00';
+    data.discounted_price
+        ? `₱${parseFloat(data.discounted_price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+        : '₱0.00';
         document.getElementById('customBranchName').textContent = data.branch_name || 'N/A';
         document.getElementById('customServiceDate').textContent = data.get_timestamp ? formatDate(data.get_timestamp) : 'N/A';
         document.getElementById('customServiceStatus').textContent = data.status || 'N/A';
