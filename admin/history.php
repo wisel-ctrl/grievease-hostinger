@@ -5948,6 +5948,74 @@ document.getElementById('completeCustomServiceForm').addEventListener('submit', 
     });
 });
 
+function closeViewCustomServiceModal() {
+  document.getElementById('viewCustomServiceModal').style.display = 'none';
+  toggleBodyScroll(false);
+}
+
+// Function to view custom service details
+function viewCustomServiceDetails(serviceId) {
+  // Show loading state
+  document.getElementById('customServiceId').textContent = 'Loading...';
+
+  // Fetch service details from server
+  fetch(`history/get_customsales_details.php?customsales_id=${serviceId}`)
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        // Populate basic service info
+        document.getElementById('customServiceId').textContent = data.customsales_id;
+        document.getElementById('customServiceClientName').textContent = data.client_name;
+        document.getElementById('customServicePrice').textContent = 
+          data.discounted_price ? `₱${parseFloat(data.discounted_price).toFixed(2)}` : '₱0.00';
+        document.getElementById('customBranchName').textContent = data.branch_name || 'N/A';
+        document.getElementById('customServiceDate').textContent = data.get_timestamp ? formatDate(data.get_timestamp) : 'N/A';
+        document.getElementById('customServiceStatus').textContent = data.status || 'N/A';
+
+        // Populate service components
+        document.getElementById('customServiceCasket').textContent = data.casket || 'N/A';
+        document.getElementById('customServiceFlowers').textContent = data.flower_design || 'N/A';
+        document.getElementById('customServiceAdditional').textContent = data.inclusion || 'N/A';
+
+        // Populate initial staff section
+        if (data.initial_staff) {
+          document.getElementById('customInitialDate').textContent = 
+            data.initial_staff.date ? formatDate(data.initial_staff.date) : 'N/A';
+          document.getElementById('customInitialEmbalmers').textContent = 
+            data.initial_staff.embalmers.length > 0 ? data.initial_staff.embalmers.join(', ') : 'None';
+          document.getElementById('customInitialDrivers').textContent = 
+            data.initial_staff.drivers.length > 0 ? data.initial_staff.drivers.join(', ') : 'None';
+          document.getElementById('customInitialPersonnel').textContent = 
+            data.initial_staff.personnel.length > 0 ? data.initial_staff.personnel.join(', ') : 'None';
+          document.getElementById('customInitialNotes').textContent = 
+            data.initial_staff.notes || 'None';
+        }
+
+        // Populate burial staff section
+        if (data.burial_staff) {
+          document.getElementById('customBurialDate').textContent = 
+            data.burial_staff.date ? formatDate(data.burial_staff.date) : 'N/A';
+          document.getElementById('customBurialDrivers').textContent = 
+            data.burial_staff.drivers.length > 0 ? data.burial_staff.drivers.join(', ') : 'None';
+          document.getElementById('customBurialPersonnel').textContent = 
+            data.burial_staff.personnel.length > 0 ? data.burial_staff.personnel.join(', ') : 'None';
+          document.getElementById('customBurialNotes').textContent = 
+            data.burial_staff.notes || 'None';
+        }
+
+        // Show the modal
+        document.getElementById('viewCustomServiceModal').style.display = 'flex';
+        toggleBodyScroll(true);
+      } else {
+        alert('Failed to fetch service details: ' + data.message);
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('An error occurred while fetching service details');
+    });
+}
+
 </script>
 
 </body> 
