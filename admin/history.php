@@ -6174,6 +6174,14 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
+function validatePaymentAmount(input) {
+    const value = parseFloat(input.value);
+
+    if (isNaN(value) || value <= 0) {
+        input.value = '';
+    }
+}
+
 </script>
 
 </body> 
