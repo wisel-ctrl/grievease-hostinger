@@ -3515,16 +3515,6 @@ function savePayment() {
   });
 }
 
-// function validatePaymentAmount(input) {
-//   // Convert to a float and round to 2 decimal places
-//   let value = parseFloat(input.value);
-
-//   if (!isNaN(value)) {
-//     // Round to exactly 2 decimal places
-//     input.value = value.toFixed(2);
-//   }
-// }
-
 // Function to update sales_tb balance
 function updateSalesBalance(salesId, newBalance) {
   const balanceData = {
@@ -6015,6 +6005,58 @@ function viewCustomServiceDetails(serviceId) {
     .catch(error => {
       console.error('Error:', error);
       alert('An error occurred while fetching service details');
+    });
+}
+
+function openCustomRecordPaymentModal(serviceId, clientName, balance) {
+  // Get the modal element
+  const modal = document.getElementById('recordPaymentModal');
+  
+  // Set the data-mode attribute
+  document.getElementById('recordPaymentBtn').setAttribute('data-mode', 'custom');
+  
+  // Fetch customerID and branch_id
+  fetch(`historyAPI/get_custom_payment_details.php?sales_id=${serviceId}`)
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        // Set the hidden input values
+        document.getElementById('customerID').value = data.customerID;
+        document.getElementById('branchID').value = data.branch_id;
+        console.log(data.customerID);console.log(data.branch_id);
+        
+        // Populate the readonly fields
+        document.getElementById('paymentServiceId').value = serviceId;
+        document.getElementById('paymentClientName').value = clientName;
+        document.getElementById('currentBalance').value = `${parseFloat(balance).toFixed(2)}`;
+        
+        // Update summary section
+        document.getElementById('summary-current-balance').textContent = `₱${parseFloat(balance).toFixed(2)}`;
+        document.getElementById('summary-payment-amount').textContent = '₱0.00';
+        document.getElementById('summary-new-balance').textContent = `₱${parseFloat(balance).toFixed(2)}`;
+        
+        // Set default payment amount to empty
+        document.getElementById('paymentAmount').value = '';
+        
+        // Set today's date as default payment date
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('paymentDate').value = today;
+        
+        // Clear any previous input in notes
+        document.getElementById('paymentNotes').value = '';
+        
+        // Add event listener for real-time updates
+        document.getElementById('paymentAmount').addEventListener('input', updatePaymentSummary);
+        
+        // Display the modal
+        modal.classList.remove('hidden');
+      } else {
+        alert('Failed to fetch payment details: ' + data.message);
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('An error occurred while fetching payment details');
     });
 }
 
