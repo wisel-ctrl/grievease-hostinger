@@ -6018,7 +6018,7 @@ function openCustomRecordPaymentModal(serviceId, clientName, balance) {
   document.getElementById('recordPaymentBtn').setAttribute('data-mode', 'custom');
   
   // Fetch customerID and branch_id
-  fetch(`historyAPI/get_custom_payment_details.php?sales_id=${serviceId}`)
+  fetch(`history/get_custom_payment_details.php?sales_id=${serviceId}`)
     .then(response => response.json())
     .then(data => {
       if (data.success) {
@@ -6118,7 +6118,7 @@ function saveCustomPayment() {
   saveBtn.disabled = true;
 
   // Send data to server
-  fetch('historyAPI/record_custom_payment.php', {
+  fetch('history/record_custom_payment.php', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
