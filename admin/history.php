@@ -3171,6 +3171,154 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
   </div>
 </div>
 
+<div class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto" id="viewCustomServiceModal">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-xl w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] flex flex-col">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeViewCustomServiceModal()">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+      </svg>
+    </button>
+    
+    <!-- Modal Header -->
+    <div class="px-5 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-white border-gray-200">
+      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
+        Custom Service Details
+      </h3>
+    </div>
+    
+    <!-- Modal Body -->
+    <div class="px-5 sm:px-6 py-4 sm:py-5 overflow-y-auto modal-scroll-container">
+      <!-- Service Information -->
+      <div class="rounded-lg border border-gray-200 overflow-hidden mb-5">
+        <div class="bg-gray-50 px-4 py-2 border-b border-gray-200">
+          <h4 class="font-medium text-gray-700">Basic Information</h4>
+        </div>
+        <div class="p-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="space-y-1">
+              <label class="block text-xs font-medium text-gray-500">ID</label>
+              <div id="customServiceId" class="text-sm font-medium text-gray-800">-</div>
+            </div>
+            
+            <div class="space-y-1">
+              <label class="block text-xs font-medium text-gray-500">Client Name</label>
+              <div id="customServiceClientName" class="text-sm font-medium text-gray-800">-</div>
+            </div>
+            
+            <div class="space-y-1">
+              <label class="block text-xs font-medium text-gray-500">Service Price</label>
+              <div id="customServicePrice" class="text-sm font-medium text-gray-800">-</div>
+            </div>
+            
+            <div class="space-y-1">
+              <label class="block text-xs font-medium text-gray-500">Branch</label>
+              <div id="customBranchName" class="text-sm font-medium text-gray-800">-</div>
+            </div>
+            
+            <div class="space-y-1">
+              <label class="block text-xs font-medium text-gray-500">Date of Burial</label>
+              <div id="customServiceDate" class="text-sm font-medium text-gray-800">-</div>
+            </div>
+            
+            <div class="space-y-1">
+              <label class="block text-xs font-medium text-gray-500">Status</label>
+              <div id="customServiceStatus" class="text-sm font-medium text-gray-800">-</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Service Components -->
+      <div class="rounded-lg border border-gray-200 overflow-hidden mb-5">
+        <div class="bg-gray-50 px-4 py-2 border-b border-gray-200">
+          <h4 class="font-medium text-gray-700">Service Components</h4>
+        </div>
+        <div class="p-4">
+          <div class="space-y-4">
+            <div>
+              <label class="block text-xs font-medium text-gray-500 mb-1">Casket</label>
+              <div id="customServiceCasket" class="text-sm text-gray-800">-</div>
+            </div>
+            
+            <div>
+              <label class="block text-xs font-medium text-gray-500 mb-1">Flower Arrangement</label>
+              <div id="customServiceFlowers" class="text-sm text-gray-800">-</div>
+            </div>
+            
+            <div>
+              <label class="block text-xs font-medium text-gray-500 mb-1">Additional Services</label>
+              <div id="customServiceAdditional" class="text-sm text-gray-800">-</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Initial Staff Section -->
+      <div class="rounded-lg border border-gray-200 overflow-hidden mb-5">
+        <div class="bg-gray-50 px-4 py-2 border-b border-gray-200">
+          <h4 class="font-medium text-gray-700">Initial Staff</h4>
+        </div>
+        <div class="p-4">
+          <div class="space-y-3">
+            <div>
+              <label class="block text-xs font-medium text-gray-500">Date</label>
+              <div id="customInitialDate" class="text-sm text-gray-800">-</div>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-500">Embalmers</label>
+              <div id="customInitialEmbalmers" class="text-sm text-gray-800">-</div>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-500">Drivers</label>
+              <div id="customInitialDrivers" class="text-sm text-gray-800">-</div>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-500">Personnel</label>
+              <div id="customInitialPersonnel" class="text-sm text-gray-800">-</div>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-500">Notes</label>
+              <div id="customInitialNotes" class="text-sm text-gray-800">-</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Burial Staff Section -->
+      <div class="rounded-lg border border-gray-200 overflow-hidden">
+        <div class="bg-gray-50 px-4 py-2 border-b border-gray-200">
+          <h4 class="font-medium text-gray-700">Burial Staff</h4>
+        </div>
+        <div class="p-4">
+          <div class="space-y-3">
+            <div>
+              <label class="block text-xs font-medium text-gray-500">Date</label>
+              <div id="customBurialDate" class="text-sm text-gray-800">-</div>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-500">Drivers</label>
+              <div id="customBurialDrivers" class="text-sm text-gray-800">-</div>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-500">Personnel</label>
+              <div id="customBurialPersonnel" class="text-sm text-gray-800">-</div>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-500">Notes</label>
+              <div id="customBurialNotes" class="text-sm text-gray-800">-</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
   <script>
 // Pass PHP data to JavaScript
 const customers = <?php echo json_encode($customers); ?>;
