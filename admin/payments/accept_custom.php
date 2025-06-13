@@ -33,13 +33,14 @@ try {
     $stmt->execute();
 
     // Get the customsales_id from custompayment_request_tb
-    $sales_query = "SELECT customsales_id FROM custompayment_request_tb WHERE payment_id = ?";
+    $sales_query = "SELECT customsales_id, payment_method FROM custompayment_request_tb WHERE payment_id = ?";
     $stmt = $conn->prepare($sales_query);
     $stmt->bind_param("s", $payment_id);
     $stmt->execute();
     $sales_result = $stmt->get_result();
     $sales_data = $sales_result->fetch_assoc();
     $customsales_id = $sales_data['customsales_id'];
+    $payment_method = $sales_data['payment_method'];
 
     // Get customer details from customsales_tb
     $customer_query = "SELECT customer_id, discounted_price, balance, payment_status, branch_id 
@@ -77,10 +78,10 @@ try {
     $insert_query = "INSERT INTO custom_installment_tb 
                     (customerID, branch_id, client_name, before_balance, after_payment_balance, 
                      payment_amount, payment_timestamp, method_of_payment, notes, customsales_id) 
-                    VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, 'online payment', ?, ?)";
+                    VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?, ?, ?)";
     $stmt = $conn->prepare($insert_query);
-    $stmt->bind_param("iisddssi", $customer_id, $branch_id, $client_name, $balance, $after_payment_balance, 
-                     $amount, $notes, $customsales_id);
+    $stmt->bind_param("iisddsssi", $customer_id, $branch_id, $client_name, $balance, $after_payment_balance, 
+                     $amount, $payment_method,$notes, $customsales_id);
     $stmt->execute();
 
     // Update balance in customsales_tb
