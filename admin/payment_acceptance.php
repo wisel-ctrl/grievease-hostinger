@@ -136,7 +136,8 @@ $lifeplan_query = "SELECT
 FROM lifeplanpayment_request_tb AS ir_tb
 JOIN users AS u ON ir_tb.customer_id = u.id
 JOIN lifeplan_tb AS sl_tb ON ir_tb.lifeplan_id = sl_tb.lifeplan_id
-JOIN services_tb AS s_tb ON sl_tb.service_id = s_tb.service_id";
+JOIN services_tb AS s_tb ON sl_tb.service_id = s_tb.service_id
+WHERE ir_tb.status = 'pending'";
 
 // Get total count for lifeplan payments
 $lifeplan_count_query = "SELECT COUNT(*) as total FROM lifeplanpayment_request_tb";
