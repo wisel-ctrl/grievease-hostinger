@@ -1090,11 +1090,15 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
     function openCustomModal(imageUrl, amount, paymentId) {
         const imgSrc = '../customer/payments/' + imageUrl;
         document.getElementById('customReceiptImage').src = imgSrc;
-        document.getElementById('customAmountInput').value = amount;
+
+        const numericAmount = amount.replace(/[^0-9.]/g, '');
+        document.getElementById('customAmountInput').value = numericAmount;
+
         document.getElementById('customModal').classList.remove('hidden');
         document.body.classList.add('overflow-hidden');
 
-        console.log('payment amount: ',amount);
+        console.log('payment amount: ', amount);
+        console.log('numeric amount: ', numericAmount);
 
         // Set current payment details
         currentPaymentType = 'custom';
