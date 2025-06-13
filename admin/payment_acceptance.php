@@ -498,7 +498,7 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
               </td>
               <td class="px-4 py-3.5 text-sm">
                 <div class="flex space-x-2">
-                  <button onclick="openCustomModal('<?= htmlspecialchars($request['payment_url']) ?>', '<?= number_format($request['amount'], 2) ?>')" 
+                  <button onclick="openCustomModal('<?= htmlspecialchars($request['payment_url']) ?>', '<?= number_format($request['amount'], 2) ?>', '<?= $request['payment_id'] ?>')" 
                     class="p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-all tooltip" 
                     title="View Receipt">
                     <i class="fas fa-receipt"></i>
@@ -977,146 +977,6 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
   </div>
 </div>
 
-<!-- <script>
-    // Traditional Payment Modal Functions
-    function openTraditionalModal(imageUrl, amount, paymentId, salesId) {
-        const imgSrc = '../customer/payments/' + imageUrl;
-        document.getElementById('traditionalReceiptImage').src = imgSrc;
-        document.getElementById('traditionalAmount').textContent = '₱' + amount;
-        document.getElementById('traditionalModal').classList.remove('hidden');
-        document.body.classList.add('overflow-hidden');
-
-        // Load Tesseract.js and process the image
-        Tesseract.recognize(
-            imgSrc,
-            'eng', // language
-            {
-                logger: m => console.log(m) // Optional: log progress
-            }
-        ).then(({ data: { text } }) => {
-            console.log('Extracted text from receipt:', text);
-        }).catch(err => {
-            console.error('Error during OCR:', err);
-        });
-
-        const approveBtn = document.getElementById('approveTraditionalPayment');
-        
-        approveBtn.onclick = async function() {
-            // 1. Show confirmation dialog
-            const { isConfirmed } = await Swal.fire({
-                title: 'Confirm Acceptance',
-                text: 'Are you sure you want to accept this payment?',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, accept it!'
-            });
-
-            if (!isConfirmed) return; // Exit if user cancels
-
-            try {
-                // 2. Send AJAX request
-                const response = await fetch(
-                    `payments/accept_traditional.php?payment_id=${paymentId}&sales_id=${salesId}&amount=${amount}`,
-                    { method: 'GET' }
-                );
-                
-                if (!response.ok) throw new Error('Server error');
-
-                // 3. Show success message
-                Swal.fire({
-                    title: 'Success!',
-                    text: 'Payment accepted successfully',
-                    icon: 'success',
-                    confirmButtonText: 'OK'
-                }).then(() => {
-                    // 4. Optional: Close modal and refresh data (if needed)
-                    document.getElementById('traditionalModal').classList.add('hidden');
-                    document.body.classList.remove('overflow-hidden');
-                    location.reload();
-                });
-
-            } catch (error) {
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'Failed to accept payment: ' + error.message,
-                    icon: 'error'
-                });
-            }
-        };
-
-        // Close button handlers
-        document.getElementById('closeTraditionalModal').onclick = function() {
-            document.getElementById('traditionalModal').classList.add('hidden');
-            document.body.classList.remove('overflow-hidden');
-        };
-        
-        document.getElementById('cancelTraditionalModal').onclick = function() {
-            document.getElementById('traditionalModal').classList.add('hidden');
-            document.body.classList.remove('overflow-hidden');
-        };
-    }
-
-    // Custom Packages Modal Functions
-    function openCustomModal(imageUrl, amount) {
-        document.getElementById('customReceiptImage').src = '../customer/payments/' + imageUrl;
-        document.getElementById('customAmount').textContent = '₱' + amount;
-        document.getElementById('customModal').classList.remove('hidden');
-        document.body.classList.add('overflow-hidden');
-        
-        // Close button handlers
-        document.getElementById('closeCustomModal').onclick = function() {
-            document.getElementById('customModal').classList.add('hidden');
-            document.body.classList.remove('overflow-hidden');
-        };
-        
-        document.getElementById('cancelCustomModal').onclick = function() {
-            document.getElementById('customModal').classList.add('hidden');
-            document.body.classList.remove('overflow-hidden');
-        };
-    }
-
-    // Lifeplan Modal Functions
-    function openLifeplanModal(imageUrl, amount, paymentId, lifeplanId) {
-        document.getElementById('lifeplanReceiptImage').src = '../customer/payments/' + imageUrl;
-        document.getElementById('lifeplanAmount').textContent = '₱' + amount;
-        document.getElementById('lifeplanModal').classList.remove('hidden');
-        document.body.classList.add('overflow-hidden');
-
-        const approveBtn = document.getElementById('approveLifeplanPayment');
-        approveBtn.onclick = function() {
-            window.location.href = `payments/accept_lifeplan.php?payment_id=${paymentId}&lifeplan_id=${lifeplanId}&amount=${amount}`;
-        };
-        
-        // Close button handlers
-        document.getElementById('closeLifeplanModal').onclick = function() {
-            document.getElementById('lifeplanModal').classList.add('hidden');
-            document.body.classList.remove('overflow-hidden');
-        };
-        
-        document.getElementById('cancelLifeplanModal').onclick = function() {
-            document.getElementById('lifeplanModal').classList.add('hidden');
-            document.body.classList.remove('overflow-hidden');
-        };
-    }
-
-    // Close modals when clicking outside
-    window.addEventListener('click', function(event) {
-        if (event.target.id === 'traditionalModal') {
-            document.getElementById('traditionalModal').classList.add('hidden');
-            document.body.classList.remove('overflow-hidden');
-        }
-        if (event.target.id === 'customModal') {
-            document.getElementById('customModal').classList.add('hidden');
-            document.body.classList.remove('overflow-hidden');
-        }
-        if (event.target.id === 'lifeplanModal') {
-            document.getElementById('lifeplanModal').classList.add('hidden');
-            document.body.classList.remove('overflow-hidden');
-        }
-    });
-</script> -->
 <script>
     // Global variables to track current payment details
     let currentPaymentType = '';
@@ -1228,7 +1088,8 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
 
     // Custom Packages Modal Functions
     function openCustomModal(imageUrl, amount, paymentId) {
-        document.getElementById('customReceiptImage').src = '../customer/payments/' + imageUrl;
+        const imgSrc = '../customer/payments/' + imageUrl;
+        document.getElementById('customReceiptImage').src = imgSrc;
         document.getElementById('customAmountInput').value = amount;
         document.getElementById('customModal').classList.remove('hidden');
         document.body.classList.add('overflow-hidden');
@@ -1251,7 +1112,7 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
             document.body.classList.remove('overflow-hidden');
         };
 
-        // Add decline button to footer
+        // Add decline button to footer if not already present
         const footer = document.querySelector('#customModal .sticky.bottom-0');
         if (!footer.querySelector('#declineCustomPayment')) {
             const declineBtn = document.createElement('button');
@@ -1264,6 +1125,60 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
             };
             footer.insertBefore(declineBtn, footer.lastElementChild);
         }
+
+        // Handle approve button click
+        const approveBtn = document.getElementById('approveCustomPayment');
+        
+        approveBtn.onclick = async function() {
+            const amount = document.getElementById('customAmountInput').value;
+            
+            // 1. Show confirmation dialog
+            const { isConfirmed } = await Swal.fire({
+                title: 'Confirm Acceptance',
+                text: 'Are you sure you want to accept this payment?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, accept it!'
+            });
+
+            if (!isConfirmed) return;
+
+            try {
+                // 2. Send AJAX request
+                const response = await fetch(
+                    `payments/accept_custom.php?payment_id=${paymentId}&amount=${amount}`,
+                    { method: 'GET' }
+                );
+                
+                if (!response.ok) throw new Error('Server error');
+
+                const data = await response.json();
+                
+                if (data.error) throw new Error(data.error);
+
+                // 3. Show success message
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Payment accepted successfully',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    // 4. Close modal and refresh
+                    document.getElementById('customModal').classList.add('hidden');
+                    document.body.classList.remove('overflow-hidden');
+                    location.reload();
+                });
+
+            } catch (error) {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Failed to accept payment: ' + error.message,
+                    icon: 'error'
+                });
+            }
+        };
     }
 
     // Lifeplan Modal Functions
