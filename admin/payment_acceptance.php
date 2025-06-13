@@ -803,7 +803,7 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
       <div class="bg-blue-50 p-5 rounded-lg shadow-inner mb-6">
         <div class="flex justify-between items-center">
           <p class="text-sidebar-text font-semibold text-lg">Payment Amount:</p>
-          <p id="traditionalAmount" class="text-2xl font-bold text-sidebar">₱0.00</p>
+          <input type="number" id="traditionalAmountInput" class="text-2xl font-bold text-sidebar w-32 text-right" value="0.00" step="0.01">
         </div>
       </div>
     </div>
@@ -848,7 +848,7 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
       <div class="bg-purple-50 p-5 rounded-lg shadow-inner mb-6">
         <div class="flex justify-between items-center">
           <p class="text-sidebar-text font-semibold text-lg">Payment Amount:</p>
-          <p id="customAmount" class="text-2xl font-bold text-sidebar">₱0.00</p>
+          <input type="number" id="customAmountInput" class="text-2xl font-bold text-sidebar w-32 text-right" value="0.00" step="0.01">
         </div>
       </div>
     </div>
@@ -893,7 +893,7 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
       <div class="bg-green-50 p-5 rounded-lg shadow-inner mb-6">
         <div class="flex justify-between items-center">
           <p class="text-sidebar-text font-semibold text-lg">Payment Amount:</p>
-          <p id="lifeplanAmount" class="text-2xl font-bold text-sidebar">₱0.00</p>
+          <input type="number" id="lifeplanAmountInput" class="text-2xl font-bold text-sidebar w-32 text-right" value="0.00" step="0.01">
         </div>
       </div>
     </div>
