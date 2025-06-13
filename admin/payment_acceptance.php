@@ -910,7 +910,74 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
   </div>
 </div>
 
-<script>
+<!-- Decline Payment Modal -->
+<div id="declineModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-2xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] flex flex-col">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-gray-500 hover:text-sidebar-accent transition-colors" id="closeDeclineModal">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <!-- Modal Header -->
+    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-red-500 to-red-600 border-gray-200">
+      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
+        <i class="fas fa-times-circle mr-2"></i> Decline Payment
+      </h3>
+    </div>
+    
+    <!-- Modal Body -->
+    <div class="px-4 sm:px-6 py-4 sm:py-5 overflow-y-auto modal-scroll-container">
+      <div class="mb-4">
+        <h4 id="declinePaymentTitle" class="text-lg font-semibold text-gray-800 mb-2"></h4>
+        <p class="text-gray-600 mb-4">Please select the reason for declining this payment:</p>
+        
+        <div class="space-y-3 mb-4">
+          <div class="flex items-center">
+            <input type="radio" id="reason1" name="declineReason" value="Wrong reference number" class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300">
+            <label for="reason1" class="ml-2 block text-sm text-gray-700">Wrong reference number</label>
+          </div>
+          <div class="flex items-center">
+            <input type="radio" id="reason2" name="declineReason" value="Wrong amount" class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300">
+            <label for="reason2" class="ml-2 block text-sm text-gray-700">Wrong amount</label>
+          </div>
+          <div class="flex items-center">
+            <input type="radio" id="reason3" name="declineReason" value="Unclear receipt" class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300">
+            <label for="reason3" class="ml-2 block text-sm text-gray-700">Unclear receipt</label>
+          </div>
+          <div class="flex items-center">
+            <input type="radio" id="reason4" name="declineReason" value="Expired payment" class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300">
+            <label for="reason4" class="ml-2 block text-sm text-gray-700">Expired payment</label>
+          </div>
+          <div class="flex items-center">
+            <input type="radio" id="reason5" name="declineReason" value="Others" class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300">
+            <label for="reason5" class="ml-2 block text-sm text-gray-700">Others</label>
+          </div>
+        </div>
+        
+        <div id="otherReasonContainer" class="hidden mt-4">
+          <label for="otherReason" class="block text-sm font-medium text-gray-700 mb-1">Please specify:</label>
+          <textarea id="otherReason" rows="3" class="shadow-sm focus:ring-red-500 focus:border-red-500 block w-full sm:text-sm border-gray-300 rounded-md"></textarea>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Modal Footer -->
+    <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button type="button" class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-gray-300 text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" id="cancelDeclineModal">
+        Cancel
+      </button>
+      <button id="submitDecline" class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center">
+        <i class="fas fa-times-circle mr-2"></i> Decline Payment
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- <script>
     // Traditional Payment Modal Functions
     function openTraditionalModal(imageUrl, amount, paymentId, salesId) {
         const imgSrc = '../customer/payments/' + imageUrl;
@@ -1047,6 +1114,338 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
         if (event.target.id === 'lifeplanModal') {
             document.getElementById('lifeplanModal').classList.add('hidden');
             document.body.classList.remove('overflow-hidden');
+        }
+    });
+</script> -->
+<script>
+    // Global variables to track current payment details
+    let currentPaymentType = '';
+    let currentPaymentId = '';
+    let currentSalesId = '';
+    let currentLifeplanId = '';
+
+    // Traditional Payment Modal Functions
+    function openTraditionalModal(imageUrl, amount, paymentId, salesId) {
+        const imgSrc = '../customer/payments/' + imageUrl;
+        document.getElementById('traditionalReceiptImage').src = imgSrc;
+        document.getElementById('traditionalAmountInput').value = amount;
+        document.getElementById('traditionalModal').classList.remove('hidden');
+        document.body.classList.add('overflow-hidden');
+
+        // Set current payment details
+        currentPaymentType = 'traditional';
+        currentPaymentId = paymentId;
+        currentSalesId = salesId;
+
+        // Update decline button onclick
+        document.getElementById('submitDecline').setAttribute('onclick', `declinePayment('traditional', '${paymentId}', '${salesId}')`);
+
+        // Load Tesseract.js and process the image
+        Tesseract.recognize(
+            imgSrc,
+            'eng',
+            { logger: m => console.log(m) }
+        ).then(({ data: { text } }) => {
+            console.log('Extracted text from receipt:', text);
+        }).catch(err => {
+            console.error('Error during OCR:', err);
+        });
+
+        const approveBtn = document.getElementById('approveTraditionalPayment');
+        
+        approveBtn.onclick = async function() {
+            const amount = document.getElementById('traditionalAmountInput').value;
+            
+            // 1. Show confirmation dialog
+            const { isConfirmed } = await Swal.fire({
+                title: 'Confirm Acceptance',
+                text: 'Are you sure you want to accept this payment?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, accept it!'
+            });
+
+            if (!isConfirmed) return;
+
+            try {
+                // 2. Send AJAX request
+                const response = await fetch(
+                    `payments/accept_traditional.php?payment_id=${paymentId}&sales_id=${salesId}&amount=${amount}`,
+                    { method: 'GET' }
+                );
+                
+                if (!response.ok) throw new Error('Server error');
+
+                // 3. Show success message
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Payment accepted successfully',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    // 4. Close modal and refresh
+                    document.getElementById('traditionalModal').classList.add('hidden');
+                    document.body.classList.remove('overflow-hidden');
+                    location.reload();
+                });
+
+            } catch (error) {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Failed to accept payment: ' + error.message,
+                    icon: 'error'
+                });
+            }
+        };
+
+        // Close button handlers
+        document.getElementById('closeTraditionalModal').onclick = function() {
+            document.getElementById('traditionalModal').classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        };
+        
+        document.getElementById('cancelTraditionalModal').onclick = function() {
+            document.getElementById('traditionalModal').classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        };
+
+        // Add decline button to footer
+        const footer = document.querySelector('#traditionalModal .sticky.bottom-0');
+        if (!footer.querySelector('#declineTraditionalPayment')) {
+            const declineBtn = document.createElement('button');
+            declineBtn.id = 'declineTraditionalPayment';
+            declineBtn.className = 'w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center';
+            declineBtn.innerHTML = '<i class="fas fa-times-circle mr-2"></i> Decline Payment';
+            declineBtn.onclick = function() {
+                document.getElementById('declinePaymentTitle').textContent = 'Traditional Payment - ' + amount;
+                document.getElementById('declineModal').classList.remove('hidden');
+            };
+            footer.insertBefore(declineBtn, footer.lastElementChild);
+        }
+    }
+
+    // Custom Packages Modal Functions
+    function openCustomModal(imageUrl, amount, paymentId) {
+        document.getElementById('customReceiptImage').src = '../customer/payments/' + imageUrl;
+        document.getElementById('customAmountInput').value = amount;
+        document.getElementById('customModal').classList.remove('hidden');
+        document.body.classList.add('overflow-hidden');
+
+        // Set current payment details
+        currentPaymentType = 'custom';
+        currentPaymentId = paymentId;
+
+        // Update decline button onclick
+        document.getElementById('submitDecline').setAttribute('onclick', `declinePayment('custom', '${paymentId}')`);
+
+        // Close button handlers
+        document.getElementById('closeCustomModal').onclick = function() {
+            document.getElementById('customModal').classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        };
+        
+        document.getElementById('cancelCustomModal').onclick = function() {
+            document.getElementById('customModal').classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        };
+
+        // Add decline button to footer
+        const footer = document.querySelector('#customModal .sticky.bottom-0');
+        if (!footer.querySelector('#declineCustomPayment')) {
+            const declineBtn = document.createElement('button');
+            declineBtn.id = 'declineCustomPayment';
+            declineBtn.className = 'w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center';
+            declineBtn.innerHTML = '<i class="fas fa-times-circle mr-2"></i> Decline Payment';
+            declineBtn.onclick = function() {
+                document.getElementById('declinePaymentTitle').textContent = 'Custom Package - ' + amount;
+                document.getElementById('declineModal').classList.remove('hidden');
+            };
+            footer.insertBefore(declineBtn, footer.lastElementChild);
+        }
+    }
+
+    // Lifeplan Modal Functions
+    function openLifeplanModal(imageUrl, amount, paymentId, lifeplanId) {
+        document.getElementById('lifeplanReceiptImage').src = '../customer/payments/' + imageUrl;
+        document.getElementById('lifeplanAmountInput').value = amount;
+        document.getElementById('lifeplanModal').classList.remove('hidden');
+        document.body.classList.add('overflow-hidden');
+
+        // Set current payment details
+        currentPaymentType = 'lifeplan';
+        currentPaymentId = paymentId;
+        currentLifeplanId = lifeplanId;
+
+        // Update decline button onclick
+        document.getElementById('submitDecline').setAttribute('onclick', `declinePayment('lifeplan', '${paymentId}', '', '${lifeplanId}')`);
+
+        const approveBtn = document.getElementById('approveLifeplanPayment');
+        approveBtn.onclick = async function() {
+            const amount = document.getElementById('lifeplanAmountInput').value;
+            
+            const { isConfirmed } = await Swal.fire({
+                title: 'Confirm Acceptance',
+                text: 'Are you sure you want to accept this payment?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, accept it!'
+            });
+
+            if (isConfirmed) {
+                try {
+                    const response = await fetch(
+                        `payments/accept_lifeplan.php?payment_id=${paymentId}&lifeplan_id=${lifeplanId}&amount=${amount}`,
+                        { method: 'GET' }
+                    );
+                    
+                    if (!response.ok) throw new Error('Server error');
+
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Payment accepted successfully',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        location.reload();
+                    });
+                } catch (error) {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Failed to accept payment: ' + error.message,
+                        icon: 'error'
+                    });
+                }
+            }
+        };
+        
+        // Close button handlers
+        document.getElementById('closeLifeplanModal').onclick = function() {
+            document.getElementById('lifeplanModal').classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        };
+        
+        document.getElementById('cancelLifeplanModal').onclick = function() {
+            document.getElementById('lifeplanModal').classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        };
+
+        // Add decline button to footer
+        const footer = document.querySelector('#lifeplanModal .sticky.bottom-0');
+        if (!footer.querySelector('#declineLifeplanPayment')) {
+            const declineBtn = document.createElement('button');
+            declineBtn.id = 'declineLifeplanPayment';
+            declineBtn.className = 'w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center';
+            declineBtn.innerHTML = '<i class="fas fa-times-circle mr-2"></i> Decline Payment';
+            declineBtn.onclick = function() {
+                document.getElementById('declinePaymentTitle').textContent = 'Lifeplan Payment - ' + amount;
+                document.getElementById('declineModal').classList.remove('hidden');
+            };
+            footer.insertBefore(declineBtn, footer.lastElementChild);
+        }
+    }
+
+    // Decline Payment Function
+    function declinePayment(type, paymentId, salesId = '', lifeplanId = '') {
+        const selectedReason = document.querySelector('input[name="declineReason"]:checked');
+        let reason = '';
+        
+        if (!selectedReason) {
+            Swal.fire('Error!', 'Please select a reason for declining', 'error');
+            return;
+        }
+        
+        reason = selectedReason.value;
+        if (reason === 'Others') {
+            reason = document.getElementById('otherReason').value;
+            if (!reason.trim()) {
+                Swal.fire('Error!', 'Please specify the reason', 'error');
+                return;
+            }
+        }
+        
+        // Send the decline request
+        let endpoint = '';
+        if (type === 'traditional') {
+            endpoint = `payments/decline_traditional.php?payment_id=${paymentId}&sales_id=${salesId}&reason=${encodeURIComponent(reason)}`;
+        } else if (type === 'custom') {
+            endpoint = `payments/decline_custom.php?payment_id=${paymentId}&reason=${encodeURIComponent(reason)}`;
+        } else if (type === 'lifeplan') {
+            endpoint = `payments/decline_lifeplan.php?payment_id=${paymentId}&lifeplan_id=${lifeplanId}&reason=${encodeURIComponent(reason)}`;
+        }
+        
+        fetch(endpoint, { method: 'GET' })
+            .then(response => {
+                if (!response.ok) throw new Error('Server error');
+                return response.json();
+            })
+            .then(data => {
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Payment has been declined',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    // Close both modals and refresh
+                    document.getElementById('declineModal').classList.add('hidden');
+                    if (type === 'traditional') {
+                        document.getElementById('traditionalModal').classList.add('hidden');
+                    } else if (type === 'custom') {
+                        document.getElementById('customModal').classList.add('hidden');
+                    } else if (type === 'lifeplan') {
+                        document.getElementById('lifeplanModal').classList.add('hidden');
+                    }
+                    document.body.classList.remove('overflow-hidden');
+                    location.reload();
+                });
+            })
+            .catch(error => {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Failed to decline payment: ' + error.message,
+                    icon: 'error'
+                });
+            });
+    }
+
+    // Initialize decline modal functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        // Show/hide other reason textarea
+        document.querySelectorAll('input[name="declineReason"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                document.getElementById('otherReasonContainer').classList.toggle('hidden', this.value !== 'Others');
+            });
+        });
+
+        // Close decline modal
+        document.getElementById('closeDeclineModal').onclick = function() {
+            document.getElementById('declineModal').classList.add('hidden');
+        };
+        
+        document.getElementById('cancelDeclineModal').onclick = function() {
+            document.getElementById('declineModal').classList.add('hidden');
+        };
+    });
+
+    // Close modals when clicking outside
+    window.addEventListener('click', function(event) {
+        if (event.target.id === 'traditionalModal') {
+            document.getElementById('traditionalModal').classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+        if (event.target.id === 'customModal') {
+            document.getElementById('customModal').classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+        if (event.target.id === 'lifeplanModal') {
+            document.getElementById('lifeplanModal').classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+        if (event.target.id === 'declineModal') {
+            document.getElementById('declineModal').classList.add('hidden');
         }
     });
 </script>
