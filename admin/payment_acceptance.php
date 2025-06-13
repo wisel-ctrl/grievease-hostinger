@@ -103,7 +103,8 @@ $custom_query = "SELECT
     ir_tb.status
 FROM custompayment_request_tb AS ir_tb
 JOIN users AS u ON ir_tb.customer_id = u.id
-JOIN customsales_tb AS cs_tb ON ir_tb.customsales_id = cs_tb.customsales_id";
+JOIN customsales_tb AS cs_tb ON ir_tb.customsales_id = cs_tb.customsales_id
+WHERE ir_tb.status = 'pending'";
 
 // Get total count for custom payments
 $custom_count_query = "SELECT COUNT(*) as total FROM custompayment_request_tb";
