@@ -1094,6 +1094,8 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
         document.getElementById('customModal').classList.remove('hidden');
         document.body.classList.add('overflow-hidden');
 
+        console.log('payment amount: ',amount);
+
         // Set current payment details
         currentPaymentType = 'custom';
         currentPaymentId = paymentId;
