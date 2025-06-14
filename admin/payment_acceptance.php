@@ -1004,7 +1004,10 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
     function openTraditionalModal(imageUrl, amount, paymentId, salesId) {
         const imgSrc = '../customer/payments/' + imageUrl;
         document.getElementById('traditionalReceiptImage').src = imgSrc;
-        document.getElementById('traditionalAmountInput').value = amount;
+
+        const numericAmount = amount.replace(/[^0-9.]/g, '');
+        document.getElementById('traditionalAmountInput').value = numericAmount;
+
         document.getElementById('traditionalModal').classList.remove('hidden');
         document.body.classList.add('overflow-hidden');
 
@@ -1128,9 +1131,6 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
         document.getElementById('customModal').classList.remove('hidden');
         document.body.classList.add('overflow-hidden');
 
-        console.log('payment amount: ', amount);
-        console.log('numeric amount: ', numericAmount);
-
         // Set current payment details
         currentPaymentType = 'custom';
         currentPaymentId = paymentId;
@@ -1229,7 +1229,10 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
     // Lifeplan Modal Functions
     function openLifeplanModal(imageUrl, amount, paymentId, lifeplanId) {
         document.getElementById('lifeplanReceiptImage').src = '../customer/payments/' + imageUrl;
-        document.getElementById('lifeplanAmountInput').value = amount;
+
+        const numericAmount = amount.replace(/[^0-9.]/g, '');
+        document.getElementById('lifeplanAmountInput').value = numericAmount;
+        
         document.getElementById('lifeplanModal').classList.remove('hidden');
         document.body.classList.add('overflow-hidden');
 
