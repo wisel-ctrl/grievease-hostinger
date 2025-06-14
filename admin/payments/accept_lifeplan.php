@@ -24,7 +24,7 @@ $payment_id = $_GET['payment_id'];
 $lifeplan_id = $_GET['lifeplan_id'];
 $amount = $_GET['amount'];
 $current_datetime = date('Y-m-d H:i:s');
-$current_month = date('F Y'); // Gets the full month name and year (e.g., "June 2023")
+$current_month = date('F Y');
 
 // Start transaction
 mysqli_begin_transaction($conn);
@@ -46,6 +46,13 @@ try {
     $current_balance = $lifeplan_data['balance'];
     $amount_paid = $lifeplan_data['amount_paid'];
     $custom_price = $lifeplan_data['custom_price'];
+    
+    // Check if amount exceeds balance
+    if ($amount > $current_balance) {
+        header("Location: ../payment_acceptance.php?error=amount_exceeds_balance&balance=" . $current_balance);
+        exit();
+    }
+    
     $new_balance = $current_balance - $amount;
     $new_amount_paid = $amount_paid + $amount;
     

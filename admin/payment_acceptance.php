@@ -1269,6 +1269,15 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
                     
                     if (!response.ok) throw new Error('Server error');
 
+                    const responseURL = response.url;
+                    const url = new URL(responseURL);
+                    const error = url.searchParams.get('error');
+                    const balance = url.searchParams.get('balance'); // Get balance from URL if available
+            
+                    if (error === 'amount_exceeds_balance') {
+                        throw new Error(`The amount entered (₱${amount}) is greater than the remaining balance (₱${balance}) for this life plan.`);
+                    }
+
                     Swal.fire({
                         title: 'Success!',
                         text: 'Payment accepted successfully',
