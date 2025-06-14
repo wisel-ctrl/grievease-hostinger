@@ -1193,11 +1193,14 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
                     { method: 'GET' }
                 );
                 
-                if (!response.ok) throw new Error('Server error');
-
                 const data = await response.json();
                 
-                if (data.error) throw new Error(data.error);
+                // Check for both HTTP errors and application errors
+                if (!response.ok || data.error) {
+                    // Use the error message from server if available, otherwise generic message
+                    const errorMsg = data.error || 'Server returned an error';
+                    throw new Error(errorMsg);
+                }
 
                 // 3. Show success message
                 Swal.fire({
@@ -1215,7 +1218,7 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
             } catch (error) {
                 Swal.fire({
                     title: 'Error!',
-                    text: 'Failed to accept payment: ' + error.message,
+                    text: error.message, // Display the actual error message from the server
                     icon: 'error'
                 });
             }
