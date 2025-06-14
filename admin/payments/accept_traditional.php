@@ -24,6 +24,7 @@ $payment_id = $_GET['payment_id'];
 $sales_id = $_GET['sales_id'];
 $amount = floatval($_GET['amount']); // Convert to float for safety
 $current_datetime = date('Y-m-d H:i:s');
+$current_month = date('F Y'); // Get current month and year for notes
 
 // Start transaction
 mysqli_begin_transaction($conn);
@@ -86,14 +87,17 @@ try {
         Payment_Amount, 
         Payment_Timestamp, 
         Method_of_Payment, 
-        sales_ID
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        sales_ID,
+        notes
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+    $notes = "payment for $current_month submitted via online payment";
     
     $stmt = mysqli_prepare($conn, $insert_installment);
     $method_of_payment = 'Online Payment';
     mysqli_stmt_bind_param(
         $stmt, 
-        "iisddsssi", 
+        "iisddsssis", 
         $_SESSION['user_id'], 
         $branch_id, 
         $full_name, 
@@ -102,7 +106,8 @@ try {
         $amount, 
         $current_datetime, 
         $method_of_payment, 
-        $sales_id
+        $sales_id,
+        $notes
     );
     mysqli_stmt_execute($stmt);
     
