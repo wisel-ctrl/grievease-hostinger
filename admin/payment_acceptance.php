@@ -107,7 +107,7 @@ JOIN customsales_tb AS cs_tb ON ir_tb.customsales_id = cs_tb.customsales_id
 WHERE ir_tb.status = 'pending'";
 
 // Get total count for custom payments
-$custom_count_query = "SELECT COUNT(*) as total FROM custompayment_request_tb";
+$custom_count_query = "SELECT COUNT(*) as total FROM custompayment_request_tb WHERE status = 'pending'";
 $custom_count_result = mysqli_query($conn, $custom_count_query);
 $custom_total = mysqli_fetch_assoc($custom_count_result)['total'];
 $custom_total_pages = ceil($custom_total / $per_page);
@@ -141,7 +141,7 @@ JOIN services_tb AS s_tb ON sl_tb.service_id = s_tb.service_id
 WHERE ir_tb.status = 'pending'";
 
 // Get total count for lifeplan payments
-$lifeplan_count_query = "SELECT COUNT(*) as total FROM lifeplanpayment_request_tb";
+$lifeplan_count_query = "SELECT COUNT(*) as total FROM lifeplanpayment_request_tb WHERE status = 'pending'";
 $lifeplan_count_result = mysqli_query($conn, $lifeplan_count_query);
 $lifeplan_total = mysqli_fetch_assoc($lifeplan_count_result)['total'];
 $lifeplan_total_pages = ceil($lifeplan_total / $per_page);
