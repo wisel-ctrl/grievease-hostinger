@@ -985,6 +985,21 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
     let currentSalesId = '';
     let currentLifeplanId = '';
 
+    // Function to validate amount
+    function validateAmount(amountInput) {
+        const amount = parseFloat(amountInput.value);
+        if (isNaN(amount) || amount <= 0) {
+            Swal.fire({
+                title: 'Invalid Amount',
+                text: 'Amount must be greater than 0',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            return false;
+        }
+        return true;
+    }
+
     // Traditional Payment Modal Functions
     function openTraditionalModal(imageUrl, amount, paymentId, salesId) {
         const imgSrc = '../customer/payments/' + imageUrl;
@@ -1015,7 +1030,12 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
         const approveBtn = document.getElementById('approveTraditionalPayment');
         
         approveBtn.onclick = async function() {
-            const amount = document.getElementById('traditionalAmountInput').value;
+            const amountInput = document.getElementById('traditionalAmountInput');
+            
+            // Validate amount
+            if (!validateAmount(amountInput)) return;
+            
+            const amount = amountInput.value;
             
             // 1. Show confirmation dialog
             const { isConfirmed } = await Swal.fire({
@@ -1137,7 +1157,12 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
         const approveBtn = document.getElementById('approveCustomPayment');
         
         approveBtn.onclick = async function() {
-            const amount = document.getElementById('customAmountInput').value;
+            const amountInput = document.getElementById('customAmountInput');
+            
+            // Validate amount
+            if (!validateAmount(amountInput)) return;
+            
+            const amount = amountInput.value;
             
             // 1. Show confirmation dialog
             const { isConfirmed } = await Swal.fire({
@@ -1205,7 +1230,12 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
 
         const approveBtn = document.getElementById('approveLifeplanPayment');
         approveBtn.onclick = async function() {
-            const amount = document.getElementById('lifeplanAmountInput').value;
+            const amountInput = document.getElementById('lifeplanAmountInput');
+            
+            // Validate amount
+            if (!validateAmount(amountInput)) return;
+            
+            const amount = amountInput.value;
             
             const { isConfirmed } = await Swal.fire({
                 title: 'Confirm Acceptance',
