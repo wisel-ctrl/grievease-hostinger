@@ -59,7 +59,7 @@ try {
     
     // Validate if amount is greater than balance
     if ($amount > $balance) {
-        header("Location: ../payment_acceptance.php?error=amount_exceeds_balance");
+        header("Location: ../payment_acceptance.php?error=amount_exceeds_balance&balance=" . number_format($balance, 2));
         exit();
     }
     
