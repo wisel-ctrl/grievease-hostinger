@@ -57,6 +57,12 @@ try {
     $new_amount_paid = $current_amount_paid + $amount;
     $new_balance = $balance - $amount;
     
+    // Validate if amount is greater than balance
+    if ($amount > $balance) {
+        header("Location: ../payment_acceptance.php?error=amount_exceeds_balance");
+        exit();
+    }
+    
     // Update payment status to 'approved'
     $update_payment = "UPDATE installment_request_tb SET status = 'accepted', acceptdecline_date = ? WHERE payment_id = ?";
     $stmt = mysqli_prepare($conn, $update_payment);

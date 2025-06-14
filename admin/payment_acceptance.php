@@ -1059,6 +1059,15 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
                 
                 if (!response.ok) throw new Error('Server error');
 
+                // Get the response URL to check for redirect parameters
+                const responseURL = response.url;
+                const url = new URL(responseURL);
+                const error = url.searchParams.get('error');
+                
+                if (error === 'amount_exceeds_balance') {
+                    throw new Error('The amount entered is greater than the remaining balance for this sale.');
+                }
+
                 // 3. Show success message
                 Swal.fire({
                     title: 'Success!',
