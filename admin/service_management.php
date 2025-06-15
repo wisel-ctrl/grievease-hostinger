@@ -372,7 +372,7 @@ if ($branchResult->num_rows > 0) {
                 </div>
 
                 <!-- Archive Button -->
-                <button id="archiveBtn" class="px-4 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover whitespace-nowrap">
+                <button class="px-4 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover whitespace-nowrap" onclick="openArchiveModal(<?php echo $branchId; ?>)">
                     <i class="fas fa-archive text-sidebar-accent"></i>
                     <span>Archive</span>
                 </button>
@@ -410,7 +410,7 @@ if ($branchResult->num_rows > 0) {
                     </div>
 
                     <!-- Archive Icon Button -->
-                    <button class="w-10 h-10 flex items-center justify-center text-sidebar-accent">
+                    <button class="w-10 h-10 flex items-center justify-center text-sidebar-accent" onclick="openArchiveModal(<?php echo $branchId; ?>)">
                         <i class="fas fa-archive text-xl"></i>
                     </button>
                 </div>
@@ -1668,42 +1668,53 @@ window.addEventListener('popstate', function(event) {
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const archiveBtn = document.getElementById('archiveBtn');
     const archiveModal = document.getElementById('archiveModal');
     const closeArchiveModal = document.getElementById('closeArchiveModal');
     const closeArchiveModalBtn = document.getElementById('closeArchiveModalBtn');
     const archivedServicesTable = document.getElementById('archivedServicesTable');
     const noArchivedServices = document.getElementById('noArchivedServices');
+    let currentBranchId = null;
 
-    // Open modal when archive button is clicked
-    archiveBtn.addEventListener('click', function() {
+    // Function to open archive modal
+    window.openArchiveModal = function(branchId) {
+        currentBranchId = branchId;
         archiveModal.classList.remove('hidden');
-        fetchArchivedServices();
-    });
+        fetchArchivedServices(branchId);
+    };
 
-    // Close modal when close button is clicked
-    closeArchiveModal.addEventListener('click', function() {
+    // Function to close archive modal
+    function closeModal() {
         archiveModal.classList.add('hidden');
-    });
+        currentBranchId = null;
+        archivedServicesTable.innerHTML = ''; // Clear table content
+        noArchivedServices.classList.add('hidden'); // Hide no services message
+    }
 
-    // Close modal when close button is clicked
-    closeArchiveModalBtn.addEventListener('click', function() {
-        archiveModal.classList.add('hidden');
-    });
+    // Close modal when close button (X) is clicked
+    if (closeArchiveModal) {
+        closeArchiveModal.addEventListener('click', closeModal);
+    }
+
+    // Close modal when close button (footer) is clicked
+    if (closeArchiveModalBtn) {
+        closeArchiveModalBtn.addEventListener('click', closeModal);
+    }
 
     // Close modal when clicking outside the modal content
-    archiveModal.addEventListener('click', function(e) {
-        if (e.target === archiveModal) {
-            archiveModal.classList.add('hidden');
-        }
-    });
+    if (archiveModal) {
+        archiveModal.addEventListener('click', function(e) {
+            if (e.target === archiveModal) {
+                closeModal();
+            }
+        });
+    }
 
-    // Function to fetch archived services
-    function fetchArchivedServices() {
+    // Function to fetch archived services for a specific branch
+    function fetchArchivedServices(branchId) {
         // Show loading state
         archivedServicesTable.innerHTML = '<tr><td colspan="3" class="px-6 py-4 text-center"><div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mx-auto"></div></td></tr>';
         
-        fetch('servicesManagement/fetch_archived_services.php')
+        fetch(`servicesManagement/fetch_archived_services.php?branch_id=${branchId}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`Server responded with ${response.status}`);
@@ -1735,7 +1746,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <button 
                                     class="unarchive-btn px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 flex items-center gap-2"
                                     data-service-id="${service.service_id}"
-                                    data-service-name="${service.service_name}">
+                                    data-service-name="${service.service_name}"
+                                    data-branch-id="${branchId}">
                                     <i class="fas fa-archive"></i>
                                     <span>Unarchive</span>
                                 </button>
@@ -1746,11 +1758,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     // Add event listeners to unarchive buttons
                     document.querySelectorAll('.unarchive-btn').forEach(btn => {
-                        btn.addEventListener('click', function() {
-                            const serviceId = this.getAttribute('data-service-id');
-                            const serviceName = this.getAttribute('data-service-name');
-                            showUnarchiveConfirmation(serviceId, serviceName);
-                        });
+                        btn.removeEventListener('click', handleUnarchiveClick); // Remove previous listeners to prevent duplicates
+                        btn.addEventListener('click', handleUnarchiveClick);
                     });
                 }
             })
@@ -1760,29 +1769,36 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
+    // Handle unarchive button click
+    function handleUnarchiveClick() {
+        const serviceId = this.getAttribute('data-service-id');
+        const serviceName = this.getAttribute('data-service-name');
+        const branchId = this.getAttribute('data-branch-id');
+        showUnarchiveConfirmation(serviceId, serviceName, branchId);
+    }
+
     // Function to show confirmation dialog using SweetAlert
-    function showUnarchiveConfirmation(serviceId, serviceName) {
+    function showUnarchiveConfirmation(serviceId, serviceName, branchId) {
         Swal.fire({
             title: 'Unarchive Service',
             html: `Are you sure you want to unarchive <strong>${serviceName}</strong>?`,
             icon: 'question',
             showCancelButton: true,
-            confirmButtonColor: '#10B981', // Green color
-            cancelButtonColor: '#6B7280', // Gray color
+            confirmButtonColor: '#10B981',
+            cancelButtonColor: '#6B7280',
             confirmButtonText: 'Yes, unarchive it!',
             cancelButtonText: 'Cancel',
             reverseButtons: true,
             focusConfirm: false
         }).then((result) => {
             if (result.isConfirmed) {
-                unarchiveService(serviceId);
+                unarchiveService(serviceId, branchId);
             }
         });
     }
 
     // Function to unarchive a service
-    function unarchiveService(serviceId) {
-        // Show loading state with SweetAlert
+    function unarchiveService(serviceId, branchId) {
         Swal.fire({
             title: 'Processing...',
             text: 'Please wait while we unarchive the service.',
@@ -1796,6 +1812,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const formData = new FormData();
         formData.append('service_id', serviceId);
+        formData.append('branch_id', branchId);
         
         fetch('servicesManagement/unarchive_service.php', {
             method: 'POST',
@@ -1804,18 +1821,14 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Show success message
                 Swal.fire({
                     title: 'Success!',
                     text: 'Service has been unarchived successfully.',
                     icon: 'success',
                     confirmButtonColor: '#10B981'
                 }).then(() => {
-                    // Close the archive modal
-                    archiveModal.classList.add('hidden');
-                    
-                    // Reload the page to refresh the services list
-                    window.location.reload();
+                    closeModal(); // Close modal after unarchiving
+                    loadBranchTable(branchId); // Refresh the branch table
                 });
             } else {
                 Swal.fire({

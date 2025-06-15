@@ -1,31 +1,35 @@
 <?php
-// fetch_archived_services.php
-session_start();
-
-// Include database connection
-include '../../db_connect.php';
+require_once '../../db_connect.php';
 
 header('Content-Type: application/json');
 
-try {
-    // Only fetch the needed fields
-    $sql = "SELECT service_id, service_name FROM services_tb WHERE status = 'Inactive'";
-    
-    // Execute the query
-    $result = $conn->query($sql);
-    
-    if (!$result) {
-        throw new Exception("Query failed: " . $conn->error);
-    }
-    
-    $archivedServices = [];
-    while ($row = $result->fetch_assoc()) {
-        $archivedServices[] = $row;
-    }
-    
-    echo json_encode($archivedServices);
-} catch (Exception $e) {
-    http_response_code(500);
-    echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
+// Get branch_id from query parameter
+$branch_id = isset($_GET['branch_id']) ? intval($_GET['branch_id']) : null;
+
+if (!$branch_id) {
+    echo json_encode([]);
+    exit;
 }
+
+// Query to fetch archived services for the specified branch
+$sql = "SELECT service_id, service_name 
+        FROM services_tb 
+        WHERE status = 'Inactive' AND branch_id = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $branch_id);
+$stmt->execute();
+$result = $stmt->get_result();
+
+$services = [];
+while ($row = $result->fetch_assoc()) {
+    $services[] = [
+        'service_id' => $row['service_id'],
+        'service_name' => $row['service_name']
+    ];
+}
+
+echo json_encode($services);
+
+$stmt->close();
+$conn->close();
 ?>
