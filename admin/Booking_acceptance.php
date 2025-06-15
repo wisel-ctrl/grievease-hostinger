@@ -3034,8 +3034,10 @@ document.getElementById('paymentForm').addEventListener('submit', function(e) {
     e.preventDefault();
     console.log('Payment form submitted'); // Log form submission
     
-    const amountPaid = document.getElementById('amountPaidInput').value;
+    const amountPaid = parseFloat(document.getElementById('amountPaidInput').value);
     const paymentMethod = document.getElementById('paymentMethod').value;
+    const initialPrice = parseFloat(document.getElementById('initialPrice').value) || 0;
+    
     console.log('Amount Paid:', amountPaid, 'Payment Method:', paymentMethod); // Log input values
     
     if (!amountPaid || !paymentMethod) {
@@ -3044,6 +3046,17 @@ document.getElementById('paymentForm').addEventListener('submit', function(e) {
             icon: 'error',
             title: 'Error',
             text: 'Please fill in all payment details',
+        });
+        return;
+    }
+    
+    // Add validation for amountPaid being greater than initialPrice
+    if (amountPaid > initialPrice) {
+        console.log('Validation failed - amount paid exceeds initial price'); // Log validation failure
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            html: `Amount paid <strong>₱${amountPaid.toFixed(2)}</strong> is higher than the initial price <strong>₱${initialPrice.toFixed(2)}</strong>`,
         });
         return;
     }
@@ -3061,8 +3074,7 @@ document.getElementById('paymentForm').addEventListener('submit', function(e) {
     console.log('Added additional fields - bookingId:', currentBookingIdForPayment, 'action: acceptBooking');
     
     // Calculate balance for display in confirmation
-    const initialPrice = parseFloat(document.getElementById('initialPrice').value) || 0;
-    const balance = initialPrice - parseFloat(amountPaid);
+    const balance = initialPrice - amountPaid;
     const paymentStatus = balance <= 0 ? 'Fully Paid' : 'With Balance';
     console.log('Calculated values - Initial Price:', initialPrice, 'Balance:', balance, 'Status:', paymentStatus);
     
@@ -3070,7 +3082,7 @@ document.getElementById('paymentForm').addEventListener('submit', function(e) {
     Swal.fire({
         title: 'Confirm Payment Details',
         html: `<div class="text-left">
-            <p><strong>Amount Paid:</strong> ₱${parseFloat(amountPaid).toFixed(2)}</p>
+            <p><strong>Amount Paid:</strong> ₱${amountPaid.toFixed(2)}</p>
             <p><strong>Payment Method:</strong> ${paymentMethod}</p>
             <p><strong>Initial Price:</strong> ₱${initialPrice.toFixed(2)}</p>
             <p><strong>Balance:</strong> ₱${balance.toFixed(2)}</p>
