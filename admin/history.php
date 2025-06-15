@@ -1066,59 +1066,152 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
 
   <!-- Custom Sales Tab Content -->
   <div id="custom-content" class="tab-content hidden">
-
-    <!-- Ongoing Custom Services Section -->
-    <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
-      <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
-        <h3 class="text-lg font-semibold text-sidebar-text">Ongoing Custom Services</h3>
-        <div class="flex gap-2">
+  <!-- Ongoing Custom Services Section -->
+  <div id="ongoing-custom-services-management" class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden">
+    <!-- Header Section -->
+    <div class="bg-sidebar-hover p-4 border-b border-sidebar-border">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+        <div class="flex items-center gap-3 mb-4 lg:mb-0">
+          <h4 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Ongoing Custom Services</h4>
+          <?php
+          $countQuery = "SELECT COUNT(*) as total FROM customsales_tb WHERE status = 'Pending'";
+          $countResult = $conn->query($countQuery);
+          $totalOngoingCustom = $countResult->fetch_assoc()['total'];
+          ?>
+          <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+            <?php echo $totalOngoingCustom; ?>
+          </span>
+        </div>
+        <div class="hidden lg:flex items-center gap-3">
           <div class="relative">
-            <input type="text" id="searchCustomOngoing" placeholder="Search..." 
-                   class="pl-9 pr-4 py-2 border border-sidebar-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent"
-                   onkeyup="debounceSearch()">
-            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <i class="fas fa-search text-gray-400"></i>
+            <input type="text" id="searchCustomOngoing" 
+                   placeholder="Search services..." 
+                   class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent"
+                   oninput="debouncedFilterCustomOngoing()">
+            <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
+          </div>
+          <div class="relative filter-dropdown">
+            <button id="filterToggleCustomOngoing" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover">
+              <i class="fas fa-filter text-sidebar-accent"></i>
+              <span>Filters</span>
+              <span id="filterIndicatorCustomOngoing" class="hidden h-2 w-2 bg-sidebar-accent rounded-full"></span>
+            </button>
+            <div id="filterDropdownCustomOngoing" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
+              <div class="space-y-4">
+                <div>
+                  <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
+                  <div class="space-y-1">
+                    <div class="flex items-center cursor-pointer" data-sort="id_asc">
+                      <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">ID: Ascending</span>
+                    </div>
+                    <div class="flex items-center cursor-pointer" data-sort="id_desc">
+                      <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">ID: Descending</span>
+                    </div>
+                    <div class="flex items-center cursor-pointer" data-sort="client_asc">
+                      <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">Client: A-Z</span>
+                    </div>
+                    <div class="flex items-center cursor-pointer" data-sort="client_desc">
+                      <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">Client: Z-A</span>
+                    </div>
+                    <div class="flex items-center cursor-pointer" data-sort="date_asc">
+                      <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">Date: Oldest First</span>
+                    </div>
+                    <div class="flex items-center cursor-pointer" data-sort="date_desc">
+                      <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">Date: Newest First</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-      <div class="overflow-x-auto scrollbar-thin">
+      <div class="lg:hidden w-full mt-4">
+        <div class="flex items-center w-full gap-3 mb-4">
+          <div class="relative flex-grow">
+            <input type="text" id="searchCustomOngoingMobile" 
+                   placeholder="Search services..." 
+                   class="pl-8 pr-3 py-2.5 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent"
+                   oninput="debouncedFilterCustomOngoing()">
+            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+          </div>
+          <div class="relative filter-dropdown">
+            <button id="filterToggleCustomOngoingMobile" class="w-10 h-10 flex items-center justify-center text-sidebar-accent">
+              <i class="fas fa-filter text-xl"></i>
+              <span id="filterIndicatorCustomOngoingMobile" class="hidden absolute top-1 right-1 h-2 w-2 bg-sidebar-accent rounded-full"></span>
+            </button>
+            <div id="filterDropdownCustomOngoingMobile" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
+              <div class="space-y-4">
+                <div>
+                  <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
+                  <div class="space-y-2">
+                    <div class="flex items-center cursor-pointer" data-sort="id_asc">
+                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">ID: Ascending</span>
+                    </div>
+                    <div class="flex items-center cursor-pointer" data-sort="id_desc">
+                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">ID: Descending</span>
+                    </div>
+                    <div class="flex items-center cursor-pointer" data-sort="client_asc">
+                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">Client: A-Z</span>
+                    </div>
+                    <div class="flex items-center cursor-pointer" data-sort="client_desc">
+                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">Client: Z-A</span>
+                    </div>
+                    <div class="flex items-center cursor-pointer" data-sort="date_asc">
+                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">Date: Oldest First</span>
+                    </div>
+                    <div class="flex items-center cursor-pointer" data-sort="date_desc">
+                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">Date: Newest First</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="overflow-x-auto scrollbar-thin" id="customOngoingTableContainer">
+      <div id="customOngoingLoadingIndicator" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center">
+        <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
+      </div>
+      <div class="min-w-full">
         <table class="w-full">
           <thead>
             <tr class="bg-gray-50 border-b border-sidebar-border">
-              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
                 <div class="flex items-center gap-1.5">
-                  <i class="fas fa-hashtag text-sidebar-accent"></i> ID 
+                  <i class="fas fa-hashtag text-sidebar-accent"></i> ID
                 </div>
               </th>
-              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortCustomOngoingTable(1)">
                 <div class="flex items-center gap-1.5">
-                  <i class="fas fa-user text-sidebar-accent"></i> Client 
+                  <i class="fas fa-user text-sidebar-accent"></i> Client
                 </div>
               </th>
-              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortCustomOngoingTable(2)">
                 <div class="flex items-center gap-1.5">
-                  <i class="fas fa-user-alt text-sidebar-accent"></i> Deceased 
+                  <i class="fas fa-user-alt text-sidebar-accent"></i> Deceased
                 </div>
               </th>
-              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortCustomOngoingTable(3)">
                 <div class="flex items-center gap-1.5">
-                  <i class="fas fa-tag text-sidebar-accent"></i> Service Price
+                  <i class="fas fa-tag text-sidebar-accent"></i> Service Type
                 </div>
               </th>
-              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortCustomOngoingTable(4)">
                 <div class="flex items-center gap-1.5">
-                  <i class="fas fa-calendar text-sidebar-accent"></i> Date of Burial 
+                  <i class="fas fa-calendar text-sidebar-accent"></i> Date of Burial
                 </div>
               </th>
-              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortCustomOngoingTable(5)">
                 <div class="flex items-center gap-1.5">
-                  <i class="fas fa-map-marker-alt text-sidebar-accent"></i> Branch 
+                  <i class="fas fa-toggle-on text-sidebar-accent"></i> Status
                 </div>
               </th>
-              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortCustomOngoingTable(6)">
                 <div class="flex items-center gap-1.5">
-                  <i class="fas fa-peso-sign text-sidebar-accent"></i> Outstanding Balance 
+                  <i class="fas fa-peso-sign text-sidebar-accent"></i> Outstanding Balance
                 </div>
               </th>
               <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
@@ -1128,147 +1221,162 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
               </th>
             </tr>
           </thead>
-          <tbody id="customOngoingServiceTableBody">
-              <?php
-              // Query for Custom Ongoing Services
-              $customOngoingQuery = "SELECT 
-                cs.customsales_id,
-                CONCAT_WS(' ', 
-                  u.first_name, 
-                  COALESCE(u.middle_name, ''), 
-                  u.last_name, 
-                  COALESCE(u.suffix, '')
-                ) AS client_name,
-                CONCAT_WS(' ', 
-                  cs.fname_deceased, 
-                  COALESCE(cs.mname_deceased, ''), 
-                  cs.lname_deceased, 
-                  COALESCE(cs.suffix_deceased, '')
-                ) AS deceased_name,
-                cs.discounted_price,
-                cs.date_of_burial,
-                b.branch_name,
-                cs.status,
-                cs.balance,
-                cs.customer_id,
-                (SELECT COUNT(*) FROM employee_service_payments esp WHERE esp.sales_id = cs.customsales_id AND esp.sales_type = 'custom') AS staff_assigned
-              FROM customsales_tb AS cs
-              JOIN users AS u ON cs.customer_id = u.id
-              JOIN branch_tb as b ON cs.branch_id = b.branch_id
-              WHERE cs.status = 'Pending'
-                    LIMIT ?, ?";
-              $stmt = $conn->prepare($customOngoingQuery);
-              $stmt->bind_param("ii", $offsetCustomOngoing, $recordsPerPage); 
-              $stmt->execute();
-              $customOngoingResult = $stmt->get_result();
-              
-              if ($customOngoingResult->num_rows > 0) {
-                while($row = $customOngoingResult->fetch_assoc()) {
-                  ?>
-              <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
-                <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">#<?php echo $row['customsales_id']; ?></td>
-                <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['client_name']); ?></td>
-                <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['deceased_name']); ?></td>
-                <td class="px-4 py-3.5 text-sm text-sidebar-text">
-                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
-                    <?php echo '₱' . number_format($row['discounted_price'], 2); ?>
-                  </span>
-                </td>
-                <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['date_of_burial']); ?></td>
-                <td class="px-4 py-3.5 text-sm text-sidebar-text">
-                  <?php echo ucfirst(strtolower(htmlspecialchars($row['branch_name']))); ?>
-                </td>
-                <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱<?php echo number_format($row['balance'], 2); ?></td>
-                <td class="px-4 py-3.5 text-sm">
-                  <div class="flex space-x-2">
-                    <button class="p-2 bg-yellow-100 text-yellow-600 rounded-lg hover:bg-yellow-200 transition-all tooltip" title="Edit Service" onclick="openEditCustomServiceModal('<?php echo $row['customsales_id']; ?>')">
-                      <i class="fas fa-edit"></i>
-                    </button>
-                    <?php if ($row['staff_assigned'] == 0): ?>
-                      <button class="p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-all tooltip assign-staff-btn" 
-                      title="Assign Staff" 
-                      onclick="openAssignCustomStaffModal('<?php echo $row['customsales_id']; ?>')"
-                      data-has-customer="<?php echo $row['customer_id'] ? 'true' : 'false'; ?>">
-                        <i class="fas fa-users"></i>
-                      </button>
-                    <?php endif; ?>
-                    <button class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip complete-btn" 
-                    title="Complete Service" 
-                    onclick="openCompleteCustomModal('<?php echo $row['customsales_id']; ?>')"
-                    data-has-customer="<?php echo $row['customer_id'] ? 'true' : 'false'; ?>">
-                      <i class="fas fa-check"></i>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-              <?php
-                }
-              } else {
-                ?>
-                <tr>
-                  <td colspan="8" class="p-6 text-sm text-center">
-                    <div class="flex flex-col items-center">
-                      <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
-                      <p class="text-gray-500">No custom ongoing services found</p>
-                    </div>
-                  </td>
-                </tr>
-                <?php
-              }
-              $stmt->close();
-              ?>
-            </tbody>
+          <tbody id="customOngoingTableBody">
+            <!-- Data will be loaded via AJAX -->
+          </tbody>
         </table>
       </div>
     </div>
+    <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+      <div id="paginationInfoCustomOngoing" class="text-sm text-gray-500 text-center sm:text-left">
+        <!-- Pagination info will be updated via AJAX -->
+      </div>
+      <div id="paginationContainerCustomOngoing" class="flex space-x-2" data-table="customOngoing">
+        <!-- Pagination buttons will be updated via AJAX -->
+      </div>
+    </div>
+  </div>
 
-    <!-- Custom Past Services - Fully Paid Section -->
-    <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
-      <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
-        <h3 class="text-lg font-semibold text-sidebar-text">Custom Past Services - Fully Paid</h3>
-        <div class="flex gap-2">
+  <!-- Past Custom Services - Fully Paid Section -->
+  <div id="past-custom-services-fully-paid" class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden">
+    <div class="bg-sidebar-hover p-4 border-b border-sidebar-border">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+        <div class="flex items-center gap-3 mb-4 lg:mb-0">
+          <h4 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Past Custom Services - Fully Paid</h4>
+          <?php
+          $countQuery = "SELECT COUNT(*) as total FROM customsales_tb WHERE status = 'Completed' AND payment_status = 'Fully Paid' AND balance = 0";
+          $countResult = $conn->query($countQuery);
+          $totalCustomFullyPaid = $countResult->fetch_assoc()['total'];
+          ?>
+          <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+            <?php echo $totalCustomFullyPaid; ?>
+          </span>
+        </div>
+        <div class="hidden lg:flex items-center gap-3">
           <div class="relative">
-            <input type="text" id="searchCustomFullyPaid" placeholder="Search..." 
-                   class="pl-9 pr-4 py-2 border border-sidebar-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent"
-                   onkeyup="debounceSearch()">
-            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <i class="fas fa-search text-gray-400"></i>
+            <input type="text" id="searchCustomFullyPaid" 
+                   placeholder="Search services..." 
+                   class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent"
+                   oninput="debouncedFilterCustomFullyPaid()">
+            <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
+          </div>
+          <div class="relative filter-dropdown">
+            <button id="filterToggleCustomFullyPaid" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover">
+              <i class="fas fa-filter text-sidebar-accent"></i>
+              <span>Filters</span>
+              <span id="filterIndicatorCustomFullyPaid" class="hidden h-2 w-2 bg-sidebar-accent rounded-full"></span>
+            </button>
+            <div id="filterDropdownCustomFullyPaid" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
+              <div class="space-y-4">
+                <div>
+                  <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
+                  <div class="space-y-1">
+                    <div class="flex items-center cursor-pointer" data-sort="id_asc">
+                      <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">ID: Ascending</span>
+                    </div>
+                    <div class="flex items-center cursor-pointer" data-sort="id_desc">
+                      <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">ID: Descending</span>
+                    </div>
+                    <div class="flex items-center cursor-pointer" data-sort="client_asc">
+                      <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">Client: A-Z</span>
+                    </div>
+                    <div class="flex items-center cursor-pointer" data-sort="client_desc">
+                      <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">Client: Z-A</span>
+                    </div>
+                    <div class="flex items-center cursor-pointer" data-sort="date_asc">
+                      <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">Date: Oldest First</span>
+                    </div>
+                    <div class="flex items-center cursor-pointer" data-sort="date_desc">
+                      <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">Date: Newest First</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-      <div class="overflow-x-auto">
+      <div class="lg:hidden w-full mt-4">
+        <div class="flex items-center w-full gap-3 mb-4">
+          <div class="relative flex-grow">
+            <input type="text" id="searchCustomFullyPaidMobile" 
+                   placeholder="Search services..." 
+                   class="pl-8 pr-3 py-2.5 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent"
+                   oninput="debouncedFilterCustomFullyPaid()">
+            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+          </div>
+          <div class="relative filter-dropdown">
+            <button id="filterToggleCustomFullyPaidMobile" class="w-10 h-10 flex items-center justify-center text-sidebar-accent">
+              <i class="fas fa-filter text-xl"></i>
+              <span id="filterIndicatorCustomFullyPaidMobile" class="hidden absolute top-1 right-1 h-2 w-2 bg-sidebar-accent rounded-full"></span>
+            </button>
+            <div id="filterDropdownCustomFullyPaidMobile" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
+              <div class="space-y-4">
+                <div>
+                  <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
+                  <div class="space-y-2">
+                    <div class="flex items-center cursor-pointer" data-sort="id_asc">
+                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">ID: Ascending</span>
+                    </div>
+                    <div class="flex items-center cursor-pointer" data-sort="id_desc">
+                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">ID: Descending</span>
+                    </div>
+                    <div class="flex items-center cursor-pointer" data-sort="client_asc">
+                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">Client: A-Z</span>
+                    </div>
+                    <div class="flex items-center cursor-pointer" data-sort="client_desc">
+                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">Client: Z-A</span>
+                    </div>
+                    <div class="flex items-center cursor-pointer" data-sort="date_asc">
+                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">Date: Oldest First</span>
+                    </div>
+                    <div class="flex items-center cursor-pointer" data-sort="date_desc">
+                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">Date: Newest First</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="overflow-x-auto scrollbar-thin" id="customFullyPaidTableContainer">
+      <div id="customFullyPaidLoadingIndicator" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center">
+        <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
+      </div>
+      <div class="min-w-full">
         <table class="w-full">
           <thead>
             <tr class="bg-gray-50 border-b border-sidebar-border">
-              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
                 <div class="flex items-center gap-1.5">
                   <i class="fas fa-hashtag text-sidebar-accent"></i> ID
                 </div>
               </th>
-              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortCustomFullyPaidTable(1)">
                 <div class="flex items-center gap-1.5">
-                  <i class="fas fa-user text-sidebar-accent"></i> Customer Name
+                  <i class="fas fa-user text-sidebar-accent"></i> Client
                 </div>
               </th>
-              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortCustomFullyPaidTable(2)">
                 <div class="flex items-center gap-1.5">
-                  <i class="fas fa-user text-sidebar-accent"></i> Deceased Name
+                  <i class="fas fa-user-alt text-sidebar-accent"></i> Deceased
                 </div>
               </th>
-              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortCustomFullyPaidTable(3)">
                 <div class="flex items-center gap-1.5">
-                  <i class="fas fa-user text-sidebar-accent"></i> Service Price
+                  <i class="fas fa-tag text-sidebar-accent"></i> Service Type
                 </div>
               </th>
-              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortCustomFullyPaidTable(4)">
                 <div class="flex items-center gap-1.5">
                   <i class="fas fa-calendar text-sidebar-accent"></i> Date of Burial
                 </div>
               </th>
-              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortCustomFullyPaidTable(5)">
                 <div class="flex items-center gap-1.5">
-                  <i class="fas fa-map-marker-alt text-sidebar-accent"></i> Branch 
+                  <i class="fas fa-toggle-on text-sidebar-accent"></i> Status
                 </div>
               </th>
               <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
@@ -1279,130 +1387,164 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
             </tr>
           </thead>
           <tbody id="customFullyPaidTableBody">
-              <?php
-              // Query for Custom Fully Paid Services
-              $customFullyPaidQuery = "SELECT 
-                cs.customsales_id,
-                CONCAT_WS(' ', 
-                  u.first_name, 
-                  COALESCE(u.middle_name, ''), 
-                  u.last_name, 
-                  COALESCE(u.suffix, '')
-                ) AS client_name,
-                CONCAT_WS(' ', 
-                  cs.fname_deceased, 
-                  COALESCE(cs.mname_deceased, ''), 
-                  cs.lname_deceased, 
-                  COALESCE(cs.suffix_deceased, '')
-                ) AS deceased_name,
-                cs.discounted_price,
-                cs.date_of_burial,
-                b. branch_name,
-                cs.status,
-                cs.payment_status
-              FROM customsales_tb AS cs
-              JOIN users AS u ON cs.customer_id = u.id
-              JOIN branch_tb as b ON cs.branch_id = b.branch_id
-              WHERE cs.status = 'Completed' AND cs.payment_status = 'Fully Paid'
-              LIMIT ?, ?";
-              $stmt = $conn->prepare($customFullyPaidQuery);
-              $stmt->bind_param("ii", $offsetCustomFullyPaid, $recordsPerPage);
-              $stmt->execute();
-              $customFullyPaidResult = $stmt->get_result();
-
-              if ($customFullyPaidResult->num_rows > 0) {
-                while($row = $customFullyPaidResult->fetch_assoc()) {
-                  ?>
-                  <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
-                    <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">#<?php echo $row['customsales_id']; ?></td>
-                    <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['client_name']); ?></td>
-                    <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['deceased_name']); ?></td>
-                    <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo '₱' . number_format($row['discounted_price'], 2); ?></td>
-                    <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['date_of_burial']); ?></td>
-                    <td class="px-4 py-3.5 text-sm">
-                      <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-500 border border-green-200">
-                        <?php echo ucfirst(strtolower(htmlspecialchars($row['branch_name']))); ?>
-                      </span>
-                    </td>
-                    <td class="px-4 py-3.5 text-sm">
-                      <div class="flex space-x-2">
-                        <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details" onclick="viewCustomServiceDetails('<?php echo $row['customsales_id']; ?>', 'custom')">
-                          <i class="fas fa-eye"></i>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                  <?php
-                }
-              } else {
-                ?>
-                <tr>
-                  <td colspan="7" class="px-4 py-6 text-sm text-center">
-                    <div class="flex flex-col items-center">
-                      <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
-                      <p class="text-gray-500">No custom fully paid services found</p>
-                    </div>
-                  </td>
-                </tr>
-                <?php
-              }
-              $stmt->close();
-              ?>
-            </tbody>
+            <!-- Data will be loaded via AJAX -->
+          </tbody>
         </table>
       </div>
     </div>
+    <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+      <div id="paginationInfoCustomFullyPaid" class="text-sm text-gray-500 text-center sm:text-left">
+        <!-- Pagination info will be updated via AJAX -->
+      </div>
+      <div id="paginationContainerCustomFullyPaid" class="flex space-x-2" data-table="customFullyPaid">
+        <!-- Pagination buttons will be updated via AJAX -->
+      </div>
+    </div>
+  </div>
 
-    <!-- Custom Past Services - With Balance Section -->
-    <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
-      <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
-        <h3 class="text-lg font-semibold text-sidebar-text">Custom Past Services - With Balance</h3>
-        <div class="flex gap-2">
+  <!-- Past Custom Services - With Outstanding Balance Section -->
+  <div id="past-custom-services-outstanding" class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden">
+    <div class="bg-sidebar-hover p-4 border-b border-sidebar-border">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+        <div class="flex items-center gap-3 mb-4 lg:mb-0">
+          <h4 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Past Custom Services - With Outstanding Balance</h4>
+          <?php
+          $countQuery = "SELECT COUNT(*) as total FROM customsales_tb WHERE status = 'Completed' AND payment_status = 'With Balance'";
+          $countResult = $conn->query($countQuery);
+          $totalCustomOutstanding = $countResult->fetch_assoc()['total'];
+          ?>
+          <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+            <?php echo $totalCustomOutstanding; ?>
+          </span>
+        </div>
+        <div class="hidden lg:flex items-center gap-3">
           <div class="relative">
-            <input type="text" id="searchCustomWithBalance" placeholder="Search..." 
-                   class="pl-9 pr-4 py-2 border border-sidebar-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent"
-                   onkeyup="debounceSearch()">
-            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <i class="fas fa-search text-gray-400"></i>
+            <input type="text" id="searchCustomOutstanding" 
+                   placeholder="Search services..." 
+                   class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent"
+                   oninput="debouncedFilterCustomOutstanding()">
+            <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
+          </div>
+          <div class="relative filter-dropdown">
+            <button id="filterToggleCustomOutstanding" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover">
+              <i class="fas fa-filter text-sidebar-accent"></i>
+              <span>Filters</span>
+              <span id="filterIndicatorCustomOutstanding" class="hidden h-2 w-2 bg-sidebar-accent rounded-full"></span>
+            </button>
+            <div id="filterDropdownCustomOutstanding" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
+              <div class="space-y-4">
+                <div>
+                  <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
+                  <div class="space-y-1">
+                    <div class="flex items-center cursor-pointer" data-sort="id_asc">
+                      <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">ID: Ascending</span>
+                    </div>
+                    <div class="flex items-center cursor-pointer" data-sort="id_desc">
+                      <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">ID: Descending</span>
+                    </div>
+                    <div class="flex items-center cursor-pointer" data-sort="client_asc">
+                      <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">Client: A-Z</span>
+                    </div>
+                    <div class="flex items-center cursor-pointer" data-sort="client_desc">
+                      <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">Client: Z-A</span>
+                    </div>
+                    <div class="flex items-center cursor-pointer" data-sort="date_asc">
+                      <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">Date: Oldest First</span>
+                    </div>
+                    <div class="flex items-center cursor-pointer" data-sort="date_desc">
+                      <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">Date: Newest First</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-      <div class="overflow-x-auto">
+      <div class="lg:hidden w-full mt-4">
+        <div class="flex items-center w-full gap-3 mb-4">
+          <div class="relative flex-grow">
+            <input type="text" id="searchCustomOutstandingMobile" 
+                   placeholder="Search services..." 
+                   class="pl-8 pr-3 py-2.5 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent"
+                   oninput="debouncedFilterCustomOutstanding()">
+            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+          </div>
+          <div class="relative filter-dropdown">
+            <button id="filterToggleCustomOutstandingMobile" class="w-10 h-10 flex items-center justify-center text-sidebar-accent">
+              <i class="fas fa-filter text-xl"></i>
+              <span id="filterIndicatorCustomOutstandingMobile" class="hidden absolute top-1 right-1 h-2 w-2 bg-sidebar-accent rounded-full"></span>
+            </button>
+            <div id="filterDropdownCustomOutstandingMobile" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
+              <div class="space-y-4">
+                <div>
+                  <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
+                  <div class="space-y-2">
+                    <div class="flex items-center cursor-pointer" data-sort="id_asc">
+                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">ID: Ascending</span>
+                    </div>
+                    <div class="flex items-center cursor-pointer" data-sort="id_desc">
+                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">ID: Descending</span>
+                    </div>
+                    <div class="flex items-center cursor-pointer" data-sort="client_asc">
+                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">Client: A-Z</span>
+                    </div>
+                    <div class="flex items-center cursor-pointer" data-sort="client_desc">
+                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">Client: Z-A</span>
+                    </div>
+                    <div class="flex items-center cursor-pointer" data-sort="date_asc">
+                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">Date: Oldest First</span>
+                    </div>
+                    <div class="flex items-center cursor-pointer" data-sort="date_desc">
+                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">Date: Newest First</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="overflow-x-auto scrollbar-thin" id="customOutstandingTableContainer">
+      <div id="customOutstandingLoadingIndicator" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center">
+        <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
+      </div>
+      <div class="min-w-full">
         <table class="w-full">
           <thead>
             <tr class="bg-gray-50 border-b border-sidebar-border">
-              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
                 <div class="flex items-center gap-1.5">
                   <i class="fas fa-hashtag text-sidebar-accent"></i> ID
                 </div>
               </th>
-              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortCustomOutstandingTable(1)">
                 <div class="flex items-center gap-1.5">
-                  <i class="fas fa-user text-sidebar-accent"></i> Customer Name
+                  <i class="fas fa-user text-sidebar-accent"></i> Client
                 </div>
               </th>
-              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortCustomOutstandingTable(2)">
                 <div class="flex items-center gap-1.5">
-                  <i class="fas fa-user text-sidebar-accent"></i> Deceased Name
+                  <i class="fas fa-user-alt text-sidebar-accent"></i> Deceased
                 </div>
               </th>
-              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortCustomOutstandingTable(3)">
                 <div class="flex items-center gap-1.5">
-                  <i class="fas fa-peso-sign text-sidebar-accent"></i> Service Price
+                  <i class="fas fa-tag text-sidebar-accent"></i> Service Type
                 </div>
               </th>
-              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortCustomOutstandingTable(4)">
                 <div class="flex items-center gap-1.5">
                   <i class="fas fa-calendar text-sidebar-accent"></i> Date of Burial
                 </div>
               </th>
-              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortCustomOutstandingTable(5)">
                 <div class="flex items-center gap-1.5">
-                  <i class="fas fa-map-marker-alt text-sidebar-accent"></i> Branch
+                  <i class="fas fa-toggle-on text-sidebar-accent"></i> Status
                 </div>
               </th>
-              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+              <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortCustomOutstandingTable(6)">
                 <div class="flex items-center gap-1.5">
                   <i class="fas fa-peso-sign text-sidebar-accent"></i> Outstanding Balance
                 </div>
@@ -1415,85 +1557,21 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
             </tr>
           </thead>
           <tbody id="customOutstandingTableBody">
-              <?php
-              // Query for Custom With Outstanding Balance Services
-              $customOutstandingQuery = "SELECT 
-                cs.customsales_id,
-                CONCAT_WS(' ', 
-                  u.first_name, 
-                  COALESCE(u.middle_name, ''), 
-                  u.last_name, 
-                  COALESCE(u.suffix, '')
-                ) AS client_name,
-                CONCAT_WS(' ', 
-                  cs.fname_deceased, 
-                  COALESCE(cs.mname_deceased, ''), 
-                  cs.lname_deceased, 
-                  COALESCE(cs.suffix_deceased, '')
-                ) AS deceased_name,
-                cs.discounted_price,
-                cs.date_of_burial,
-                cs.status,
-                b.branch_name,
-                cs.payment_status,
-                cs.balance
-              FROM customsales_tb AS cs
-              JOIN users AS u ON cs.customer_id = u.id
-              JOIN branch_tb as b ON cs.branch_id = b.branch_id
-              WHERE cs.status = 'Completed' AND cs.payment_status = 'With Balance'
-              LIMIT ?, ?";
-              $stmt = $conn->prepare($customOutstandingQuery);
-              $stmt->bind_param("ii", $offsetCustomOutstanding, $recordsPerPage);
-              $stmt->execute();
-              $customOutstandingResult = $stmt->get_result();
-
-              if ($customOutstandingResult->num_rows > 0) {
-                while($row = $customOutstandingResult->fetch_assoc()) {
-                  ?>
-                  <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
-                    <td class="px-4 py-4 text-sm text-sidebar-text font-medium">#<?php echo $row['customsales_id']; ?></td>
-                    <td class="px-4 py-4 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['client_name']); ?></td>
-                    <td class="px-4 py-4 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['deceased_name']); ?></td>
-                    <td class="px-4 py-4 text-sm text-sidebar-text"><?php echo '₱' . number_format($row['discounted_price'], 2); ?></td>
-                    <td class="px-4 py-4 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['date_of_burial']); ?></td>
-                    <td class="px-4 py-4 text-sm">
-                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-500 border border-yellow-200">
-                        <?php echo ucfirst(strtolower(htmlspecialchars($row['branch_name']))); ?>
-                      </span>
-                    </td>
-                    <td class="px-4 py-4 text-sm font-medium text-sidebar-text">₱<?php echo number_format($row['balance'], 2); ?></td>
-                    <td class="px-4 py-4 text-sm">
-                      <div class="flex space-x-2">
-                        <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details" onclick="viewCustomServiceDetails('<?php echo $row['customsales_id']; ?>', 'custom')">
-                          <i class="fas fa-eye"></i>
-                        </button>
-                        <button class="p-2 bg-orange-100 text-orange-600 rounded-lg hover:bg-orange-200 transition-all tooltip" title="Record Payment" onclick="openCustomRecordPaymentModal('<?php echo $row['customsales_id']; ?>','<?php echo htmlspecialchars($row['client_name']); ?>','<?php echo $row['balance']; ?>')">
-                          <i class="fas fa-money-bill-wave"></i>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                  <?php
-                }
-              } else {
-                ?>
-                <tr>
-                  <td colspan="8" class="px-4 py-6 text-sm text-center">
-                    <div class="flex flex-col items-center">
-                      <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
-                      <p class="text-gray-500">No custom services with outstanding balance found</p>
-                    </div>
-                  </td>
-                </tr>
-                <?php
-              }
-              $stmt->close();
-              ?>
-            </tbody>
+            <!-- Data will be loaded via AJAX -->
+          </tbody>
         </table>
       </div>
     </div>
+    <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+      <div id="paginationInfoCustomOutstanding" class="text-sm text-gray-500 text-center sm:text-left">
+        <!-- Pagination info will be updated via AJAX -->
+      </div>
+      <div id="paginationContainerCustomOutstanding" class="flex space-x-2" data-table="customOutstanding">
+        <!-- Pagination buttons will be updated via AJAX -->
+      </div>
+    </div>
   </div>
+</div>
 
             
 
@@ -4888,6 +4966,387 @@ document.addEventListener('DOMContentLoaded', () => {
     loadFullyPaidServices(tableStates.fullyPaid.page);
     loadOutstandingServices(tableStates.outstanding.page);
 });
+
+
+
+
+// Debounce function for search inputs
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
+
+// AJAX functions for Custom Sales tables
+function loadCustomOngoingServices(page = 1, search = '', sort = '') {
+  const tableContainer = document.getElementById('customOngoingTableContainer');
+  const tableBody = document.getElementById('customOngoingTableBody');
+  const loadingIndicator = document.getElementById('customOngoingLoadingIndicator');
+  const paginationInfo = document.getElementById('paginationInfoCustomOngoing');
+  const paginationContainer = document.getElementById('paginationContainerCustomOngoing');
+  
+  loadingIndicator.classList.remove('hidden');
+  
+  fetch(`historyAjax/get_custom_ongoing_services.php?page=${page}&search=${encodeURIComponent(search)}&sort=${sort}`)
+    .then(response => response.json())
+    .then(data => {
+      tableBody.innerHTML = '';
+      if (data.services.length > 0) {
+        data.services.forEach(row => {
+          const clientName = `${row.fname || ''} ${row.mname || ''} ${row.lname || ''} ${row.suffix || ''}`.trim();
+          const deceasedName = `${row.fname_deceased || ''} ${row.mname_deceased || ''} ${row.lname_deceased || ''} ${row.suffix_deceased || ''}`.trim();
+          const serviceType = row.with_cremate === 'yes' ? 'Cremation Service' : 'Burial Service';
+          tableBody.innerHTML += `
+            <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
+              <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">#${row.customsales_id}</td>
+              <td class="px-4 py-3.5 text-sm text-sidebar-text">${clientName}</td>
+              <td class="px-4 py-3.5 text-sm text-sidebar-text">${deceasedName}</td>
+              <td class="px-4 py-3.5 text-sm text-sidebar-text">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
+                  ${serviceType}
+                </span>
+              </td>
+              <td class="px-4 py-3.5 text-sm text-sidebar-text">${row.date_of_burial || 'N/A'}</td>
+              <td class="px-4 py-3.5 text-sm">
+                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-500 border border-orange-200">
+                  <i class="fas fa-pause-circle mr-1"></i> ${row.status}
+                </span>
+              </td>
+              <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱${parseFloat(row.balance || 0).toFixed(2)}</td>
+              <td class="px-4 py-3.5 text-sm">
+                <div class="flex space-x-2">
+                  <button class="p-2 bg-yellow-100 text-yellow-600 rounded-lg hover:bg-yellow-200 transition-all tooltip" title="Edit Service" onclick="openEditCustomServiceModal('${row.customsales_id}')">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button class="p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-all tooltip assign-staff-btn" 
+                          title="Assign Staff" 
+                          onclick="checkCustomerBeforeAssignCustom('${row.customsales_id}', ${row.customer_id ? 'true' : 'false'})"
+                          ${row.customer_id ? '' : 'disabled'}>
+                    <i class="fas fa-users"></i>
+                  </button>
+                  <button class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip complete-btn" 
+                          title="Complete Service" 
+                          onclick="checkCustomerBeforeCompleteCustom('${row.customsales_id}', ${row.customer_id ? 'true' : 'false'})"
+                          ${row.customer_id ? '' : 'disabled'}>
+                    <i class="fas fa-check"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          `;
+        });
+      } else {
+        tableBody.innerHTML = `
+          <tr>
+            <td colspan="8" class="p-6 text-sm text-center">
+              <div class="flex flex-col items-center">
+                <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
+                <p class="text-gray-500">No ongoing custom services found</p>
+              </div>
+            </td>
+          </tr>
+        `;
+      }
+      
+      paginationInfo.innerHTML = `Showing ${data.start} - ${data.end} of ${data.total} services`;
+      paginationContainer.innerHTML = generatePagination(data.total_pages, page, 'loadCustomOngoingServices');
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      tableBody.innerHTML = `
+        <tr>
+          <td colspan="8" class="p-6 text-sm text-center text-red-500">Error loading services</td>
+        </tr>
+      `;
+    })
+    .finally(() => {
+      loadingIndicator.classList.add('hidden');
+    });
+}
+
+function loadCustomFullyPaidServices(page = 1, search = '', sort = '') {
+  const tableContainer = document.getElementById('customFullyPaidTableContainer');
+  const tableBody = document.getElementById('customFullyPaidTableBody');
+  const loadingIndicator = document.getElementById('customFullyPaidLoadingIndicator');
+  const paginationInfo = document.getElementById('paginationInfoCustomFullyPaid');
+  const paginationContainer = document.getElementById('paginationContainerCustomFullyPaid');
+  
+  loadingIndicator.classList.remove('hidden');
+  
+  fetch(`historyAjax/get_custom_fully_paid_services.php?page=${page}&search=${encodeURIComponent(search)}&sort=${sort}`)
+    .then(response => response.json())
+    .then(data => {
+      tableBody.innerHTML = '';
+      if (data.services.length > 0) {
+        data.services.forEach(row => {
+          const clientName = `${row.fname || ''} ${row.mname || ''} ${row.lname || ''} ${row.suffix || ''}`.trim();
+          const deceasedName = `${row.fname_deceased || ''} ${row.mname_deceased || ''} ${row.lname_deceased || ''} ${row.suffix_deceased || ''}`.trim();
+          const serviceType = row.with_cremate === 'yes' ? 'Cremation Service' : 'Burial Service';
+          tableBody.innerHTML += `
+            <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
+              <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">#${row.customsales_id}</td>
+              <td class="px-4 py-3.5 text-sm text-sidebar-text">${clientName}</td>
+              <td class="px-4 py-3.5 text-sm text-sidebar-text">${deceasedName}</td>
+              <td class="px-4 py-3.5 text-sm text-sidebar-text">${serviceType}</td>
+              <td class="px-4 py-3.5 text-sm text-sidebar-text">${row.date_of_burial || 'N/A'}</td>
+              <td class="px-4 py-3.5 text-sm">
+                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-500 border border-green-200">
+                  <i class="fas fa-check-circle mr-1"></i> ${row.status}
+                </span>
+              </td>
+              <td class="px-4 py-3.5 text-sm">
+                <div class="flex space-x-2">
+                  <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details" onclick="viewCustomServiceDetails('${row.customsales_id}')">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          `;
+        });
+      } else {
+        tableBody.innerHTML = `
+          <tr>
+            <td colspan="7" class="px-4 py-6 text-sm text-center">
+              <div class="flex flex-col items-center">
+                <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
+                <p class="text-gray-500">No fully paid past custom services found</p>
+              </div>
+            </td>
+          </tr>
+        `;
+      }
+      
+      paginationInfo.innerHTML = `Showing ${data.start} - ${data.end} of ${data.total} services`;
+      paginationContainer.innerHTML = generatePagination(data.total_pages, page, 'loadCustomFullyPaidServices');
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      tableBody.innerHTML = `
+        <tr>
+          <td colspan="7" class="p-6 text-sm text-center text-red-500">Error loading services</td>
+        </tr>
+      `;
+    })
+    .finally(() => {
+      loadingIndicator.classList.add('hidden');
+    });
+}
+
+function loadCustomOutstandingServices(page = 1, search = '', sort = '') {
+  const tableContainer = document.getElementById('customOutstandingTableContainer');
+  const tableBody = document.getElementById('customOutstandingTableBody');
+  const loadingIndicator = document.getElementById('customOutstandingLoadingIndicator');
+  const paginationInfo = document.getElementById('paginationInfoCustomOutstanding');
+  const paginationContainer = document.getElementById('paginationContainerCustomOutstanding');
+  
+  loadingIndicator.classList.remove('hidden');
+  
+  fetch(`historyAjax/get_custom_outstanding_services.php?page=${page}&search=${encodeURIComponent(search)}&sort=${sort}`)
+    .then(response => response.json())
+    .then(data => {
+      tableBody.innerHTML = '';
+      if (data.services.length > 0) {
+        data.services.forEach(row => {
+          const clientName = `${row.fname || ''} ${row.mname || ''} ${row.lname || ''} ${row.suffix || ''}`.trim();
+          const deceasedName = `${row.fname_deceased || ''} ${row.mname_deceased || ''} ${row.lname_deceased || ''} ${row.suffix_deceased || ''}`.trim();
+          const serviceType = row.with_cremate === 'yes' ? 'Cremation Service' : 'Burial Service';
+          tableBody.innerHTML += `
+            <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
+              <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">#${row.customsales_id}</td>
+              <td class="px-4 py-3.5 text-sm text-sidebar-text">${clientName}</td>
+              <td class="px-4 py-3.5 text-sm text-sidebar-text">${deceasedName}</td>
+              <td class="px-4 py-3.5 text-sm text-sidebar-text">${serviceType}</td>
+              <td class="px-4 py-3.5 text-sm text-sidebar-text">${row.date_of_burial || 'N/A'}</td>
+              <td class="px-4 py-3.5 text-sm">
+                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-500 border border-green-200">
+                  <i class="fas fa-check-circle mr-1"></i> ${row.status}
+                </span>
+              </td>
+              <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱${parseFloat(row.balance || 0).toFixed(2)}</td>
+              <td class="px-4 py-3.5 text-sm">
+                <div class="flex space-x-2">
+                  <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details" onclick="viewCustomServiceDetails('${row.customsales_id}')">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                  <button class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip" title="Record Payment" onclick="openCustomRecordPaymentModal('${row.customsales_id}', '${clientName.replace(/'/g, "\\'")}', ${row.balance})">
+                    <i class="fas fa-money-bill-wave"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          `;
+        });
+      } else {
+        tableBody.innerHTML = `
+          <tr>
+            <td colspan="8" class="px-4 py-6 text-sm text-center">
+              <div class="flex flex-col items-center">
+                <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
+                <p class="text-gray-500">No past custom services with outstanding balance found</p>
+              </div>
+            </td>
+          </tr>
+        `;
+      }
+      
+      paginationInfo.innerHTML = `Showing ${data.start} - ${data.end} of ${data.total} services`;
+      paginationContainer.innerHTML = generatePagination(data.total_pages, page, 'loadCustomOutstandingServices');
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      tableBody.innerHTML = `
+        <tr>
+          <td colspan="8" class="p-6 text-sm text-center text-red-500">Error loading services</td>
+        </tr>
+      `;
+    })
+    .finally(() => {
+      loadingIndicator.classList.add('hidden');
+    });
+}
+
+// Generate pagination buttons
+function generatePagination(totalPages, currentPage, loadFunction) {
+  let html = '';
+  if (totalPages > 1) {
+    html += `
+      <button onclick="${loadFunction}(${1})" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover ${currentPage === 1 ? 'opacity-50 pointer-events-none' : ''}">
+        &laquo;
+      </button>
+      <button onclick="${loadFunction}(${Math.max(1, currentPage - 1)})" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover ${currentPage === 1 ? 'opacity-50 pointer-events-none' : ''}">
+        &lsaquo;
+      </button>
+    `;
+    const startPage = Math.max(1, Math.min(currentPage - 1, totalPages - 2));
+    const endPage = Math.min(totalPages, startPage + 2);
+    for (let i = startPage; i <= endPage; i++) {
+      html += `
+        <button onclick="${loadFunction}(${i})" class="px-3.5 py-1.5 rounded text-sm ${i === currentPage ? 'bg-sidebar-accent text-white' : 'border border-sidebar-border hover:bg-sidebar-hover'}">
+          ${i}
+        </button>
+      `;
+    }
+    html += `
+      <button onclick="${loadFunction}(${Math.min(totalPages, currentPage + 1)})" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover ${currentPage === totalPages ? 'opacity-50 pointer-events-none' : ''}">
+        &rsaquo;
+      </button>
+      <button onclick="${loadFunction}(${totalPages})" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover ${currentPage === totalPages ? 'opacity-50 pointer-events-none' : ''}">
+        &raquo;
+      </button>
+    `;
+  }
+  return html;
+}
+
+// Sorting functions for Custom Sales tables
+function sortCustomOngoingTable(column) {
+  // Implement sorting logic if needed
+}
+
+function sortCustomFullyPaidTable(column) {
+  // Implement sorting logic if needed
+}
+
+function sortCustomOutstandingTable(column) {
+  // Implement sorting logic if needed
+}
+
+// Debounced filter functions
+const debouncedFilterCustomOngoing = debounce(() => {
+  const search = document.getElementById('searchCustomOngoing')?.value || document.getElementById('searchCustomOngoingMobile')?.value || '';
+  loadCustomOngoingServices(1, search);
+}, 300);
+
+const debouncedFilterCustomFullyPaid = debounce(() => {
+  const search = document.getElementById('searchCustomFullyPaid')?.value || document.getElementById('searchCustomFullyPaidMobile')?.value || '';
+  loadCustomFullyPaidServices(1, search);
+}, 300);
+
+const debouncedFilterCustomOutstanding = debounce(() => {
+  const search = document.getElementById('searchCustomOutstanding')?.value || document.getElementById('searchCustomOutstandingMobile')?.value || '';
+  loadCustomOutstandingServices(1, search);
+}, 300);
+
+// Filter toggle handlers
+function setupFilterToggle(buttonId, dropdownId, indicatorId, tableType) {
+  const button = document.getElementById(buttonId);
+  const dropdown = document.getElementById(dropdownId);
+  const indicator = document.getElementById(indicatorId);
+  
+  button.addEventListener('click', () => {
+    dropdown.classList.toggle('hidden');
+  });
+  
+  dropdown.querySelectorAll('.filter-option').forEach(option => {
+    option.addEventListener('click', () => {
+      const sort = option.parentElement.getAttribute('data-sort');
+      indicator.classList.remove('hidden');
+      dropdown.classList.add('hidden');
+      if (tableType === 'customOngoing') {
+        loadCustomOngoingServices(1, '', sort);
+      } else if (tableType === 'customFullyPaid') {
+        loadCustomFullyPaidServices(1, '', sort);
+      } else if (tableType === 'customOutstanding') {
+        loadCustomOutstandingServices(1, '', sort);
+      }
+    });
+  });
+  
+  document.addEventListener('click', (e) => {
+    if (!button.contains(e.target) && !dropdown.contains(e.target)) {
+      dropdown.classList.add('hidden');
+    }
+  });
+}
+
+// Initialize filter toggles
+document.addEventListener('DOMContentLoaded', () => {
+  setupFilterToggle('filterToggleCustomOngoing', 'filterDropdownCustomOngoing', 'filterIndicatorCustomOngoing', 'customOngoing');
+  setupFilterToggle('filterToggleCustomOngoingMobile', 'filterDropdownCustomOngoingMobile', 'filterIndicatorCustomOngoingMobile', 'customOngoing');
+  setupFilterToggle('filterToggleCustomFullyPaid', 'filterDropdownCustomFullyPaid', 'filterIndicatorCustomFullyPaid', 'customFullyPaid');
+  setupFilterToggle('filterToggleCustomFullyPaidMobile', 'filterDropdownCustomFullyPaidMobile', 'filterIndicatorCustomFullyPaidMobile', 'customFullyPaid');
+  setupFilterToggle('filterToggleCustomOutstanding', 'filterDropdownCustomOutstanding', 'filterIndicatorCustomOutstanding', 'customOutstanding');
+  setupFilterToggle('filterToggleCustomOutstandingMobile', 'filterDropdownCustomOutstandingMobile', 'filterIndicatorCustomOutstandingMobile', 'customOutstanding');
+  
+  // Load initial data
+  loadCustomOngoingServices();
+  loadCustomFullyPaidServices();
+  loadCustomOutstandingServices();
+});
+
+// Customer check functions for custom services
+function checkCustomerBeforeAssignCustom(serviceId, hasCustomer) {
+  if (!hasCustomer) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'No Customer Assigned',
+      text: 'Please assign a customer to this service before assigning staff.',
+      confirmButtonText: 'OK'
+    });
+    return;
+  }
+  openAssignCustomStaffModal(serviceId);
+}
+
+function checkCustomerBeforeCompleteCustom(serviceId, hasCustomer) {
+  if (!hasCustomer) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'No Customer Assigned',
+      text: 'Please assign a customer to this service before marking it as complete.',
+      confirmButtonText: 'OK'
+    });
+    return;
+  }
+  openCompleteCustomModal(serviceId);
+}
 </script>
 
 <script>
