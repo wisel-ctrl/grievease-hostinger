@@ -4411,7 +4411,7 @@ function closeLifeplanPaymentModal() {
 document.getElementById('lifeplanPaymentForm').addEventListener('submit', function(e) {
     e.preventDefault();
     
-    const amountPaid = document.getElementById('lifeplanAmountPaidInput').value;
+    const amountPaid = parseFloat(document.getElementById('lifeplanAmountPaidInput').value);
     const paymentMethod = document.getElementById('lifeplanPaymentMethod').value;
     
     if (!amountPaid || !paymentMethod) {
