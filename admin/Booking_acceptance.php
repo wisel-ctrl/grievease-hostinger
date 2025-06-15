@@ -4433,6 +4433,27 @@ document.getElementById('lifeplanPaymentForm').addEventListener('submit', functi
     const packagePrice = parseFloat(document.getElementById('lifeplanPackagePrice').value) || 0;
     const balance = packagePrice - parseFloat(amountPaid);
     const paymentStatus = balance <= 0 ? 'Fully Paid' : 'With Balance';
+
+    if (amountPaid <= 0) {
+        console.log('Validation failed - amount paid is zero or negative'); // Log validation failure
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Amount paid must be greater than ₱0.00',
+        });
+        return;
+    }
+    
+    // Add validation for amountPaid being greater than packagePrice
+    if (amountPaid > packagePrice) {
+        console.log('Validation failed - amount paid exceeds package price'); // Log validation failure
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            html: `Amount paid <strong>₱${amountPaid.toFixed(2)}</strong> is higher than the package price <strong>₱${packagePrice.toFixed(2)}</strong>`,
+        });
+        return;
+    }
     
     // Show confirmation dialog with payment summary
     Swal.fire({
