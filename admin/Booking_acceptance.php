@@ -3049,6 +3049,16 @@ document.getElementById('paymentForm').addEventListener('submit', function(e) {
         });
         return;
     }
+
+    if (amountPaid <= 0) {
+        console.log('Validation failed - amount paid is zero or negative'); // Log validation failure
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Amount paid must be greater than ₱0.00',
+        });
+        return;
+    }
     
     // Add validation for amountPaid being greater than initialPrice
     if (amountPaid > initialPrice) {
