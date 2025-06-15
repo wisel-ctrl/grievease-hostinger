@@ -92,6 +92,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($paymentMethod)) $errors[] = 'paymentMethod';
     if ($initialPrice <= 0) $errors[] = 'initialPrice';
 
+      // Add new validations for amountPaid
+    if ($amountPaid <= 0) {
+        echo json_encode([
+            'success' => false,
+            'error' => 'The amount paid should not be negative or zero.'
+        ]);
+        exit();
+    }
+    
+    if ($amountPaid > $initialPrice) {
+        echo json_encode([
+            'success' => false,
+            'error' => 'The '.number_format($amountPaid, 2).' should not be higher than the price: '.number_format($initialPrice, 2).'.'
+        ]);
+        exit();
+    }
+
     if (!empty($errors)) {
         echo json_encode([
             'success' => false,

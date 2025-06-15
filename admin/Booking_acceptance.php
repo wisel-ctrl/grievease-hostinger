@@ -4031,7 +4031,7 @@ document.getElementById('customPaymentForm').addEventListener('submit', function
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
-                        text: data.message || 'Failed to accept booking. Please try again.',
+                        text: data.error || 'Failed to accept booking. Please try again.',
                     });
                 }
             })
