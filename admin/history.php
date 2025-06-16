@@ -132,6 +132,11 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
     background-color: #d4a933;
     border-radius: 6px;
 }
+
+.rotate-180 {
+    transform: rotate(180deg);
+    transition: transform 0.2s ease;
+}
   </style>
 </head>
 <body class="flex bg-gray-50">
@@ -166,7 +171,7 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
       </div>
     </div>
   </div>
-  
+
   <!-- Tabs Navigation -->
   <div class="mb-6">
     <ul class="flex border-b border-gray-200">
@@ -4551,7 +4556,48 @@ document.addEventListener('DOMContentLoaded', function() {
   showTab('standard');
 });
 
+// Branch Filter Dropdown Toggle
+const branchFilterToggle = document.getElementById('branchFilterToggle');
+const branchFilterDropdown = document.getElementById('branchFilterDropdown');
 
+// Toggle dropdown visibility
+branchFilterToggle.addEventListener('click', function(e) {
+    e.stopPropagation(); // Prevent immediate document click handler
+    branchFilterDropdown.classList.toggle('hidden');
+    
+    // Rotate chevron icon
+    const chevron = this.querySelector('.fa-chevron-down');
+    chevron.classList.toggle('rotate-180');
+});
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(e) {
+    if (!branchFilterDropdown.contains(e.target) && e.target !== branchFilterToggle) {
+        branchFilterDropdown.classList.add('hidden');
+        // Reset chevron icon rotation
+        const chevron = branchFilterToggle.querySelector('.fa-chevron-down');
+        chevron.classList.remove('rotate-180');
+    }
+});
+
+// Branch selection handler
+document.querySelectorAll('#branchFilterDropdown button').forEach(button => {
+    button.addEventListener('click', function() {
+        const branch = this.getAttribute('data-branch');
+        
+        // Update button text to show selected branch
+        const branchText = this.textContent.trim();
+        branchFilterToggle.querySelector('span').textContent = branchText.split('\n')[0];
+        
+        // Close dropdown
+        branchFilterDropdown.classList.add('hidden');
+        const chevron = branchFilterToggle.querySelector('.fa-chevron-down');
+        chevron.classList.remove('rotate-180');
+        
+        // Here you would add your branch filtering logic later
+        console.log('Selected branch:', branch);
+    });
+});
 
 // State management for each table
 const tableStates = {
