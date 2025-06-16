@@ -4609,10 +4609,11 @@ document.querySelectorAll('#branchFilterDropdown button').forEach(button => {
 });
 
 // State management for each table
+// State management for each table
 const tableStates = {
-    ongoing: { page: <?php echo $page; ?>, search: '', sort: 'id_asc' },
-    fullyPaid: { page: <?php echo $fullyPaidPage; ?>, search: '', sort: 'id_asc' },
-    outstanding: { page: <?php echo $outstandingPage; ?>, search: '', sort: 'id_asc' }
+    ongoing: { page: <?php echo $page; ?>, search: '', sort: 'id_asc', branch: 'all' },
+    fullyPaid: { page: <?php echo $fullyPaidPage; ?>, search: '', sort: 'id_asc', branch: 'all' },
+    outstanding: { page: <?php echo $outstandingPage; ?>, search: '', sort: 'id_asc', branch: 'all' }
 };
 
 // Debounce function to limit search/filter requests
@@ -4745,7 +4746,7 @@ function loadFullyPaidServices(page = 1) {
     loadingIndicator.classList.remove('hidden');
     tableBody.innerHTML = '';
 
-    fetch(`historyAjax/fetch_fully_paid_services.php?page=${page}&search=${encodeURIComponent(tableStates.fullyPaid.search)}&sort=${tableStates.fullyPaid.sort}`)
+    fetch(`historyAjax/fetch_fully_paid_services.php?page=${page}&search=${encodeURIComponent(tableStates.fullyPaid.search)}&sort=${tableStates.fullyPaid.sort}&branch=${tableStates.ongoing.branch || 'all'}`)
         .then(response => response.json())
         .then(data => {
             // Update table body
@@ -4836,7 +4837,7 @@ function loadOutstandingServices(page = 1) {
     loadingIndicator.classList.remove('hidden');
     tableBody.innerHTML = '';
 
-    fetch(`historyAjax/fetch_outstanding_services.php?page=${page}&search=${encodeURIComponent(tableStates.outstanding.search)}&sort=${tableStates.outstanding.sort}`)
+    fetch(`historyAjax/fetch_outstanding_services.php?page=${page}&search=${encodeURIComponent(tableStates.outstanding.search)}&sort=${tableStates.outstanding.sort}&branch=${tableStates.ongoing.branch || 'all'}`)
         .then(response => response.json())
         .then(data => {
             // Update table body

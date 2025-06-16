@@ -6,10 +6,16 @@ $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
 $offset = ($page - 1) * $recordsPerPage;
 $search = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['search']) : '';
 $sort = isset($_GET['sort']) ? $_GET['sort'] : 'id_asc';
+$branch = isset($_GET['branch']) ? $_GET['branch'] : 'all';
 
 $whereClause = "WHERE s.status = 'Completed' AND s.payment_status = 'With Balance'";
 if ($search) {
     $whereClause .= " AND (s.fname LIKE '%$search%' OR s.lname LIKE '%$search%' OR s.fname_deceased LIKE '%$search%' OR s.lname_deceased LIKE '%$search%' OR sv.service_name LIKE '%$search%')";
+}
+
+if ($branch !== 'all') {
+    $branchId = intval($branch);
+    $whereClause .= " AND s.branch_id = $branchId";
 }
 
 $orderBy = '';
