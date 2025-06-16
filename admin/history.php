@@ -3389,6 +3389,7 @@ function updatePaymentSummary() {
   
   document.getElementById('summary-current-balance').textContent = `₱${currentBalance.toFixed(2)}`;
   document.getElementById('summary-payment-amount').textContent = `₱${paymentAmount.toFixed(2)}`;
+  document.getElementById('total-amount-paid').textContent = `₱${parseFloat(data.amount_paid + paymentAmount).toFixed(2)}`;
   document.getElementById('summary-new-balance').textContent = `₱${newBalance.toFixed(2)}`;
 }
 
@@ -6865,7 +6866,8 @@ function openCustomRecordPaymentModal(serviceId, clientName, balance) {
         
         // Update summary section
         document.getElementById('summary-current-balance').textContent = `₱${parseFloat(balance).toFixed(2)}`;
-        document.getElementById('summary-payment-amount').textContent = `₱${parseFloat(data.amount_paid).toFixed(2)}`;
+        document.getElementById('summary-payment-amount').textContent = '₱0.00';
+        document.getElementById('total-amount-paid').textContent = `₱${parseFloat(data.amount_paid).toFixed(2)}`;
         document.getElementById('summary-new-balance').textContent = `₱${parseFloat(balance).toFixed(2)}`;
         
         // Set default payment amount to empty
