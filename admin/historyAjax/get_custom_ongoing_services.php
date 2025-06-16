@@ -18,7 +18,7 @@ if ($search) {
 
 if ($branch !== 'all') {
     $branchId = intval($branch);
-    $whereClause .= " AND s.branch_id = $branchId";
+    $whereClause .= " AND cs.branch_id = $branchId";
 }
 
 $orderBy = 'ORDER BY cs.customsales_id ASC';
