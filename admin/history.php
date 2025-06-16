@@ -4605,6 +4605,9 @@ document.querySelectorAll('#branchFilterDropdown button').forEach(button => {
         loadOngoingServices(1);
         loadFullyPaidServices(1);
         loadOutstandingServices(1);
+        loadCustomOngoingServices(1);
+        loadCustomFullyPaidServices(1);
+        loadCustomOutstandingServices(1);
     });
 });
 
@@ -4613,7 +4616,10 @@ document.querySelectorAll('#branchFilterDropdown button').forEach(button => {
 const tableStates = {
     ongoing: { page: <?php echo $page; ?>, search: '', sort: 'id_asc', branch: 'all' },
     fullyPaid: { page: <?php echo $fullyPaidPage; ?>, search: '', sort: 'id_asc', branch: 'all' },
-    outstanding: { page: <?php echo $outstandingPage; ?>, search: '', sort: 'id_asc', branch: 'all' }
+    outstanding: { page: <?php echo $outstandingPage; ?>, search: '', sort: 'id_asc', branch: 'all' },
+    customOngoing: { page: 1, search: '', sort: 'id_asc', branch: 'all' },
+    customFullyPaid: { page: 1, search: '', sort: 'id_asc', branch: 'all' },
+    customOutstanding: { page: 1, search: '', sort: 'id_asc', branch: 'all' }
 };
 
 // Debounce function to limit search/filter requests
@@ -5069,7 +5075,7 @@ function loadCustomOngoingServices(page = 1, search = '', sort = '') {
   
   loadingIndicator.classList.remove('hidden');
   
-  fetch(`historyAjax/get_custom_ongoing_services.php?page=${page}&search=${encodeURIComponent(search)}&sort=${sort}`)
+  fetch(`historyAjax/get_custom_ongoing_services.php?page=${page}&search=${encodeURIComponent(tableStates.customOngoing.search)}&sort=${tableStates.customOngoing.sort}&branch=${tableStates.customOngoing.branch || 'all'}`)
     .then(response => response.json())
     .then(data => {
       tableBody.innerHTML = '';
@@ -5155,7 +5161,7 @@ function loadCustomFullyPaidServices(page = 1, search = '', sort = '') {
   
   loadingIndicator.classList.remove('hidden');
   
-  fetch(`historyAjax/get_custom_fully_paid_services.php?page=${page}&search=${encodeURIComponent(search)}&sort=${sort}`)
+  fetch(`historyAjax/get_custom_fully_paid_services.php?page=${page}&search=${encodeURIComponent(tableStates.customFullyPaid.search)}&sort=${tableStates.customFullyPaid.sort}&branch=${tableStates.customFullyPaid.branch || 'all'}`)
     .then(response => response.json())
     .then(data => {
       tableBody.innerHTML = '';
@@ -5224,7 +5230,7 @@ function loadCustomOutstandingServices(page = 1, search = '', sort = '') {
   
   loadingIndicator.classList.remove('hidden');
   
-  fetch(`historyAjax/get_custom_outstanding_services.php?page=${page}&search=${encodeURIComponent(search)}&sort=${sort}`)
+  fetch(`historyAjax/get_custom_outstanding_services.php?page=${page}&search=${encodeURIComponent(tableStates.customOutstanding.search)}&sort=${tableStates.customOutstanding.sort}&branch=${tableStates.customOutstanding.branch || 'all'}`)
     .then(response => response.json())
     .then(data => {
       tableBody.innerHTML = '';

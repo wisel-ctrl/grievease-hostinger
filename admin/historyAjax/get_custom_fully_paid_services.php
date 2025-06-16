@@ -7,12 +7,18 @@ $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
 $offset = ($page - 1) * $recordsPerPage;
 $search = isset($_GET['search']) ? $_GET['search'] : '';
 $sort = isset($_GET['sort']) ? $_GET['sort'] : 'id_asc';
+$branch = isset($_GET['branch']) ? $_GET['branch'] : 'all';
 
 $whereClause = "WHERE cs.status = 'Completed' AND cs.payment_status = 'Fully Paid' AND cs.balance = 0";
 if ($search) {
   $search = $conn->real_escape_string($search);
   $whereClause .= " AND (CONCAT(u.first_name, ' ', COALESCE(u.middle_name, ''), ' ', u.last_name) LIKE '%$search%' 
                    OR CONCAT(cs.fname_deceased, ' ', COALESCE(cs.mname_deceased, ''), ' ', cs.lname_deceased) LIKE '%$search%')";
+}
+
+if ($branch !== 'all') {
+    $branchId = intval($branch);
+    $whereClause .= " AND s.branch_id = $branchId";
 }
 
 $orderBy = 'ORDER BY cs.customsales_id ASC';
