@@ -145,8 +145,28 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
     <div>
       <h1 class="text-2xl font-bold text-sidebar-text">History</h1>
     </div>
+    <div class="relative">
+      <button id="branchFilterToggle" class="px-4 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover transition-colors">
+        <i class="fas fa-map-marker-alt text-sidebar-accent"></i>
+        <span>Filter Branch</span>
+        <i class="fas fa-chevron-down text-xs text-gray-500"></i>
+      </button>
+      <div id="branchFilterDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-sidebar-border py-1">
+        <div class="space-y-1">
+          <button class="w-full text-left px-4 py-2 text-sm text-sidebar-text hover:bg-sidebar-hover transition-colors" data-branch="all">
+            <i class="fas fa-globe-americas text-sidebar-accent mr-2"></i> All Branches
+          </button>
+          <button class="w-full text-left px-4 py-2 text-sm text-sidebar-text hover:bg-sidebar-hover transition-colors" data-branch="pila">
+            <i class="fas fa-store text-sidebar-accent mr-2"></i> Pila Branch
+          </button>
+          <button class="w-full text-left px-4 py-2 text-sm text-sidebar-text hover:bg-sidebar-hover transition-colors" data-branch="paete">
+            <i class="fas fa-store text-sidebar-accent mr-2"></i> Paete Branch
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
-
+  
   <!-- Tabs Navigation -->
   <div class="mb-6">
     <ul class="flex border-b border-gray-200">
