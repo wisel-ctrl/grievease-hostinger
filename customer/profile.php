@@ -1,4 +1,3 @@
-
 <?php
 session_start();
 
@@ -802,7 +801,7 @@ input[name*="LastName"] {
                                         $statusText = 'APPROVED';
                                         $statusClass = 'bg-green-100 text-green-800 border border-green-200';
                                         $iconColor = 'text-green-500';
-                                        $icon = '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 10-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>';
+                                        $icon = '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>';
                                         break;
                                     case 'denied':
                                         $statusText = 'DECLINED';
@@ -1225,15 +1224,16 @@ document.addEventListener('DOMContentLoaded', function() {
                             <i class="fas fa-file-alt mr-1"></i> View Details
                         </button>
                         
+                        <?php if ($booking['status'] === 'Accepted' && empty($booking['deathcert_url'])): ?>
+                            <button class="upload-death-cert bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition text-sm mr-2" data-booking="<?php echo $booking['booking_id']; ?>">
+                                <i class="fas fa-upload mr-1"></i> Upload Death Cert
+                            </button>
+                        <?php endif; ?>
+                        
                         <?php if ($booking['status'] === 'Accepted'): ?>
                             <button class="view-receipt bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition text-sm mr-2" data-booking="<?php echo $booking['booking_id']; ?>">
                                 <i class="fas fa-receipt mr-1"></i> View Receipt
                             </button>
-                            <?php if (empty($booking['deathcert_url'])): ?>
-                            <button onclick="openDeathCertModal(<?php echo $booking['booking_id']; ?>)" class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition text-sm">
-                                <i class="fas fa-upload mr-1"></i> Upload Death Certificate
-                            </button>
-                            <?php endif; ?>
                         <?php endif; ?>
                         
                         <?php if ($booking['status'] === 'Pending' || $booking['status'] === 'Declined'): ?>
@@ -1367,11 +1367,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <i class="fas fa-file-alt mr-1"></i> View Details
                         </button>
                         
-                        <?php if ($booking['booking_status'] === 'accepted'): ?>
-                            <button class="view-lifeplan-receipt bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition text-sm mr-2" data-booking="<?php echo $booking['lpbooking_id']; ?>">
-                                <i class="fas fa-receipt mr-1"></i> View Receipt
-                            </button>
-                        <?php endif; ?>
+                    
                         
                         <?php if ($booking['booking_status'] === 'pending' || $booking['booking_status'] === 'decline'): ?>
                             <button class="modify-lifeplan-booking bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition text-sm mr-2" data-booking="<?php echo $booking['lpbooking_id']; ?>">
@@ -1744,46 +1740,50 @@ $lifeplanStmt->close();
   </div>
 </div>
 
-<!-- Death Certificate Upload Modal -->
-<div id="deathCertUploadModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 p-4 hidden backdrop-blur-sm">
-    <div class="w-full max-w-lg bg-white rounded-2xl shadow-xl overflow-hidden">
-        <div class="bg-blue-600 p-6 flex justify-between items-center">
-            <h2 class="text-2xl font-hedvig text-white">Upload Death Certificate</h2>
-            <button onclick="closeDeathCertModal()" class="text-white hover:text-blue-300">
-                <i class="fas fa-times text-2xl"></i>
-            </button>
-        </div>
-        
-        <div class="p-6">
-            <form id="deathCertUploadForm" class="space-y-4">
-                <input type="hidden" id="deathCertBookingId" name="booking_id">
-                
-                <div class="space-y-2">
-                    <label class="block text-sm font-medium text-gray-700">Death Certificate Image</label>
-                    <div class="flex items-center justify-center w-full">
-                        <label class="w-full h-48 flex flex-col items-center justify-center px-4 py-6 bg-white text-blue rounded-lg shadow-lg tracking-wide border border-blue cursor-pointer hover:bg-blue-100 transition-colors duration-200">
-                            <div id="previewContainer" class="hidden w-full h-full flex items-center justify-center">
-                                <img id="imagePreview" class="max-h-full max-w-full object-contain" src="" alt="Preview">
-                            </div>
-                            <div id="uploadPrompt" class="flex flex-col items-center justify-center">
-                                <i class="fas fa-cloud-upload-alt fa-3x text-blue-600"></i>
-                                <p class="mt-2 text-sm text-gray-500">Click or drag to upload image</p>
-                                <p class="text-xs text-gray-400 mt-1">Supported formats: JPG, PNG, PDF</p>
-                            </div>
-                            <input type="file" id="deathCertFile" name="death_cert" class="hidden" accept="image/*,.pdf" onchange="previewImage(this)">
-                        </label>
+<!-- Upload Death Certificate Modal -->
+<div id="uploadDeathCertModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 hidden">
+    <div class="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden max-h-[90vh]">
+        <div class="modal-scroll-container overflow-y-auto max-h-[90vh]">
+            <!-- Header with close button -->
+            <div class="bg-navy p-6 flex justify-between items-center">
+                <h2 class="text-2xl font-hedvig text-white">Upload Death Certificate</h2>
+                <button id="close-upload-death-cert-modal" class="text-white hover:text-yellow-300">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+            
+            <!-- Modal Body -->
+            <div class="p-6 bg-cream">
+                <form id="deathCertForm" enctype="multipart/form-data">
+                    <input type="hidden" id="death-cert-booking-id" name="booking_id">
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-navy mb-2">Death Certificate Image</label>
+                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
+                            <input type="file" id="death-cert-file" name="death_cert" class="hidden" accept=".jpg,.jpeg,.png" required>
+                            <label for="death-cert-file" class="cursor-pointer">
+                                <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                                <p class="text-sm text-gray-600">Click to upload or drag and drop</p>
+                                <p class="text-xs text-gray-500 mt-1">PNG, JPG up to 5MB</p>
+                            </label>
+                        </div>
+                        <div id="death-cert-preview" class="mt-4 hidden">
+                            <h5 class="text-sm font-medium text-navy mb-2">Preview</h5>
+                            <img id="death-cert-preview-img" src="#" alt="Death Certificate Preview" class="max-w-full h-auto rounded border border-gray-200">
+                        </div>
                     </div>
-                </div>
-
-                <div class="flex justify-end mt-6">
-                    <button type="button" onclick="closeDeathCertModal()" class="mr-3 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
-                        Cancel
-                    </button>
-                    <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700">
-                        Upload Certificate
-                    </button>
-                </div>
-            </form>
+                </form>
+            </div>
+            
+            <!-- Modal Footer -->
+            <div class="modal-sticky-footer px-6 py-4 flex flex-col sm:flex-row sm:justify-end gap-3 border-t border-gray-200 bg-white">
+                <button id="cancel-upload-death-cert" class="w-full sm:w-auto px-6 py-3 bg-white border border-yellow-600 text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center">
+                    Cancel
+                </button>
+                <button id="submit-death-cert" class="w-full sm:w-auto px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-md transition-all duration-300 flex items-center justify-center">
+                    <i class="fas fa-upload mr-2"></i> Upload Certificate
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -4047,143 +4047,319 @@ window.addEventListener('click', function(e) {
                 showError(data.message || 'Failed to fetch booking details');
             }
         })
-```
-</script>
-
-<!-- Death Certificate Upload Modal -->
-<div id="deathCertUploadModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 p-4 hidden backdrop-blur-sm">
-    <div class="w-full max-w-lg bg-white rounded-2xl shadow-xl overflow-hidden">
-        <div class="bg-blue-600 p-6 flex justify-between items-center">
-            <h2 class="text-2xl font-hedvig text-white">Upload Death Certificate</h2>
-            <button onclick="closeDeathCertModal()" class="text-white hover:text-blue-300">
-                <i class="fas fa-times text-2xl"></i>
-            </button>
-        </div>
-        
-        <div class="p-6">
-            <form id="deathCertUploadForm" class="space-y-4">
-                <input type="hidden" id="deathCertBookingId" name="booking_id">
-                
-                <div class="space-y-2">
-                    <label class="block text-sm font-medium text-gray-700">Death Certificate Image</label>
-                    <div class="flex items-center justify-center w-full">
-                        <label class="w-full h-48 flex flex-col items-center justify-center px-4 py-6 bg-white text-blue rounded-lg shadow-lg tracking-wide border border-blue cursor-pointer hover:bg-blue-100 transition-colors duration-200">
-                            <div id="previewContainer" class="hidden w-full h-full flex items-center justify-center">
-                                <img id="imagePreview" class="max-h-full max-w-full object-contain" src="" alt="Preview">
-                            </div>
-                            <div id="uploadPrompt" class="flex flex-col items-center justify-center">
-                                <i class="fas fa-cloud-upload-alt fa-3x text-blue-600"></i>
-                                <p class="mt-2 text-sm text-gray-500">Click or drag to upload image</p>
-                                <p class="text-xs text-gray-400 mt-1">Supported formats: JPG, PNG, PDF</p>
-                            </div>
-                            <input type="file" id="deathCertFile" name="death_cert" class="hidden" accept="image/*,.pdf" onchange="previewImage(this)">
-                        </label>
-                    </div>
-                </div>
-
-                <div class="flex justify-end mt-6">
-                    <button type="button" onclick="closeDeathCertModal()" class="mr-3 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
-                        Cancel
-                    </button>
-                    <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700">
-                        Upload Certificate
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<script>
-// ... existing code ...
-
-function openDeathCertModal(bookingId) {
-    document.getElementById('deathCertBookingId').value = bookingId;
-    document.getElementById('deathCertUploadModal').classList.remove('hidden');
-    // Reset form and preview
-    document.getElementById('deathCertUploadForm').reset();
-    document.getElementById('previewContainer').classList.add('hidden');
-    document.getElementById('uploadPrompt').classList.remove('hidden');
-    document.getElementById('imagePreview').src = '';
+        .catch(error => {
+            console.error('Error:', error);
+            showError('An error occurred while fetching booking details');
+        });
 }
+// Update your document viewing functions
+viewDeathCertBtn.addEventListener('click', function() {
+    showDocument('Death Certificate', currentDeathCertUrl);
+});
 
-function closeDeathCertModal() {
-    document.getElementById('deathCertUploadModal').classList.add('hidden');
-}
+viewPaymentBtn.addEventListener('click', function() {
+    showDocument('Payment Proof', currentPaymentUrl);
+});
 
-function previewImage(input) {
-    const previewContainer = document.getElementById('previewContainer');
-    const uploadPrompt = document.getElementById('uploadPrompt');
-    const preview = document.getElementById('imagePreview');
-    
-    if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        
-        reader.onload = function(e) {
-            preview.src = e.target.result;
-            previewContainer.classList.remove('hidden');
-            uploadPrompt.classList.add('hidden');
-        }
-        
-        reader.readAsDataURL(input.files[0]);
-    }
-}
-
-// Handle death certificate upload
-document.getElementById('deathCertUploadForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const formData = new FormData();
-    const bookingId = document.getElementById('deathCertBookingId').value;
-    const fileInput = document.getElementById('deathCertFile');
-    
-    if (!fileInput.files[0]) {
-        showError('Please select a file to upload');
+function showDocument(title, url) {
+    if (!url) {
+        showError('No document available');
         return;
     }
     
-    formData.append('booking_id', bookingId);
-    formData.append('death_cert', fileInput.files[0]);
+    document.getElementById('document-modal-title').textContent = title;
+    const imgElement = document.getElementById('document-image');
+    const pdfElement = document.getElementById('document-pdf');
     
-    // Show loading state
-    const submitBtn = this.querySelector('button[type="submit"]');
-    const originalBtnText = submitBtn.innerHTML;
+    // Check if the URL is a PDF
+    if (url.toLowerCase().endsWith('.pdf')) {
+        imgElement.style.display = 'none';
+        pdfElement.style.display = 'block';
+        pdfElement.src = url;
+    } else {
+        // For images
+        imgElement.style.display = 'block';
+        pdfElement.style.display = 'none';
+        imgElement.src = url;
+    }
+    
+    document.getElementById('viewDocumentModal').classList.remove('hidden');
+}
+
+function fetchBookingForModification(bookingId) {
+    fetch(`profile/fetch_booking_for_modification.php?booking_id=${bookingId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Populate the modify form
+                const form = document.getElementById('modifyBookingForm');
+                form.reset();
+                
+                // Set booking ID and hidden service/branch IDs
+                document.getElementById('modify-booking-id').value = data.booking_id;
+                document.getElementById('modify-service-id').value = data.service_id;
+                document.getElementById('modify-branch-id').value = data.branch_id;
+                
+                // Display service package and branch name in read-only divs
+                document.getElementById('display-service-package').textContent = data.service_name + 
+                    ' (₱' + parseFloat(data.selling_price).toFixed(2) + ')';
+                document.getElementById('display-branch-location').textContent = data.branch_name;
+                
+                // Set dates
+                form.querySelector('input[name="deceased_dateOfBurial"]').value = data.deceased_dateOfBurial || '';
+                form.querySelector('input[name="deceased_birth"]').value = data.deceased_birth || '';
+                form.querySelector('input[name="deceased_dodeath"]').value = data.deceased_dodeath || '';
+                
+                // Set deceased info
+                form.querySelector('input[name="deceased_fname"]').value = data.deceased_fname || '';
+                form.querySelector('input[name="deceased_midname"]').value = data.deceased_midname || '';
+                form.querySelector('input[name="deceased_lname"]').value = data.deceased_lname || '';
+                form.querySelector('input[name="deceased_suffix"]').value = data.deceased_suffix || '';
+                form.querySelector('textarea[name="deceased_address"]').value = data.deceased_address || '';
+                form.querySelector('input[name="with_cremate"]').checked = data.with_cremate == 'yes' || data.with_cremate == 1;
+                
+                // Show the modal
+                document.getElementById('modifyBookingModal').classList.remove('hidden');
+            } else {
+                showError(data.message || 'Failed to fetch booking for modification');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showError('An error occurred while fetching booking for modification');
+        });
+}
+
+function submitBookingModification() {
+    const form = document.getElementById('modifyBookingForm');
+    const formData = new FormData(form);
+    const submitBtn = document.getElementById('modifyBookingSubmit'); // Target by ID
+    
+    // Disable submit button during processing
     submitBtn.disabled = true;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Uploading...';
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Saving...';
     
-    fetch('booking/upload_death_cert.php', {
+    fetch('booking/update_booking.php', {
         method: 'POST',
         body: formData
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            showSuccess('Death certificate uploaded successfully');
-            closeDeathCertModal();
-            // Reload the page after a brief delay
+            showSuccess(data.message || 'Booking updated successfully!');
+            document.getElementById('modifyBookingModal').classList.add('hidden');
+            
+            // Refresh the bookings list after a short delay
             setTimeout(() => {
-                window.location.reload();
+                location.reload();
             }, 1500);
         } else {
-            showError(data.message || 'Failed to upload death certificate');
+            showError(data.message || 'Failed to update booking');
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        showError('An error occurred while uploading the death certificate');
+        showError('An error occurred while updating booking');
     })
     .finally(() => {
         submitBtn.disabled = false;
-        submitBtn.innerHTML = originalBtnText;
+        submitBtn.innerHTML = '<i class="fas fa-save mr-2"></i> Save Changes';
+    });
+}
+
+// Function to send OTP
+document.getElementById('sendOtpBtn').addEventListener('click', function() {
+    const bookingId = document.getElementById('cancel-booking-id').value;
+    if (!bookingId) {
+        showError('No booking selected');
+        return;
+    }
+    
+    // Disable button to prevent multiple clicks
+    const otpBtn = this;
+    otpBtn.disabled = true;
+    otpBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Sending...';
+    
+    fetch('profile/send_cancel_otp.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ booking_id: bookingId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showSuccess('OTP sent to your email!');
+            document.getElementById('otpInput').focus();
+        } else {
+            showError(data.message || 'Failed to send OTP');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showError('Failed to send OTP');
+    })
+    .finally(() => {
+        otpBtn.disabled = false;
+        otpBtn.textContent = 'Send OTP';
     });
 });
 
-</script>
-</html>
+// Form submission handler
+document.getElementById('cancelBookingForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const form = this;
+    const formData = new FormData(form);
+    
+    fetch('profile/cancel_booking.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showSuccess('Booking cancelled successfully!');
+            // Close modal and update UI without full page reload
+            document.getElementById('cancelBookingModal').classList.add('hidden');
+            
+            // Option 1: If you're using a bookings list, refresh just that section
+            // loadBookings(); // Your function to reload bookings
+            
+            // Option 2: If you must reload, delay slightly for user to see success message
+            setTimeout(() => {
+                // Only reload if necessary
+                if (window.location.pathname.includes('profile')) {
+                    window.location.reload();
+                } else {
+                    // Update UI as needed
+                }
+            }, 1500);
+        } else {
+            showError(data.message || 'Failed to cancel booking');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showError('An error occurred while cancelling booking');
+    })
+    .finally(() => {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-times mr-2"></i> Confirm Cancellation';
+    });
+});
+
+
+// Life Plan View Details
+    const viewLifeplanDetailsButtons = document.querySelectorAll('.view-lifeplan-details');
+    const viewLifeplanDetailsModal = document.getElementById('viewLifeplanDetailsModal');
+    
+    viewLifeplanDetailsButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const bookingId = this.getAttribute('data-booking');
+            fetchLifeplanDetails(bookingId);
+        });
+    });
+
+    // Life Plan Modify Booking
+    const modifyLifeplanButtons = document.querySelectorAll('.modify-lifeplan-booking');
+    const modifyLifeplanModal = document.getElementById('modifyLifeplanModal');
+    
+    modifyLifeplanButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const bookingId = this.getAttribute('data-booking');
+            fetchLifeplanForModification(bookingId);
+        });
+    });
+
+    // Life Plan Cancel Booking
+    const cancelLifeplanButtons = document.querySelectorAll('.cancel-lifeplan-booking');
+    const cancelLifeplanModal = document.getElementById('cancelLifeplanModal');
+    
+    cancelLifeplanButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const bookingId = this.getAttribute('data-booking');
+            document.getElementById('cancel-lifeplan-id').value = bookingId;
+            cancelLifeplanModal.classList.remove('hidden');
+        });
+    });
+
+    
+
+    // Close life plan modals
+    document.querySelectorAll('.close-lifeplan-modal').forEach(button => {
+        button.addEventListener('click', function() {
+            document.getElementById('viewLifeplanDetailsModal').classList.add('hidden');
+            document.getElementById('modifyLifeplanModal').classList.add('hidden');
+            document.getElementById('cancelLifeplanModal').classList.add('hidden');
+        });
+    });
+
+    // Click outside life plan modals to close
+    window.addEventListener('click', function(e) {
+        if (e.target === document.getElementById('viewLifeplanDetailsModal')) {
+            document.getElementById('viewLifeplanDetailsModal').classList.add('hidden');
+        }
+        if (e.target === document.getElementById('modifyLifeplanModal')) {
+            document.getElementById('modifyLifeplanModal').classList.add('hidden');
+        }
+        if (e.target === document.getElementById('cancelLifeplanModal')) {
+            document.getElementById('cancelLifeplanModal').classList.add('hidden');
+        }
+    });
+
+    // Life Plan Form Submissions
+    document.getElementById('modifyLifeplanForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        submitLifeplanModification();
+    });
+    
+    document.getElementById('cancelLifeplanForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        submitLifeplanCancellation();
+    });
+
+    // Life Plan OTP Send
+    document.getElementById('lifeplan-sendOtpBtn').addEventListener('click', function() {
+        const bookingId = document.getElementById('cancel-lifeplan-id').value;
+        if (!bookingId) {
+            showError('No booking selected');
+            return;
+        }
+        
+        const otpBtn = this;
+        otpBtn.disabled = true;
+        otpBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Sending...';
+        
+        fetch('profile/send_cancel_otp.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 
+                booking_id: bookingId,
+                booking_type: 'lifeplan'
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showSuccess('OTP sent to your email!');
+                document.getElementById('lifeplan-otpInput').focus();
+            } else {
+                showError(data.message || 'Failed to send OTP');
+            }
+        })
         .catch(error => {
             console.error('Error:', error);
-            showError('An error occurred while fetching booking details');
+            showError('Failed to send OTP');
+        })
+        .finally(() => {
+            otpBtn.disabled = false;
+            otpBtn.textContent = 'Send OTP';
         });
+    });
 
     // Life Plan Functions
     function fetchLifeplanDetails(bookingId) {
@@ -4372,6 +4548,10 @@ document.getElementById('deathCertUploadForm').addEventListener('submit', functi
         });
     }
 
+// Remove the redundant submitBookingCancellation() function
+
+
+
     function formatDate(dateString) {
         const options = { year: 'numeric', month: 'long', day: 'numeric' };
         return new Date(dateString).toLocaleDateString('en-US', options);
@@ -4404,6 +4584,133 @@ document.getElementById('deathCertUploadForm').addEventListener('submit', functi
             notification.classList.add('hidden');
         }, 5000);
     }
+});// Add this to your existing JavaScript
+function showError(message) {
+    const notification = document.getElementById('errorNotification');
+    document.getElementById('errorMessage').textContent = message;
+    notification.classList.remove('hidden');
+    
+    // Add click handler to dismiss
+    notification.addEventListener('click', function() {
+        this.classList.add('hidden');
+    });
+    
+    // Auto-hide after 5 seconds
+    setTimeout(() => {
+        notification.classList.add('hidden');
+    }, 5000);
+}
+
+
+
+</script>
+
+<script>
+
+    // Function to capitalize first letter of each word
+function capitalizeName(name) {
+    return name.toLowerCase().replace(/\b\w/g, function(char) {
+        return char.toUpperCase();
+    });
+}
+
+function validateNameInput(input) {
+    // Remove any numbers or symbols
+    let value = input.value.replace(/[^a-zA-Z\s'-]/g, '');
+    
+    // Remove leading spaces
+    value = value.replace(/^\s+/, '');
+    
+    // Capitalize first letter of each word
+    value = capitalizeName(value);
+    
+    // Prevent multiple spaces
+    value = value.replace(/\s{2,}/g, ' ');
+    
+    // Update the input value
+    input.value = value;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Name fields in the edit profile modal
+    const profileNameFields = [
+        'firstName', 
+        'middleName', 
+        'lastName'
+    ];
+
+    // Name fields in the modify booking modal
+    const modifyBookingNameFields = [
+        'deceased_fname',
+        'deceased_midname',
+        'deceased_lname',
+        'deceased_suffix'
+    ];
+
+    // Function to apply validation to a field
+    function applyNameValidation(field) {
+        if (field) {
+            // Validate on input
+            field.addEventListener('input', function() {
+                validateNameInput(this);
+            });
+
+            // Validate on blur (when field loses focus)
+            field.addEventListener('blur', function() {
+                validateNameInput(this);
+            });
+
+            // Prevent paste of invalid content
+            field.addEventListener('paste', function(e) {
+                e.preventDefault();
+                const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+                const cleanedText = pastedText.replace(/[^a-zA-Z\s'-]/g, '');
+                document.execCommand('insertText', false, cleanedText);
+            });
+        }
+    }
+
+    // Apply validation to profile fields
+    profileNameFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        applyNameValidation(field);
+    });
+
+    // Apply validation to modify booking fields
+    modifyBookingNameFields.forEach(fieldName => {
+        // For modify booking modal, fields are accessed by name attribute
+        const field = document.querySelector(`input[name="${fieldName}"]`);
+        applyNameValidation(field);
+    });
+
+    // Additional validation for required fields
+    const requiredProfileFields = ['firstName', 'lastName'];
+    const requiredModifyFields = ['deceased_fname', 'deceased_lname'];
+
+    // Function to apply required validation
+    function applyRequiredValidation(field) {
+        if (field) {
+            field.addEventListener('blur', function() {
+                if (this.value.trim().length < 2) {
+                    this.setCustomValidity('Please enter at least 2 characters');
+                } else {
+                    this.setCustomValidity('');
+                }
+            });
+        }
+    }
+
+    // Apply to profile fields
+    requiredProfileFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        applyRequiredValidation(field);
+    });
+
+    // Apply to modify booking fields
+    requiredModifyFields.forEach(fieldName => {
+        const field = document.querySelector(`input[name="${fieldName}"]`);
+        applyRequiredValidation(field);
+    });
 });
 
 // Date validation for modify booking modal
@@ -4496,6 +4803,258 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
+    // Function to load address data when modal opens
+function loadAddressData() {
+    const regionId = document.getElementById('region').value;
+    if (regionId) {
+        updateProvinces();
+        
+        // We need to wait for provinces to load before selecting the right one
+        setTimeout(() => {
+            // Select the province if we have the data
+            const provinceSelect = document.getElementById('province');
+            if (provinceSelect && '<?php echo $province; ?>') {
+                for (let i = 0; i < provinceSelect.options.length; i++) {
+                    if (provinceSelect.options[i].text === '<?php echo $province; ?>') {
+                        provinceSelect.value = provinceSelect.options[i].value;
+                        provinceSelect.dispatchEvent(new Event('change'));
+                        break;
+                    }
+                }
+            }
+            
+            // Wait for cities to load
+            setTimeout(() => {
+                // Select the city if we have the data
+                const citySelect = document.getElementById('city');
+                if (citySelect && '<?php echo $city; ?>') {
+                    for (let i = 0; i < citySelect.options.length; i++) {
+                        if (citySelect.options[i].text === '<?php echo $city; ?>') {
+                            citySelect.value = citySelect.options[i].value;
+                            citySelect.dispatchEvent(new Event('change'));
+                            break;
+                        }
+                    }
+                }
+                
+                // Wait for barangays to load
+                setTimeout(() => {
+                    // Select the barangay if we have the data
+                    const barangaySelect = document.getElementById('barangay');
+                    if (barangaySelect && '<?php echo $barangay; ?>') {
+                        for (let i = 0; i < barangaySelect.options.length; i++) {
+                            if (barangaySelect.options[i].text === '<?php echo $barangay; ?>') {
+                                barangaySelect.value = barangaySelect.options[i].value;
+                                break;
+                            }
+                        }
+                    }
+                }, 500);
+            }, 500);
+        }, 500);
+    }
+}
+
+// Call loadAddressData when edit modal opens
+document.getElementById('edit-profile-btn').addEventListener('click', function() {
+    // Show modal first
+    const modal = document.getElementById('edit-profile-modal');
+    modal.classList.remove('hidden');
+    modal.classList.remove('opacity-0', 'scale-95');
+    modal.classList.add('opacity-100', 'scale-100');
+    
+    // Then load address data
+    setTimeout(loadAddressData, 100);
+});
+// Enhanced address dropdown functions with AJAX
+function updateProvinces() {
+    const regionId = document.getElementById('region').value;
+    const provinceDropdown = document.getElementById('province');
+    
+    if (!regionId) {
+        provinceDropdown.disabled = true;
+        document.getElementById('city').disabled = true;
+        document.getElementById('barangay').disabled = true;
+        return;
+    }
+    
+    // Fetch provinces via AJAX
+    fetch('address/get_provinces.php?region_id=' + regionId)
+        .then(response => response.json())
+        .then(data => {
+            provinceDropdown.innerHTML = '<option value="" selected disabled>Select Province</option>';
+            data.forEach(province => {
+                provinceDropdown.innerHTML += `<option value="${province.province_id}">${province.province_name}</option>`;
+            });
+            provinceDropdown.disabled = false;
+            
+            // Reset dependent dropdowns
+            document.getElementById('city').innerHTML = '<option value="" selected disabled>Select City/Municipality</option>';
+            document.getElementById('city').disabled = true;
+            document.getElementById('barangay').innerHTML = '<option value="" selected disabled>Select Barangay</option>';
+            document.getElementById('barangay').disabled = true;
+        });
+}
+
+function updateCities() {
+    const provinceId = document.getElementById('province').value;
+    const cityDropdown = document.getElementById('city');
+    
+    if (!provinceId) {
+        cityDropdown.disabled = true;
+        document.getElementById('barangay').disabled = true;
+        return;
+    }
+    
+    // Fetch cities via AJAX
+    fetch('address/get_cities.php?province_id=' + provinceId)
+        .then(response => response.json())
+        .then(data => {
+            cityDropdown.innerHTML = '<option value="" selected disabled>Select City/Municipality</option>';
+            data.forEach(city => {
+                cityDropdown.innerHTML += `<option value="${city.municipality_id}">${city.municipality_name}</option>`;
+            });
+            cityDropdown.disabled = false;
+            
+            // Reset dependent dropdown
+            document.getElementById('barangay').innerHTML = '<option value="" selected disabled>Select Barangay</option>';
+            document.getElementById('barangay').disabled = true;
+        });
+}
+
+function updateBarangays() {
+    const cityId = document.getElementById('city').value;
+    const barangayDropdown = document.getElementById('barangay');
+    
+    if (!cityId) {
+        barangayDropdown.disabled = true;
+        return;
+    }
+    
+    // Fetch barangays via AJAX
+    fetch('address/get_barangays.php?city_id=' + cityId)
+        .then(response => response.json())
+        .then(data => {
+            barangayDropdown.innerHTML = '<option value="" selected disabled>Select Barangay</option>';
+            data.forEach(barangay => {
+                barangayDropdown.innerHTML += `<option value="${barangay.barangay_id}">${barangay.barangay_name}</option>`;
+            });
+            barangayDropdown.disabled = false;
+        });
+}
+
+// Phone number validation with format instructions
+function validatePhoneNumber(phone) {
+    // Remove all non-digit and non-plus characters
+    const cleaned = phone.replace(/[^0-9+]/g, '');
+    
+    // Check if starts with +63 (Philippines country code)
+    if (phone.startsWith('+63')) {
+        return cleaned.length === 13; // +63 plus 10 digits
+    }
+    
+    // Check if starts with 0 (local number)
+    if (phone.startsWith('0')) {
+        return cleaned.length === 11; // 0 plus 10 digits
+    }
+    
+    // If doesn't start with 0 or +63, must be 10 digits
+    return cleaned.length === 10;
+}
+
+// Restrict phone input to numbers and + only
+function restrictPhoneInput() {
+    const phoneInput = document.getElementById('phone');
+    
+    // Add help text
+    const helpText = document.createElement('p');
+    helpText.className = 'mt-1 text-xs text-gray-500';
+    phoneInput.parentNode.appendChild(helpText);
+    
+    phoneInput.addEventListener('keydown', function(e) {
+        // Allow: backspace, delete, tab, escape, enter
+        if ([46, 8, 9, 27, 13].includes(e.keyCode) || 
+            // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+            (e.keyCode === 65 && e.ctrlKey === true) || 
+            (e.keyCode === 67 && e.ctrlKey === true) || 
+            (e.keyCode === 86 && e.ctrlKey === true) || 
+            (e.keyCode === 88 && e.ctrlKey === true) ||
+            // Allow: home, end, left, right
+            (e.keyCode >= 35 && e.keyCode <= 39)) {
+                return;
+        }
+        
+        // Ensure it's a number or + (only at start)
+        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && 
+            (e.keyCode < 96 || e.keyCode > 105) && 
+            (e.keyCode !== 187 || this.value.length !== 0)) {
+            e.preventDefault();
+        }
+    });
+    
+    phoneInput.addEventListener('input', function() {
+        const value = this.value;
+        // Remove any non-digit/non-plus characters
+        this.value = value.replace(/[^0-9+]/g, '');
+        
+        // Validate in real-time
+        if (!value) {
+            showError('phone', 'Phone number is required');
+        } else if (!validatePhoneNumber(value)) {
+            showError('phone', 'Invalid format. Use: 09*********');
+        } else {
+            clearError('phone');
+        }
+    });
+}
+
+// Date of birth validation - at least 18 years old
+function validateDateOfBirth(dob) {
+    if (!dob) return false;
+    
+    const birthDate = new Date(dob);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+    }
+    
+    return age >= 18;
+}
+
+// Set up date picker restrictions
+function setupDatePicker() {
+    const dobInput = document.getElementById('dob');
+    const today = new Date();
+    const minDate = new Date();
+    minDate.setFullYear(today.getFullYear() - 18);
+    
+    // Set max date to today
+    dobInput.max = today.toISOString().split('T')[0];
+    
+    // Set min date to 18 years ago
+    dobInput.min = new Date(today.getFullYear() - 120, today.getMonth(), today.getDate()).toISOString().split('T')[0];
+}
+
+// Street Address Validation
+// Street Address Validation
+function validateStreetAddress(input) {
+    // Remove any leading spaces
+    let value = input.value.replace(/^\s+/, '');
+    
+    // Remove multiple consecutive spaces
+    value = value.replace(/\s{2,}/g, ' ');
+    
+    // Capitalize first letter of the string if it exists
+    if (value.length > 0) {
+        value = value.charAt(0).toUpperCase() + value.slice(1);
+    }
+    
+    // Update the input value
+    input.value = value;
+}
 
 // Zip Code Validation (unchanged)
 function validateZipCode(input) {
@@ -5168,9 +5727,6 @@ function clearPasswordError(fieldId) {
     field.classList.remove('border-red-500');
     errorElement.classList.add('hidden');
 }
-```
-</script>
-</html>
 
 // Handle form submission
 function handleChangePasswordSubmit() {
@@ -5529,5 +6085,88 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 </script>
 
+<script>
+    
+    // Add this to your existing JavaScript
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle death certificate upload button clicks
+    document.querySelectorAll('.upload-death-cert').forEach(button => {
+        button.addEventListener('click', function() {
+            const bookingId = this.getAttribute('data-booking');
+            document.getElementById('death-cert-booking-id').value = bookingId;
+            document.getElementById('uploadDeathCertModal').classList.remove('hidden');
+        });
+    });
+
+    // Close death cert modal
+    document.getElementById('close-upload-death-cert-modal').addEventListener('click', function() {
+        document.getElementById('uploadDeathCertModal').classList.add('hidden');
+    });
+
+    document.getElementById('cancel-upload-death-cert').addEventListener('click', function() {
+        document.getElementById('uploadDeathCertModal').classList.add('hidden');
+    });
+
+    // Preview death certificate image
+    document.getElementById('death-cert-file').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                document.getElementById('death-cert-preview-img').src = event.target.result;
+                document.getElementById('death-cert-preview').classList.remove('hidden');
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Submit death certificate form
+    document.getElementById('submit-death-cert').addEventListener('click', function() {
+        const form = document.getElementById('deathCertForm');
+        const formData = new FormData(form);
+        
+        // Show loading state
+        this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Uploading...';
+        this.disabled = true;
+
+        fetch('profile/upload_death_cert.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: 'Death certificate uploaded successfully!',
+                    confirmButtonColor: '#d4a933'
+                }).then(() => {
+                    location.reload();
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: data.message || 'Failed to upload death certificate',
+                    confirmButtonColor: '#d4a933'
+                });
+            }
+        })
+        .catch(error => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'An error occurred while uploading',
+                confirmButtonColor: '#d4a933'
+            });
+        })
+        .finally(() => {
+            this.innerHTML = '<i class="fas fa-upload mr-2"></i> Upload Certificate';
+            this.disabled = false;
+        });
+    });
+});
+</script>
 </body> 
 </html>
