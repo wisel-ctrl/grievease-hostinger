@@ -158,13 +158,13 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
       </button>
       <div id="branchFilterDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-sidebar-border py-1">
         <div class="space-y-1">
-          <button class="w-full text-left px-4 py-2 text-sm text-sidebar-text hover:bg-sidebar-hover transition-colors" data-branch="all">
+          <button class="w-full text-left px-4 py-2 text-sm text-sidebar-text hover:bg-sidebar-hover transition-colors" data-branch="all" data-branch-id="all">
             <i class="fas fa-globe-americas text-sidebar-accent mr-2"></i> All Branches
           </button>
-          <button class="w-full text-left px-4 py-2 text-sm text-sidebar-text hover:bg-sidebar-hover transition-colors" data-branch="pila">
+          <button class="w-full text-left px-4 py-2 text-sm text-sidebar-text hover:bg-sidebar-hover transition-colors" data-branch="pila" data-branch-id="2">
             <i class="fas fa-store text-sidebar-accent mr-2"></i> Pila Branch
           </button>
-          <button class="w-full text-left px-4 py-2 text-sm text-sidebar-text hover:bg-sidebar-hover transition-colors" data-branch="paete">
+          <button class="w-full text-left px-4 py-2 text-sm text-sidebar-text hover:bg-sidebar-hover transition-colors" data-branch="paete" data-branch-id="1">
             <i class="fas fa-store text-sidebar-accent mr-2"></i> Paete Branch
           </button>
         </div>
@@ -199,8 +199,8 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
             <?php
             // Count total ongoing services (status = 'Pending')
             $countQuery = "SELECT COUNT(*) as total FROM sales_tb WHERE status = 'Pending'";
-    $countResult = $conn->query($countQuery);
-    $totalOngoing = $countResult->fetch_assoc()['total'];
+            $countResult = $conn->query($countQuery);
+            $totalOngoing = $countResult->fetch_assoc()['total'];
             ?>
             
             <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
@@ -4581,9 +4581,11 @@ document.addEventListener('click', function(e) {
 });
 
 // Branch selection handler
+// Branch selection handler
 document.querySelectorAll('#branchFilterDropdown button').forEach(button => {
     button.addEventListener('click', function() {
         const branch = this.getAttribute('data-branch');
+        const branchId = this.getAttribute('data-branch-id');
         
         // Update button text to show selected branch
         const branchText = this.textContent.trim();
@@ -4594,8 +4596,15 @@ document.querySelectorAll('#branchFilterDropdown button').forEach(button => {
         const chevron = branchFilterToggle.querySelector('.fa-chevron-down');
         chevron.classList.remove('rotate-180');
         
-        // Here you would add your branch filtering logic later
-        console.log('Selected branch:', branch);
+        // Update branch filter in all table states
+        for (const table in tableStates) {
+            tableStates[table].branch = branchId;
+        }
+        
+        // Reload all tables with the new branch filter
+        loadOngoingServices(1);
+        loadFullyPaidServices(1);
+        loadOutstandingServices(1);
     });
 });
 
@@ -4626,7 +4635,7 @@ function loadOngoingServices(page = 1) {
     loadingIndicator.classList.remove('hidden');
     tableBody.innerHTML = '';
 
-    fetch(`historyAjax/fetch_ongoing_services.php?page=${page}&search=${encodeURIComponent(tableStates.ongoing.search)}&sort=${tableStates.ongoing.sort}`)
+    fetch(`historyAjax/fetch_ongoing_services.php?page=${page}&search=${encodeURIComponent(tableStates.ongoing.search)}&sort=${tableStates.ongoing.sort}&branch=${tableStates.ongoing.branch || 'all'}`)
         .then(response => response.json())
         .then(data => {
             // Update table body
