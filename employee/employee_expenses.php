@@ -510,73 +510,96 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
       </div>
     </div>
 
-        <!-- Analytics Cards -->    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8 px-1">        <?php        // Card data array for consistent styling
-        $cards = [
-            [
-                'title' => 'Total Expenses',
-                'value' => number_format($total_expenses, 2),
-                'change' => '8% from last month',
-                'change_class' => 'text-green-600',
-                'change_icon' => 'fa-arrow-up',
-                'icon' => 'peso-sign',
-                'color' => 'blue',
-                'prefix' => '₱',
-                'suffix' => '',
-                'extra_content' => ''
-            ],
-            [
-                'title' => 'This Month',
-                'value' => number_format($monthly_expenses, 2),
-                'change' => '12% from last month',
-                'change_class' => 'text-green-600',
-                'change_icon' => 'fa-arrow-up',
-                'icon' => 'chart-line',
-                'color' => 'green',
-                'prefix' => '₱',
-                'suffix' => '',
-                'extra_content' => ''
-            ],
-            [
-                'title' => 'Pending Payments',
-                'value' => $pending_payments,
-                'change' => '3% from last month',
-                'change_class' => 'text-red-600',
-                'change_icon' => 'fa-arrow-down',
-                'icon' => 'exclamation-triangle',
-                'color' => 'orange',
-                'prefix' => '',
-                'suffix' => '',
-                'extra_content' => ''
-            ]
-        ];
-        
-        // Render cards
-        foreach ($cards as $card) {
-        ?>
-        
-                <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden transform hover:-translate-y-1">            <!-- Card header with gradient background -->            <div class="bg-gradient-to-r from-<?php echo $card['color']; ?>-100 to-<?php echo $card['color']; ?>-200 p-5">                <div class="flex items-center justify-between mb-3">                    <div class="flex-grow">                        <h3 class="text-base font-semibold text-gray-700"><?php echo $card['title']; ?></h3>                        <?php if (isset($card['sub_text']) && !empty($card['sub_text'])): ?>                        <div class="text-sm text-gray-500 mt-1"><?php echo $card['sub_text']; ?></div>                        <?php endif; ?>                    </div>                    <div class="w-10 h-10 rounded-full bg-white/90 text-<?php echo $card['color']; ?>-600 flex items-center justify-center ml-3 flex-shrink-0 shadow-md">                        <i class="fas fa-<?php echo $card['icon']; ?> text-lg"></i>                    </div>                </div>                <div class="flex items-end mt-2">                    <span class="text-2xl md:text-3xl font-bold <?php echo isset($card['warning_class']) ? $card['warning_class'] : 'text-gray-800'; ?>">                        <?php echo $card['prefix'] . $card['value'] . $card['suffix']; ?>                    </span>                </div>            </div>
-            
-            <!-- Extra content if any -->
-            <?php if (!empty($card['extra_content'])): ?>
-            <div class="px-3 py-2 bg-white border-t border-gray-50">
-                <?php echo $card['extra_content']; ?>
-            </div>
-            <?php endif; ?>
-            
-            <!-- Card footer with change indicator -->
-            <?php if (isset($card['change']) && !empty($card['change'])): ?>
-            <div class="px-3 py-2 bg-white border-t border-gray-50 text-xs">
-                <div class="flex items-center <?php echo $card['change_class']; ?>">
-                    <i class="fas <?php echo $card['change_icon']; ?> mr-1"></i>
-                    <span><?php echo $card['change']; ?></span>
+        <!-- Analytics Cards -->    
+<!-- Analytics Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8 px-1">
+    <?php
+    // Card data array for consistent styling
+    $cards = [
+        [
+            'title' => 'Total Expenses',
+            'value_class' => 'total-expenses-value',
+            'value' => number_format($total_expenses, 2),
+            'change' => '8% from last month',
+            'change_class' => 'text-green-600',
+            'change_icon' => 'fa-arrow-up',
+            'icon' => 'peso-sign',
+            'color' => 'blue',
+            'prefix' => '₱',
+            'suffix' => '',
+            'extra_content' => ''
+        ],
+        [
+            'title' => 'This Month',
+            'value_class' => 'monthly-expenses-value',
+            'value' => number_format($monthly_expenses, 2),
+            'change' => '12% from last month',
+            'change_class' => 'text-green-600',
+            'change_icon' => 'fa-arrow-up',
+            'icon' => 'chart-line',
+            'color' => 'green',
+            'prefix' => '₱',
+            'suffix' => '',
+            'extra_content' => ''
+        ],
+        [
+            'title' => 'Pending Payments',
+            'value_class' => 'pending-payments-value',
+            'value' => $pending_payments,
+            'change' => '3% from last month',
+            'change_class' => 'text-red-600',
+            'change_icon' => 'fa-arrow-down',
+            'icon' => 'exclamation-triangle',
+            'color' => 'orange',
+            'prefix' => '',
+            'suffix' => '',
+            'extra_content' => ''
+        ]
+    ];
+
+    // Render cards
+    foreach ($cards as $card) {
+    ?>
+        <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden transform hover:-translate-y-1">
+            <!-- Card header with gradient background -->
+            <div class="bg-gradient-to-r from-<?php echo $card['color']; ?>-100 to-<?php echo $card['color']; ?>-200 p-5">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex-grow">
+                        <h3 class="text-base font-semibold text-gray-700"><?php echo $card['title']; ?></h3>
+                        <?php if (isset($card['sub_text']) && !empty($card['sub_text'])): ?>
+                            <div class="text-sm text-gray-500 mt-1"><?php echo $card['sub_text']; ?></div>
+                        <?php endif; ?>
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-white/90 text-<?php echo $card['color']; ?>-600 flex items-center justify-center ml-3 flex-shrink-0 shadow-md">
+                        <i class="fas fa-<?php echo $card['icon']; ?> text-lg"></i>
+                    </div>
+                </div>
+                <div class="flex items-end mt-2">
+                    <div class="text-2xl md:text-3xl font-bold text-gray-800 <?php echo $card['value_class']; ?>">
+                        <?php echo $card['prefix'] . $card['value'] . $card['suffix']; ?>
+                    </div>
                 </div>
             </div>
+
+            <!-- Extra content if any -->
+            <?php if (!empty($card['extra_content'])): ?>
+                <div class="px-3 py-2 bg-white border-t border-gray-50">
+                    <?php echo $card['extra_content']; ?>
+                </div>
+            <?php endif; ?>
+
+            <!-- Card footer with change indicator -->
+            <?php if (isset($card['change']) && !empty($card['change'])): ?>
+                <div class="px-3 py-2 bg-white border-t border-gray-50 text-xs">
+                    <div class="flex items-center <?php echo $card['change_class']; ?>">
+                        <i class="fas <?php echo $card['change_icon']; ?> mr-1"></i>
+                        <span><?php echo $card['change']; ?></span>
+                    </div>
+                </div>
             <?php endif; ?>
         </div>
-        
-        <?php } ?>
-    </div>
-
+    <?php } ?>
+</div>
     <!-- Expenses Table Card -->
 <div class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden branch-expense-container">
     <!-- Branch Header with Search and Filters - Made responsive with better stacking -->
@@ -596,16 +619,14 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
             <div class="hidden lg:flex items-center gap-3">
                 <!-- Search Input -->
                 <div class="relative">
-                    <form id="searchForm" method="GET" class="relative">
-                        <input type="text" 
-                               name="search" 
-                               placeholder="Search expenses..." 
-                               value="<?php echo htmlspecialchars($search); ?>"
-                               class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-                        <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
-                            <i class="fas fa-search text-gray-400"></i>
-                        </div>
-                    </form>
+                    <input type="text" 
+                           name="search" 
+                           placeholder="Search expenses..." 
+                           value="<?php echo htmlspecialchars($search); ?>"
+                           class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+                    <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
+                        <i class="fas fa-search text-gray-400"></i>
+                    </div>
                 </div>
 
                 <!-- Filter Dropdown -->
@@ -621,35 +642,21 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
                     
                     <!-- Filter Window -->
                     <div id="filterDropdown" class="filter-content absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border hidden p-4">
-    <div class="space-y-4">
-        <!-- Category Filter -->
-        <div>
-            <h5 class="text-sm font-medium text-sidebar-text mb-2">Category</h5>
-            <select name="category" class="w-full px-3 py-2 border border-sidebar-border rounded-md text-sm">
-                <option value="">All Categories</option>
-                <option value="Supplies" <?php echo $category_filter === 'Supplies' ? 'selected' : ''; ?>>Supplies</option>
-                <option value="Utilities" <?php echo $category_filter === 'Utilities' ? 'selected' : ''; ?>>Utilities</option>
-                <option value="Salaries" <?php echo $category_filter === 'Salaries' ? 'selected' : ''; ?>>Salaries</option>
-                <option value="Maintenance" <?php echo $category_filter === 'Maintenance' ? 'selected' : ''; ?>>Maintenance</option>
-                <option value="Other" <?php echo $category_filter === 'Other' ? 'selected' : ''; ?>>Other</option>
-            </select>
-        </div>
-        
-        <!-- Status Filter -->
-        <div>
-            <h5 class="text-sm font-medium text-sidebar-text mb-2">Status</h5>
-            <select name="status" class="w-full px-3 py-2 border border-sidebar-border rounded-md text-sm">
-                <option value="">All Statuses</option>
-                <option value="Paid" <?php echo $status_filter === 'Paid' ? 'selected' : ''; ?>>Paid</option>
-                <option value="Pending" <?php echo $status_filter === 'Pending' ? 'selected' : ''; ?>>Pending</option>
-            </select>
-        </div>
-        
-        <button type="button" onclick="applyFilters()" class="w-full px-4 py-2 bg-sidebar-accent text-white rounded-md text-sm hover:bg-darkgold transition-all duration-300">
-            Apply Filters
-        </button>
-    </div>
-</div>
+                        <div class="space-y-4">
+                            <!-- Category Filter -->
+                            <div>
+                                <h5 class="text-sm font-medium text-sidebar-text mb-2">Category</h5>
+                                <select name="category" class="w-full px-3 py-2 border border-sidebar-border rounded-md text-sm" onchange="loadExpenses(1)">
+                                    <option value="">All Categories</option>
+                                    <option value="Supplies" <?php echo $category_filter === 'Supplies' ? 'selected' : ''; ?>>Supplies</option>
+                                    <option value="Utilities" <?php echo $category_filter === 'Utilities' ? 'selected' : ''; ?>>Utilities</option>
+                                    <option value="Salaries" <?php echo $category_filter === 'Salaries' ? 'selected' : ''; ?>>Salaries</option>
+                                    <option value="Maintenance" <?php echo $category_filter === 'Maintenance' ? 'selected' : ''; ?>>Maintenance</option>
+                                    <option value="Other" <?php echo $category_filter === 'Other' ? 'selected' : ''; ?>>Other</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 
                 <!-- View Archived Button -->
@@ -674,16 +681,14 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
             <div class="flex items-center w-full gap-3 mb-4">
                 <!-- Search Input - Takes most of the space -->
                 <div class="relative flex-grow">
-                    <form id="mobileSearchForm" method="GET" class="relative w-full">
-                        <input type="text" 
-                               name="search" 
-                               placeholder="Search expenses..." 
-                               value="<?php echo htmlspecialchars($search); ?>"
-                               class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-                        <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
-                            <i class="fas fa-search text-gray-400"></i>
-                        </div>
-                    </form>
+                    <input type="text" 
+                           name="search" 
+                           placeholder="Search expenses..." 
+                           value="<?php echo htmlspecialchars($search); ?>"
+                           class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+                    <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
+                        <i class="fas fa-search text-gray-400"></i>
+                    </div>
                 </div>
 
                 <!-- Icon-only button for filter -->
@@ -820,10 +825,10 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
     
     <!-- Sticky Pagination Footer with improved spacing -->
     <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
-        <div class="text-sm text-gray-500 text-center sm:text-left">
+        <div class="text-sm text-gray-500 text-center sm:text-left showing-text">
     Showing <?php echo ($offset + 1) . ' to ' . min($offset + $items_per_page, $total_items); ?> of <?php echo $total_items; ?> expenses
 </div>
-        <div class="flex space-x-2">
+        <div class="flex space-x-2 pagination-container">
             <?php if ($total_pages > 1): ?>
                 <!-- First page button (double arrow) -->
                 <a href="?page=1&search=<?php echo urlencode($search); ?>&category=<?php echo urlencode($category_filter); ?>&status=<?php echo urlencode($status_filter); ?>&sort=<?php echo $sort_by; ?>&order=<?php echo $sort_order; ?>" 
@@ -1269,6 +1274,206 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
 
   
     <script>
+        
+        // Add this to your script section
+// Add this to your script section
+document.addEventListener('DOMContentLoaded', function() {
+    // Initial load
+    loadExpenses(1);
+    
+    // Handle search input changes with debounce
+    const searchInput = document.querySelector('input[name="search"]');
+    if (searchInput) {
+        let searchTimeout;
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                loadExpenses(1);
+            }, 500); // 500ms debounce
+        });
+    }
+    
+    // Add event listener for filter changes
+    const categoryFilter = document.querySelector('select[name="category"]');
+    
+    if (categoryFilter) {
+        categoryFilter.addEventListener('change', function() {
+            applyFilters(); // Call applyFilters to load expenses and hide dropdown
+        });
+    }
+    
+    // Prevent any form submissions (since we're using AJAX)
+    const forms = document.querySelectorAll('form');
+    forms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            loadExpenses(1);
+        });
+    });
+});
+
+function loadExpenses(page) {
+    const searchInput = document.querySelector('input[name="search"]');
+    const categoryFilter = document.querySelector('select[name="category"]');
+    const urlParams = new URLSearchParams(window.location.search);
+    const sortBy = urlParams.get('sort') || 'date';
+    const sortOrder = urlParams.get('order') || 'DESC';
+    
+    // Show loading state
+    const tableBody = document.querySelector('tbody');
+    if (tableBody) {
+        tableBody.innerHTML = '<tr><td colspan="7" class="px-4 py-6 text-sm text-center"><div class="flex flex-col items-center"><i class="fas fa-spinner fa-spin text-gray-300 text-4xl mb-3"></i><p class="text-gray-500">Loading expenses...</p></div></td></tr>';
+    }
+    
+    // Prepare parameters
+    const params = new URLSearchParams();
+    params.append('page', page);
+    if (searchInput && searchInput.value) params.append('search', searchInput.value);
+    if (categoryFilter && categoryFilter.value) params.append('category', categoryFilter.value);
+    params.append('sort', sortBy);
+    params.append('order', sortOrder);
+    
+    // Fetch data
+    fetch('expenses/fetch_expenses.php?' + params.toString())
+        .then(response => response.json())
+        .then(data => {
+            // Update analytics cards
+            if (data.total_expenses !== undefined) {
+                updateAnalyticsCards(data);
+            }
+            
+            // Update table
+            if (data.expenses) {
+                updateExpensesTable(data.expenses);
+            }
+            
+            // Update pagination
+            const paginationContainer = document.querySelector('.pagination-container');
+            const showingText = document.querySelector('.showing-text');
+            
+            if (paginationContainer && data.pagination_html) {
+                paginationContainer.innerHTML = data.pagination_html;
+            }
+            if (showingText && data.showing_text) {
+                showingText.innerHTML = data.showing_text;
+            }
+            
+            // Update URL without reloading
+            const newUrl = window.location.pathname + '?' + params.toString();
+            window.history.pushState({ path: newUrl }, '', newUrl);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            if (tableBody) {
+                tableBody.innerHTML = '<tr><td colspan="7" class="px-4 py-6 text-sm text-center"><div class="flex flex-col items-center"><i class="fas fa-exclamation-triangle text-gray-300 text-4xl mb-3"></i><p class="text-gray-500">Error loading expenses. Please try again.</p></div></td></tr>';
+            }
+        });
+}
+
+function updateAnalyticsCards(data) {
+    // Update total expenses card
+    document.querySelector('.total-expenses-value').textContent = '₱' + parseFloat(data.total_expenses || 0).toFixed(2);
+    
+    // Update monthly expenses card
+    document.querySelector('.monthly-expenses-value').textContent = '₱' + parseFloat(data.monthly_expenses || 0).toFixed(2);
+    
+    // Update pending payments card
+    document.querySelector('.pending-payments-value').textContent = data.pending_payments || 0;
+}
+
+function updateExpensesTable(expenses) {
+    const tableBody = document.querySelector('tbody');
+    
+    if (expenses.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="7" class="px-4 py-6 text-sm text-center"><div class="flex flex-col items-center"><i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i><p class="text-gray-500">No expenses found</p></div></td></tr>';
+        return;
+    }
+    
+    let html = '';
+    expenses.forEach(expense => {
+        const statusClass = expense.status === 'Paid' 
+            ? "bg-green-100 text-green-600 border border-green-200" 
+            : "bg-orange-100 text-orange-500 border border-orange-200";
+        const statusIcon = expense.status === 'Paid' ? "fa-check-circle" : "fa-clock";
+        
+        html += `
+            <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
+                <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">#${expense.expense_ID}</td>
+                <td class="px-4 py-3.5 text-sm text-sidebar-text">${escapeHtml(expense.expense_name)}</td>
+                <td class="px-4 py-3.5 text-sm text-sidebar-text">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
+                        ${escapeHtml(expense.category)}
+                    </span>
+                </td>
+                <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱${parseFloat(expense.price).toFixed(2)}</td>
+                <td class="px-4 py-3.5 text-sm text-sidebar-text">${expense.date}</td>
+                <td class="px-4 py-3.5 text-sm">
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${statusClass}">
+                        <i class="fas ${statusIcon} mr-1"></i> ${escapeHtml(expense.status)}
+                    </span>
+                </td>
+                <td class="px-4 py-3.5 text-sm">
+                    <div class="flex space-x-2">
+                        <button class="p-2 bg-yellow-100 text-yellow-600 rounded-lg hover:bg-yellow-200 transition-all tooltip" title="Edit Expense" 
+                            onclick="openEditExpenseModal(
+                                '${escapeHtml(expense.expense_ID)}',
+                                '${escapeHtml(expense.expense_name)}',
+                                '${escapeHtml(expense.category)}',
+                                '${escapeHtml(expense.price)}',
+                                '${escapeHtml(expense.date)}',
+                                '${escapeHtml(expense.status)}',
+                                '${escapeHtml(expense.notes || '')}'
+                            )">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all tooltip" title="Archive Expense" 
+                                onclick="confirmArchive('${escapeHtml(expense.expense_ID)}')">
+                            <i class="fas fa-archive"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    });
+    
+    tableBody.innerHTML = html;
+}
+
+function escapeHtml(unsafe) {
+    if (unsafe === null || unsafe === undefined) return '';
+    return unsafe.toString()
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function applyFilters() {
+    loadExpenses(1);
+    document.getElementById('filterDropdown').classList.add('hidden');
+}
+
+// Function to sort table
+function sortTable(column) {
+    const url = new URL(window.location.href);
+    const currentSort = url.searchParams.get('sort');
+    const currentOrder = url.searchParams.get('order');
+    
+    let newOrder = 'ASC';
+    if (currentSort === column && currentOrder === 'ASC') {
+        newOrder = 'DESC';
+    }
+    
+    url.searchParams.set('sort', column);
+    url.searchParams.set('order', newOrder);
+    
+    // Update URL and reload data
+    window.history.pushState({ path: url.toString() }, '', url.toString());
+    loadExpenses(1);
+}
+        
+        
       // Initialize current date for date inputs
       document.addEventListener('DOMContentLoaded', function() {
         const today = new Date().toISOString().split('T')[0];
@@ -1286,9 +1491,7 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
         document.getElementById('filterDropdown').classList.toggle('hidden');
       }
       
-      function applyFilters() {
-    submitSearch();
-}
+      
 
       // Function to sort table
       function sortTable(column) {
@@ -1348,69 +1551,7 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
           }
       }
 
-      // Add this to your script section
-document.addEventListener('DOMContentLoaded', function() {
-    // Handle search form submission
-    const searchForm = document.getElementById('searchForm');
-    const mobileSearchForm = document.getElementById('mobileSearchForm');
-    
-    if (searchForm) {
-        searchForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            submitSearch();
-        });
-    }
-    
-    if (mobileSearchForm) {
-        mobileSearchForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            submitSearch();
-        });
-    }
-    
-    // Add event listener for search input changes with debounce
-    const searchInput = document.querySelector('input[name="search"]');
-    if (searchInput) {
-        let searchTimeout;
-        searchInput.addEventListener('input', function() {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                submitSearch();
-            }, 500); // 500ms debounce
-        });
-    }
-});
 
-function submitSearch() {
-    const url = new URL(window.location.href);
-    const searchInput = document.querySelector('input[name="search"]');
-    const categoryFilter = document.querySelector('select[name="category"]');
-    const statusFilter = document.querySelector('select[name="status"]');
-    
-    // Update URL parameters
-    if (searchInput && searchInput.value) {
-        url.searchParams.set('search', searchInput.value);
-    } else {
-        url.searchParams.delete('search');
-    }
-    
-    if (categoryFilter && categoryFilter.value) {
-        url.searchParams.set('category', categoryFilter.value);
-    } else {
-        url.searchParams.delete('category');
-    }
-    
-    if (statusFilter && statusFilter.value) {
-        url.searchParams.set('status', statusFilter.value);
-    } else {
-        url.searchParams.delete('status');
-    }
-    
-    // Reset to page 1 when searching
-    url.searchParams.set('page', '1');
-    
-    window.location.href = url.toString();
-}
 
       // Function to open the Edit Expense Modal
       function openEditExpenseModal(id, description, category, amount, date, status, notes) {
