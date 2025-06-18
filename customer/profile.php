@@ -1993,10 +1993,18 @@ function openPaymentHistoryModal(packageType, Id) {
         tbody.innerHTML = '';
         
         paymentHistory.forEach(payment => {
+            // Format the payment date
+            const paymentDate = new Date(payment.payment_date);
+            const formattedDate = paymentDate.toLocaleDateString('en-US', {
+                month: 'long',
+                day: 'numeric',
+                year: 'numeric'
+            });
+            
             const row = document.createElement('tr');
             row.className = 'hover:bg-gray-50';
             row.innerHTML = `
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${payment.payment_date}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${formattedDate}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${payment.Notes || ''}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">₱${parseFloat(payment.Payment_Amount).toFixed(2)}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">₱${parseFloat(payment.After_Payment_Balance).toFixed(2)}</td>
