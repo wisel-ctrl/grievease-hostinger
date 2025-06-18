@@ -1966,7 +1966,7 @@ function escapeHtml(unsafe) {
 
 
 
-function openPaymentHistoryModal(packageType) {
+function openPaymentHistoryModal(packageType, Id) {
     // Set modal title based on package type
     const titles = {
         'traditional-funeral': 'Traditional Funeral Payment History',
@@ -1975,30 +1975,45 @@ function openPaymentHistoryModal(packageType) {
     };
     document.getElementById('modal-package-title').textContent = titles[packageType];
     
-    // This would normally come from your backend/data
-    const paymentHistory = getSamplePaymentHistory(packageType);
-    
-    // Populate the table
-    const tbody = document.getElementById('payment-history-body');
-    tbody.innerHTML = '';
-    
-    paymentHistory.forEach(payment => {
-        const row = document.createElement('tr');
-        row.className = 'hover:bg-gray-50';
-        row.innerHTML = `
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${payment.date}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${payment.description}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium ${payment.amountClass}">${payment.amount}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${payment.balance}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                <button class="text-yellow-600 hover:text-yellow-800">View</button>
-            </td>
-        `;
-        tbody.appendChild(row);
+    // Fetch payment history from server
+    fetch('profile/get_payment_history.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            packageType: packageType,
+            id: Id
+        })
+    })
+    .then(response => response.json())
+    .then(paymentHistory => {
+        // Populate the table
+        const tbody = document.getElementById('payment-history-body');
+        tbody.innerHTML = '';
+        
+        paymentHistory.forEach(payment => {
+            const row = document.createElement('tr');
+            row.className = 'hover:bg-gray-50';
+            row.innerHTML = `
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${payment.payment_date}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${payment.Notes || ''}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">₱${parseFloat(payment.Payment_Amount).toFixed(2)}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">₱${parseFloat(payment.After_Payment_Balance).toFixed(2)}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <button class="text-yellow-600 hover:text-yellow-800">View</button>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+        
+        // Show the modal
+        document.getElementById('payment-history-modal').classList.remove('hidden');
+    })
+    .catch(error => {
+        console.error('Error fetching payment history:', error);
+        // You might want to show an error message to the user here
     });
-    
-    // Show the modal
-    document.getElementById('payment-history-modal').classList.remove('hidden');
 }
 
 function populateCustomPackageCards(containerId, packages) {
