@@ -1546,6 +1546,7 @@ $lifeplanStmt->close();
 
 <!-- Payment Modal -->
 <!-- Traditional Funeral Payment Modal -->
+<!-- Traditional Package Payment Modal -->
 <div id="traditional-payment-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 hidden">
   <!-- Modal Content -->
   <div class="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden max-h-[90vh]">
@@ -1568,7 +1569,7 @@ $lifeplanStmt->close();
             <label for="traditional-amount" class="block text-sm font-medium text-navy mb-1 sm:mb-2">Amount to Pay</label>
             <div class="relative">
               <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-600">₱</span>
-              <input type="number" id="traditional-amount" min="0" class="pl-8 w-full px-3 sm:px-4 py-2 sm:py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base" placeholder="0.00">
+              <input type="number" id="traditional-amount" min="0" class="pl-10 w-full px-3 sm:px-4 py-2 sm:py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base" placeholder="0.00">
             </div>
           </div>
           
@@ -1586,12 +1587,19 @@ $lifeplanStmt->close();
           <div>
             <label for="traditional-receipt" class="block text-sm font-medium text-navy mb-1 sm:mb-2">Upload Receipt (if bank transfer)</label>
             <div class="border-2 border-dashed border-input-border rounded-lg p-4 text-center">
-              <input type="file" id="traditional-receipt" class="hidden">
+              <input type="file" id="traditional-receipt" class="hidden" accept="image/*" onchange="previewImage(this, 'traditional-receipt-preview')">
               <label for="traditional-receipt" class="cursor-pointer">
                 <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
                 <p class="text-sm text-gray-600">Click to upload or drag and drop</p>
                 <p class="text-xs text-gray-500 mt-1">PNG, JPG up to 5MB</p>
               </label>
+              <!-- Image Preview -->
+              <div id="traditional-receipt-preview" class="mt-3 hidden">
+                <img class="max-w-full max-h-40 mx-auto rounded" src="" alt="Receipt Preview">
+                <button type="button" onclick="removeImage('traditional-receipt', 'traditional-receipt-preview')" class="mt-2 text-red-500 text-sm hover:text-red-700">
+                  <i class="fas fa-times mr-1"></i>Remove Image
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -1633,7 +1641,7 @@ $lifeplanStmt->close();
             <label for="custom-amount" class="block text-sm font-medium text-navy mb-1 sm:mb-2">Amount to Pay</label>
             <div class="relative">
               <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-600">₱</span>
-              <input type="number" id="custom-amount" min="0" class="pl-8 w-full px-3 sm:px-4 py-2 sm:py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base" placeholder="0.00">
+              <input type="number" id="custom-amount" min="0" class="pl-10 w-full px-3 sm:px-4 py-2 sm:py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base" placeholder="0.00">
             </div>
           </div>
           
@@ -1651,12 +1659,19 @@ $lifeplanStmt->close();
           <div>
             <label for="custom-receipt" class="block text-sm font-medium text-navy mb-1 sm:mb-2">Upload Receipt (if bank transfer)</label>
             <div class="border-2 border-dashed border-input-border rounded-lg p-4 text-center">
-              <input type="file" id="custom-receipt" class="hidden">
+              <input type="file" id="custom-receipt" class="hidden" accept="image/*" onchange="previewImage(this, 'custom-receipt-preview')">
               <label for="custom-receipt" class="cursor-pointer">
                 <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
                 <p class="text-sm text-gray-600">Click to upload or drag and drop</p>
                 <p class="text-xs text-gray-500 mt-1">PNG, JPG up to 5MB</p>
               </label>
+              <!-- Image Preview -->
+              <div id="custom-receipt-preview" class="mt-3 hidden">
+                <img class="max-w-full max-h-40 mx-auto rounded" src="" alt="Receipt Preview">
+                <button type="button" onclick="removeImage('custom-receipt', 'custom-receipt-preview')" class="mt-2 text-red-500 text-sm hover:text-red-700">
+                  <i class="fas fa-times mr-1"></i>Remove Image
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -1698,7 +1713,7 @@ $lifeplanStmt->close();
             <label for="lifeplan-amount" class="block text-sm font-medium text-navy mb-1 sm:mb-2">Amount to Pay</label>
             <div class="relative">
               <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-600">₱</span>
-              <input type="number" id="lifeplan-amount" min="0" class="pl-8 w-full px-3 sm:px-4 py-2 sm:py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base" placeholder="0.00">
+              <input type="number" id="lifeplan-amount" min="0" class="pl-10 w-full px-3 sm:px-4 py-2 sm:py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base" placeholder="0.00">
             </div>
           </div>
           
@@ -1716,12 +1731,19 @@ $lifeplanStmt->close();
           <div>
             <label for="lifeplan-receipt" class="block text-sm font-medium text-navy mb-1 sm:mb-2">Upload Receipt (if bank transfer)</label>
             <div class="border-2 border-dashed border-input-border rounded-lg p-4 text-center">
-              <input type="file" id="lifeplan-receipt" class="hidden">
+              <input type="file" id="lifeplan-receipt" class="hidden" accept="image/*" onchange="previewImage(this, 'lifeplan-receipt-preview')">
               <label for="lifeplan-receipt" class="cursor-pointer">
                 <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
                 <p class="text-sm text-gray-600">Click to upload or drag and drop</p>
                 <p class="text-xs text-gray-500 mt-1">PNG, JPG up to 5MB</p>
               </label>
+              <!-- Image Preview -->
+              <div id="lifeplan-receipt-preview" class="mt-3 hidden">
+                <img class="max-w-full max-h-40 mx-auto rounded" src="" alt="Receipt Preview">
+                <button type="button" onclick="removeImage('lifeplan-receipt', 'lifeplan-receipt-preview')" class="mt-2 text-red-500 text-sm hover:text-red-700">
+                  <i class="fas fa-times mr-1"></i>Remove Image
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -6167,6 +6189,33 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+ function previewImage(input, previewId) {
+    const preview = document.getElementById(previewId);
+    const file = input.files[0];
+    
+    if (file) {
+      const reader = new FileReader();
+      
+      reader.onload = function(e) {
+        preview.querySelector('img').src = e.target.result;
+        preview.classList.remove('hidden');
+      }
+      
+      reader.readAsDataURL(file);
+    }
+  }
+  
+  // Function to remove image
+  function removeImage(inputId, previewId) {
+    const input = document.getElementById(inputId);
+    const preview = document.getElementById(previewId);
+    
+    input.value = '';
+    preview.querySelector('img').src = '';
+    preview.classList.add('hidden');
+  }
+
 </script>
 </body> 
 </html>
