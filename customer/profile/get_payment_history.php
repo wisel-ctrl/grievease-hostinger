@@ -9,7 +9,6 @@ $id = $data['id'] ?? 0;
 
 try {
     $query = '';
-    $params = [$id];
     
     // Determine the query based on package type
     switch ($packageType) {
@@ -53,10 +52,21 @@ try {
             throw new Exception('Invalid package type');
     }
     
-    // Prepare and execute the query
+    // Prepare the statement
     $stmt = $conn->prepare($query);
-    $stmt->execute($params);
-    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    if (!$stmt) {
+        throw new Exception($conn->error);
+    }
+    
+    // Bind parameters and execute
+    $stmt->bind_param('i', $id);
+    $stmt->execute();
+    
+    // Get result
+    $result = $stmt->get_result();
+    
+    // Fetch all rows as associative array
+    $results = $result->fetch_all(MYSQLI_ASSOC);
     
     // Return the results as JSON
     echo json_encode($results);
@@ -65,4 +75,3 @@ try {
     http_response_code(400);
     echo json_encode(['error' => $e->getMessage()]);
 }
-?>
