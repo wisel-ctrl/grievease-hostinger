@@ -1810,6 +1810,34 @@ $lifeplanStmt->close();
     </div>
 </div>
 
+<div id="receipt-modal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+    <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+            <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+        </div>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div id="receipt-content" class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <!-- Receipt content will be inserted here -->
+            </div>
+            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <button id="print-receipt" type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
+                    Print Receipt
+                </button>
+                <button id="save-pdf" type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm">
+                    Save as PDF
+                </button>
+                <button id="save-image" type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-purple-600 text-base font-medium text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 sm:ml-3 sm:w-auto sm:text-sm">
+                    Save as Image
+                </button>
+                <button onclick="document.getElementById('receipt-modal').classList.add('hidden')" type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 // Pass PHP data to JavaScript
 const servicesData = <?php echo json_encode($services); ?>;
@@ -2008,9 +2036,11 @@ function openPaymentHistoryModal(packageType, Id) {
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${payment.Notes || ''}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">₱${parseFloat(payment.Payment_Amount).toFixed(2)}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">₱${parseFloat(payment.After_Payment_Balance).toFixed(2)}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <button class="text-yellow-600 hover:text-yellow-800">View</button>
-                </td>
+                <button 
+                class="text-yellow-600 hover:text-yellow-800" 
+                onclick="viewReceipt('${packageType}', '${payment.installment_ID}')">
+                View
+                </button>
             `;
             tbody.appendChild(row);
         });
@@ -2023,6 +2053,140 @@ function openPaymentHistoryModal(packageType, Id) {
         // You might want to show an error message to the user here
     });
 }
+
+function viewReceipt(packageType, id) {
+    // Fetch receipt data from server
+    fetch('profile/get_receipt_data.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            packageType: packageType,
+            id: id
+        })
+    })
+    .then(response => response.json())
+    .then(receiptData => {
+        // Generate receipt number based on package type and date
+        const now = new Date();
+        const datePart = now.toISOString().replace(/[^0-9]/g, '').slice(0, 8);
+        let receiptNumber = '';
+        
+        if (packageType === 'traditional-funeral') {
+            receiptNumber = `TRAD-${datePart}-${receiptData.installment_ID}`;
+        } else if (packageType === 'custom-package') {
+            receiptNumber = `CUST-${datePart}-${receiptData.custom_installment_id}`;
+        } else if (packageType === 'life-plan') {
+            receiptNumber = `LIFE-${datePart}-${receiptData.lplogs_id}`;
+        }
+
+        // Format payment date
+        const paymentDate = new Date(receiptData.Payment_Timestamp || receiptData.payment_timestamp || receiptData.log_date);
+        const formattedDate = paymentDate.toLocaleDateString('en-US', {
+            month: 'long',
+            day: 'numeric',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+
+        // Populate the receipt modal
+        const receiptModal = document.getElementById('receipt-modal');
+        const receiptContent = document.getElementById('receipt-content');
+        
+        receiptContent.innerHTML = `
+            <div class="text-center mb-4">
+                <h2 class="text-2xl font-bold">Veejay Relova Funeral Services</h2>
+                <p class="text-gray-600">${receiptData.branch_name}</p>
+                <p class="text-gray-500 text-sm">${formattedDate}</p>
+                <p class="text-gray-700 mt-2">Receipt No: ${receiptNumber}</p>
+            </div>
+            
+            <div class="border-t border-b border-gray-300 py-2 my-2">
+                <div class="flex justify-between">
+                    <span class="font-semibold">Client Name:</span>
+                    <span>${receiptData.Client_Name || receiptData.client_name || receiptData.planholder_name}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="font-semibold">Service:</span>
+                    <span>${receiptData.service_name}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="font-semibold">Package Type:</span>
+                    <span>${packageType.replace('-', ' ').toUpperCase()}</span>
+                </div>
+            </div>
+            
+            <div class="my-4">
+                <div class="flex justify-between py-1">
+                    <span>Service Price:</span>
+                    <span>₱${parseFloat(receiptData.discounted_price || receiptData.installment_amount).toFixed(2)}</span>
+                </div>
+                <div class="flex justify-between py-1">
+                    <span>Previous Balance:</span>
+                    <span>₱${parseFloat(receiptData.Before_Balance || receiptData.before_balance || receiptData.current_balance).toFixed(2)}</span>
+                </div>
+                <div class="flex justify-between py-1">
+                    <span>Amount Paid:</span>
+                    <span class="font-semibold">₱${parseFloat(receiptData.Payment_Amount || receiptData.payment_amount).toFixed(2)}</span>
+                </div>
+                <div class="flex justify-between py-1 border-t border-gray-300 mt-2">
+                    <span class="font-semibold">New Balance:</span>
+                    <span class="font-semibold">₱${parseFloat(receiptData.After_Payment_Balance || receiptData.after_payment_balance || receiptData.new_balance).toFixed(2)}</span>
+                </div>
+                <div class="flex justify-between py-1">
+                    <span>Payment Method:</span>
+                    <span>${receiptData.Method_of_Payment || receiptData.method_of_payment}</span>
+                </div>
+            </div>
+            
+            <div class="text-center text-sm text-gray-500 mt-6">
+                <p>Thank you for your payment!</p>
+                <p>For inquiries, please contact your branch.</p>
+            </div>
+        `;
+
+        // Show the modal
+        receiptModal.classList.remove('hidden');
+    })
+    .catch(error => {
+        console.error('Error fetching receipt data:', error);
+        alert('Failed to load receipt data. Please try again.');
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('print-receipt').addEventListener('click', function() {
+        const receiptContent = document.getElementById('receipt-content').innerHTML;
+        const originalContent = document.body.innerHTML;
+        
+        document.body.innerHTML = receiptContent;
+        window.print();
+        document.body.innerHTML = originalContent;
+    });
+
+    document.getElementById('save-pdf').addEventListener('click', function() {
+        // You'll need a library like html2pdf.js for this
+        // Example implementation:
+        const element = document.getElementById('receipt-content');
+        html2pdf()
+            .from(element)
+            .save('receipt.pdf');
+    });
+
+    document.getElementById('save-image').addEventListener('click', function() {
+        // You'll need a library like html2canvas for this
+        // Example implementation:
+        const element = document.getElementById('receipt-content');
+        html2canvas(element).then(canvas => {
+            const link = document.createElement('a');
+            link.download = 'receipt.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        });
+    });
+});
 
 function populateCustomPackageCards(containerId, packages) {
     const container = document.getElementById(containerId);
