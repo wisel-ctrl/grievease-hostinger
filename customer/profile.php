@@ -2165,24 +2165,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const printWindow = window.open('', '_blank');
 
-        const styles = `
-            <style>
-                body {
-                    font-family: Arial, sans-serif;
-                    padding: 20px;
-                }
-                /* Add your receipt styles here */
-            </style>
-        `;
-
-        // Build the full HTML
         const html = `
             <html>
                 <head>
                     <title>Print Receipt</title>
-                    ${styles}
+                    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
                 </head>
-                <body>
+                <body class="p-6 text-sm">
                     ${receiptContent}
                     <script>
                         window.addEventListener('load', function () {
@@ -2193,7 +2182,6 @@ document.addEventListener('DOMContentLoaded', function() {
             </html>
         `;
 
-        // Write and close the document in the new tab
         printWindow.document.open();
         printWindow.document.write(html);
         printWindow.document.close();
