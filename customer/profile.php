@@ -2172,7 +2172,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <title>Print Receipt</title>
                     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
                 </head>
-                <body class="p-6 text-sm">
+                <body class="p-6 text-sm font-hedvig">
                     ${receiptContent}
                     <script src="../tailwind.js" onload="window.print()"><\/script>
                 </body>
