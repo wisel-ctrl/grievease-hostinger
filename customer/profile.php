@@ -2181,6 +2181,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <html>
             <head>
                 <title>Receipt</title>
+                <script src="https://cdn.tailwindcss.com"></script>
                 ${stylesheets}
                 <style>
                     @media print {
