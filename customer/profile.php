@@ -2169,18 +2169,26 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('save-pdf').addEventListener('click', function () {
         const element = document.getElementById('receipt-content');
 
-        html2canvas(element).then(canvas => {
+        html2canvas(element, { scale: 2 }).then(canvas => {
             const imgData = canvas.toDataURL('image/png');
 
-            // Use jsPDF to generate PDF
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF({
-                orientation: 'portrait',
-                unit: 'px',
-                format: [canvas.width, canvas.height] // Size to match the canvas
-            });
+            const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
+            const pageWidth = pdf.internal.pageSize.getWidth();
+            const pageHeight = pdf.internal.pageSize.getHeight();
 
-            pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+            const imgProps = pdf.getImageProperties(imgData);
+            const pdfWidth = pageWidth;
+            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+            // If height exceeds, scale to fit A4
+            let finalHeight = pdfHeight;
+            let finalWidth = pdfWidth;
+            if (pdfHeight > pageHeight) {
+                finalHeight = pageHeight;
+                finalWidth = (imgProps.width * pageHeight) / imgProps.height;
+            }
+
+            pdf.addImage(imgData, 'PNG', 0, 0, finalWidth, finalHeight);
             pdf.save('receipt.pdf');
         });
     });
