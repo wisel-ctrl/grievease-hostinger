@@ -2171,15 +2171,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 <head>
                     <title>Print Receipt</title>
                     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-                    <script src="../tailwind.js"><\/script>
                 </head>
                 <body class="p-6 text-sm">
                     ${receiptContent}
-                    <script>
-                        window.addEventListener('load', function () {
-                            window.print();
-                        });
-                    <\/script>
+                    <script src="../tailwind.js" onload="window.print()"><\/script>
                 </body>
             </html>
         `;
