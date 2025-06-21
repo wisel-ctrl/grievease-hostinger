@@ -2160,36 +2160,54 @@ function viewReceipt(packageType, id) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('print-receipt').addEventListener('click', function() {
-        // Create a new window for printing
+    document.getElementById('print-receipt').addEventListener('click', function () {
         const printWindow = window.open('', '_blank');
-        
-        // Write the receipt content to the new window
+
+        const stylesheets = Array.from(document.styleSheets)
+            .map(sheet => {
+                try {
+                    return sheet.href ? `<link rel="stylesheet" href="${sheet.href}">` : '';
+                } catch (e) {
+                    // Cross-origin style sheets may throw security errors
+                    return '';
+                }
+            })
+            .join('');
+
+        const receiptContent = document.getElementById('receipt-content').innerHTML;
+
         printWindow.document.write(`
             <!DOCTYPE html>
             <html>
             <head>
                 <title>Receipt</title>
+                ${stylesheets}
                 <style>
-                    body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
-                    /* Add any other print-specific styles here */
+                    @media print {
+                        body {
+                            -webkit-print-color-adjust: exact !important;
+                            print-color-adjust: exact !important;
+                        }
+                    }
                 </style>
             </head>
-            <body>
-                ${document.getElementById('receipt-content').innerHTML}
+            <body class="bg-white p-4">
+                <div class="max-w-lg mx-auto">
+                    ${receiptContent}
+                </div>
             </body>
             </html>
         `);
-        
+
         printWindow.document.close();
-        
-        // Wait for content to load before printing
-        printWindow.onload = function() {
+
+        printWindow.onload = function () {
+            printWindow.focus(); // Optional for Safari
             printWindow.print();
-            // Optional: close the window after printing
-            // printWindow.close();
+            printWindow.close();
         };
     });
+
 
     document.getElementById('save-pdf').addEventListener('click', function () {
         const element = document.getElementById('receipt-content');
