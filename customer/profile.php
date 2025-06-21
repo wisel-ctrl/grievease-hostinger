@@ -2097,11 +2097,12 @@ function viewReceipt(packageType, id) {
         // Populate the receipt modal
         const receiptModal = document.getElementById('receipt-modal');
         const receiptContent = document.getElementById('receipt-content');
+        const branchName = receiptData.branch_name.charAt(0).toUpperCase() + receiptData.branch_name.slice(1).toLowerCase() + ' Branch';
         
         receiptContent.innerHTML = `
             <div class="text-center mb-4">
                 <h2 class="text-2xl font-bold">Veejay Relova Funeral Services</h2>
-                <p class="text-gray-600">${receiptData.branch_name}</p>
+                <p class="text-gray-600">${branchName}</p>
                 <p class="text-gray-500 text-sm">${formattedDate}</p>
                 <p class="text-gray-700 mt-2">Receipt No: ${receiptNumber}</p>
             </div>
