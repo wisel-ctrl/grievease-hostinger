@@ -2166,13 +2166,23 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.innerHTML = originalContent;
     });
 
-    document.getElementById('save-pdf').addEventListener('click', function() {
-        // You'll need a library like html2pdf.js for this
-        // Example implementation:
+    document.getElementById('save-pdf').addEventListener('click', function () {
         const element = document.getElementById('receipt-content');
-        html2pdf()
-            .from(element)
-            .save('receipt.pdf');
+
+        html2canvas(element).then(canvas => {
+            const imgData = canvas.toDataURL('image/png');
+
+            // Use jsPDF to generate PDF
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'px',
+                format: [canvas.width, canvas.height] // Size to match the canvas
+            });
+
+            pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+            pdf.save('receipt.pdf');
+        });
     });
 
     document.getElementById('save-image').addEventListener('click', function() {
