@@ -1995,6 +1995,9 @@ function escapeHtml(unsafe) {
 
 
 function openPaymentHistoryModal(packageType, Id) {
+    const tbody = document.getElementById('payment-history-body');
+    tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>';
+    
     // Set modal title based on package type
     const titles = {
         'traditional-funeral': 'Traditional Funeral Payment History',
@@ -2158,12 +2161,34 @@ function viewReceipt(packageType, id) {
 
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('print-receipt').addEventListener('click', function() {
-        const receiptContent = document.getElementById('receipt-content').innerHTML;
-        const originalContent = document.body.innerHTML;
+        // Create a new window for printing
+        const printWindow = window.open('', '_blank');
         
-        document.body.innerHTML = receiptContent;
-        window.print();
-        document.body.innerHTML = originalContent;
+        // Write the receipt content to the new window
+        printWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Receipt</title>
+                <style>
+                    body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+                    /* Add any other print-specific styles here */
+                </style>
+            </head>
+            <body>
+                ${document.getElementById('receipt-content').innerHTML}
+            </body>
+            </html>
+        `);
+        
+        printWindow.document.close();
+        
+        // Wait for content to load before printing
+        printWindow.onload = function() {
+            printWindow.print();
+            // Optional: close the window after printing
+            // printWindow.close();
+        };
     });
 
     document.getElementById('save-pdf').addEventListener('click', function () {
