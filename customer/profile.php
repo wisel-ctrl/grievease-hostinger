@@ -2161,41 +2161,43 @@ function viewReceipt(packageType, id) {
 
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('print-receipt').addEventListener('click', function () {
-    const receiptContent = document.getElementById('receipt-content').innerHTML;
+        const receiptContent = document.getElementById('receipt-content').innerHTML;
 
-    // Open a new window
-    const printWindow = window.open('', '_blank');
+        const printWindow = window.open('', '_blank');
 
-    // Optional: Add your receipt CSS styles here if needed
-    const styles = `
-        <style>
-            body {
-                font-family: Arial, sans-serif;
-                padding: 20px;
-            }
-            /* Include other receipt styles if needed */
-        </style>
-    `;
+        const styles = `
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    padding: 20px;
+                }
+                /* Add your receipt styles here */
+            </style>
+        `;
 
-    printWindow.document.open();
-    printWindow.document.write(`
-        <html>
-            <head>
-                <title>Print Receipt</title>
-                ${styles}
-            </head>
-            <body>
-                ${receiptContent}
-                <script>
-                    window.onload = function() {
-                        window.print();
-                    }
-                </script>
-            </body>
-        </html>
-    `);
-    printWindow.document.close();
-});
+        // Build the full HTML
+        const html = `
+            <html>
+                <head>
+                    <title>Print Receipt</title>
+                    ${styles}
+                </head>
+                <body>
+                    ${receiptContent}
+                    <script>
+                        window.addEventListener('load', function () {
+                            window.print();
+                        });
+                    <\/script>
+                </body>
+            </html>
+        `;
+
+        // Write and close the document in the new tab
+        printWindow.document.open();
+        printWindow.document.write(html);
+        printWindow.document.close();
+    });
 
 
 
