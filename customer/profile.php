@@ -2171,10 +2171,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 <head>
                     <title>Print Receipt</title>
                     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+                    <link href="https://fonts.googleapis.com/css2?family=Hedvig+Letters+Serif&display=swap" rel="stylesheet">
+                    <style>
+                        .font-hedvig {
+                            font-family: 'Hedvig Letters Serif', serif;
+                        }
+                    </style>
                 </head>
                 <body class="p-6 text-sm font-hedvig">
                     ${receiptContent}
-                    <script src="../tailwind.js" onload="window.print()"><\/script>
+                    <script>
+                        window.addEventListener('load', function () {
+                            window.print();
+                        });
+                    <\/script>
                 </body>
             </html>
         `;
