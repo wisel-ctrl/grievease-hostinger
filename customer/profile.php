@@ -2161,14 +2161,42 @@ function viewReceipt(packageType, id) {
 
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('print-receipt').addEventListener('click', function () {
-        const receiptContent = document.getElementById('receipt-content').innerHTML;
-        const originalContent = document.body.innerHTML;
+    const receiptContent = document.getElementById('receipt-content').innerHTML;
 
-        
-        document.body.innerHTML = receiptContent;
-        window.print();
-        document.body.innerHTML = originalContent;
-    });
+    // Open a new window
+    const printWindow = window.open('', '_blank');
+
+    // Optional: Add your receipt CSS styles here if needed
+    const styles = `
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                padding: 20px;
+            }
+            /* Include other receipt styles if needed */
+        </style>
+    `;
+
+    printWindow.document.open();
+    printWindow.document.write(`
+        <html>
+            <head>
+                <title>Print Receipt</title>
+                ${styles}
+            </head>
+            <body>
+                ${receiptContent}
+                <script>
+                    window.onload = function() {
+                        window.print();
+                    }
+                </script>
+            </body>
+        </html>
+    `);
+    printWindow.document.close();
+});
+
 
 
     document.getElementById('save-pdf').addEventListener('click', function () {
