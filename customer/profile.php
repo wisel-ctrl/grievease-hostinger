@@ -2161,52 +2161,65 @@ function viewReceipt(packageType, id) {
 
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('print-receipt').addEventListener('click', function () {
-        const printWindow = window.open('', '_blank');
-
-        const stylesheets = Array.from(document.styleSheets)
-            .map(sheet => {
-                try {
-                    return sheet.href ? `<link rel="stylesheet" href="${sheet.href}">` : '';
-                } catch (e) {
-                    // Cross-origin style sheets may throw security errors
-                    return '';
-                }
-            })
-            .join('');
-
-        const receiptContent = document.getElementById('receipt-content').innerHTML;
-
-        printWindow.document.write(`
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <title>Receipt</title>
-                ${stylesheets}
-                <style>
-                    @media print {
-                        body {
-                            -webkit-print-color-adjust: exact !important;
-                            print-color-adjust: exact !important;
-                        }
+    const printWindow = window.open('', '_blank');
+    
+    // Get all styles from the document
+    const styles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
+        .map(el => el.outerHTML)
+        .join('');
+    
+    // Get the receipt content and clone it to avoid modifying the original
+    const receiptContent = document.getElementById('receipt-content').cloneNode(true);
+    
+    // Remove any buttons or elements you don't want to print
+    const elementsToRemove = receiptContent.querySelectorAll('.no-print, button');
+    elementsToRemove.forEach(el => el.remove());
+    
+    printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Receipt</title>
+            ${styles}
+            <style>
+                @media print {
+                    body {
+                        -webkit-print-color-adjust: exact !important;
+                        print-color-adjust: exact !important;
+                        background: white !important;
                     }
-                </style>
-            </head>
-            <body class="bg-white p-4">
-                <div class="max-w-lg mx-auto">
-                    ${receiptContent}
-                </div>
-            </body>
-            </html>
-        `);
+                    .no-print {
+                        display: none !important;
+                    }
+                }
+                body {
+                    margin: 0;
+                    padding: 20px;
+                    background: white !important;
+                }
+                .receipt-container {
+                    width: 100%;
+                    max-width: 500px;
+                    margin: 0 auto;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="receipt-container">
+                ${receiptContent.innerHTML}
+            </div>
+            <script>
+                setTimeout(function() {
+                    window.print();
+                    window.close();
+                }, 200);
+            </script>
+        </body>
+        </html>
+    `);
 
-        printWindow.document.close();
-
-        printWindow.onload = function () {
-            printWindow.focus(); // Optional for Safari
-            printWindow.print();
-            printWindow.close();
-        };
-    });
+    printWindow.document.close();
+});
 
 
     document.getElementById('save-pdf').addEventListener('click', function () {
