@@ -2161,65 +2161,14 @@ function viewReceipt(packageType, id) {
 
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('print-receipt').addEventListener('click', function () {
-    const printWindow = window.open('', '_blank');
-    
-    // Get all styles from the document
-    const styles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
-        .map(el => el.outerHTML)
-        .join('');
-    
-    // Get the receipt content and clone it to avoid modifying the original
-    const receiptContent = document.getElementById('receipt-content').cloneNode(true);
-    
-    // Remove any buttons or elements you don't want to print
-    const elementsToRemove = receiptContent.querySelectorAll('.no-print, button');
-    elementsToRemove.forEach(el => el.remove());
-    
-    printWindow.document.write(`
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>Receipt</title>
-            ${styles}
-            <style>
-                @media print {
-                    body {
-                        -webkit-print-color-adjust: exact !important;
-                        print-color-adjust: exact !important;
-                        background: white !important;
-                    }
-                    .no-print {
-                        display: none !important;
-                    }
-                }
-                body {
-                    margin: 0;
-                    padding: 20px;
-                    background: white !important;
-                }
-                .receipt-container {
-                    width: 100%;
-                    max-width: 500px;
-                    margin: 0 auto;
-                }
-            </style>
-        </head>
-        <body>
-            <div class="receipt-container">
-                ${receiptContent.innerHTML}
-            </div>
-            <script>
-                setTimeout(function() {
-                    window.print();
-                    window.close();
-                }, 200);
-            </script>
-        </body>
-        </html>
-    `);
+        const receiptContent = document.getElementById('receipt-content').innerHTML;
+        const originalContent = document.body.innerHTML;
 
-    printWindow.document.close();
-});
+        
+        document.body.innerHTML = receiptContent;
+        window.print();
+        document.body.innerHTML = originalContent;
+    });
 
 
     document.getElementById('save-pdf').addEventListener('click', function () {
