@@ -163,7 +163,7 @@ try {
             DATE(get_timestamp) as sale_date,
             discounted_price,
             ? as casket_id,
-            address,
+            deceased_address,
             service_id,
             branch_id,
             sales_id,
