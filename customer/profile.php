@@ -1645,7 +1645,7 @@ $lifeplanStmt->close();
           <div>
             <label for="custom-amount" class="block text-sm font-medium text-navy mb-1 sm:mb-2">Amount to Pay</label>
             <div class="relative">
-              <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-600">₱</span>
+              <span class="absolute inset-y-0 left-0 flex items-center pl-5 text-gray-600">₱</span>
               <input 
               type="number" 
               id="custom-amount" 
