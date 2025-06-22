@@ -1584,7 +1584,7 @@ $lifeplanStmt->close();
             <select id="traditional-method" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
               <option>Bank Transfer</option>
               <option>Credit Card</option>
-              <option>Cash</option>
+              <option>G-Cash</option>
             </select>
           </div>
           
@@ -1661,7 +1661,7 @@ $lifeplanStmt->close();
             <select id="custom-method" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
               <option>Bank Transfer</option>
               <option>Credit Card</option>
-              <option>Cash</option>
+              <option>G-Cash</option>
             </select>
           </div>
           
@@ -1733,7 +1733,7 @@ $lifeplanStmt->close();
             <select id="lifeplan-method" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
               <option>Bank Transfer</option>
               <option>Credit Card</option>
-              <option>Cash</option>
+              <option>G-Cash</option>
             </select>
           </div>
           
