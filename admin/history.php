@@ -3676,6 +3676,7 @@ function saveServiceChanges() {
     alert('Service updated successfully!');
     closeEditServiceModal();
     cancelAddressChange();
+    location.reload();
   } else {
     alert('Error: ' + data.message);
   }
