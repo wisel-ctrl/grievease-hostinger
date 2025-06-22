@@ -148,10 +148,52 @@ try {
         throw new Exception('Failed to update service status: ' . $updateStmt->error);
     }
 
+    $analyticsStmt = $conn->prepare("
+        INSERT INTO analytics_tb (
+            sale_date, 
+            discounted_price, 
+            casket_id, 
+            address, 
+            service_id, 
+            branch_id, 
+            sales_id, 
+            amount_paid
+        )
+        SELECT 
+            DATE(get_timestamp) as sale_date,
+            discounted_price,
+            ? as casket_id,
+            address,
+            service_id,
+            branch_id,
+            sales_id,
+            CASE 
+                WHEN ? = 1 THEN discounted_price
+                ELSE amount_paid
+            END as amount_paid
+        FROM sales_tb
+        WHERE sales_id = ?
+    ");
+
+    if ($analyticsStmt === false) {
+        throw new Exception('Failed to prepare analytics insert: ' . $conn->error);
+    }
+
+    // Handle case where casket_id might not exist
+    $casket_id = $casket_id ?? null; // Set to null if not defined
+    $balanceSettled = !empty($data['balance_settled']) ? 1 : 0;
+    $analyticsStmt->bind_param("iii", $casket_id, $balanceSettled, $data['sales_id']);
+
+    if (!$analyticsStmt->execute()) {
+        throw new Exception('Failed to insert analytics data: ' . $analyticsStmt->error);
+    }
+
     $conn->commit();
     $response['success'] = true;
     $response['message'] = "Service completed successfully" . 
                          (isset($successful_inserts) ? " with $successful_inserts staff records" : "");
+
+
 
 } catch (Exception $e) {
     if (isset($conn) && method_exists($conn, 'rollback')) {
@@ -179,6 +221,9 @@ try {
     }
     if (isset($updateInventoryStmt) && $updateInventoryStmt instanceof mysqli_stmt) {
         $updateInventoryStmt->close();
+    }
+    if (isset($analyticsStmt) && $analyticsStmt instanceof mysqli_stmt) {
+        $analyticsStmt->close();
     }
     if (isset($conn) && $conn instanceof mysqli) {
         $conn->close();
