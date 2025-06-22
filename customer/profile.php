@@ -1516,7 +1516,7 @@ $lifeplanStmt->close();
       
       <!-- Modal Body -->
       <div class="p-6 bg-cream">
-        <div class="overflow-x-auto">
+        <div class="overflow-auto max-h-96 touch-auto scroll-smooth">
           <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
               <tr>
