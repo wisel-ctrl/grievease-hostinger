@@ -1650,7 +1650,7 @@ $lifeplanStmt->close();
               type="number" 
               id="custom-amount" 
               min="0" 
-              class="pl-12 pr-3 sm:pr-4 w-full px-3 sm:px-4 py-2 sm:py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base" 
+              class="pl-12 pr-3 sm:pr-4 w-full py-2 sm:py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base" 
               placeholder="0.00">
             </div>
           </div>
