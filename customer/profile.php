@@ -2548,7 +2548,11 @@ function submitCustomPayment() {
     
     // Validate inputs
     if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
-        alert('Please enter a valid payment amount');
+        Swal.fire({
+            icon: 'error',
+            title: 'Invalid Amount',
+            text: 'Please enter a valid payment amount',
+        });
         return;
     }
     
@@ -2568,17 +2572,30 @@ function submitCustomPayment() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert('Payment submitted successfully!');
-            closeModal('custom-payment-modal');
-            // Refresh the data
-            location.reload();
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: 'Payment submitted successfully!',
+            }).then(() => {
+                closeModal('custom-payment-modal');
+                // Refresh the data
+                location.reload();
+            });
         } else {
-            alert('Error: ' + data.message);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: data.message,
+            });
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('An error occurred while submitting payment');
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'An error occurred while submitting payment',
+        });
     });
 }
 
