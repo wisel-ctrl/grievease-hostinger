@@ -1545,7 +1545,6 @@ $lifeplanStmt->close();
 </div>
 
 <!-- Payment Modal -->
-<!-- Traditional Funeral Payment Modal -->
 <!-- Traditional Package Payment Modal -->
 <div id="traditional-payment-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 hidden">
   <!-- Modal Content -->
