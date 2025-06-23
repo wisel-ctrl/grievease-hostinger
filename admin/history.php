@@ -5085,6 +5085,8 @@ function loadCustomOngoingServices(page = 1, search = '', sort = '') {
           const clientName = `${row.fname || ''} ${row.mname || ''} ${row.lname || ''} ${row.suffix || ''}`.trim();
           const deceasedName = `${row.fname_deceased || ''} ${row.mname_deceased || ''} ${row.lname_deceased || ''} ${row.suffix_deceased || ''}`.trim();
           const serviceType = row.with_cremate === 'yes' ? 'Cremation Service' : 'Burial Service';
+          const hasStaffAssigned = row.staff_assigned > 0;
+          
           tableBody.innerHTML += `
             <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
               <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">#${row.customsales_id}</td>
@@ -5108,15 +5110,15 @@ function loadCustomOngoingServices(page = 1, search = '', sort = '') {
                     <i class="fas fa-edit"></i>
                   </button>
                   <button class="p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-all tooltip assign-staff-btn" 
-                          title="Assign Staff" 
+                          title="${hasStaffAssigned ? 'Staff already assigned' : 'Assign Staff'}" 
                           onclick="checkCustomerBeforeAssignCustom('${row.customsales_id}', ${row.customer_id ? 'true' : 'false'})"
-                          ${row.customer_id ? '' : 'disabled'}>
+                          ${(row.customer_id && !hasStaffAssigned) ? '' : 'disabled'}>
                     <i class="fas fa-users"></i>
                   </button>
                   <button class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip complete-btn" 
-                          title="Complete Service" 
+                          title="${hasStaffAssigned ? 'Complete Service' : 'Assign staff first'}" 
                           onclick="checkCustomerBeforeCompleteCustom('${row.customsales_id}', ${row.customer_id ? 'true' : 'false'})"
-                          ${row.customer_id ? '' : 'disabled'}>
+                          ${(row.customer_id && hasStaffAssigned) ? '' : 'disabled'}>
                     <i class="fas fa-check"></i>
                   </button>
                 </div>

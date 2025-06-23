@@ -45,7 +45,8 @@ switch ($sort) {
 
 $query = "SELECT cs.customsales_id, u.first_name AS fname, u.middle_name AS mname, u.last_name AS lname, u.suffix,
                  cs.fname_deceased, cs.mname_deceased, cs.lname_deceased, cs.suffix_deceased,
-                 cs.date_of_burial, cs.balance, cs.status, cs.customer_id, cs.with_cremate
+                 cs.date_of_burial, cs.balance, cs.status, cs.customer_id, cs.with_cremate,
+                 (SELECT COUNT(*) FROM employee_service_payments esp WHERE esp.sales_id = cs.customsales_id AND esp.sales_type = 'custom') AS staff_assigned
           FROM customsales_tb cs
           LEFT JOIN users u ON cs.customer_id = u.id
           $whereClause
