@@ -231,7 +231,8 @@ $statusFilter = isset($_GET['status']) ? $conn->real_escape_string($_GET['status
 if ($branchResult->num_rows > 0) {
     while($branch = $branchResult->fetch_assoc()) {
         $branchId = $branch['branch_id'];
-        $branchName = $branch['branch_name'];
+        $branchName = ucwords(strtolower($branch['branch_name']));
+
         
         // SQL query for this branch with search and filter
         $sql = "SELECT 
