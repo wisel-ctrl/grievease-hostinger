@@ -146,7 +146,7 @@ $branchResult = $conn->query($branchSql);
 
 // Function to format price
 function formatPrice($price) {
-    return '$' . number_format($price, 2);
+    return '₱' . number_format($price, 2);
 }
 ?>
 
@@ -2025,9 +2025,9 @@ function updateService() {
 }
 </script>
 
-  <script>
+<script>
     // Function to open the Add Service Modal
-    function openAddServiceModal(branchId) {
+function openAddServiceModal(branchId) {
   // Display the modal
   document.getElementById('addServiceModal').style.display = 'flex';
   
