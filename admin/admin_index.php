@@ -1291,7 +1291,7 @@ function time_elapsed_string($datetime, $full = false) {
                 LEFT JOIN (
                     SELECT 
                         branch_id,
-                        COUNT(DISTINCT sales_id) AS custom_service_count,
+                        COUNT(DISTINCT customsales_id) AS custom_service_count,
                         SUM(amount_paid) AS custom_revenue
                     FROM 
                         customsales_tb
