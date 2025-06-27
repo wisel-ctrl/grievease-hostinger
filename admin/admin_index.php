@@ -196,50 +196,49 @@ for ($i = 11; $i >= 0; $i--) {
     $month = $date->format('m');
     $year = $date->format('Y');
     
-    // Modified query to handle all three tables
+    // Modified query to include all possible sources
     $query = "SELECT SUM(total_discounted) as projected_income FROM (
-        -- Sales from sales_tb
+        -- 1. Direct sales from sales_tb
         SELECT discounted_price as total_discounted 
         FROM sales_tb 
         WHERE MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?
         
         UNION ALL
         
-        -- Sales from analytics_tb that reference sales_tb (traditional)
-        SELECT s.discounted_price as total_discounted
-        FROM analytics_tb a
-        JOIN sales_tb s ON a.sales_id = s.sales_id
-        WHERE MONTH(a.sale_date) = ? AND YEAR(a.sale_date) = ?
-        AND a.sales_type = 'traditional'
-        
-        UNION ALL
-        
-        -- Sales from analytics_tb that reference customsales_tb (custom)
-        SELECT c.discounted_price as total_discounted
-        FROM analytics_tb a
-        JOIN customsales_tb c ON a.sales_id = c.customsales_id
-        WHERE MONTH(a.sale_date) = ? AND YEAR(a.sale_date) = ?
-        AND a.sales_type = 'custom'
-        
-        UNION ALL
-        
-        -- Sales from customsales_tb not referenced in analytics_tb
+        -- 2. Direct custom sales from customsales_tb not referenced in analytics_tb
         SELECT discounted_price as total_discounted
         FROM customsales_tb
         WHERE MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?
         AND customsales_id NOT IN (
-            SELECT sales_id FROM analytics_tb WHERE sales_type = 'custom'
+            SELECT sales_id FROM analytics_tb 
+            WHERE sales_type = 'custom'
             AND MONTH(sale_date) = ? AND YEAR(sale_date) = ?
         )
+        
+        UNION ALL
+        
+        -- 3. All analytics records (they may or may not reference other tables)
+        SELECT 
+            CASE
+                -- If it's traditional and has a sales_id reference
+                WHEN a.sales_type = 'traditional' AND s.sales_id IS NOT NULL THEN s.discounted_price
+                -- If it's custom and has a customsales_id reference
+                WHEN a.sales_type = 'custom' AND c.customsales_id IS NOT NULL THEN c.discounted_price
+                -- Otherwise use analytics_tb's own discounted_price
+                ELSE a.discounted_price
+            END as total_discounted
+        FROM analytics_tb a
+        LEFT JOIN sales_tb s ON a.sales_type = 'traditional' AND a.sales_id = s.sales_id
+        LEFT JOIN customsales_tb c ON a.sales_type = 'custom' AND a.sales_id = c.customsales_id
+        WHERE MONTH(a.sale_date) = ? AND YEAR(a.sale_date) = ?
     ) as combined_sales";
     
     $stmt = $conn->prepare($query);
-    $stmt->bind_param("iiiiiiiiii", 
-        $month, $year,        // sales_tb direct
-        $month, $year,        // analytics_tb traditional
-        $month, $year,        // analytics_tb custom
-        $month, $year,        // customsales_tb direct
-        $month, $year         // customsales_tb not in analytics
+    $stmt->bind_param("iiiiiiii", 
+        $month, $year,        // 1. sales_tb direct
+        $month, $year,        // 2. customsales_tb direct
+        $month, $year,        // 2. customsales_tb not in analytics
+        $month, $year         // 3. analytics_tb all records
     );
     $stmt->execute();
     $result = $stmt->get_result();
