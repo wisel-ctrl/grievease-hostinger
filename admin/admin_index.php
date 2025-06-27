@@ -1317,7 +1317,7 @@ function time_elapsed_string($datetime, $full = false) {
                     b.branch_name ASC";
                 
                 $stmt = $conn->prepare($branchQuery);
-                $stmt->bind_param("iiiiis", $currentMonth, $currentYear, $currentMonth, $currentYear, $currentMonth, $currentYear, $visible);
+                $stmt->bind_param("iiiiiis", $currentMonth, $currentYear, $currentMonth, $currentYear, $currentMonth, $currentYear, $visible);
                 $stmt->execute();
                 $branchResult = $stmt->get_result();
                 
