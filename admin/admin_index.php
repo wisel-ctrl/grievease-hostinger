@@ -196,11 +196,51 @@ for ($i = 11; $i >= 0; $i--) {
     $month = $date->format('m');
     $year = $date->format('Y');
     
+    // Modified query to handle all three tables
+    $query = "SELECT SUM(total_discounted) as projected_income FROM (
+        -- Sales from sales_tb
+        SELECT discounted_price as total_discounted 
+        FROM sales_tb 
+        WHERE MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?
+        
+        UNION ALL
+        
+        -- Sales from analytics_tb that reference sales_tb (traditional)
+        SELECT s.discounted_price as total_discounted
+        FROM analytics_tb a
+        JOIN sales_tb s ON a.sales_id = s.sales_id
+        WHERE MONTH(a.sale_date) = ? AND YEAR(a.sale_date) = ?
+        AND a.sales_type = 'traditional'
+        
+        UNION ALL
+        
+        -- Sales from analytics_tb that reference customsales_tb (custom)
+        SELECT c.discounted_price as total_discounted
+        FROM analytics_tb a
+        JOIN customsales_tb c ON a.sales_id = c.customsales_id
+        WHERE MONTH(a.sale_date) = ? AND YEAR(a.sale_date) = ?
+        AND a.sales_type = 'custom'
+        
+        UNION ALL
+        
+        -- Sales from customsales_tb not referenced in analytics_tb
+        SELECT discounted_price as total_discounted
+        FROM customsales_tb
+        WHERE MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?
+        AND customsales_id NOT IN (
+            SELECT sales_id FROM analytics_tb WHERE sales_type = 'custom'
+            AND MONTH(sale_date) = ? AND YEAR(sale_date) = ?
+        )
+    ) as combined_sales";
     
-    $query = "SELECT SUM(discounted_price) as projected_income FROM sales_tb 
-              WHERE MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?";
     $stmt = $conn->prepare($query);
-    $stmt->bind_param("ii", $month, $year);
+    $stmt->bind_param("iiiiiiiiii", 
+        $month, $year,        // sales_tb direct
+        $month, $year,        // analytics_tb traditional
+        $month, $year,        // analytics_tb custom
+        $month, $year,        // customsales_tb direct
+        $month, $year         // customsales_tb not in analytics
+    );
     $stmt->execute();
     $result = $stmt->get_result();
     $data = $result->fetch_assoc();
@@ -883,7 +923,7 @@ function time_elapsed_string($datetime, $full = false) {
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
   <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 w-full">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-4 sm:p-5 border-b border-sidebar-border">
-      <h3 class="font-medium text-sidebar-text">Supposed Revenue</h3>
+      <h3 class="font-medium text-sidebar-text">Accrued Revenue</h3>
       
     </div>
     <div class="p-4 sm:p-5">
