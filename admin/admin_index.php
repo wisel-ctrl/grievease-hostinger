@@ -122,20 +122,31 @@ if ($prevTotalRevenue > 0) {
 }
 
 // Get pending services count this month
-$pendingQuery = "SELECT COUNT(*) as pending_count FROM sales_tb 
-                WHERE status = 'Pending' AND MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?";
+// Get pending count this month from both tables
+$pendingQuery = "SELECT SUM(total) as pending_count FROM (
+                SELECT COUNT(*) as total FROM sales_tb 
+                WHERE status = 'Pending' AND MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?
+                UNION ALL
+                SELECT COUNT(*) as total FROM customsales_tb 
+                WHERE status = 'Pending' AND MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?
+                ) as combined";
 $stmt = $conn->prepare($pendingQuery);
-$stmt->bind_param("ii", $currentMonth, $currentYear);
+$stmt->bind_param("iiii", $currentMonth, $currentYear, $currentMonth, $currentYear);
 $stmt->execute();
 $pendingResult = $stmt->get_result();
 $pendingData = $pendingResult->fetch_assoc();
 $pendingCount = $pendingData['pending_count'] ?? 0;
 
-// Get pending services count last month
-$prevPendingQuery = "SELECT COUNT(*) as pending_count FROM sales_tb 
-                    WHERE status = 'Pending' AND MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?";
+// Get pending count last month from both tables
+$prevPendingQuery = "SELECT SUM(total) as pending_count FROM (
+                    SELECT COUNT(*) as total FROM sales_tb 
+                    WHERE status = 'Pending' AND MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?
+                    UNION ALL
+                    SELECT COUNT(*) as total FROM customsales_tb 
+                    WHERE status = 'Pending' AND MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?
+                    ) as combined";
 $stmt = $conn->prepare($prevPendingQuery);
-$stmt->bind_param("ii", $prevMonth, $prevYear);
+$stmt->bind_param("iiii", $prevMonth, $prevYear, $prevMonth, $prevYear);
 $stmt->execute();
 $prevPendingResult = $stmt->get_result();
 $prevPendingData = $prevPendingResult->fetch_assoc();
@@ -147,21 +158,31 @@ if ($prevPendingCount > 0) {
     $pendingChange = (($pendingCount - $prevPendingCount) / $prevPendingCount) * 100;
 }
 
-// Get completed services count this month
-$completedQuery = "SELECT COUNT(*) as completed_count FROM sales_tb 
-                  WHERE status = 'Completed' AND MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?";
+// Get completed count this month from both tables
+$completedQuery = "SELECT SUM(total) as completed_count FROM (
+                  SELECT COUNT(*) as total FROM sales_tb 
+                  WHERE status = 'Completed' AND MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?
+                  UNION ALL
+                  SELECT COUNT(*) as total FROM customsales_tb 
+                  WHERE status = 'Completed' AND MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?
+                  ) as combined";
 $stmt = $conn->prepare($completedQuery);
-$stmt->bind_param("ii", $currentMonth, $currentYear);
+$stmt->bind_param("iiii", $currentMonth, $currentYear, $currentMonth, $currentYear);
 $stmt->execute();
 $completedResult = $stmt->get_result();
 $completedData = $completedResult->fetch_assoc();
 $completedCount = $completedData['completed_count'] ?? 0;
 
-// Get completed services count last month
-$prevCompletedQuery = "SELECT COUNT(*) as completed_count FROM sales_tb 
-                      WHERE status = 'Completed' AND MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?";
+// Get completed count last month from both tables
+$prevCompletedQuery = "SELECT SUM(total) as completed_count FROM (
+                      SELECT COUNT(*) as total FROM sales_tb 
+                      WHERE status = 'Completed' AND MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?
+                      UNION ALL
+                      SELECT COUNT(*) as total FROM customsales_tb 
+                      WHERE status = 'Completed' AND MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?
+                      ) as combined";
 $stmt = $conn->prepare($prevCompletedQuery);
-$stmt->bind_param("ii", $prevMonth, $prevYear);
+$stmt->bind_param("iiii", $prevMonth, $prevYear, $prevMonth, $prevYear);
 $stmt->execute();
 $prevCompletedResult = $stmt->get_result();
 $prevCompletedData = $prevCompletedResult->fetch_assoc();
