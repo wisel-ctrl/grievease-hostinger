@@ -95,21 +95,99 @@ if ($prevServicesCount > 0) {
     $servicesChange = (($servicesCount - $prevServicesCount) / $prevServicesCount) * 100;
 }
 
-// Get revenue this month
-$revenueQuery = "SELECT SUM(amount_paid) as total_revenue FROM sales_tb 
-                WHERE MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?";
+// Current month revenue with the new approach
+$revenueQuery = "SELECT SUM(amount_paid) as total_revenue FROM (
+    -- 1. Direct sales from sales_tb
+    SELECT amount_paid 
+    FROM sales_tb 
+    WHERE MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?
+    
+    UNION ALL
+    
+    -- 2. Direct custom sales from customsales_tb not referenced in analytics_tb
+    SELECT amount_paid
+    FROM customsales_tb
+    WHERE MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?
+    AND customsales_id NOT IN (
+        SELECT sales_id FROM analytics_tb 
+        WHERE sales_type = 'custom'
+        AND MONTH(sale_date) = ? AND YEAR(sale_date) = ?
+    )
+    
+    UNION ALL
+    
+    -- 3. All analytics records (they may or may not reference other tables)
+    SELECT 
+        CASE
+            -- If it's traditional and has a sales_id reference
+            WHEN a.sales_type = 'traditional' AND s.sales_id IS NOT NULL THEN s.amount_paid
+            -- If it's custom and has a customsales_id reference
+            WHEN a.sales_type = 'custom' AND c.customsales_id IS NOT NULL THEN c.amount_paid
+            -- Otherwise use analytics_tb's own amount_paid
+            ELSE a.amount_paid
+        END as amount_paid
+    FROM analytics_tb a
+    LEFT JOIN sales_tb s ON a.sales_type = 'traditional' AND a.sales_id = s.sales_id
+    LEFT JOIN customsales_tb c ON a.sales_type = 'custom' AND a.sales_id = c.customsales_id
+    WHERE MONTH(a.sale_date) = ? AND YEAR(a.sale_date) = ?
+) as combined_sales";
+
 $stmt = $conn->prepare($revenueQuery);
-$stmt->bind_param("ii", $currentMonth, $currentYear);
+$stmt->bind_param("iiiiiiii", 
+    $currentMonth, $currentYear,        // 1. sales_tb direct
+    $currentMonth, $currentYear,        // 2. customsales_tb direct
+    $currentMonth, $currentYear,        // 2. customsales_tb not in analytics
+    $currentMonth, $currentYear         // 3. analytics_tb all records
+);
 $stmt->execute();
 $revenueResult = $stmt->get_result();
 $revenueData = $revenueResult->fetch_assoc();
 $totalRevenue = $revenueData['total_revenue'] ?? 0;
 
-// Get revenue last month
-$prevRevenueQuery = "SELECT SUM(amount_paid) as total_revenue FROM sales_tb 
-                    WHERE MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?";
+// Previous month revenue with the new approach
+$prevRevenueQuery = "SELECT SUM(amount_paid) as total_revenue FROM (
+    -- 1. Direct sales from sales_tb
+    SELECT amount_paid 
+    FROM sales_tb 
+    WHERE MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?
+    
+    UNION ALL
+    
+    -- 2. Direct custom sales from customsales_tb not referenced in analytics_tb
+    SELECT amount_paid
+    FROM customsales_tb
+    WHERE MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?
+    AND customsales_id NOT IN (
+        SELECT sales_id FROM analytics_tb 
+        WHERE sales_type = 'custom'
+        AND MONTH(sale_date) = ? AND YEAR(sale_date) = ?
+    )
+    
+    UNION ALL
+    
+    -- 3. All analytics records (they may or may not reference other tables)
+    SELECT 
+        CASE
+            -- If it's traditional and has a sales_id reference
+            WHEN a.sales_type = 'traditional' AND s.sales_id IS NOT NULL THEN s.amount_paid
+            -- If it's custom and has a customsales_id reference
+            WHEN a.sales_type = 'custom' AND c.customsales_id IS NOT NULL THEN c.amount_paid
+            -- Otherwise use analytics_tb's own amount_paid
+            ELSE a.amount_paid
+        END as amount_paid
+    FROM analytics_tb a
+    LEFT JOIN sales_tb s ON a.sales_type = 'traditional' AND a.sales_id = s.sales_id
+    LEFT JOIN customsales_tb c ON a.sales_type = 'custom' AND a.sales_id = c.customsales_id
+    WHERE MONTH(a.sale_date) = ? AND YEAR(a.sale_date) = ?
+) as combined_sales";
+
 $stmt = $conn->prepare($prevRevenueQuery);
-$stmt->bind_param("ii", $prevMonth, $prevYear);
+$stmt->bind_param("iiiiiiii", 
+    $prevMonth, $prevYear,        // 1. sales_tb direct
+    $prevMonth, $prevYear,        // 2. customsales_tb direct
+    $prevMonth, $prevYear,        // 2. customsales_tb not in analytics
+    $prevMonth, $prevYear         // 3. analytics_tb all records
+);
 $stmt->execute();
 $prevRevenueResult = $stmt->get_result();
 $prevRevenueData = $prevRevenueResult->fetch_assoc();
