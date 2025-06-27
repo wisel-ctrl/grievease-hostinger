@@ -1259,54 +1259,65 @@ function time_elapsed_string($datetime, $full = false) {
                 // Fetch branch performance data
                 $visible = "visible";
                 $branchQuery = "SELECT 
-                                    b.branch_id,
-                                    b.branch_name,
-                                    COALESCE(s.service_count, 0) AS service_count,
-                                    COALESCE(s.revenue, 0) AS revenue,
-                                    COALESCE(e.expenses, 0) AS expenses,
-                                    COALESCE(s.capital_total, 0) AS capital_total,
-                                    (COALESCE(s.revenue, 0) - (COALESCE(s.capital_total, 0) + COALESCE(e.expenses, 0))) AS profit,
-                                    CASE 
-                                        WHEN COALESCE(s.revenue, 0) > 0 THEN 
-                                            (COALESCE(s.revenue, 0) - (COALESCE(s.capital_total, 0) + COALESCE(e.expenses, 0))) / COALESCE(s.revenue, 0) * 100
-                                        ELSE 0 
-                                    END AS margin
-                                FROM 
-                                    branch_tb b
-                                LEFT JOIN (
-                                    SELECT 
-                                        s.branch_id,
-                                        COUNT(DISTINCT s.sales_id) AS service_count,
-                                        SUM(s.amount_paid) AS revenue,
-                                        SUM(sv.capital_price) AS capital_total
-                                    FROM 
-                                        sales_tb s
-                                    LEFT JOIN 
-                                        services_tb sv ON s.service_id = sv.service_id
-                                    WHERE 
-                                        MONTH(s.get_timestamp) = ? AND YEAR(s.get_timestamp) = ?
-                                    GROUP BY 
-                                        s.branch_id
-                                ) s ON b.branch_id = s.branch_id
-                                LEFT JOIN (
-                                    SELECT 
-                                        branch_id,
-                                        SUM(price) AS expenses
-                                    FROM 
-                                        expense_tb
-                                    WHERE 
-                                        MONTH(date) = ? AND YEAR(date) = ? AND appearance = ?
-                                    GROUP BY 
-                                        branch_id
-                                ) e ON b.branch_id = e.branch_id
-                                WHERE 
-                                    b.branch_id IN (1, 2)
-                                ORDER BY 
-                                    b.branch_name ASC
-                                ";
+                    b.branch_id,
+                    b.branch_name,
+                    COALESCE(s.service_count, 0) + COALESCE(c.custom_service_count, 0) AS service_count,
+                    COALESCE(s.revenue, 0) + COALESCE(c.custom_revenue, 0) AS revenue,
+                    COALESCE(e.expenses, 0) AS expenses,
+                    COALESCE(s.capital_total, 0) AS capital_total,
+                    (COALESCE(s.revenue, 0) + COALESCE(c.custom_revenue, 0) - (COALESCE(s.capital_total, 0) + COALESCE(e.expenses, 0))) AS profit,
+                    CASE 
+                        WHEN COALESCE(s.revenue, 0) + COALESCE(c.custom_revenue, 0) > 0 THEN 
+                            (COALESCE(s.revenue, 0) + COALESCE(c.custom_revenue, 0) - (COALESCE(s.capital_total, 0) + COALESCE(e.expenses, 0))) / (COALESCE(s.revenue, 0) + COALESCE(c.custom_revenue, 0)) * 100
+                        ELSE 0 
+                    END AS margin
+                FROM 
+                    branch_tb b
+                LEFT JOIN (
+                    SELECT 
+                        s.branch_id,
+                        COUNT(DISTINCT s.sales_id) AS service_count,
+                        SUM(s.amount_paid) AS revenue,
+                        SUM(sv.capital_price) AS capital_total
+                    FROM 
+                        sales_tb s
+                    LEFT JOIN 
+                        services_tb sv ON s.service_id = sv.service_id
+                    WHERE 
+                        MONTH(s.get_timestamp) = ? AND YEAR(s.get_timestamp) = ?
+                    GROUP BY 
+                        s.branch_id
+                ) s ON b.branch_id = s.branch_id
+                LEFT JOIN (
+                    SELECT 
+                        branch_id,
+                        COUNT(DISTINCT sales_id) AS custom_service_count,
+                        SUM(amount_paid) AS custom_revenue
+                    FROM 
+                        customsales_tb
+                    WHERE 
+                        MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?
+                    GROUP BY 
+                        branch_id
+                ) c ON b.branch_id = c.branch_id
+                LEFT JOIN (
+                    SELECT 
+                        branch_id,
+                        SUM(price) AS expenses
+                    FROM 
+                        expense_tb
+                    WHERE 
+                        MONTH(date) = ? AND YEAR(date) = ? AND appearance = ?
+                    GROUP BY 
+                        branch_id
+                ) e ON b.branch_id = e.branch_id
+                WHERE 
+                    b.branch_id IN (1, 2)
+                ORDER BY 
+                    b.branch_name ASC";
                 
                 $stmt = $conn->prepare($branchQuery);
-                $stmt->bind_param("iiiis", $currentMonth, $currentYear, $currentMonth, $currentYear, $visible);
+                $stmt->bind_param("iiiiis", $currentMonth, $currentYear, $currentMonth, $currentYear, $currentMonth, $currentYear, $visible);
                 $stmt->execute();
                 $branchResult = $stmt->get_result();
                 
