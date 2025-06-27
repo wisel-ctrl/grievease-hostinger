@@ -359,11 +359,17 @@ function getBranchMetrics($conn, $branchId) {
   $currentMonth = date('m');
   $currentYear = date('Y');
 
-  // Get current month revenue (sum of amount_paid)
-  $revenueQuery = "SELECT SUM(amount_paid) as total_revenue FROM sales_tb 
-                  WHERE branch_id = ? AND MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?";
+  // Get current month revenue (sum of amount_paid from both sales_tb and customsales_tb)
+  $revenueQuery = "SELECT 
+                      (SELECT COALESCE(SUM(amount_paid), 0) FROM sales_tb 
+                        WHERE branch_id = ? AND MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?)
+                      +
+                      (SELECT COALESCE(SUM(amount_paid), 0) FROM customsales_tb 
+                        WHERE branch_id = ? AND MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?)
+                      AS total_revenue";
+  
   $stmt = $conn->prepare($revenueQuery);
-  $stmt->bind_param("iii", $branchId, $currentMonth, $currentYear);
+  $stmt->bind_param("iiiiii", $branchId, $currentMonth, $currentYear, $branchId, $currentMonth, $currentYear);
   $stmt->execute();
   $revenueResult = $stmt->get_result();
   $revenueData = $revenueResult->fetch_assoc();
@@ -384,7 +390,7 @@ function getBranchMetrics($conn, $branchId) {
 
   // Get sum of expenses for current month
   $expensesQuery = "SELECT SUM(price) as total_expenses FROM expense_tb 
-                   WHERE branch_id = ? AND MONTH(date) = ? AND YEAR(date) = ? AND appearance = ?";
+                    WHERE branch_id = ? AND MONTH(date) = ? AND YEAR(date) = ? AND appearance = ?";
   $stmt = $conn->prepare($expensesQuery);
   $stmt->bind_param("iiis", $branchId, $currentMonth, $currentYear, $visible);
   $stmt->execute();
