@@ -96,16 +96,16 @@ function generateInventoryRow($row) {
     
     $html .= '<td class="p-4 text-sm font-medium text-sidebar-text" data-sort-value="' . $row["price"] . '">₱' . number_format($row["price"], 2) . '</td>';
     $html .= '<td class="p-4 text-sm font-medium text-sidebar-text" data-sort-value="' . $row["total_value"] . '">₱' . number_format($row["total_value"], 2) . '</td>';
-    $html .= '<td class="p-2 text-sm align-middle">';  // Changed p-4 to p-2 and added align-middle
-$html .= '<div class="flex space-x-2 h-full items-center">';  // Added h-full and items-center
+    $html .= '<td class="p-2 text-sm align-middle">';
+$html .= '<div class="flex space-x-2 items-center h-full">'; // Added items-center and h-full
 $html .= '<button class="w-7 h-7 flex items-center justify-center bg-yellow-100 text-yellow-600 rounded hover:bg-yellow-200 transition-all tooltip" title="Edit Item" onclick="openViewItemModal(' . $row["inventory_id"] . ')">';
-$html .= '<i class="fas fa-edit text-xs"></i>';  // Changed text-sm to text-xs
+$html .= '<i class="fas fa-edit text-xs"></i>';
 $html .= '</button>';
-$html .= '<form method="POST" action="inventory/delete_inventory_item.php" onsubmit="return false;" style="display:inline;" class="delete-form">';  // Added h-full and flex items-center
+$html .= '<button type="submit" form="deleteForm'.$row["inventory_id"].'" class="w-7 h-7 flex items-center justify-center bg-red-100 text-red-600 rounded hover:bg-red-200 transition-all tooltip" title="Archive Item">';
+$html .= '<i class="fas fa-archive text-xs"></i>';
+$html .= '</button>';
+$html .= '<form id="deleteForm'.$row["inventory_id"].'" method="POST" action="inventory/delete_inventory_item.php" onsubmit="return false;" style="display: none;">';
 $html .= '<input type="hidden" name="inventory_id" value="' . $row["inventory_id"] . '">';
-$html .= '<button type="submit" class="w-7 h-7 flex items-center justify-center bg-red-100 text-red-600 rounded hover:bg-red-200 transition-all tooltip" title="Archive Item">';
-$html .= '<i class="fas fa-archive text-xs"></i>';  // Changed text-sm to text-xs
-$html .= '</button>';
 $html .= '</form>';
 $html .= '</div>';
 $html .= '</td>';
