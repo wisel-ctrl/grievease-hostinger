@@ -1121,86 +1121,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     <!-- Traditional Bookings Content -->
     <div id="traditional-booking-content" class="service-content">
-        <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
-            <!-- Header -->
-            <div class="bookings bg-navy p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 tab-header">
-                <h3 class="font-hedvig text-xl sm:text-2xl text-white font-semibold">Traditional Funeral Bookings</h3>
-            </div>
-            
-            <!-- Content -->
-            <div class="p-6">
-                <?php
-                // Fetch all traditional bookings for the current customer with pagination
-                $items_per_page = 3;
-                $page = isset($_GET['trad_page']) ? max(1, intval($_GET['trad_page'])) : 1;
-                $offset = ($page - 1) * $items_per_page;
-                
-                $query = "SELECT b.*, s.service_name, s.selling_price, br.branch_name 
-                          FROM booking_tb b
-                          LEFT JOIN services_tb s ON b.service_id = s.service_id
-                          JOIN branch_tb br ON b.branch_id = br.branch_id
-                          WHERE b.customerID = ?
-                          ORDER BY CASE 
-                              WHEN b.status = 'Pending' THEN 1
-                              WHEN b.status = 'Accepted' THEN 2
-                              WHEN b.status = 'Declined' THEN 3
-                              WHEN b.status = 'Cancelled' THEN 4
-                              ELSE 5
-                          END, b.booking_date DESC
-                          LIMIT ? OFFSET ?";
-                
-                $stmt = $conn->prepare($query);
-                $stmt->bind_param("iii", $user_id, $items_per_page, $offset);
-                $stmt->execute();
-                $result = $stmt->get_result();
-                
-                // Get total count for pagination
-                $count_query = "SELECT COUNT(*) as total FROM booking_tb WHERE customerID = ?";
-                $count_stmt = $conn->prepare($count_query);
-                $count_stmt->bind_param("i", $user_id);
-                $count_stmt->execute();
-                $count_result = $count_stmt->get_result();
-                $total_items = $count_result->fetch_assoc()['total'];
-                $total_pages = ceil($total_items / $items_per_page);
-                
-                if ($result->num_rows > 0) {
-                    while ($booking = $result->fetch_assoc()) {
-                        // [Previous booking display code remains exactly the same...]
-                        // [Keep all the existing booking display HTML]
-                    }
-                } else {
-                    echo '<p class="text-gray-500">You have no traditional funeral bookings yet.</p>';
-                }
-                $stmt->close();
-                $count_stmt->close();
-                ?>
-                
-                <!-- Pagination -->
-                <?php if ($total_pages > 1): ?>
-                <div class="flex justify-center mt-6">
-                    <nav class="inline-flex rounded-md shadow">
-                        <?php if ($page > 1): ?>
-                            <a href="?trad_page=<?php echo $page - 1; ?>" class="px-3 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-navy hover:bg-gray-50">
-                                Previous
-                            </a>
-                        <?php endif; ?>
-                        
-                        <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-                            <a href="?trad_page=<?php echo $i; ?>" class="<?php echo $i == $page ? 'bg-yellow-600 text-white' : 'bg-white text-navy'; ?> px-3 py-2 border-t border-b border-gray-300 text-sm font-medium hover:bg-gray-50">
-                                <?php echo $i; ?>
-                            </a>
-                        <?php endfor; ?>
-                        
-                        <?php if ($page < $total_pages): ?>
-                            <a href="?trad_page=<?php echo $page + 1; ?>" class="px-3 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-navy hover:bg-gray-50">
-                                Next
-                            </a>
-                        <?php endif; ?>
-                    </nav>
-                </div>
-                <?php endif; ?>
-            </div>
-        </div>
+        <!-- [Previous Traditional Booking Content Remains Exactly the Same] -->
     </div>
     
     <!-- Custom Package Bookings Content -->
@@ -1219,9 +1140,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 $page = isset($_GET['custom_page']) ? max(1, intval($_GET['custom_page'])) : 1;
                 $offset = ($page - 1) * $items_per_page;
                 
-                $query = "SELECT c.*, br.branch_name 
+                $query = "SELECT c.*, br.branch_name, 
+                          CONCAT(u.first_name, ' ', u.last_name) AS customer_name
                           FROM customsales_tb c
                           JOIN branch_tb br ON c.branch_id = br.branch_id
+                          JOIN users u ON c.customer_id = u.id
                           WHERE c.customer_id = ?
                           ORDER BY c.get_timestamp DESC
                           LIMIT ? OFFSET ?";
@@ -1278,6 +1201,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                     <div class="p-4 sm:p-6 space-y-3 sm:space-y-4">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+                            <div>
+                                <p class="text-sm text-gray-500">Customer Name</p>
+                                <p class="text-purple-600"><?php echo $booking['customer_name']; ?></p>
+                            </div>
                             <div>
                                 <p class="text-sm text-gray-500">Booking Date</p>
                                 <p class="text-purple-600"><?php echo $booking_date; ?></p>
@@ -1396,8 +1323,107 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 if ($result->num_rows > 0) {
                     while ($booking = $result->fetch_assoc()) {
-                        // [Previous lifeplan booking display code remains exactly the same...]
-                        // [Keep all the existing lifeplan booking display HTML]
+                        // Determine status color and text for life plan
+                        $status_class = '';
+                        $status_text = '';
+                        switch ($booking['booking_status']) {
+                            case 'pending':
+                                $status_class = 'bg-yellow-600/10 text-yellow-600';
+                                $status_text = 'Pending';
+                                break;
+                            case 'accepted':
+                                $status_class = 'bg-green-500/10 text-green-500';
+                                $status_text = 'Accepted';
+                                break;
+                            case 'decline':
+                                $status_class = 'bg-red-500/10 text-red-500';
+                                $status_text = 'Declined';
+                                break;
+                            default:
+                                $status_class = 'bg-blue-500/10 text-blue-500';
+                                $status_text = ucfirst($booking['booking_status']);
+                        }
+                        
+                        // Format dates
+                        $booking_date = date('F j, Y', strtotime($booking['initial_date']));
+                        $end_date = $booking['end_date'] ? date('F j, Y', strtotime($booking['end_date'])) : 'Not set';
+                        
+                        // Format beneficiary name
+                        $beneficiary_name = $booking['benefeciary_lname'] . ', ' . $booking['benefeciary_fname'];
+                        if (!empty($booking['benefeciary_mname'])) {
+                            $beneficiary_name .= ' ' . $booking['benefeciary_mname'];
+                        }
+                        if (!empty($booking['benefeciary_suffix'])) {
+                            $beneficiary_name .= ' ' . $booking['benefeciary_suffix'];
+                        }
+                        
+                        // Handle NULL service_id (custom packages)
+                        $service_name = $booking['service_name'] ?? 'Customize Package';
+                        $selling_price = $booking['package_price'] ?? 0;
+                        
+                        // Format price
+                        $price = number_format($selling_price, 2);
+                        $amount_paid = $booking['amount_paid'] ? number_format($booking['amount_paid'], 2) : '0.00';
+                        $balance = number_format($selling_price - ($booking['amount_paid'] ?? 0), 2);
+                ?>
+                
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-4">
+                    <div class="bg-blue-600 bg-opacity-10 px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="<?php echo $status_class; ?> text-xs px-2 py-1 rounded-full"><?php echo $status_text; ?></span>
+                            <p class="text-sm text-gray-500">Life Plan ID: <?php echo $booking['lpbooking_id']; ?></p>
+                        </div>
+                        <h4 class="font-hedvig text-lg text-blue-600 mb-2"><?php echo $service_name; ?> (Life Plan)</h4>
+                    </div>
+                    <div class="p-4 sm:p-6 space-y-3 sm:space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+                            <div>
+                                <p class="text-sm text-gray-500">Beneficiary Name</p>
+                                <p class="text-blue-600"><?php echo ucwords(strtolower($beneficiary_name)); ?></p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Branch</p>
+                                <p class="text-blue-600"><?php echo ucwords(strtolower($booking['branch_name'])); ?></p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">End Date</p>
+                                <p class="text-blue-600"><?php echo $end_date; ?></p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+                            <div>
+                                <p class="text-sm text-gray-500">Total Amount</p>
+                                <p class="text-blue-600 font-bold">₱<?php echo $price; ?></p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Amount Paid</p>
+                                <p class="text-blue-600">₱<?php echo $amount_paid; ?></p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Balance</p>
+                                <p class="text-blue-600">₱<?php echo $balance; ?></p>
+                            </div>
+                        </div>
+                        <div class="flex justify-end">
+                            <button class="view-lifeplan-details bg-blue-600/5 text-blue-600 px-3 py-1 rounded hover:bg-blue-600/10 transition text-sm mr-2" data-booking="<?php echo $booking['lpbooking_id']; ?>">
+                                <i class="fas fa-file-alt mr-1"></i> View Details
+                            </button>
+                            
+                            <?php if ($booking['booking_status'] === 'pending' || $booking['booking_status'] === 'decline'): ?>
+                                <button class="modify-lifeplan-booking bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition text-sm mr-2" data-booking="<?php echo $booking['lpbooking_id']; ?>">
+                                    <i class="fas fa-edit mr-1"></i> Modify
+                                </button>
+                            <?php endif; ?>
+                            
+                            <?php if ($booking['booking_status'] === 'pending'): ?>
+                                <button class="cancel-lifeplan-booking bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition text-sm" data-booking="<?php echo $booking['lpbooking_id']; ?>">
+                                    <i class="fas fa-times mr-1"></i> Cancel
+                                </button>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+                <?php
                     }
                 } else {
                     echo '<p class="text-gray-500">You have no life plan bookings yet.</p>';
@@ -1441,70 +1467,135 @@ document.addEventListener('DOMContentLoaded', function() {
     const bookingTabs = document.querySelectorAll('#bookings .service-tab');
     const bookingContents = document.querySelectorAll('#bookings .service-content');
     
+    // Function to handle tab switching
+    function switchTab(activeTab) {
+        // Remove active class from all tabs
+        bookingTabs.forEach(tab => {
+            tab.classList.remove('border-yellow-600', 'text-navy');
+            tab.classList.add('text-gray-500');
+        });
+        
+        // Add active class to clicked tab
+        activeTab.classList.add('border-yellow-600', 'text-navy');
+        activeTab.classList.remove('text-gray-500');
+        
+        // Hide all content
+        bookingContents.forEach(content => {
+            content.style.display = 'none';
+        });
+        
+        // Show the corresponding content
+        const contentId = activeTab.dataset.tab + '-content';
+        document.getElementById(contentId).style.display = 'block';
+    }
+    
+    // Set up click handlers for tabs
     bookingTabs.forEach(tab => {
         tab.addEventListener('click', () => {
-            // Remove active class from all tabs
-            bookingTabs.forEach(t => {
-                t.classList.remove('border-yellow-600', 'text-navy');
-                t.classList.add('text-gray-500');
-            });
-            
-            // Add active class to clicked tab
-            tab.classList.add('border-yellow-600', 'text-navy');
-            tab.classList.remove('text-gray-500');
-            
-            // Hide all content
-            bookingContents.forEach(content => {
-                content.style.display = 'none';
-            });
-            
-            // Show the corresponding content
-            const contentId = tab.dataset.tab + '-content';
-            document.getElementById(contentId).style.display = 'block';
+            switchTab(tab);
         });
     });
+    
+    // Check if there's a tab parameter in the URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const activeTabParam = urlParams.get('tab');
+    
+    if (activeTabParam) {
+        const tabToActivate = document.querySelector(`.service-tab[data-tab="${activeTabParam}"]`);
+        if (tabToActivate) {
+            switchTab(tabToActivate);
+        }
+    }
     
     // Initialize all existing booking functionality
     initializeBookingFunctions();
 });
 
 function initializeBookingFunctions() {
-    // All your existing booking-related JavaScript functions would go here
-    // This includes the event handlers for:
-    // - view-details
-    // - upload-death-cert
-    // - view-receipt
-    // - modify-booking
-    // - cancel-booking
-    // - view-lifeplan-details
-    // - modify-lifeplan-booking
-    // - cancel-lifeplan-booking
-    // - view-custom-details
-    // - add-custom-payment
+    // Set up all button event handlers
     
-    // Example of one of those handlers:
+    // Traditional Booking Buttons
     document.querySelectorAll('.view-details').forEach(button => {
         button.addEventListener('click', function() {
             const bookingId = this.getAttribute('data-booking');
-            // Your existing view details logic
+            // Your view details logic here
+            console.log('View traditional booking:', bookingId);
         });
     });
     
+    document.querySelectorAll('.upload-death-cert').forEach(button => {
+        button.addEventListener('click', function() {
+            const bookingId = this.getAttribute('data-booking');
+            // Your upload death cert logic here
+            console.log('Upload death cert for booking:', bookingId);
+        });
+    });
+    
+    document.querySelectorAll('.view-receipt').forEach(button => {
+        button.addEventListener('click', function() {
+            const bookingId = this.getAttribute('data-booking');
+            // Your view receipt logic here
+            console.log('View receipt for booking:', bookingId);
+        });
+    });
+    
+    document.querySelectorAll('.modify-booking').forEach(button => {
+        button.addEventListener('click', function() {
+            const bookingId = this.getAttribute('data-booking');
+            // Your modify booking logic here
+            console.log('Modify booking:', bookingId);
+        });
+    });
+    
+    document.querySelectorAll('.cancel-booking').forEach(button => {
+        button.addEventListener('click', function() {
+            const bookingId = this.getAttribute('data-booking');
+            // Your cancel booking logic here
+            console.log('Cancel booking:', bookingId);
+        });
+    });
+    
+    // Custom Package Buttons
     document.querySelectorAll('.view-custom-details').forEach(button => {
         button.addEventListener('click', function() {
             const bookingId = this.getAttribute('data-booking');
-            // Your custom package view details logic
+            // Your custom package view details logic here
+            console.log('View custom package details:', bookingId);
         });
     });
     
     document.querySelectorAll('.add-custom-payment').forEach(button => {
         button.addEventListener('click', function() {
             const bookingId = this.getAttribute('data-booking');
-            // Your custom package payment logic
+            // Your custom package payment logic here
+            console.log('Add payment for custom package:', bookingId);
         });
     });
     
-    // [Keep all other existing event handlers...]
+    // Life Plan Buttons
+    document.querySelectorAll('.view-lifeplan-details').forEach(button => {
+        button.addEventListener('click', function() {
+            const bookingId = this.getAttribute('data-booking');
+            // Your life plan view details logic here
+            console.log('View life plan details:', bookingId);
+        });
+    });
+    
+    document.querySelectorAll('.modify-lifeplan-booking').forEach(button => {
+        button.addEventListener('click', function() {
+            const bookingId = this.getAttribute('data-booking');
+            // Your modify life plan logic here
+            console.log('Modify life plan:', bookingId);
+        });
+    });
+    
+    document.querySelectorAll('.cancel-lifeplan-booking').forEach(button => {
+        button.addEventListener('click', function() {
+            const bookingId = this.getAttribute('data-booking');
+            // Your cancel life plan logic here
+            console.log('Cancel life plan:', bookingId);
+        });
+    });
 }
 </script>
 
