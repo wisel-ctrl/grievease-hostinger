@@ -98,7 +98,7 @@ function generateInventoryRow($row) {
     $html .= '<td class="p-4 text-sm font-medium text-sidebar-text" data-sort-value="' . $row["total_value"] . '">₱' . number_format($row["total_value"], 2) . '</td>';
     $html .= '<td class="p-4 text-sm">';
 $html .= '<div class="flex space-x-2">';
-$html .= '<button class="w-8 h-8 flex items-center justify-center bg-yellow-100 text-yellow-600 rounded hover:bg-yellow-200 transition-all tooltip" title="Edit Item" onclick="openViewItemModal(' . $row["inventory_id"] . ')">';
+$html .= '<button class="w-4 h-4 flex items-center justify-center bg-yellow-100 text-yellow-600 rounded hover:bg-yellow-200 transition-all tooltip" title="Edit Item" onclick="openViewItemModal(' . $row["inventory_id"] . ')">';
 $html .= '<i class="fas fa-edit text-sm"></i>';
 $html .= '</button>';
 $html .= '<form method="POST" action="inventory/delete_inventory_item.php" onsubmit="return false;" style="display:inline;" class="delete-form">';
