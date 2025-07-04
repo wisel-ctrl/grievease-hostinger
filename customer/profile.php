@@ -835,7 +835,7 @@ input[name*="LastName"] {
                                         onclick="openDeclineReasonModal('<?php echo htmlspecialchars($decline_reason); ?>')"
                                     >
                                         <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                            <path fill-rule="evenodd" d="M18 10a8 8 0 10-16 0 8 8 0 0016 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" clip-rule="evenodd"></path>
+                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" clip-rule="evenodd"></path>
                                         </svg>
                                         View Details
                                     </button>
@@ -1103,471 +1103,298 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
                     
 <!-- Bookings Tab -->
-<div id="bookings" class="tab-content p-4">
-    <!-- Service Type Selector -->
-    <div class="mb-6">
-        <div class="flex flex-wrap border-b border-gray-200">
-            <button class="bookings-tab px-4 py-2 text-navy font-medium border-b-2 border-yellow-600" data-tab="traditional-bookings">
-                Traditional Funeral
-            </button>
-            <button class="bookings-tab px-4 py-2 text-gray-500 font-medium mx-2" data-tab="lifeplan-bookings">
-                Life Plan
-            </button>
+<div id="bookings" class="tab-content">
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
+        <!-- Header with enhanced styling -->
+        <div class="bookings bg-navy p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 tab-header">
+            <h3 class="font-hedvig text-xl sm:text-2xl text-white font-semibold">My Bookings</h3>
+        </div>
+        
+        <!-- Content area with improved spacing and grouping -->
+        <div class="p-6">
+            <?php
+            // Fetch all traditional bookings for the current customer
+            $query = "SELECT b.*, s.service_name, s.selling_price, br.branch_name 
+                      FROM booking_tb b
+                      LEFT JOIN services_tb s ON b.service_id = s.service_id
+                      JOIN branch_tb br ON b.branch_id = br.branch_id
+                      WHERE b.customerID = ?
+                      ORDER BY CASE 
+                          WHEN b.status = 'Pending' THEN 1
+                          WHEN b.status = 'Accepted' THEN 2
+                          WHEN b.status = 'Declined' THEN 3
+                          WHEN b.status = 'Cancelled' THEN 4
+                          ELSE 5
+                      END, b.booking_date DESC";
+            
+            $stmt = $conn->prepare($query);
+            $stmt->bind_param("i", $user_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            
+            if ($result->num_rows > 0) {
+                while ($booking = $result->fetch_assoc()) {
+                    // Determine status color and text
+                    $status_class = '';
+                    $status_text = '';
+                    switch ($booking['status']) {
+                        case 'Pending':
+                            $status_class = 'bg-yellow-600/10 text-yellow-600';
+                            $status_text = 'Pending';
+                            break;
+                        case 'Accepted':
+                            $status_class = 'bg-green-500/10 text-green-500';
+                            $status_text = 'Accepted';
+                            break;
+                        case 'Declined':
+                            $status_class = 'bg-red-500/10 text-red-500';
+                            $status_text = 'Declined';
+                            break;
+                        case 'Cancelled':
+                            $status_class = 'bg-gray-500/10 text-gray-500';
+                            $status_text = 'Cancelled';
+                            break;
+                        default:
+                            $status_class = 'bg-blue-500/10 text-blue-500';
+                            $status_text = $booking['status'];
+                    }
+                    
+                    // Format dates
+                    $booking_date = date('F j, Y', strtotime($booking['booking_date']));
+                    $burial_date = $booking['deceased_dateOfBurial'] ? date('F j, Y', strtotime($booking['deceased_dateOfBurial'])) : 'Not set';
+                    
+                    // Format deceased name
+                    $deceased_name = $booking['deceased_lname'] . ', ' . $booking['deceased_fname'];
+                    if (!empty($booking['deceased_midname'])) {
+                        $deceased_name .= ' ' . $booking['deceased_midname'];
+                    }
+                    if (!empty($booking['deceased_suffix'])) {
+                        $deceased_name .= ' ' . $booking['deceased_suffix'];
+                    }
+                    
+                    // Handle NULL service_id (custom packages)
+                    $service_name = $booking['service_name'] ?? 'Customize Package';
+                    $selling_price = $booking['selling_price'] ?? 0;
+                    
+                    // Format price
+                    $price = number_format($selling_price, 2);
+                    $amount_paid = $booking['amount_paid'] ? number_format($booking['amount_paid'], 2) : '0.00';
+                    $balance = number_format($selling_price - ($booking['amount_paid'] ?? 0), 2);
+            ?>
+            
+            <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-4">
+                <div class="bg-navy bg-opacity-10 px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="<?php echo $status_class; ?> text-xs px-2 py-1 rounded-full"><?php echo $status_text; ?></span>
+                        <p class="text-sm text-gray-500">Booking ID: <?php echo $booking['booking_id']; ?></p>
+                    </div>
+                    <h4 class="font-hedvig text-lg text-navy mb-2"><?php echo $service_name; ?></h4>
+                </div>
+                <div class="p-4 sm:p-6 space-y-3 sm:space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+                        <div>
+                            <p class="text-sm text-gray-500">Deceased Name</p>
+                            <p class="text-navy"><?php echo ucwords(strtolower($deceased_name)); ?></p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Branch</p>
+                            <p class="text-navy"><?php echo ucwords(strtolower($booking['branch_name'])); ?></p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Burial Date</p>
+                            <p class="text-navy"><?php echo $burial_date; ?></p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+                        <div>
+                            <p class="text-sm text-gray-500">Total Amount</p>
+                            <p class="text-navy font-bold">₱<?php echo $price; ?></p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Amount Paid</p>
+                            <p class="text-navy">₱<?php echo $amount_paid; ?></p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Balance</p>
+                            <p class="text-navy">₱<?php echo $balance; ?></p>
+                        </div>
+                    </div>
+                    <div class="flex justify-end">
+                        <button class="view-details bg-navy/5 text-navy px-3 py-1 rounded hover:bg-navy/10 transition text-sm mr-2" data-booking="<?php echo $booking['booking_id']; ?>">
+                            <i class="fas fa-file-alt mr-1"></i> View Details
+                        </button>
+                        
+                        <?php if ($booking['status'] === 'Accepted' && empty($booking['deathcert_url'])): ?>
+                            <button class="upload-death-cert bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition text-sm mr-2" data-booking="<?php echo $booking['booking_id']; ?>">
+                                <i class="fas fa-upload mr-1"></i> Upload Death Cert
+                            </button>
+                        <?php endif; ?>
+                        
+                        <?php if ($booking['status'] === 'Accepted'): ?>
+                            <button class="view-receipt bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition text-sm mr-2" data-booking="<?php echo $booking['booking_id']; ?>">
+                                <i class="fas fa-receipt mr-1"></i> View Receipt
+                            </button>
+                        <?php endif; ?>
+                        
+                        <?php if ($booking['status'] === 'Pending' || $booking['status'] === 'Declined'): ?>
+                            <button class="modify-booking bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition text-sm mr-2" data-booking="<?php echo $booking['booking_id']; ?>">
+                                <i class="fas fa-edit mr-1"></i> Modify
+                            </button>
+                        <?php endif; ?>
+                        
+                        <?php if ($booking['status'] === 'Pending'): ?>
+                            <button class="cancel-booking bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition text-sm" data-booking="<?php echo $booking['booking_id']; ?>">
+                                <i class="fas fa-times mr-1"></i> Cancel
+                            </button>
+                        <?php elseif ($booking['status'] === 'Cancelled'): ?>
+                            <span class="text-gray-500 text-sm py-1 px-3">
+                                <i class="fas fa-ban mr-1"></i> Cancelled
+                            </span>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+            <?php
+                }
+            } else {
+                echo '<p class="text-gray-500">You have no bookings yet.</p>';
+            }
+            $stmt->close();
+            
+            // Now fetch all life plan bookings for the current customer
+            $query = "SELECT lb.*, s.service_name, s.selling_price as package_price, br.branch_name 
+                      FROM lifeplan_booking_tb lb
+                      LEFT JOIN services_tb s ON lb.service_id = s.service_id
+                      JOIN branch_tb br ON lb.branch_id = br.branch_id
+                      WHERE lb.customer_id = ?
+                      ORDER BY CASE 
+                          WHEN lb.booking_status = 'pending' THEN 1
+                          WHEN lb.booking_status = 'accepted' THEN 2
+                          WHEN lb.booking_status = 'decline' THEN 3
+                          ELSE 4
+                      END, lb.initial_date DESC";
+            
+            $stmt = $conn->prepare($query);
+            $stmt->bind_param("i", $user_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            
+            if ($result->num_rows > 0) {
+                while ($booking = $result->fetch_assoc()) {
+                    // Determine status color and text for life plan
+                    $status_class = '';
+                    $status_text = '';
+                    switch ($booking['booking_status']) {
+                        case 'pending':
+                            $status_class = 'bg-yellow-600/10 text-yellow-600';
+                            $status_text = 'Pending';
+                            break;
+                        case 'accepted':
+                            $status_class = 'bg-green-500/10 text-green-500';
+                            $status_text = 'Accepted';
+                            break;
+                        case 'decline':
+                            $status_class = 'bg-red-500/10 text-red-500';
+                            $status_text = 'Declined';
+                            break;
+                        default:
+                            $status_class = 'bg-blue-500/10 text-blue-500';
+                            $status_text = ucfirst($booking['booking_status']);
+                    }
+                    
+                    // Format dates
+                    $booking_date = date('F j, Y', strtotime($booking['initial_date']));
+                    $end_date = $booking['end_date'] ? date('F j, Y', strtotime($booking['end_date'])) : 'Not set';
+                    
+                    // Format beneficiary name
+                    $beneficiary_name = $booking['benefeciary_lname'] . ', ' . $booking['benefeciary_fname'];
+                    if (!empty($booking['benefeciary_mname'])) {
+                        $beneficiary_name .= ' ' . $booking['benefeciary_mname'];
+                    }
+                    if (!empty($booking['benefeciary_suffix'])) {
+                        $beneficiary_name .= ' ' . $booking['benefeciary_suffix'];
+                    }
+                    
+                    // Handle NULL service_id (custom packages)
+                    $service_name = $booking['service_name'] ?? 'Customize Package';
+                    $selling_price = $booking['package_price'] ?? 0;
+                    
+                    // Format price
+                    $price = number_format($selling_price, 2);
+                    $amount_paid = $booking['amount_paid'] ? number_format($booking['amount_paid'], 2) : '0.00';
+                    $balance = number_format($selling_price - ($booking['amount_paid'] ?? 0), 2);
+            ?>
+            
+            <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-4">
+                <div class="bg-blue-600 bg-opacity-10 px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="<?php echo $status_class; ?> text-xs px-2 py-1 rounded-full"><?php echo $status_text; ?></span>
+                        <p class="text-sm text-gray-500">Life Plan ID: <?php echo $booking['lpbooking_id']; ?></p>
+                    </div>
+                    <h4 class="font-hedvig text-lg text-blue-600 mb-2"><?php echo $service_name; ?> (Life Plan)</h4>
+                </div>
+                <div class="p-4 sm:p-6 space-y-3 sm:space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+                        <div>
+                            <p class="text-sm text-gray-500">Beneficiary Name</p>
+                            <p class="text-blue-600"><?php echo ucwords(strtolower($beneficiary_name)); ?></p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Branch</p>
+                            <p class="text-blue-600"><?php echo ucwords(strtolower($booking['branch_name'])); ?></p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">End Date</p>
+                            <p class="text-blue-600"><?php echo $end_date; ?></p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+                        <div>
+                            <p class="text-sm text-gray-500">Total Amount</p>
+                            <p class="text-blue-600 font-bold">₱<?php echo $price; ?></p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Amount Paid</p>
+                            <p class="text-blue-600">₱<?php echo $amount_paid; ?></p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Balance</p>
+                            <p class="text-blue-600">₱<?php echo $balance; ?></p>
+                        </div>
+                    </div>
+                    <div class="flex justify-end">
+                        <button class="view-lifeplan-details bg-blue-600/5 text-blue-600 px-3 py-1 rounded hover:bg-blue-600/10 transition text-sm mr-2" data-booking="<?php echo $booking['lpbooking_id']; ?>">
+                            <i class="fas fa-file-alt mr-1"></i> View Details
+                        </button>
+                        
+                    
+                        
+                        <?php if ($booking['booking_status'] === 'pending' || $booking['booking_status'] === 'decline'): ?>
+                            <button class="modify-lifeplan-booking bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition text-sm mr-2" data-booking="<?php echo $booking['lpbooking_id']; ?>">
+                                <i class="fas fa-edit mr-1"></i> Modify
+                            </button>
+                        <?php endif; ?>
+                        
+                        <?php if ($booking['booking_status'] === 'pending'): ?>
+                            <button class="cancel-lifeplan-booking bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition text-sm" data-booking="<?php echo $booking['lpbooking_id']; ?>">
+                                <i class="fas fa-times mr-1"></i> Cancel
+                            </button>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+            <?php
+                }
+            }
+            
+            if ($result->num_rows === 0 && !isset($has_traditional_bookings)) {
+                echo '<p class="text-gray-500">You have no bookings yet.</p>';
+            }
+            $stmt->close();
+            ?>
         </div>
     </div>
-    
-    <!-- Empty containers that will be populated by JavaScript -->
-    <div id="traditional-bookings-content" class="bookings-content"></div>
-    <div id="lifeplan-bookings-content" class="bookings-content" style="display: none;"></div>
 </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize booking tabs
-    const bookingTabs = document.querySelectorAll('.bookings-tab');
-    const bookingContents = document.querySelectorAll('.bookings-content');
-    
-    bookingTabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            // Remove active class from all tabs
-            bookingTabs.forEach(t => {
-                t.classList.remove('border-yellow-600', 'text-navy');
-                t.classList.add('text-gray-500');
-            });
-            
-            // Add active class to clicked tab
-            tab.classList.add('border-yellow-600', 'text-navy');
-            tab.classList.remove('text-gray-500');
-            
-            // Hide all content
-            bookingContents.forEach(content => {
-                content.style.display = 'none';
-            });
-            
-            // Show the corresponding content
-            const contentId = tab.dataset.tab + '-content';
-            const contentElement = document.getElementById(contentId);
-            contentElement.style.display = 'block';
-            
-            // Load content if empty
-            if (contentElement.innerHTML === '') {
-                if (contentId === 'traditional-bookings-content') {
-                    loadTraditionalBookings();
-                } else if (contentId === 'lifeplan-bookings-content') {
-                    loadLifeplanBookings();
-                }
-            }
-        });
-    });
-    
-    // Load traditional bookings by default
-    loadTraditionalBookings();
-});
-
-function loadTraditionalBookings() {
-    const container = document.getElementById('traditional-bookings-content');
-    container.innerHTML = '<div class="text-center py-8"><i class="fas fa-spinner fa-spin text-2xl text-yellow-600"></i><p class="mt-2">Loading traditional bookings...</p></div>';
-    
-    // Fetch traditional bookings from server
-    fetch('profile/get_traditional_bookings.php')
-        .then(response => response.json())
-        .then(bookings => {
-            container.innerHTML = '';
-            
-            if (bookings.length === 0) {
-                container.innerHTML = '<p class="text-gray-500 py-4">You have no traditional funeral bookings yet.</p>';
-                return;
-            }
-            
-            bookings.forEach(booking => {
-                // Determine status color and text
-                $status_class = '';
-                $status_text = '';
-                switch (booking.status) {
-                    case 'Pending':
-                        $status_class = 'bg-yellow-600/10 text-yellow-600';
-                        $status_text = 'Pending';
-                        break;
-                    case 'Accepted':
-                        $status_class = 'bg-green-500/10 text-green-500';
-                        $status_text = 'Accepted';
-                        break;
-                    case 'Declined':
-                        $status_class = 'bg-red-500/10 text-red-500';
-                        $status_text = 'Declined';
-                        break;
-                    case 'Cancelled':
-                        $status_class = 'bg-gray-500/10 text-gray-500';
-                        $status_text = 'Cancelled';
-                        break;
-                    default:
-                        $status_class = 'bg-blue-500/10 text-blue-500';
-                        $status_text = booking.status;
-                }
-                
-                // Format dates
-                const booking_date = new Date(booking.booking_date).toLocaleDateString('en-US', { 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
-                });
-                
-                const burial_date = booking.deceased_dateOfBurial ? 
-                    new Date(booking.deceased_dateOfBurial).toLocaleDateString('en-US', { 
-                        year: 'numeric', 
-                        month: 'long', 
-                        day: 'numeric' 
-                    }) : 'Not set';
-                
-                // Format deceased name
-                let deceased_name = `${booking.deceased_lname}, ${booking.deceased_fname}`;
-                if (booking.deceased_midname) {
-                    deceased_name += ` ${booking.deceased_midname}`;
-                }
-                if (booking.deceased_suffix) {
-                    deceased_name += ` ${booking.deceased_suffix}`;
-                }
-                
-                // Handle NULL service_id (custom packages)
-                const service_name = booking.service_name || 'Custom Package';
-                const selling_price = booking.selling_price || 0;
-                
-                // Format price
-                const price = new Intl.NumberFormat('en-PH', {
-                    style: 'currency',
-                    currency: 'PHP'
-                }).format(selling_price);
-                
-                const amount_paid = booking.amount_paid ? 
-                    new Intl.NumberFormat('en-PH', {
-                        style: 'currency',
-                        currency: 'PHP'
-                    }).format(booking.amount_paid) : '₱0.00';
-                    
-                const balance = new Intl.NumberFormat('en-PH', {
-                    style: 'currency',
-                    currency: 'PHP'
-                }).format(selling_price - (booking.amount_paid || 0));
-                
-                // Create booking card
-                const cardHtml = `
-                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-4">
-                        <div class="bg-navy bg-opacity-10 px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200">
-                            <div class="flex items-center justify-between mb-3">
-                                <span class="${$status_class} text-xs px-2 py-1 rounded-full">${$status_text}</span>
-                                <p class="text-sm text-gray-500">Booking ID: ${booking.booking_id}</p>
-                            </div>
-                            <h4 class="font-hedvig text-lg text-navy mb-2">${service_name}</h4>
-                        </div>
-                        <div class="p-4 sm:p-6 space-y-3 sm:space-y-4">
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
-                                <div>
-                                    <p class="text-sm text-gray-500">Deceased Name</p>
-                                    <p class="text-navy">${deceased_name}</p>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-500">Branch</p>
-                                    <p class="text-navy">${booking.branch_name}</p>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-500">Burial Date</p>
-                                    <p class="text-navy">${burial_date}</p>
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
-                                <div>
-                                    <p class="text-sm text-gray-500">Total Amount</p>
-                                    <p class="text-navy font-bold">${price}</p>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-500">Amount Paid</p>
-                                    <p class="text-navy">${amount_paid}</p>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-500">Balance</p>
-                                    <p class="text-navy">${balance}</p>
-                                </div>
-                            </div>
-                            <div class="flex justify-end">
-                                <button class="view-details bg-navy/5 text-navy px-3 py-1 rounded hover:bg-navy/10 transition text-sm mr-2" data-booking="${booking.booking_id}">
-                                    <i class="fas fa-file-alt mr-1"></i> View Details
-                                </button>
-                                
-                                ${booking.status === 'Accepted' && !booking.deathcert_url ? `
-                                    <button class="upload-death-cert bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition text-sm mr-2" data-booking="${booking.booking_id}">
-                                        <i class="fas fa-upload mr-1"></i> Upload Death Cert
-                                    </button>
-                                ` : ''}
-                                
-                                ${booking.status === 'Accepted' ? `
-                                    <button class="view-receipt bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition text-sm mr-2" data-booking="${booking.booking_id}">
-                                        <i class="fas fa-receipt mr-1"></i> View Receipt
-                                    </button>
-                                ` : ''}
-                                
-                                ${(booking.status === 'Pending' || booking.status === 'Declined') ? `
-                                    <button class="modify-booking bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition text-sm mr-2" data-booking="${booking.booking_id}">
-                                        <i class="fas fa-edit mr-1"></i> Modify
-                                    </button>
-                                ` : ''}
-                                
-                                ${booking.status === 'Pending' ? `
-                                    <button class="cancel-booking bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition text-sm" data-booking="${booking.booking_id}">
-                                        <i class="fas fa-times mr-1"></i> Cancel
-                                    </button>
-                                ` : booking.status === 'Cancelled' ? `
-                                    <span class="text-gray-500 text-sm py-1 px-3">
-                                        <i class="fas fa-ban mr-1"></i> Cancelled
-                                    </span>
-                                ` : ''}
-                            </div>
-                        </div>
-                    </div>
-                `;
-                
-                container.insertAdjacentHTML('beforeend', cardHtml);
-            });
-            
-            // Add event listeners to buttons
-            addBookingEventListeners();
-        })
-        .catch(error => {
-            console.error('Error loading traditional bookings:', error);
-            container.innerHTML = '<p class="text-red-500 py-4">Failed to load traditional bookings. Please try again.</p>';
-        });
-}
-
-function loadLifeplanBookings() {
-    const container = document.getElementById('lifeplan-bookings-content');
-    container.innerHTML = '<div class="text-center py-8"><i class="fas fa-spinner fa-spin text-2xl text-yellow-600"></i><p class="mt-2">Loading life plan bookings...</p></div>';
-    
-    // Fetch lifeplan bookings from server
-    fetch('profile/get_lifeplan_bookings.php')
-        .then(response => response.json())
-        .then(bookings => {
-            container.innerHTML = '';
-            
-            if (bookings.length === 0) {
-                container.innerHTML = '<p class="text-gray-500 py-4">You have no life plan bookings yet.</p>';
-                return;
-            }
-            
-            bookings.forEach(booking => {
-                // Determine status color and text for life plan
-                $status_class = '';
-                $status_text = '';
-                switch (booking.booking_status) {
-                    case 'pending':
-                        $status_class = 'bg-yellow-600/10 text-yellow-600';
-                        $status_text = 'Pending';
-                        break;
-                    case 'accepted':
-                        $status_class = 'bg-green-500/10 text-green-500';
-                        $status_text = 'Accepted';
-                        break;
-                    case 'decline':
-                        $status_class = 'bg-red-500/10 text-red-500';
-                        $status_text = 'Declined';
-                        break;
-                    default:
-                        $status_class = 'bg-blue-500/10 text-blue-500';
-                        $status_text = booking.booking_status.charAt(0).toUpperCase() + booking.booking_status.slice(1);
-                }
-                
-                // Format dates
-                const booking_date = new Date(booking.initial_date).toLocaleDateString('en-US', { 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
-                });
-                
-                const end_date = booking.end_date ? 
-                    new Date(booking.end_date).toLocaleDateString('en-US', { 
-                        year: 'numeric', 
-                        month: 'long', 
-                        day: 'numeric' 
-                    }) : 'Not set';
-                
-                // Format beneficiary name
-                let beneficiary_name = `${booking.benefeciary_lname}, ${booking.benefeciary_fname}`;
-                if (booking.benefeciary_mname) {
-                    beneficiary_name += ` ${booking.benefeciary_mname}`;
-                }
-                if (booking.benefeciary_suffix) {
-                    beneficiary_name += ` ${booking.benefeciary_suffix}`;
-                }
-                
-                // Handle NULL service_id (custom packages)
-                const service_name = booking.service_name || 'Custom Package';
-                const selling_price = booking.package_price || 0;
-                
-                // Format price
-                const price = new Intl.NumberFormat('en-PH', {
-                    style: 'currency',
-                    currency: 'PHP'
-                }).format(selling_price);
-                
-                const amount_paid = booking.amount_paid ? 
-                    new Intl.NumberFormat('en-PH', {
-                        style: 'currency',
-                        currency: 'PHP'
-                    }).format(booking.amount_paid) : '₱0.00';
-                    
-                const balance = new Intl.NumberFormat('en-PH', {
-                    style: 'currency',
-                    currency: 'PHP'
-                }).format(selling_price - (booking.amount_paid || 0));
-                
-                // Create booking card
-                const cardHtml = `
-                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-4">
-                        <div class="bg-blue-600 bg-opacity-10 px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200">
-                            <div class="flex items-center justify-between mb-3">
-                                <span class="${$status_class} text-xs px-2 py-1 rounded-full">${$status_text}</span>
-                                <p class="text-sm text-gray-500">Life Plan ID: ${booking.lpbooking_id}</p>
-                            </div>
-                            <h4 class="font-hedvig text-lg text-blue-600 mb-2">${service_name} (Life Plan)</h4>
-                        </div>
-                        <div class="p-4 sm:p-6 space-y-3 sm:space-y-4">
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
-                                <div>
-                                    <p class="text-sm text-gray-500">Beneficiary Name</p>
-                                    <p class="text-blue-600">${beneficiary_name}</p>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-500">Branch</p>
-                                    <p class="text-blue-600">${booking.branch_name}</p>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-500">End Date</p>
-                                    <p class="text-blue-600">${end_date}</p>
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
-                                <div>
-                                    <p class="text-sm text-gray-500">Total Amount</p>
-                                    <p class="text-blue-600 font-bold">${price}</p>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-500">Amount Paid</p>
-                                    <p class="text-blue-600">${amount_paid}</p>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-500">Balance</p>
-                                    <p class="text-blue-600">${balance}</p>
-                                </div>
-                            </div>
-                            <div class="flex justify-end">
-                                <button class="view-lifeplan-details bg-blue-600/5 text-blue-600 px-3 py-1 rounded hover:bg-blue-600/10 transition text-sm mr-2" data-booking="${booking.lpbooking_id}">
-                                    <i class="fas fa-file-alt mr-1"></i> View Details
-                                </button>
-                                
-                                ${(booking.booking_status === 'pending' || booking.booking_status === 'decline') ? `
-                                    <button class="modify-lifeplan-booking bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition text-sm mr-2" data-booking="${booking.lpbooking_id}">
-                                        <i class="fas fa-edit mr-1"></i> Modify
-                                    </button>
-                                ` : ''}
-                                
-                                ${booking.booking_status === 'pending' ? `
-                                    <button class="cancel-lifeplan-booking bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition text-sm" data-booking="${booking.lpbooking_id}">
-                                        <i class="fas fa-times mr-1"></i> Cancel
-                                    </button>
-                                ` : ''}
-                            </div>
-                        </div>
-                    </div>
-                `;
-                
-                container.insertAdjacentHTML('beforeend', cardHtml);
-            });
-            
-            // Add event listeners to buttons
-            addLifeplanEventListeners();
-        })
-        .catch(error => {
-            console.error('Error loading lifeplan bookings:', error);
-            container.innerHTML = '<p class="text-red-500 py-4">Failed to load life plan bookings. Please try again.</p>';
-        });
-}
-
-function addBookingEventListeners() {
-    // View Details buttons
-    document.querySelectorAll('.view-details').forEach(button => {
-        button.addEventListener('click', function() {
-            const bookingId = this.getAttribute('data-booking');
-            // Implement view details functionality
-            console.log('View details for booking:', bookingId);
-        });
-    });
-    
-    // Upload Death Certificate buttons
-    document.querySelectorAll('.upload-death-cert').forEach(button => {
-        button.addEventListener('click', function() {
-            const bookingId = this.getAttribute('data-booking');
-            // Implement upload death certificate functionality
-            console.log('Upload death cert for booking:', bookingId);
-            document.getElementById('death-cert-booking-id').value = bookingId;
-            document.getElementById('uploadDeathCertModal').classList.remove('hidden');
-        });
-    });
-    
-    // View Receipt buttons
-    document.querySelectorAll('.view-receipt').forEach(button => {
-        button.addEventListener('click', function() {
-            const bookingId = this.getAttribute('data-booking');
-            // Implement view receipt functionality
-            console.log('View receipt for booking:', bookingId);
-        });
-    });
-    
-    // Modify Booking buttons
-    document.querySelectorAll('.modify-booking').forEach(button => {
-        button.addEventListener('click', function() {
-            const bookingId = this.getAttribute('data-booking');
-            // Implement modify booking functionality
-            console.log('Modify booking:', bookingId);
-        });
-    });
-    
-    // Cancel Booking buttons
-    document.querySelectorAll('.cancel-booking').forEach(button => {
-        button.addEventListener('click', function() {
-            const bookingId = this.getAttribute('data-booking');
-            // Implement cancel booking functionality
-            console.log('Cancel booking:', bookingId);
-        });
-    });
-}
-
-function addLifeplanEventListeners() {
-    // View Details buttons
-    document.querySelectorAll('.view-lifeplan-details').forEach(button => {
-        button.addEventListener('click', function() {
-            const bookingId = this.getAttribute('data-booking');
-            // Implement view details functionality
-            console.log('View details for lifeplan booking:', bookingId);
-        });
-    });
-    
-    // Modify Booking buttons
-    document.querySelectorAll('.modify-lifeplan-booking').forEach(button => {
-        button.addEventListener('click', function() {
-            const bookingId = this.getAttribute('data-booking');
-            // Implement modify booking functionality
-            console.log('Modify lifeplan booking:', bookingId);
-        });
-    });
-    
-    // Cancel Booking buttons
-    document.querySelectorAll('.cancel-lifeplan-booking').forEach(button => {
-        button.addEventListener('click', function() {
-            const bookingId = this.getAttribute('data-booking');
-            // Implement cancel booking functionality
-            console.log('Cancel lifeplan booking:', bookingId);
-        });
-    });
-}
-</script>
 
 
 <?php
@@ -5073,12 +4900,6 @@ document.getElementById('cancelBookingForm').addEventListener('submit', function
         document.getElementById('errorMessage').textContent = message;
         notification.classList.remove('hidden');
         
-        // Add click handler to dismiss
-        notification.addEventListener('click', function() {
-            this.classList.add('hidden');
-        });
-        
-        // Auto-hide after 5 seconds
         setTimeout(() => {
             notification.classList.add('hidden');
         }, 5000);
