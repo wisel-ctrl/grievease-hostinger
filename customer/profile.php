@@ -1113,7 +1113,21 @@ document.addEventListener('DOMContentLoaded', function() {
         <!-- Content area with improved spacing and grouping -->
         <div class="p-6">
             <?php
-            // Fetch all traditional bookings for the current customer
+            // Pagination for traditional bookings
+            $traditional_page = isset($_GET['t_page']) ? (int)$_GET['t_page'] : 1;
+            $traditional_per_page = 3;
+            $traditional_offset = ($traditional_page - 1) * $traditional_per_page;
+
+            // Fetch total count of traditional bookings
+            $count_query = "SELECT COUNT(*) as total FROM booking_tb WHERE customerID = ?";
+            $count_stmt = $conn->prepare($count_query);
+            $count_stmt->bind_param("i", $user_id);
+            $count_stmt->execute();
+            $count_result = $count_stmt->get_result();
+            $traditional_total = $count_result->fetch_assoc()['total'];
+            $traditional_total_pages = ceil($traditional_total / $traditional_per_page);
+
+            // Fetch traditional bookings with pagination
             $query = "SELECT b.*, s.service_name, s.selling_price, br.branch_name 
                       FROM booking_tb b
                       LEFT JOIN services_tb s ON b.service_id = s.service_id
@@ -1125,15 +1139,22 @@ document.addEventListener('DOMContentLoaded', function() {
                           WHEN b.status = 'Declined' THEN 3
                           WHEN b.status = 'Cancelled' THEN 4
                           ELSE 5
-                      END, b.booking_date DESC";
+                      END, b.booking_date DESC
+                      LIMIT ? OFFSET ?";
             
             $stmt = $conn->prepare($query);
-            $stmt->bind_param("i", $user_id);
+            $stmt->bind_param("iii", $user_id, $traditional_per_page, $traditional_offset);
             $stmt->execute();
-            $result = $stmt->get_result();
+            $traditional_result = $stmt->get_result();
+            $has_traditional_bookings = $traditional_result->num_rows > 0;
+            ?>
             
-            if ($result->num_rows > 0) {
-                while ($booking = $result->fetch_assoc()) {
+            <!-- Traditional Bookings Section -->
+            <h4 class="text-lg font-semibold text-navy mb-4">Traditional Funeral Bookings</h4>
+            
+            <?php if ($has_traditional_bookings): ?>
+                <?php while ($booking = $traditional_result->fetch_assoc()): ?>
+                    <?php
                     // Determine status color and text
                     $status_class = '';
                     $status_text = '';
@@ -1180,88 +1201,129 @@ document.addEventListener('DOMContentLoaded', function() {
                     $price = number_format($selling_price, 2);
                     $amount_paid = $booking['amount_paid'] ? number_format($booking['amount_paid'], 2) : '0.00';
                     $balance = number_format($selling_price - ($booking['amount_paid'] ?? 0), 2);
-            ?>
+                    ?>
             
-            <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-4">
-                <div class="bg-navy bg-opacity-10 px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200">
-                    <div class="flex items-center justify-between mb-3">
-                        <span class="<?php echo $status_class; ?> text-xs px-2 py-1 rounded-full"><?php echo $status_text; ?></span>
-                        <p class="text-sm text-gray-500">Booking ID: <?php echo $booking['booking_id']; ?></p>
+                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-4">
+                        <div class="bg-navy bg-opacity-10 px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="<?php echo $status_class; ?> text-xs px-2 py-1 rounded-full"><?php echo $status_text; ?></span>
+                                <p class="text-sm text-gray-500">Booking ID: <?php echo $booking['booking_id']; ?></p>
+                            </div>
+                            <h4 class="font-hedvig text-lg text-navy mb-2"><?php echo $service_name; ?></h4>
+                        </div>
+                        <div class="p-4 sm:p-6 space-y-3 sm:space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+                                <div>
+                                    <p class="text-sm text-gray-500">Deceased Name</p>
+                                    <p class="text-navy"><?php echo ucwords(strtolower($deceased_name)); ?></p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">Branch</p>
+                                    <p class="text-navy"><?php echo ucwords(strtolower($booking['branch_name'])); ?></p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">Burial Date</p>
+                                    <p class="text-navy"><?php echo $burial_date; ?></p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+                                <div>
+                                    <p class="text-sm text-gray-500">Total Amount</p>
+                                    <p class="text-navy font-bold">₱<?php echo $price; ?></p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">Amount Paid</p>
+                                    <p class="text-navy">₱<?php echo $amount_paid; ?></p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">Balance</p>
+                                    <p class="text-navy">₱<?php echo $balance; ?></p>
+                                </div>
+                            </div>
+                            <div class="flex justify-end">
+                                <button class="view-details bg-navy/5 text-navy px-3 py-1 rounded hover:bg-navy/10 transition text-sm mr-2" data-booking="<?php echo $booking['booking_id']; ?>">
+                                    <i class="fas fa-file-alt mr-1"></i> View Details
+                                </button>
+                                
+                                <?php if ($booking['status'] === 'Accepted' && empty($booking['deathcert_url'])): ?>
+                                    <button class="upload-death-cert bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition text-sm mr-2" data-booking="<?php echo $booking['booking_id']; ?>">
+                                        <i class="fas fa-upload mr-1"></i> Upload Death Cert
+                                    </button>
+                                <?php endif; ?>
+                                
+                                <?php if ($booking['status'] === 'Accepted'): ?>
+                                    <button class="view-receipt bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition text-sm mr-2" data-booking="<?php echo $booking['booking_id']; ?>">
+                                        <i class="fas fa-receipt mr-1"></i> View Receipt
+                                    </button>
+                                <?php endif; ?>
+                                
+                                <?php if ($booking['status'] === 'Pending' || $booking['status'] === 'Declined'): ?>
+                                    <button class="modify-booking bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition text-sm mr-2" data-booking="<?php echo $booking['booking_id']; ?>">
+                                        <i class="fas fa-edit mr-1"></i> Modify
+                                    </button>
+                                <?php endif; ?>
+                                
+                                <?php if ($booking['status'] === 'Pending'): ?>
+                                    <button class="cancel-booking bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition text-sm" data-booking="<?php echo $booking['booking_id']; ?>">
+                                        <i class="fas fa-times mr-1"></i> Cancel
+                                    </button>
+                                <?php elseif ($booking['status'] === 'Cancelled'): ?>
+                                    <span class="text-gray-500 text-sm py-1 px-3">
+                                        <i class="fas fa-ban mr-1"></i> Cancelled
+                                    </span>
+                                <?php endif; ?>
+                            </div>
+                        </div>
                     </div>
-                    <h4 class="font-hedvig text-lg text-navy mb-2"><?php echo $service_name; ?></h4>
+                <?php endwhile; ?>
+                
+                <!-- Traditional Bookings Pagination -->
+                <?php if ($traditional_total_pages > 1): ?>
+                <div class="flex justify-center mt-6">
+                    <nav class="inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                        <?php if ($traditional_page > 1): ?>
+                            <a href="?t_page=<?php echo $traditional_page - 1; ?>" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                <span class="sr-only">Previous</span>
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        <?php endif; ?>
+
+                        <?php for ($i = 1; $i <= $traditional_total_pages; $i++): ?>
+                            <a href="?t_page=<?php echo $i; ?>" class="<?php echo $i == $traditional_page ? 'bg-yellow-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'; ?> relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium">
+                                <?php echo $i; ?>
+                            </a>
+                        <?php endfor; ?>
+
+                        <?php if ($traditional_page < $traditional_total_pages): ?>
+                            <a href="?t_page=<?php echo $traditional_page + 1; ?>" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                <span class="sr-only">Next</span>
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        <?php endif; ?>
+                    </nav>
                 </div>
-                <div class="p-4 sm:p-6 space-y-3 sm:space-y-4">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
-                        <div>
-                            <p class="text-sm text-gray-500">Deceased Name</p>
-                            <p class="text-navy"><?php echo ucwords(strtolower($deceased_name)); ?></p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-500">Branch</p>
-                            <p class="text-navy"><?php echo ucwords(strtolower($booking['branch_name'])); ?></p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-500">Burial Date</p>
-                            <p class="text-navy"><?php echo $burial_date; ?></p>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
-                        <div>
-                            <p class="text-sm text-gray-500">Total Amount</p>
-                            <p class="text-navy font-bold">₱<?php echo $price; ?></p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-500">Amount Paid</p>
-                            <p class="text-navy">₱<?php echo $amount_paid; ?></p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-500">Balance</p>
-                            <p class="text-navy">₱<?php echo $balance; ?></p>
-                        </div>
-                    </div>
-                    <div class="flex justify-end">
-                        <button class="view-details bg-navy/5 text-navy px-3 py-1 rounded hover:bg-navy/10 transition text-sm mr-2" data-booking="<?php echo $booking['booking_id']; ?>">
-                            <i class="fas fa-file-alt mr-1"></i> View Details
-                        </button>
-                        
-                        <?php if ($booking['status'] === 'Accepted' && empty($booking['deathcert_url'])): ?>
-                            <button class="upload-death-cert bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition text-sm mr-2" data-booking="<?php echo $booking['booking_id']; ?>">
-                                <i class="fas fa-upload mr-1"></i> Upload Death Cert
-                            </button>
-                        <?php endif; ?>
-                        
-                        <?php if ($booking['status'] === 'Accepted'): ?>
-                            <button class="view-receipt bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition text-sm mr-2" data-booking="<?php echo $booking['booking_id']; ?>">
-                                <i class="fas fa-receipt mr-1"></i> View Receipt
-                            </button>
-                        <?php endif; ?>
-                        
-                        <?php if ($booking['status'] === 'Pending' || $booking['status'] === 'Declined'): ?>
-                            <button class="modify-booking bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition text-sm mr-2" data-booking="<?php echo $booking['booking_id']; ?>">
-                                <i class="fas fa-edit mr-1"></i> Modify
-                            </button>
-                        <?php endif; ?>
-                        
-                        <?php if ($booking['status'] === 'Pending'): ?>
-                            <button class="cancel-booking bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition text-sm" data-booking="<?php echo $booking['booking_id']; ?>">
-                                <i class="fas fa-times mr-1"></i> Cancel
-                            </button>
-                        <?php elseif ($booking['status'] === 'Cancelled'): ?>
-                            <span class="text-gray-500 text-sm py-1 px-3">
-                                <i class="fas fa-ban mr-1"></i> Cancelled
-                            </span>
-                        <?php endif; ?>
-                    </div>
-                </div>
-            </div>
+                <?php endif; ?>
+                
+            <?php else: ?>
+                <p class="text-gray-500">You have no traditional funeral bookings yet.</p>
+            <?php endif; ?>
+            
             <?php
-                }
-            } else {
-                echo '<p class="text-gray-500">You have no bookings yet.</p>';
-            }
-            $stmt->close();
-            
-            // Now fetch all life plan bookings for the current customer
+            // Pagination for life plan bookings
+            $lifeplan_page = isset($_GET['lp_page']) ? (int)$_GET['lp_page'] : 1;
+            $lifeplan_per_page = 3;
+            $lifeplan_offset = ($lifeplan_page - 1) * $lifeplan_per_page;
+
+            // Fetch total count of life plan bookings
+            $count_query = "SELECT COUNT(*) as total FROM lifeplan_booking_tb WHERE customer_id = ?";
+            $count_stmt = $conn->prepare($count_query);
+            $count_stmt->bind_param("i", $user_id);
+            $count_stmt->execute();
+            $count_result = $count_stmt->get_result();
+            $lifeplan_total = $count_result->fetch_assoc()['total'];
+            $lifeplan_total_pages = ceil($lifeplan_total / $lifeplan_per_page);
+
+            // Fetch life plan bookings with pagination
             $query = "SELECT lb.*, s.service_name, s.selling_price as package_price, br.branch_name 
                       FROM lifeplan_booking_tb lb
                       LEFT JOIN services_tb s ON lb.service_id = s.service_id
@@ -1272,15 +1334,22 @@ document.addEventListener('DOMContentLoaded', function() {
                           WHEN lb.booking_status = 'accepted' THEN 2
                           WHEN lb.booking_status = 'decline' THEN 3
                           ELSE 4
-                      END, lb.initial_date DESC";
+                      END, lb.initial_date DESC
+                      LIMIT ? OFFSET ?";
             
             $stmt = $conn->prepare($query);
-            $stmt->bind_param("i", $user_id);
+            $stmt->bind_param("iii", $user_id, $lifeplan_per_page, $lifeplan_offset);
             $stmt->execute();
-            $result = $stmt->get_result();
+            $lifeplan_result = $stmt->get_result();
+            $has_lifeplan_bookings = $lifeplan_result->num_rows > 0;
+            ?>
             
-            if ($result->num_rows > 0) {
-                while ($booking = $result->fetch_assoc()) {
+            <!-- Life Plan Bookings Section -->
+            <h4 class="text-lg font-semibold text-navy mb-4 mt-8">Life Plan Bookings</h4>
+            
+            <?php if ($has_lifeplan_bookings): ?>
+                <?php while ($booking = $lifeplan_result->fetch_assoc()): ?>
+                    <?php
                     // Determine status color and text for life plan
                     $status_class = '';
                     $status_text = '';
@@ -1323,80 +1392,105 @@ document.addEventListener('DOMContentLoaded', function() {
                     $price = number_format($selling_price, 2);
                     $amount_paid = $booking['amount_paid'] ? number_format($booking['amount_paid'], 2) : '0.00';
                     $balance = number_format($selling_price - ($booking['amount_paid'] ?? 0), 2);
-            ?>
+                    ?>
             
-            <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-4">
-                <div class="bg-blue-600 bg-opacity-10 px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200">
-                    <div class="flex items-center justify-between mb-3">
-                        <span class="<?php echo $status_class; ?> text-xs px-2 py-1 rounded-full"><?php echo $status_text; ?></span>
-                        <p class="text-sm text-gray-500">Life Plan ID: <?php echo $booking['lpbooking_id']; ?></p>
+                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-4">
+                        <div class="bg-blue-600 bg-opacity-10 px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="<?php echo $status_class; ?> text-xs px-2 py-1 rounded-full"><?php echo $status_text; ?></span>
+                                <p class="text-sm text-gray-500">Life Plan ID: <?php echo $booking['lpbooking_id']; ?></p>
+                            </div>
+                            <h4 class="font-hedvig text-lg text-blue-600 mb-2"><?php echo $service_name; ?> (Life Plan)</h4>
+                        </div>
+                        <div class="p-4 sm:p-6 space-y-3 sm:space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+                                <div>
+                                    <p class="text-sm text-gray-500">Beneficiary Name</p>
+                                    <p class="text-blue-600"><?php echo ucwords(strtolower($beneficiary_name)); ?></p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">Branch</p>
+                                    <p class="text-blue-600"><?php echo ucwords(strtolower($booking['branch_name'])); ?></p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">End Date</p>
+                                    <p class="text-blue-600"><?php echo $end_date; ?></p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+                                <div>
+                                    <p class="text-sm text-gray-500">Total Amount</p>
+                                    <p class="text-blue-600 font-bold">₱<?php echo $price; ?></p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">Amount Paid</p>
+                                    <p class="text-blue-600">₱<?php echo $amount_paid; ?></p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">Balance</p>
+                                    <p class="text-blue-600">₱<?php echo $balance; ?></p>
+                                </div>
+                            </div>
+                            <div class="flex justify-end">
+                                <button class="view-lifeplan-details bg-blue-600/5 text-blue-600 px-3 py-1 rounded hover:bg-blue-600/10 transition text-sm mr-2" data-booking="<?php echo $booking['lpbooking_id']; ?>">
+                                    <i class="fas fa-file-alt mr-1"></i> View Details
+                                </button>
+                                
+                                <?php if ($booking['booking_status'] === 'pending' || $booking['booking_status'] === 'decline'): ?>
+                                    <button class="modify-lifeplan-booking bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition text-sm mr-2" data-booking="<?php echo $booking['lpbooking_id']; ?>">
+                                        <i class="fas fa-edit mr-1"></i> Modify
+                                    </button>
+                                <?php endif; ?>
+                                
+                                <?php if ($booking['booking_status'] === 'pending'): ?>
+                                    <button class="cancel-lifeplan-booking bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition text-sm" data-booking="<?php echo $booking['lpbooking_id']; ?>">
+                                        <i class="fas fa-times mr-1"></i> Cancel
+                                    </button>
+                                <?php endif; ?>
+                            </div>
+                        </div>
                     </div>
-                    <h4 class="font-hedvig text-lg text-blue-600 mb-2"><?php echo $service_name; ?> (Life Plan)</h4>
-                </div>
-                <div class="p-4 sm:p-6 space-y-3 sm:space-y-4">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
-                        <div>
-                            <p class="text-sm text-gray-500">Beneficiary Name</p>
-                            <p class="text-blue-600"><?php echo ucwords(strtolower($beneficiary_name)); ?></p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-500">Branch</p>
-                            <p class="text-blue-600"><?php echo ucwords(strtolower($booking['branch_name'])); ?></p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-500">End Date</p>
-                            <p class="text-blue-600"><?php echo $end_date; ?></p>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
-                        <div>
-                            <p class="text-sm text-gray-500">Total Amount</p>
-                            <p class="text-blue-600 font-bold">₱<?php echo $price; ?></p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-500">Amount Paid</p>
-                            <p class="text-blue-600">₱<?php echo $amount_paid; ?></p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-500">Balance</p>
-                            <p class="text-blue-600">₱<?php echo $balance; ?></p>
-                        </div>
-                    </div>
-                    <div class="flex justify-end">
-                        <button class="view-lifeplan-details bg-blue-600/5 text-blue-600 px-3 py-1 rounded hover:bg-blue-600/10 transition text-sm mr-2" data-booking="<?php echo $booking['lpbooking_id']; ?>">
-                            <i class="fas fa-file-alt mr-1"></i> View Details
-                        </button>
-                        
-                    
-                        
-                        <?php if ($booking['booking_status'] === 'pending' || $booking['booking_status'] === 'decline'): ?>
-                            <button class="modify-lifeplan-booking bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition text-sm mr-2" data-booking="<?php echo $booking['lpbooking_id']; ?>">
-                                <i class="fas fa-edit mr-1"></i> Modify
-                            </button>
+                <?php endwhile; ?>
+                
+                <!-- Life Plan Bookings Pagination -->
+                <?php if ($lifeplan_total_pages > 1): ?>
+                <div class="flex justify-center mt-6">
+                    <nav class="inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                        <?php if ($lifeplan_page > 1): ?>
+                            <a href="?lp_page=<?php echo $lifeplan_page - 1; ?>" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                <span class="sr-only">Previous</span>
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
                         <?php endif; ?>
-                        
-                        <?php if ($booking['booking_status'] === 'pending'): ?>
-                            <button class="cancel-lifeplan-booking bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition text-sm" data-booking="<?php echo $booking['lpbooking_id']; ?>">
-                                <i class="fas fa-times mr-1"></i> Cancel
-                            </button>
+
+                        <?php for ($i = 1; $i <= $lifeplan_total_pages; $i++): ?>
+                            <a href="?lp_page=<?php echo $i; ?>" class="<?php echo $i == $lifeplan_page ? 'bg-yellow-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'; ?> relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium">
+                                <?php echo $i; ?>
+                            </a>
+                        <?php endfor; ?>
+
+                        <?php if ($lifeplan_page < $lifeplan_total_pages): ?>
+                            <a href="?lp_page=<?php echo $lifeplan_page + 1; ?>" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                <span class="sr-only">Next</span>
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
                         <?php endif; ?>
-                    </div>
+                    </nav>
                 </div>
-            </div>
-            <?php
-                }
-            }
+                <?php endif; ?>
+                
+            <?php else: ?>
+                <p class="text-gray-500">You have no life plan bookings yet.</p>
+            <?php endif; ?>
             
-            if ($result->num_rows === 0 && !isset($has_traditional_bookings)) {
-                echo '<p class="text-gray-500">You have no bookings yet.</p>';
-            }
-            $stmt->close();
-            ?>
+            <?php if (!$has_traditional_bookings && !$has_lifeplan_bookings): ?>
+                <p class="text-gray-500">You have no bookings yet.</p>
+            <?php endif; ?>
         </div>
     </div>
 </div>
 
-
+<!-- Rest of your existing code for transaction logs and other sections -->
 <?php
 $customerID = $_SESSION['user_id'];
 $sql = "SELECT 
@@ -1476,7 +1570,6 @@ $lifeplanStmt->execute();
 $lifeplanResult = $lifeplanStmt->get_result();
 $lifeplans = $lifeplanResult->fetch_all(MYSQLI_ASSOC);
 $lifeplanStmt->close();
-
 ?>
 <!-- Transaction Logs Tab -->
 <div id="transaction-logs" class="tab-content p-4">
