@@ -723,23 +723,7 @@ function applyQuantityHeatmap() {
   });
 }
 
-function confirmArchive(inventoryId) {
-    Swal.fire({
-        title: 'Are you sure?',
-        text: "You won't be able to revert this!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, archive it!'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            // Find the form and submit it
-            document.querySelector(`form[onsubmit="return confirmArchive(${inventoryId});"]`).submit();
-        }
-    });
-    return false; // Prevent default form submission
-}
+
 
 // Call this function after loading table data
 document.addEventListener('DOMContentLoaded', applyQuantityHeatmap);
