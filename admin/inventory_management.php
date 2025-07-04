@@ -99,12 +99,12 @@ function generateInventoryRow($row) {
   $html .= '<td class="p-4 text-sm">';
   $html .= '<div class="flex space-x-2">';
   $html .= '<button class="p-1.5 bg-yellow-100 text-yellow-600 rounded hover:bg-yellow-200 transition-all tooltip" title="Edit Item" onclick="openViewItemModal(' . $row["inventory_id"] . ')">';
-  $html .= '<i class="fas fa-edit text-base align-middle"></i>';
+  $html .= '<i class="fas fa-edit"></i>';
   $html .= '</button>';
     $html .= '<form method="POST" action="delete_inventory_item.php" onsubmit="return false;" style="display:inline;" class="delete-form">';
     $html .= '<input type="hidden" name="inventory_id" value="' . $row["inventory_id"] . '">';
     $html .= '<button type="submit" class="p-1.5 bg-red-100 text-red-600 rounded hover:bg-red-200 transition-all tooltip" title="Archive Item">';
-    $html .= '<i class="fas fa-archive text-base align-middle"></i>';
+    $html .= '<i class="fas fa-archive"></i>';
     $html .= '</button>';
     $html .= '</form>';
   $html .= '</div>';
