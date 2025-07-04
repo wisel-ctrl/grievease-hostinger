@@ -835,7 +835,7 @@ input[name*="LastName"] {
                                         onclick="openDeclineReasonModal('<?php echo htmlspecialchars($decline_reason); ?>')"
                                     >
                                         <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" clip-rule="evenodd"></path>
+                                            <path fill-rule="evenodd" d="M18 10a8 8 0 10-16 0 8 8 0 0016 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" clip-rule="evenodd"></path>
                                         </svg>
                                         View Details
                                     </button>
@@ -1113,6 +1113,8 @@ document.addEventListener('DOMContentLoaded', function() {
         <!-- Content area with improved spacing and grouping -->
         <div class="p-6">
             <?php
+            // Track if the user has any bookings
+            $has_any_bookings = false;
             // Fetch all traditional bookings for the current customer
             $query = "SELECT b.*, s.service_name, s.selling_price, br.branch_name 
                       FROM booking_tb b
@@ -1133,6 +1135,7 @@ document.addEventListener('DOMContentLoaded', function() {
             $result = $stmt->get_result();
             
             if ($result->num_rows > 0) {
+                $has_any_bookings = true;
                 while ($booking = $result->fetch_assoc()) {
                     // Determine status color and text
                     $status_class = '';
@@ -1256,8 +1259,6 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
             <?php
                 }
-            } else {
-                echo '<p class="text-gray-500">You have no bookings yet.</p>';
             }
             $stmt->close();
             
@@ -1280,6 +1281,7 @@ document.addEventListener('DOMContentLoaded', function() {
             $result = $stmt->get_result();
             
             if ($result->num_rows > 0) {
+                $has_any_bookings = true;
                 while ($booking = $result->fetch_assoc()) {
                     // Determine status color and text for life plan
                     $status_class = '';
@@ -1387,7 +1389,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
             
-            if ($result->num_rows === 0 && !isset($has_traditional_bookings)) {
+            if (!$has_any_bookings) {
                 echo '<p class="text-gray-500">You have no bookings yet.</p>';
             }
             $stmt->close();
@@ -4900,6 +4902,12 @@ document.getElementById('cancelBookingForm').addEventListener('submit', function
         document.getElementById('errorMessage').textContent = message;
         notification.classList.remove('hidden');
         
+        // Add click handler to dismiss
+        notification.addEventListener('click', function() {
+            this.classList.add('hidden');
+        });
+        
+        // Auto-hide after 5 seconds
         setTimeout(() => {
             notification.classList.add('hidden');
         }, 5000);
