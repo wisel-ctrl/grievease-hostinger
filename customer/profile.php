@@ -1205,7 +1205,6 @@ if ($totalPages > 1) {
     echo '</div>';
 }
 ?>
-</div>
             
             <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-4">
                 <div class="bg-navy bg-opacity-10 px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200">
