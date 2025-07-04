@@ -1110,77 +1110,102 @@ document.addEventListener('DOMContentLoaded', function() {
             <h3 class="font-hedvig text-xl sm:text-2xl text-white font-semibold">My Bookings</h3>
         </div>
         
-        <!-- Content area with improved spacing and grouping -->
         <div class="p-6">
-            <?php
-            // Fetch all traditional bookings for the current customer
-            $query = "SELECT b.*, s.service_name, s.selling_price, br.branch_name 
-                      FROM booking_tb b
-                      LEFT JOIN services_tb s ON b.service_id = s.service_id
-                      JOIN branch_tb br ON b.branch_id = br.branch_id
-                      WHERE b.customerID = ?
-                      ORDER BY CASE 
-                          WHEN b.status = 'Pending' THEN 1
-                          WHEN b.status = 'Accepted' THEN 2
-                          WHEN b.status = 'Declined' THEN 3
-                          WHEN b.status = 'Cancelled' THEN 4
-                          ELSE 5
-                      END, b.booking_date DESC";
-            
-            $stmt = $conn->prepare($query);
-            $stmt->bind_param("i", $user_id);
-            $stmt->execute();
-            $result = $stmt->get_result();
-            
-            if ($result->num_rows > 0) {
-                while ($booking = $result->fetch_assoc()) {
-                    // Determine status color and text
-                    $status_class = '';
-                    $status_text = '';
-                    switch ($booking['status']) {
-                        case 'Pending':
-                            $status_class = 'bg-yellow-600/10 text-yellow-600';
-                            $status_text = 'Pending';
-                            break;
-                        case 'Accepted':
-                            $status_class = 'bg-green-500/10 text-green-500';
-                            $status_text = 'Accepted';
-                            break;
-                        case 'Declined':
-                            $status_class = 'bg-red-500/10 text-red-500';
-                            $status_text = 'Declined';
-                            break;
-                        case 'Cancelled':
-                            $status_class = 'bg-gray-500/10 text-gray-500';
-                            $status_text = 'Cancelled';
-                            break;
-                        default:
-                            $status_class = 'bg-blue-500/10 text-blue-500';
-                            $status_text = $booking['status'];
-                    }
-                    
-                    // Format dates
-                    $booking_date = date('F j, Y', strtotime($booking['booking_date']));
-                    $burial_date = $booking['deceased_dateOfBurial'] ? date('F j, Y', strtotime($booking['deceased_dateOfBurial'])) : 'Not set';
-                    
-                    // Format deceased name
-                    $deceased_name = $booking['deceased_lname'] . ', ' . $booking['deceased_fname'];
-                    if (!empty($booking['deceased_midname'])) {
-                        $deceased_name .= ' ' . $booking['deceased_midname'];
-                    }
-                    if (!empty($booking['deceased_suffix'])) {
-                        $deceased_name .= ' ' . $booking['deceased_suffix'];
-                    }
-                    
-                    // Handle NULL service_id (custom packages)
-                    $service_name = $booking['service_name'] ?? 'Customize Package';
-                    $selling_price = $booking['selling_price'] ?? 0;
-                    
-                    // Format price
-                    $price = number_format($selling_price, 2);
-                    $amount_paid = $booking['amount_paid'] ? number_format($booking['amount_paid'], 2) : '0.00';
-                    $balance = number_format($selling_price - ($booking['amount_paid'] ?? 0), 2);
-            ?>
+<?php
+// PAGINATION SETUP
+$page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+$perPage = 3;
+$allBookings = [];
+
+// Fetch all traditional bookings
+$query = "SELECT b.*, s.service_name, s.selling_price, br.branch_name 
+          FROM booking_tb b
+          LEFT JOIN services_tb s ON b.service_id = s.service_id
+          JOIN branch_tb br ON b.branch_id = br.branch_id
+          WHERE b.customerID = ?
+          ORDER BY CASE 
+              WHEN b.status = 'Pending' THEN 1
+              WHEN b.status = 'Accepted' THEN 2
+              WHEN b.status = 'Declined' THEN 3
+              WHEN b.status = 'Cancelled' THEN 4
+              ELSE 5
+          END, b.booking_date DESC";
+$stmt = $conn->prepare($query);
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+while ($booking = $result->fetch_assoc()) {
+    $booking['type'] = 'traditional';
+    $allBookings[] = $booking;
+}
+$stmt->close();
+
+// Fetch all life plan bookings
+$query = "SELECT lb.*, s.service_name, s.selling_price as package_price, br.branch_name 
+          FROM lifeplan_booking_tb lb
+          LEFT JOIN services_tb s ON lb.service_id = s.service_id
+          JOIN branch_tb br ON lb.branch_id = br.branch_id
+          WHERE lb.customer_id = ?
+          ORDER BY CASE 
+              WHEN lb.booking_status = 'pending' THEN 1
+              WHEN lb.booking_status = 'accepted' THEN 2
+              WHEN lb.booking_status = 'decline' THEN 3
+              ELSE 4
+          END, lb.initial_date DESC";
+$stmt = $conn->prepare($query);
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+while ($booking = $result->fetch_assoc()) {
+    $booking['type'] = 'lifeplan';
+    $allBookings[] = $booking;
+}
+$stmt->close();
+
+// Sort all bookings by a common date (descending)
+usort($allBookings, function($a, $b) {
+    $dateA = isset($a['booking_date']) ? strtotime($a['booking_date']) : strtotime($a['initial_date']);
+    $dateB = isset($b['booking_date']) ? strtotime($b['booking_date']) : strtotime($b['initial_date']);
+    return $dateB - $dateA;
+});
+
+$totalBookings = count($allBookings);
+$totalPages = ceil($totalBookings / $perPage);
+$start = ($page - 1) * $perPage;
+$bookingsToShow = array_slice($allBookings, $start, $perPage);
+
+if ($totalBookings > 0) {
+    foreach ($bookingsToShow as $booking) {
+        if ($booking['type'] === 'traditional') {
+            // ... (PASTE your existing traditional booking card HTML here) ...
+        } else if ($booking['type'] === 'lifeplan') {
+            // ... (PASTE your existing lifeplan booking card HTML here) ...
+        }
+    }
+} else {
+    echo '<p class="text-gray-500">You have no bookings yet.</p>';
+}
+
+// PAGINATION CONTROLS
+if ($totalPages > 1) {
+    echo '<div class="flex justify-center mt-6">';
+    if ($page > 1) {
+        echo '<a href=\"?page=' . ($page - 1) . '\" class=\"px-3 py-1 mx-1 bg-gray-200 rounded hover:bg-gray-300\">Previous</a>';
+    }
+    for ($i = 1; $i <= $totalPages; $i++) {
+        if ($i == $page) {
+            echo '<span class=\"px-3 py-1 mx-1 bg-yellow-600 text-white rounded\">' . $i . '</span>';
+        } else {
+            echo '<a href=\"?page=' . $i . '\" class=\"px-3 py-1 mx-1 bg-gray-200 rounded hover:bg-gray-300\">' . $i . '</a>';
+        }
+    }
+    if ($page < $totalPages) {
+        echo '<a href=\"?page=' . ($page + 1) . '\" class=\"px-3 py-1 mx-1 bg-gray-200 rounded hover:bg-gray-300\">Next</a>';
+    }
+    echo '</div>';
+}
+?>
+</div>
             
             <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-4">
                 <div class="bg-navy bg-opacity-10 px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200">
