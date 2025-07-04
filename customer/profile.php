@@ -1110,104 +1110,374 @@ document.addEventListener('DOMContentLoaded', function() {
             <h3 class="font-hedvig text-xl sm:text-2xl text-white font-semibold">My Bookings</h3>
         </div>
         
+        <!-- Content area with improved spacing and grouping -->
         <div class="p-6">
-<?php
-// PAGINATION SETUP
-$page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
-$perPage = 3;
-$allBookings = [];
-
-// Fetch all traditional bookings
-$query = "SELECT b.*, s.service_name, s.selling_price, br.branch_name 
-          FROM booking_tb b
-          LEFT JOIN services_tb s ON b.service_id = s.service_id
-          JOIN branch_tb br ON b.branch_id = br.branch_id
-          WHERE b.customerID = ?
-          ORDER BY CASE 
-              WHEN b.status = 'Pending' THEN 1
-              WHEN b.status = 'Accepted' THEN 2
-              WHEN b.status = 'Declined' THEN 3
-              WHEN b.status = 'Cancelled' THEN 4
-              ELSE 5
-          END, b.booking_date DESC";
-$stmt = $conn->prepare($query);
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$result = $stmt->get_result();
-while ($booking = $result->fetch_assoc()) {
-    $booking['type'] = 'traditional';
-    $allBookings[] = $booking;
-}
-$stmt->close();
-
-// Fetch all life plan bookings
-$query = "SELECT lb.*, s.service_name, s.selling_price as package_price, br.branch_name 
-          FROM lifeplan_booking_tb lb
-          LEFT JOIN services_tb s ON lb.service_id = s.service_id
-          JOIN branch_tb br ON lb.branch_id = br.branch_id
-          WHERE lb.customer_id = ?
-          ORDER BY CASE 
-              WHEN lb.booking_status = 'pending' THEN 1
-              WHEN lb.booking_status = 'accepted' THEN 2
-              WHEN lb.booking_status = 'decline' THEN 3
-              ELSE 4
-          END, lb.initial_date DESC";
-$stmt = $conn->prepare($query);
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$result = $stmt->get_result();
-while ($booking = $result->fetch_assoc()) {
-    $booking['type'] = 'lifeplan';
-    $allBookings[] = $booking;
-}
-$stmt->close();
-
-// Sort all bookings by a common date (descending)
-usort($allBookings, function($a, $b) {
-    $dateA = isset($a['booking_date']) ? strtotime($a['booking_date']) : strtotime($a['initial_date']);
-    $dateB = isset($b['booking_date']) ? strtotime($b['booking_date']) : strtotime($b['initial_date']);
-    return $dateB - $dateA;
-});
-
-$totalBookings = count($allBookings);
-$totalPages = ceil($totalBookings / $perPage);
-$start = ($page - 1) * $perPage;
-$bookingsToShow = array_slice($allBookings, $start, $perPage);
-
-if ($totalBookings > 0) {
-    foreach ($bookingsToShow as $booking) {
-        if ($booking['type'] === 'traditional') {
-            // ... (PASTE your existing traditional booking card HTML here) ...
-        } else if ($booking['type'] === 'lifeplan') {
-            // ... (PASTE your existing lifeplan booking card HTML here) ...
-        }
-    }
-} else {
-    echo '<p class="text-gray-500">You have no bookings yet.</p>';
-}
-
-// PAGINATION CONTROLS
-if ($totalPages > 1) {
-    echo '<div class="flex justify-center mt-6">';
-    if ($page > 1) {
-        echo '<a href=\"?page=' . ($page - 1) . '\" class=\"px-3 py-1 mx-1 bg-gray-200 rounded hover:bg-gray-300\">Previous</a>';
-    }
-    for ($i = 1; $i <= $totalPages; $i++) {
-        if ($i == $page) {
-            echo '<span class=\"px-3 py-1 mx-1 bg-yellow-600 text-white rounded\">' . $i . '</span>';
-        } else {
-            echo '<a href=\"?page=' . $i . '\" class=\"px-3 py-1 mx-1 bg-gray-200 rounded hover:bg-gray-300\">' . $i . '</a>';
-        }
-    }
-    if ($page < $totalPages) {
-        echo '<a href=\"?page=' . ($page + 1) . '\" class=\"px-3 py-1 mx-1 bg-gray-200 rounded hover:bg-gray-300\">Next</a>';
-    }
-    echo '</div>';
-}
-?>
+            <?php
+            // Fetch all traditional bookings for the current customer
+            $query = "SELECT b.*, s.service_name, s.selling_price, br.branch_name 
+                      FROM booking_tb b
+                      LEFT JOIN services_tb s ON b.service_id = s.service_id
+                      JOIN branch_tb br ON b.branch_id = br.branch_id
+                      WHERE b.customerID = ?
+                      ORDER BY CASE 
+                          WHEN b.status = 'Pending' THEN 1
+                          WHEN b.status = 'Accepted' THEN 2
+                          WHEN b.status = 'Declined' THEN 3
+                          WHEN b.status = 'Cancelled' THEN 4
+                          ELSE 5
+                      END, b.booking_date DESC";
+            
+            $stmt = $conn->prepare($query);
+            $stmt->bind_param("i", $user_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            
+            if ($result->num_rows > 0) {
+                while ($booking = $result->fetch_assoc()) {
+                    // Determine status color and text
+                    $status_class = '';
+                    $status_text = '';
+                    switch ($booking['status']) {
+                        case 'Pending':
+                            $status_class = 'bg-yellow-600/10 text-yellow-600';
+                            $status_text = 'Pending';
+                            break;
+                        case 'Accepted':
+                            $status_class = 'bg-green-500/10 text-green-500';
+                            $status_text = 'Accepted';
+                            break;
+                        case 'Declined':
+                            $status_class = 'bg-red-500/10 text-red-500';
+                            $status_text = 'Declined';
+                            break;
+                        case 'Cancelled':
+                            $status_class = 'bg-gray-500/10 text-gray-500';
+                            $status_text = 'Cancelled';
+                            break;
+                        default:
+                            $status_class = 'bg-blue-500/10 text-blue-500';
+                            $status_text = $booking['status'];
+                    }
+                    
+                    // Format dates
+                    $booking_date = date('F j, Y', strtotime($booking['booking_date']));
+                    $burial_date = $booking['deceased_dateOfBurial'] ? date('F j, Y', strtotime($booking['deceased_dateOfBurial'])) : 'Not set';
+                    
+                    // Format deceased name
+                    $deceased_name = $booking['deceased_lname'] . ', ' . $booking['deceased_fname'];
+                    if (!empty($booking['deceased_midname'])) {
+                        $deceased_name .= ' ' . $booking['deceased_midname'];
+                    }
+                    if (!empty($booking['deceased_suffix'])) {
+                        $deceased_name .= ' ' . $booking['deceased_suffix'];
+                    }
+                    
+                    // Handle NULL service_id (custom packages)
+                    $service_name = $booking['service_name'] ?? 'Customize Package';
+                    $selling_price = $booking['selling_price'] ?? 0;
+                    
+                    // Format price
+                    $price = number_format($selling_price, 2);
+                    $amount_paid = $booking['amount_paid'] ? number_format($booking['amount_paid'], 2) : '0.00';
+                    $balance = number_format($selling_price - ($booking['amount_paid'] ?? 0), 2);
+            ?>
+            
+            <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-4">
+                <div class="bg-navy bg-opacity-10 px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="<?php echo $status_class; ?> text-xs px-2 py-1 rounded-full"><?php echo $status_text; ?></span>
+                        <p class="text-sm text-gray-500">Booking ID: <?php echo $booking['booking_id']; ?></p>
+                    </div>
+                    <h4 class="font-hedvig text-lg text-navy mb-2"><?php echo $service_name; ?></h4>
+                </div>
+                <div class="p-4 sm:p-6 space-y-3 sm:space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+                        <div>
+                            <p class="text-sm text-gray-500">Deceased Name</p>
+                            <p class="text-navy"><?php echo ucwords(strtolower($deceased_name)); ?></p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Branch</p>
+                            <p class="text-navy"><?php echo ucwords(strtolower($booking['branch_name'])); ?></p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Burial Date</p>
+                            <p class="text-navy"><?php echo $burial_date; ?></p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+                        <div>
+                            <p class="text-sm text-gray-500">Total Amount</p>
+                            <p class="text-navy font-bold">₱<?php echo $price; ?></p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Amount Paid</p>
+                            <p class="text-navy">₱<?php echo $amount_paid; ?></p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Balance</p>
+                            <p class="text-navy">₱<?php echo $balance; ?></p>
+                        </div>
+                    </div>
+                    <div class="flex justify-end">
+                        <button class="view-details bg-navy/5 text-navy px-3 py-1 rounded hover:bg-navy/10 transition text-sm mr-2" data-booking="<?php echo $booking['booking_id']; ?>">
+                            <i class="fas fa-file-alt mr-1"></i> View Details
+                        </button>
+                        
+                        <?php if ($booking['status'] === 'Accepted' && empty($booking['deathcert_url'])): ?>
+                            <button class="upload-death-cert bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition text-sm mr-2" data-booking="<?php echo $booking['booking_id']; ?>">
+                                <i class="fas fa-upload mr-1"></i> Upload Death Cert
+                            </button>
+                        <?php endif; ?>
+                        
+                        <?php if ($booking['status'] === 'Accepted'): ?>
+                            <button class="view-receipt bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition text-sm mr-2" data-booking="<?php echo $booking['booking_id']; ?>">
+                                <i class="fas fa-receipt mr-1"></i> View Receipt
+                            </button>
+                        <?php endif; ?>
+                        
+                        <?php if ($booking['status'] === 'Pending' || $booking['status'] === 'Declined'): ?>
+                            <button class="modify-booking bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition text-sm mr-2" data-booking="<?php echo $booking['booking_id']; ?>">
+                                <i class="fas fa-edit mr-1"></i> Modify
+                            </button>
+                        <?php endif; ?>
+                        
+                        <?php if ($booking['status'] === 'Pending'): ?>
+                            <button class="cancel-booking bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition text-sm" data-booking="<?php echo $booking['booking_id']; ?>">
+                                <i class="fas fa-times mr-1"></i> Cancel
+                            </button>
+                        <?php elseif ($booking['status'] === 'Cancelled'): ?>
+                            <span class="text-gray-500 text-sm py-1 px-3">
+                                <i class="fas fa-ban mr-1"></i> Cancelled
+                            </span>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+            <?php
+                }
+            } else {
+                echo '<p class="text-gray-500">You have no bookings yet.</p>';
+            }
+            $stmt->close();
+            
+            // Now fetch all life plan bookings for the current customer
+            $query = "SELECT lb.*, s.service_name, s.selling_price as package_price, br.branch_name 
+                      FROM lifeplan_booking_tb lb
+                      LEFT JOIN services_tb s ON lb.service_id = s.service_id
+                      JOIN branch_tb br ON lb.branch_id = br.branch_id
+                      WHERE lb.customer_id = ?
+                      ORDER BY CASE 
+                          WHEN lb.booking_status = 'pending' THEN 1
+                          WHEN lb.booking_status = 'accepted' THEN 2
+                          WHEN lb.booking_status = 'decline' THEN 3
+                          ELSE 4
+                      END, lb.initial_date DESC";
+            
+            $stmt = $conn->prepare($query);
+            $stmt->bind_param("i", $user_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            
+            if ($result->num_rows > 0) {
+                while ($booking = $result->fetch_assoc()) {
+                    // Determine status color and text for life plan
+                    $status_class = '';
+                    $status_text = '';
+                    switch ($booking['booking_status']) {
+                        case 'pending':
+                            $status_class = 'bg-yellow-600/10 text-yellow-600';
+                            $status_text = 'Pending';
+                            break;
+                        case 'accepted':
+                            $status_class = 'bg-green-500/10 text-green-500';
+                            $status_text = 'Accepted';
+                            break;
+                        case 'decline':
+                            $status_class = 'bg-red-500/10 text-red-500';
+                            $status_text = 'Declined';
+                            break;
+                        default:
+                            $status_class = 'bg-blue-500/10 text-blue-500';
+                            $status_text = ucfirst($booking['booking_status']);
+                    }
+                    
+                    // Format dates
+                    $booking_date = date('F j, Y', strtotime($booking['initial_date']));
+                    $end_date = $booking['end_date'] ? date('F j, Y', strtotime($booking['end_date'])) : 'Not set';
+                    
+                    // Format beneficiary name
+                    $beneficiary_name = $booking['benefeciary_lname'] . ', ' . $booking['benefeciary_fname'];
+                    if (!empty($booking['benefeciary_mname'])) {
+                        $beneficiary_name .= ' ' . $booking['benefeciary_mname'];
+                    }
+                    if (!empty($booking['benefeciary_suffix'])) {
+                        $beneficiary_name .= ' ' . $booking['benefeciary_suffix'];
+                    }
+                    
+                    // Handle NULL service_id (custom packages)
+                    $service_name = $booking['service_name'] ?? 'Customize Package';
+                    $selling_price = $booking['package_price'] ?? 0;
+                    
+                    // Format price
+                    $price = number_format($selling_price, 2);
+                    $amount_paid = $booking['amount_paid'] ? number_format($booking['amount_paid'], 2) : '0.00';
+                    $balance = number_format($selling_price - ($booking['amount_paid'] ?? 0), 2);
+            ?>
+            
+            <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-4">
+                <div class="bg-blue-600 bg-opacity-10 px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="<?php echo $status_class; ?> text-xs px-2 py-1 rounded-full"><?php echo $status_text; ?></span>
+                        <p class="text-sm text-gray-500">Life Plan ID: <?php echo $booking['lpbooking_id']; ?></p>
+                    </div>
+                    <h4 class="font-hedvig text-lg text-blue-600 mb-2"><?php echo $service_name; ?> (Life Plan)</h4>
+                </div>
+                <div class="p-4 sm:p-6 space-y-3 sm:space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+                        <div>
+                            <p class="text-sm text-gray-500">Beneficiary Name</p>
+                            <p class="text-blue-600"><?php echo ucwords(strtolower($beneficiary_name)); ?></p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Branch</p>
+                            <p class="text-blue-600"><?php echo ucwords(strtolower($booking['branch_name'])); ?></p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">End Date</p>
+                            <p class="text-blue-600"><?php echo $end_date; ?></p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+                        <div>
+                            <p class="text-sm text-gray-500">Total Amount</p>
+                            <p class="text-blue-600 font-bold">₱<?php echo $price; ?></p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Amount Paid</p>
+                            <p class="text-blue-600">₱<?php echo $amount_paid; ?></p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Balance</p>
+                            <p class="text-blue-600">₱<?php echo $balance; ?></p>
+                        </div>
+                    </div>
+                    <div class="flex justify-end">
+                        <button class="view-lifeplan-details bg-blue-600/5 text-blue-600 px-3 py-1 rounded hover:bg-blue-600/10 transition text-sm mr-2" data-booking="<?php echo $booking['lpbooking_id']; ?>">
+                            <i class="fas fa-file-alt mr-1"></i> View Details
+                        </button>
+                        
+                    
+                        
+                        <?php if ($booking['booking_status'] === 'pending' || $booking['booking_status'] === 'decline'): ?>
+                            <button class="modify-lifeplan-booking bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition text-sm mr-2" data-booking="<?php echo $booking['lpbooking_id']; ?>">
+                                <i class="fas fa-edit mr-1"></i> Modify
+                            </button>
+                        <?php endif; ?>
+                        
+                        <?php if ($booking['booking_status'] === 'pending'): ?>
+                            <button class="cancel-lifeplan-booking bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition text-sm" data-booking="<?php echo $booking['lpbooking_id']; ?>">
+                                <i class="fas fa-times mr-1"></i> Cancel
+                            </button>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+            <?php
+                }
+            }
+            
+            if ($result->num_rows === 0 && !isset($has_traditional_bookings)) {
+                echo '<p class="text-gray-500">You have no bookings yet.</p>';
+            }
+            $stmt->close();
+            ?>
+        </div>
+    </div>
 </div>
-            
-            
+
+
+<?php
+$customerID = $_SESSION['user_id'];
+$sql = "SELECT 
+            s.sales_id,
+            s.get_timestamp,
+            s.payment_status,
+            sv.service_name,
+            s.discounted_price,
+            s.amount_paid,
+            s.balance
+        FROM 
+            sales_tb s
+        JOIN 
+            services_tb sv ON s.service_id = sv.service_id
+        WHERE customerID = ?";
+
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $customerID);
+$stmt->execute();
+$result = $stmt->get_result();
+$services = $result->fetch_all(MYSQLI_ASSOC);
+$stmt->close();
+
+
+// Query for custom packages
+$customSql = "SELECT 
+                c.customsales_id,
+                c.get_timestamp,
+                c.payment_status,
+                c.discounted_price,
+                c.amount_paid,
+                c.balance,
+                CONCAT(
+                    UPPER(LEFT(u.first_name, 1)), LOWER(SUBSTRING(u.first_name, 2)), ' ',
+                    UPPER(LEFT(COALESCE(u.middle_name, ''), 1)), LOWER(SUBSTRING(COALESCE(u.middle_name, ''), 2)), ' ',
+                    UPPER(LEFT(u.last_name, 1)), LOWER(SUBSTRING(u.last_name, 2)), ' ',
+                    UPPER(LEFT(COALESCE(u.suffix, ''), 1)), LOWER(SUBSTRING(COALESCE(u.suffix, ''), 2))
+                ) AS customer_name
+            FROM 
+                customsales_tb c
+            JOIN 
+                users u ON c.customer_id = u.id
+            WHERE c.customer_id = ?";
+
+$customStmt = $conn->prepare($customSql);
+$customStmt->bind_param("i", $customerID);
+$customStmt->execute();
+$customResult = $customStmt->get_result();
+$customPackages = $customResult->fetch_all(MYSQLI_ASSOC);
+$customStmt->close();
+
+// Query for life plans
+$lifeplanSql = "SELECT 
+                    l.lifeplan_id,
+                    l.initial_date,
+                    l.end_date,
+                    l.payment_status,
+                    l.custom_price,
+                    l.amount_paid,
+                    l.balance,
+                    s.service_name,
+                    CONCAT(
+                        COALESCE(l.benefeciary_fname, ''), ' ',
+                        COALESCE(l.benefeciary_mname, ''), ' ',
+                        COALESCE(l.benefeciary_lname, ''), ' ',
+                        COALESCE(l.benefeciary_suffix, '')
+                    ) AS benefeciary_name
+                FROM 
+                    lifeplan_tb l
+                JOIN 
+                    services_tb s ON l.service_id = s.service_id
+                WHERE l.customerID = ?";
+
+$lifeplanStmt = $conn->prepare($lifeplanSql);
+$lifeplanStmt->bind_param("i", $customerID);
+$lifeplanStmt->execute();
+$lifeplanResult = $lifeplanStmt->get_result();
+$lifeplans = $lifeplanResult->fetch_all(MYSQLI_ASSOC);
+$lifeplanStmt->close();
+
+?>
 <!-- Transaction Logs Tab -->
 <div id="transaction-logs" class="tab-content p-4">
     <!-- Service Type Selector -->
