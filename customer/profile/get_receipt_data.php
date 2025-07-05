@@ -84,6 +84,7 @@ try {
                     l.current_balance, 
                     l.new_balance, 
                     l.log_date,
+                    lp.custom_price as discounted_price,
                     b.branch_name,
                     s.service_name,
                     CONCAT(

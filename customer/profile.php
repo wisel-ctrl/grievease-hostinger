@@ -2266,7 +2266,7 @@ function viewReceipt(packageType, id) {
             <div class="my-4">
                 <div class="flex justify-between py-1">
                     <span>Service Price:</span>
-                    <span>₱${parseFloat(receiptData.discounted_price || receiptData.installment_amount).toFixed(2)}</span>
+                    <span>₱${parseFloat(receiptData.discounted_price).toFixed(2)}</span>
                 </div>
                 <div class="flex justify-between py-1">
                     <span>Previous Balance:</span>
@@ -2274,7 +2274,7 @@ function viewReceipt(packageType, id) {
                 </div>
                 <div class="flex justify-between py-1">
                     <span>Amount Paid:</span>
-                    <span class="font-semibold">₱${parseFloat(receiptData.Payment_Amount || receiptData.payment_amount).toFixed(2)}</span>
+                    <span class="font-semibold">₱${parseFloat(receiptData.Payment_Amount || receiptData.payment_amount || receiptData.installment_amount).toFixed(2)}</span>
                 </div>
                 <div class="flex justify-between py-1 border-t border-gray-300 mt-2">
                     <span class="font-semibold">New Balance:</span>
