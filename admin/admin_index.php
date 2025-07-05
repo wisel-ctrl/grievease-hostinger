@@ -305,7 +305,39 @@ for ($i = 11; $i >= 0; $i--) {
     $year = $date->format('Y');
     
     $query = "SELECT SUM(total_discounted) as projected_income FROM (
-        -- Your existing query here
+        -- 1. Direct sales from sales_tb
+        SELECT discounted_price as total_discounted 
+        FROM sales_tb 
+        WHERE MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?
+        
+        UNION ALL
+        
+        -- 2. Direct custom sales from customsales_tb not referenced in analytics_tb
+        SELECT discounted_price as total_discounted
+        FROM customsales_tb
+        WHERE MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?
+        AND customsales_id NOT IN (
+            SELECT sales_id FROM analytics_tb 
+            WHERE sales_type = 'custom'
+            AND MONTH(sale_date) = ? AND YEAR(sale_date) = ?
+        )
+        
+        UNION ALL
+        
+        -- 3. All analytics records (they may or may not reference other tables)
+        SELECT 
+            CASE
+                -- If it's traditional and has a sales_id reference
+                WHEN a.sales_type = 'traditional' AND s.sales_id IS NOT NULL THEN s.discounted_price
+                -- If it's custom and has a customsales_id reference
+                WHEN a.sales_type = 'custom' AND c.customsales_id IS NOT NULL THEN c.discounted_price
+                -- Otherwise use analytics_tb's own discounted_price
+                ELSE a.discounted_price
+            END as total_discounted
+        FROM analytics_tb a
+        LEFT JOIN sales_tb s ON a.sales_type = 'traditional' AND a.sales_id = s.sales_id
+        LEFT JOIN customsales_tb c ON a.sales_type = 'custom' AND a.sales_id = c.customsales_id
+        WHERE MONTH(a.sale_date) = ? AND YEAR(a.sale_date) = ?
     ) as combined_sales";
     
     $stmt = $conn->prepare($query);
