@@ -1870,8 +1870,12 @@ projectedIncomeChart.render();
 // Custom export functionality
 // Custom export functionality
 document.getElementById('exportProjectedIncome').addEventListener('click', function () {
-  const seriesData = projectedIncomeOptions.series[0].data;
-  const categories = projectedIncomeOptions.xaxis.categories;
+  const seriesData = [...projectedIncomeOptions.series[0].data]; // Create a copy
+  const categories = [...projectedIncomeOptions.xaxis.categories]; // Create a copy
+  
+  // Reverse the order of both arrays to show latest first
+  seriesData.reverse();
+  categories.reverse();
 
   const tableData = [['Month', 'Accrued Revenue (PHP)']];
 
@@ -1893,6 +1897,7 @@ document.getElementById('exportProjectedIncome').addEventListener('click', funct
       })
     ]);
   });
+
 
   const total = seriesData.reduce((sum, val) => sum + (Number(val) || 0), 0);
   tableData.push([
