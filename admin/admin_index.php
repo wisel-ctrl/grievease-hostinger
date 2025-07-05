@@ -1872,7 +1872,7 @@ document.getElementById('exportProjectedIncome').addEventListener('click', funct
   const seriesData = projectedIncomeOptions.series[0].data;
   const categories = projectedIncomeOptions.xaxis.categories;
 
-  const tableData = [['Month', 'Projected Income (₱)']];
+  const tableData = [['Month', 'Accrued Revenue (₱)']];
 
   categories.forEach((month, index) => {
     const cleanMonth = month.toString()
@@ -1911,7 +1911,7 @@ document.getElementById('exportProjectedIncome').addEventListener('click', funct
   doc.text('VJAY RELOVA FUNERAL SERVICES', 105, 20, { align: 'center' });
 
   doc.setFontSize(16);
-  doc.text('PROJECTED INCOME REPORT', 105, 30, { align: 'center' });
+  doc.text('ACCRUED REVENUE REPORT', 105, 30, { align: 'center' });
 
   doc.setFontSize(10);
   doc.setTextColor(100, 100, 100);
@@ -1936,7 +1936,7 @@ document.getElementById('exportProjectedIncome').addEventListener('click', funct
     },
     columnStyles: {
       0: { cellWidth: 70 }, // Month
-      1: { cellWidth: 60, halign: 'right' } // Amount
+      1: { cellWidth: 60, halign: 'center' } // Amount
     },
     styles: {
       fontSize: 10,
