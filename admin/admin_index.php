@@ -1887,7 +1887,7 @@ document.getElementById('exportProjectedIncome').addEventListener('click', funct
 
     tableData.push([
       cleanMonth,
-      '\u20B1' + value.toLocaleString('en-PH', {
+      '₱' + value.toLocaleString('en-PH', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
       })
@@ -1897,7 +1897,7 @@ document.getElementById('exportProjectedIncome').addEventListener('click', funct
   const total = seriesData.reduce((sum, val) => sum + (Number(val) || 0), 0);
   tableData.push([
     'TOTAL',
-    '\u20B1' + total.toLocaleString('en-PH', {
+    '₱' + total.toLocaleString('en-PH', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
     })
