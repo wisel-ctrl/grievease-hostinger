@@ -1873,7 +1873,7 @@ document.getElementById('exportProjectedIncome').addEventListener('click', funct
   const seriesData = projectedIncomeOptions.series[0].data;
   const categories = projectedIncomeOptions.xaxis.categories;
 
-  const tableData = [['Month', 'Accrued Revenue ('\u20B1')']];
+  const tableData = [['Month', 'Accrued Revenue ('\\u20B1')']];
 
   categories.forEach((month, index) => {
     // Clean the month name - replace plus-minus with empty string
