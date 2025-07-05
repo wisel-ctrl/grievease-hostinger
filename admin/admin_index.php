@@ -1868,76 +1868,61 @@ var projectedIncomeChart = new ApexCharts(document.querySelector("#projectedInco
 projectedIncomeChart.render();
 
 // Custom export functionality
-document.getElementById('exportProjectedIncome').addEventListener('click', function() {
-  // Get the chart data
+document.getElementById('exportProjectedIncome').addEventListener('click', function () {
   const seriesData = projectedIncomeOptions.series[0].data;
   const categories = projectedIncomeOptions.xaxis.categories;
-  
-  // Create a table structure for the PDF
-  const tableData = [
-    ['Month', 'Projected Income (₱)'] // Header row
-  ];
-  
-  // Add data rows with proper cleaning and formatting
+
+  const tableData = [['Month', 'Projected Income (₱)']];
+
   categories.forEach((month, index) => {
-    // Clean up month name - remove special characters but keep spaces
     const cleanMonth = month.toString()
-      .replace(/[^a-zA-Z0-9\u00F1\u00D1\s±]/g, '') // Allow letters, numbers, ñ, Ñ, spaces, and ±
+      .replace(/[^a-zA-Z0-9\u00F1\u00D1\s]/g, '')  // Removed ± and ₱ from exclusion
       .trim() || `Month ${index + 1}`;
-    
-    // Handle numeric values
+
     let value = Number(seriesData[index]);
     if (isNaN(value)) value = 0;
-    
+
     tableData.push([
       cleanMonth,
-      '₱' + value.toLocaleString('en-US', {
-        minimumIntegerDigits: 2,
+      '₱' + value.toLocaleString('en-PH', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
       })
     ]);
   });
-  
-  // Calculate total
+
   const total = seriesData.reduce((sum, val) => sum + (Number(val) || 0), 0);
   tableData.push([
     'TOTAL',
-    '₱' + total.toLocaleString('en-US', {
-      minimumIntegerDigits: 2,
+    '₱' + total.toLocaleString('en-PH', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
     })
   ]);
-  
-  // Create PDF with better layout
+
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({
-    orientation: 'landscape' // Better for wide tables
+    orientation: 'portrait' // changed from landscape
   });
-  
-  // Add business header
+
   doc.setFontSize(20);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(33, 37, 41);
-  doc.text('VJAY RELOVA FUNERAL SERVICES', 148, 20, { align: 'center' });
-  
-  // Add report title
+  doc.text('VJAY RELOVA FUNERAL SERVICES', 105, 20, { align: 'center' });
+
   doc.setFontSize(16);
-  doc.text('PROJECTED INCOME REPORT', 148, 30, { align: 'center' });
-  
-  // Add date generated
+  doc.text('PROJECTED INCOME REPORT', 105, 30, { align: 'center' });
+
   doc.setFontSize(10);
   doc.setTextColor(100, 100, 100);
-  doc.text('Generated on: ' + new Date().toLocaleDateString('en-US', { 
-    year: 'numeric', 
-    month: 'long', 
+  doc.text('Generated on: ' + new Date().toLocaleString('en-PH', {
+    year: 'numeric',
+    month: 'long',
     day: 'numeric',
     hour: '2-digit',
     minute: '2-digit'
-  }), 148, 36, { align: 'center' });
-  
-  // Add table with proper column widths
+  }), 105, 36, { align: 'center' });
+
   doc.autoTable({
     head: [tableData[0]],
     body: tableData.slice(1, -1),
@@ -1950,39 +1935,35 @@ document.getElementById('exportProjectedIncome').addEventListener('click', funct
       fontSize: 11
     },
     columnStyles: {
-      0: { cellWidth: 'auto', minCellWidth: 40 }, // Month column
-      1: { cellWidth: 'auto', halign: 'right', minCellWidth: 50 } // Amount column
+      0: { cellWidth: 70 }, // Month
+      1: { cellWidth: 60, halign: 'right' } // Amount
     },
     styles: {
       fontSize: 10,
-      cellPadding: 5,
+      cellPadding: 4,
       overflow: 'linebreak',
       valign: 'middle'
     },
-    margin: { horizontal: 10 },
-    tableWidth: 'wrap',
-    didDrawPage: function(data) {
-      // Add total row
+    margin: { horizontal: 15 },
+    didDrawPage: function (data) {
       if (data.pageCount === data.pageNumber) {
         const finalY = data.cursor.y + 10;
         doc.setFontSize(12);
         doc.setFont('helvetica', 'bold');
-        doc.text(tableData[tableData.length-1][0], data.settings.margin.left, finalY);
-        doc.text(tableData[tableData.length-1][1], doc.internal.pageSize.width - data.settings.margin.right, finalY, { align: 'right' });
-        
-        // Add footer
+        doc.text(tableData[tableData.length - 1][0], data.settings.margin.left, finalY);
+        doc.text(tableData[tableData.length - 1][1], doc.internal.pageSize.width - data.settings.margin.right, finalY, { align: 'right' });
+
         const footerY = doc.internal.pageSize.height - 10;
         doc.setFontSize(9);
         doc.setTextColor(100, 100, 100);
         doc.setFont('helvetica', 'normal');
-        doc.text('For inquiries: Tel: (02) 1234-5678 • Mobile: 0917-123-4567 • Email: info@vjayrelova.com', 
-                148, footerY, { align: 'center' });
+        doc.text('For inquiries: Tel: (02) 1234-5678 • Mobile: 0917-123-4567 • Email: info@vjayrelova.com',
+          105, footerY, { align: 'center' });
       }
     }
   });
-  
-  // Save the PDF
-  doc.save(`Vjay-Relova-Income-Report-${new Date().toISOString().slice(0,10)}.pdf`);
+
+  doc.save(`Vjay-Relova-Income-Report-${new Date().toISOString().slice(0, 10)}.pdf`);
 });
 </script>
 <script>
