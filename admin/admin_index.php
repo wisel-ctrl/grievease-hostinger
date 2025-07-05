@@ -1956,7 +1956,8 @@ document.getElementById('exportProjectedIncome').addEventListener('click', funct
       fillColor: [59, 130, 246],
       textColor: 255,
       fontStyle: 'bold',
-      fontSize: 11
+      fontSize: 11,
+      halign: 'center'
     },
     columnStyles: {
       0: { 
