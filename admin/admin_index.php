@@ -1804,31 +1804,17 @@ var projectedIncomeOptions = {
     toolbar: {
       show: true,
       tools: {
-        download: true,
+        download: false, // Disable built-in download
         selection: true,
         zoom: true,
         zoomin: true,
         zoomout: true,
         pan: true,
         reset: true
-      },
-      export: {
-        csv: {
-          filename: 'projected-income',
-          columnDelimiter: ',',
-          headerCategory: 'Month',
-          headerValue: 'Projected Income (₱)',
-        },
-        png: {
-          filename: 'projected-income',
-        },
-        svg: {
-          filename: 'projected-income',
-        }
       }
     }
   },
-  colors: ['#3b82f6'], // Different color from revenue chart
+  colors: ['#3b82f6'],
   dataLabels: {
     enabled: false
   },
@@ -1877,6 +1863,69 @@ var projectedIncomeOptions = {
 
 var projectedIncomeChart = new ApexCharts(document.querySelector("#projectedIncomeChart"), projectedIncomeOptions);
 projectedIncomeChart.render();
+
+// Custom export functionality
+document.getElementById('exportProjectedIncome').addEventListener('click', function() {
+  // Get the chart data
+  const seriesData = projectedIncomeOptions.series[0].data;
+  const categories = projectedIncomeOptions.xaxis.categories;
+  
+  // Create a table structure for the PDF
+  const tableData = [
+    ['Month', 'Projected Income (₱)'] // Header row
+  ];
+  
+  // Add data rows
+  categories.forEach((month, index) => {
+    const value = seriesData[index] || 0;
+    tableData.push([
+      month,
+      '₱' + value.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})
+    ]);
+  });
+  
+  // Calculate total
+  const total = seriesData.reduce((sum, value) => sum + (value || 0), 0);
+  tableData.push([
+    'Total',
+    '₱' + total.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})
+  ]);
+  
+  // Create PDF
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  
+  // Add title
+  doc.setFontSize(16);
+  doc.text('Accrued Revenue Report', 14, 15);
+  doc.setFontSize(12);
+  doc.text('Generated on: ' + new Date().toLocaleDateString(), 14, 22);
+  
+  // Add table
+  doc.autoTable({
+    head: [tableData[0]],
+    body: tableData.slice(1, -1), // Exclude header and total from body
+    startY: 30,
+    theme: 'grid',
+    headStyles: {
+      fillColor: [59, 130, 246], // Blue color
+      textColor: 255
+    },
+    didDrawPage: function(data) {
+      // Add total row at the bottom
+      if (data.pageCount === data.pageNumber) {
+        const finalY = data.cursor.y + 10;
+        doc.setFontSize(12);
+        doc.setFont(undefined, 'bold');
+        doc.text(tableData[tableData.length-1][0], data.settings.margin.left, finalY);
+        doc.text(tableData[tableData.length-1][1], data.settings.margin.left + 100, finalY, { align: 'right' });
+      }
+    }
+  });
+  
+  // Save the PDF
+  doc.save('Accrued-Revenue-Report-' + new Date().toISOString().slice(0, 10) + '.pdf');
+});
 </script>
 <script>
 // Get the revenue data for both branches
