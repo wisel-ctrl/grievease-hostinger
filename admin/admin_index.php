@@ -1873,7 +1873,7 @@ document.getElementById('exportProjectedIncome').addEventListener('click', funct
   const seriesData = projectedIncomeOptions.series[0].data;
   const categories = projectedIncomeOptions.xaxis.categories;
 
-  const tableData = [['Month', 'Accrued Revenue (₱)']];
+  const tableData = [['Month', 'Accrued Revenue (PHP)']];
 
   categories.forEach((month, index) => {
     // Clean the month name - replace plus-minus with empty string
@@ -1887,7 +1887,7 @@ document.getElementById('exportProjectedIncome').addEventListener('click', funct
 
     tableData.push([
       cleanMonth,
-      '₱' + value.toLocaleString('en-PH', {
+      'PHP' + value.toLocaleString('en-PH', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
       })
@@ -1897,7 +1897,7 @@ document.getElementById('exportProjectedIncome').addEventListener('click', funct
   const total = seriesData.reduce((sum, val) => sum + (Number(val) || 0), 0);
   tableData.push([
     'TOTAL',
-    '₱' + total.toLocaleString('en-PH', {
+    'PHP' + total.toLocaleString('en-PH', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
     })
