@@ -1955,12 +1955,12 @@ document.getElementById('exportProjectedIncome').addEventListener('click', funct
     },
     columnStyles: {
       0: { 
-        cellWidth: availableWidth * 0.5,  // Increased width for Month column
+        cellWidth: availableWidth * 0.4,  // Increased width for Month column
         halign: 'left',
         fontStyle: 'bold'
       },
       1: { 
-        cellWidth: availableWidth * 0.5,  // Adjusted width for Amount column
+        cellWidth: availableWidth * 0.6,  // Adjusted width for Amount column
         halign: 'right',
         minCellHeight: 10  // Ensure enough height for values
       }
@@ -1982,7 +1982,7 @@ document.getElementById('exportProjectedIncome').addEventListener('click', funct
       if (data.pageCount === data.pageNumber) {
         const finalY = data.cursor.y + 10;
         doc.setFontSize(12);
-        doc.setFont('helvetica', 'bold');
+        doc.setFont('courier', 'bold');
         
         // Draw total line with full width
         doc.setFillColor(240, 240, 240);
@@ -1994,7 +1994,7 @@ document.getElementById('exportProjectedIncome').addEventListener('click', funct
         const footerY = doc.internal.pageSize.height - 10;
         doc.setFontSize(9);
         doc.setTextColor(100, 100, 100);
-        doc.setFont('helvetica', 'normal');
+        doc.setFont('courier', 'normal');
         doc.text('For inquiries: Tel: (02) 1234-5678 • Mobile: 0917-123-4567 • Email: info@vjayrelova.com',
           105, footerY, { align: 'center' });
       }
