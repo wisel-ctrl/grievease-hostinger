@@ -276,74 +276,94 @@ if ($prevCompletedCount > 0) {
 $formattedRevenue = number_format($totalRevenue, 2);
 ?>
 <?php
+// Get monthly labels and data
 $monthLabels = [];
+$yearLabels = [];
 $currentDate = new DateTime(); // Get current date
 $currentDate->modify('first day of this month'); // Start from beginning of current month
 
+// Prepare labels for last 12 months
 for ($i = 11; $i >= 0; $i--) {
     $date = clone $currentDate;
     $date->modify("-$i months");
     $monthLabels[] = $date->format('M Y');
 }
 
-// Get monthly projected income data (sum of discounted_price) for the last 12 months
-$monthlyProjectedIncomeData = [];
+// Prepare labels for last 5 years
+for ($i = 4; $i >= 0; $i--) {
+    $date = clone $currentDate;
+    $date->modify("-$i years");
+    $yearLabels[] = $date->format('Y');
+}
 
+// Get monthly projected income data
+$monthlyProjectedIncomeData = [];
 for ($i = 11; $i >= 0; $i--) {
     $date = clone $currentDate;
     $date->modify("-$i months");
     $month = $date->format('m');
     $year = $date->format('Y');
     
-    // Modified query to include all possible sources
     $query = "SELECT SUM(total_discounted) as projected_income FROM (
-        -- 1. Direct sales from sales_tb
-        SELECT discounted_price as total_discounted 
-        FROM sales_tb 
-        WHERE MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?
-        
-        UNION ALL
-        
-        -- 2. Direct custom sales from customsales_tb not referenced in analytics_tb
-        SELECT discounted_price as total_discounted
-        FROM customsales_tb
-        WHERE MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?
-        AND customsales_id NOT IN (
-            SELECT sales_id FROM analytics_tb 
-            WHERE sales_type = 'custom'
-            AND MONTH(sale_date) = ? AND YEAR(sale_date) = ?
-        )
-        
-        UNION ALL
-        
-        -- 3. All analytics records (they may or may not reference other tables)
-        SELECT 
-            CASE
-                -- If it's traditional and has a sales_id reference
-                WHEN a.sales_type = 'traditional' AND s.sales_id IS NOT NULL THEN s.discounted_price
-                -- If it's custom and has a customsales_id reference
-                WHEN a.sales_type = 'custom' AND c.customsales_id IS NOT NULL THEN c.discounted_price
-                -- Otherwise use analytics_tb's own discounted_price
-                ELSE a.discounted_price
-            END as total_discounted
-        FROM analytics_tb a
-        LEFT JOIN sales_tb s ON a.sales_type = 'traditional' AND a.sales_id = s.sales_id
-        LEFT JOIN customsales_tb c ON a.sales_type = 'custom' AND a.sales_id = c.customsales_id
-        WHERE MONTH(a.sale_date) = ? AND YEAR(a.sale_date) = ?
+        -- Your existing query here
     ) as combined_sales";
     
     $stmt = $conn->prepare($query);
     $stmt->bind_param("iiiiiiii", 
-        $month, $year,        // 1. sales_tb direct
-        $month, $year,        // 2. customsales_tb direct
-        $month, $year,        // 2. customsales_tb not in analytics
-        $month, $year         // 3. analytics_tb all records
+        $month, $year, $month, $year, $month, $year, $month, $year
     );
     $stmt->execute();
     $result = $stmt->get_result();
     $data = $result->fetch_assoc();
     
     $monthlyProjectedIncomeData[] = $data['projected_income'] ?? 0;
+}
+
+// Get yearly projected income data
+$yearlyProjectedIncomeData = [];
+for ($i = 4; $i >= 0; $i--) {
+    $date = clone $currentDate;
+    $date->modify("-$i years");
+    $year = $date->format('Y');
+    
+    $query = "SELECT SUM(total_discounted) as projected_income FROM (
+        -- Your existing query modified for yearly
+        SELECT discounted_price as total_discounted 
+        FROM sales_tb 
+        WHERE YEAR(get_timestamp) = ?
+        
+        UNION ALL
+        
+        SELECT discounted_price as total_discounted
+        FROM customsales_tb
+        WHERE YEAR(get_timestamp) = ?
+        AND customsales_id NOT IN (
+            SELECT sales_id FROM analytics_tb 
+            WHERE sales_type = 'custom'
+            AND YEAR(sale_date) = ?
+        )
+        
+        UNION ALL
+        
+        SELECT 
+            CASE
+                WHEN a.sales_type = 'traditional' AND s.sales_id IS NOT NULL THEN s.discounted_price
+                WHEN a.sales_type = 'custom' AND c.customsales_id IS NOT NULL THEN c.discounted_price
+                ELSE a.discounted_price
+            END as total_discounted
+        FROM analytics_tb a
+        LEFT JOIN sales_tb s ON a.sales_type = 'traditional' AND a.sales_id = s.sales_id
+        LEFT JOIN customsales_tb c ON a.sales_type = 'custom' AND a.sales_id = c.customsales_id
+        WHERE YEAR(a.sale_date) = ?
+    ) as combined_sales";
+    
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("iiii", $year, $year, $year, $year);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_assoc();
+    
+    $yearlyProjectedIncomeData[] = $data['projected_income'] ?? 0;
 }
 ?>
 <?php
@@ -660,6 +680,16 @@ foreach ($serviceData as $service => $branches) {
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
   
 </head>
+<style>
+  /* Add this to your stylesheet */
+.bg-gray-100 .bg-blue-500 {
+  transition: all 0.3s ease;
+}
+
+.bg-gray-100 .text-gray-600:hover {
+  color: #4b5563;
+}
+</style>
 <body class="flex bg-gray-50">
 
 <?php include 'admin_sidebar.php'; ?>
@@ -1146,14 +1176,24 @@ function time_elapsed_string($datetime, $full = false) {
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-4 sm:p-5 border-b border-sidebar-border">
       <div class="flex items-center justify-between w-full">
         <h3 class="font-medium text-sidebar-text">Accrued Revenue</h3>
-        <button id="exportProjectedIncome" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm flex items-center gap-1">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-            <polyline points="7 10 12 15 17 10"></polyline>
-            <line x1="12" y1="15" x2="12" y2="3"></line>
-          </svg>
-          Export
-        </button>
+        <div class="flex items-center gap-2">
+          <div class="flex items-center bg-gray-100 rounded-full p-1">
+            <button id="monthlyView" class="px-3 py-1 rounded-full text-sm font-medium bg-blue-500 text-white">
+              Monthly
+            </button>
+            <button id="yearlyView" class="px-3 py-1 rounded-full text-sm font-medium text-gray-600 hover:text-gray-800">
+              Yearly
+            </button>
+          </div>
+          <button id="exportProjectedIncome" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm flex items-center gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Export
+          </button>
+        </div>
       </div>
     </div>
     <div class="p-4 sm:p-5">
@@ -1789,7 +1829,7 @@ var chart = new ApexCharts(document.querySelector("#revenueChart"), options);
 chart.render();
 </script>
 <script>
-// Projected Income Chart (using discounted_price instead of amount_paid)
+// Initialize chart with monthly data
 var projectedIncomeOptions = {
   series: [{
     name: "Projected Income",
@@ -1807,7 +1847,7 @@ var projectedIncomeOptions = {
     toolbar: {
       show: true,
       tools: {
-        download: false, // Disable built-in download
+        download: false,
         selection: true,
         zoom: true,
         zoomin: true,
@@ -1867,30 +1907,62 @@ var projectedIncomeOptions = {
 var projectedIncomeChart = new ApexCharts(document.querySelector("#projectedIncomeChart"), projectedIncomeOptions);
 projectedIncomeChart.render();
 
-// Custom export functionality
-// Custom export functionality
+// Toggle between monthly and yearly views
+document.getElementById('monthlyView').addEventListener('click', function() {
+  this.classList.add('bg-blue-500', 'text-white');
+  this.classList.remove('text-gray-600');
+  document.getElementById('yearlyView').classList.remove('bg-blue-500', 'text-white');
+  document.getElementById('yearlyView').classList.add('text-gray-600');
+  
+  projectedIncomeChart.updateOptions({
+    series: [{
+      data: <?php echo json_encode($monthlyProjectedIncomeData); ?>
+    }],
+    xaxis: {
+      categories: <?php echo json_encode($monthLabels); ?>
+    }
+  });
+});
+
+document.getElementById('yearlyView').addEventListener('click', function() {
+  this.classList.add('bg-blue-500', 'text-white');
+  this.classList.remove('text-gray-600');
+  document.getElementById('monthlyView').classList.remove('bg-blue-500', 'text-white');
+  document.getElementById('monthlyView').classList.add('text-gray-600');
+  
+  projectedIncomeChart.updateOptions({
+    series: [{
+      data: <?php echo json_encode($yearlyProjectedIncomeData); ?>
+    }],
+    xaxis: {
+      categories: <?php echo json_encode($yearLabels); ?>
+    }
+  });
+});
+
+// Update export functionality to handle both views
 document.getElementById('exportProjectedIncome').addEventListener('click', function () {
-  const seriesData = [...projectedIncomeOptions.series[0].data]; // Create a copy
-  const categories = [...projectedIncomeOptions.xaxis.categories]; // Create a copy
+  const isMonthly = document.getElementById('monthlyView').classList.contains('bg-blue-500');
+  const seriesData = isMonthly ? [...<?php echo json_encode($monthlyProjectedIncomeData); ?>] : [...<?php echo json_encode($yearlyProjectedIncomeData); ?>];
+  const categories = isMonthly ? [...<?php echo json_encode($monthLabels); ?>] : [...<?php echo json_encode($yearLabels); ?>];
   
   // Reverse the order of both arrays to show latest first
   seriesData.reverse();
   categories.reverse();
 
-  const tableData = [['Month', 'Accrued Revenue (PHP)']];
+  const tableData = [[isMonthly ? 'Month' : 'Year', 'Accrued Revenue (PHP)']];
 
-  categories.forEach((month, index) => {
-    // Clean the month name - replace plus-minus with empty string
-    const cleanMonth = month.toString()
-      .replace(/±/g, '')  // Explicitly remove plus-minus symbol
-      .replace(/[^a-zA-Z0-9ñÑ\s]/g, '')  // Keep alphanumeric, ñ, Ñ, and whitespace
-      .trim() || `Month ${index + 1}`;
+  categories.forEach((period, index) => {
+    const cleanPeriod = period.toString()
+      .replace(/±/g, '')
+      .replace(/[^a-zA-Z0-9ñÑ\s]/g, '')
+      .trim() || (isMonthly ? `Month ${index + 1}` : `Year ${index + 1}`);
 
     let value = Number(seriesData[index]);
     if (isNaN(value)) value = 0;
 
     tableData.push([
-      cleanMonth,
+      cleanPeriod,
       'PHP ' + value.toLocaleString('en-PH', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
