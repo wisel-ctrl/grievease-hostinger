@@ -1878,41 +1878,65 @@ document.getElementById('exportProjectedIncome').addEventListener('click', funct
     ['Month', 'Projected Income (₱)'] // Header row
   ];
   
-  // Add data rows
+  // Add data rows with proper currency formatting
   categories.forEach((month, index) => {
     const value = seriesData[index] || 0;
     tableData.push([
       month,
-      '₱' + value.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})
+      '₱' + value.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}).padStart(11, '0')
     ]);
   });
   
   // Calculate total
   const total = seriesData.reduce((sum, value) => sum + (value || 0), 0);
   tableData.push([
-    'Total',
-    '₱' + total.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})
+    'TOTAL',
+    '₱' + total.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}).padStart(11, '0')
   ]);
   
   // Create PDF
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
   
-  // Add title
+  // Add logo or business name header
+  doc.setFontSize(20);
+  doc.setFont(undefined, 'bold');
+  doc.setTextColor(59, 130, 246); // Blue color
+  doc.text('VJAY RELOVA FUNERAL SERVICES', 105, 15, { align: 'center' });
+  
+  // Add report title
   doc.setFontSize(16);
-  doc.text('Accrued Revenue Report', 14, 15);
-  doc.setFontSize(12);
-  doc.text('Generated on: ' + new Date().toLocaleDateString(), 14, 22);
+  doc.setTextColor(0, 0, 0); // Black color
+  doc.text('Accrued Revenue Report', 105, 25, { align: 'center' });
+  
+  // Add date generated
+  doc.setFontSize(10);
+  doc.setTextColor(100, 100, 100); // Gray color
+  doc.text('Generated on: ' + new Date().toLocaleDateString('en-US', { 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  }), 105, 30, { align: 'center' });
   
   // Add table
   doc.autoTable({
     head: [tableData[0]],
     body: tableData.slice(1, -1), // Exclude header and total from body
-    startY: 30,
+    startY: 40,
     theme: 'grid',
     headStyles: {
       fillColor: [59, 130, 246], // Blue color
-      textColor: 255
+      textColor: 255,
+      fontStyle: 'bold'
+    },
+    columnStyles: {
+      1: { cellWidth: 'auto', halign: 'right' }
+    },
+    styles: {
+      fontSize: 10,
+      cellPadding: 3
     },
     didDrawPage: function(data) {
       // Add total row at the bottom
@@ -1920,14 +1944,22 @@ document.getElementById('exportProjectedIncome').addEventListener('click', funct
         const finalY = data.cursor.y + 10;
         doc.setFontSize(12);
         doc.setFont(undefined, 'bold');
+        doc.setTextColor(0, 0, 0);
         doc.text(tableData[tableData.length-1][0], data.settings.margin.left, finalY);
-        doc.text(tableData[tableData.length-1][1], data.settings.margin.left + 100, finalY, { align: 'right' });
+        doc.text(tableData[tableData.length-1][1], doc.internal.pageSize.width - data.settings.margin.right, finalY, { align: 'right' });
+        
+        // Add footer
+        const footerY = doc.internal.pageSize.height - 10;
+        doc.setFontSize(9);
+        doc.setTextColor(100, 100, 100);
+        doc.setFont(undefined, 'normal');
+        doc.text('For inquiries, please contact: (02) 1234-5678 | info@vjayrelovafuneral.com', 105, footerY, { align: 'center' });
       }
     }
   });
   
   // Save the PDF
-  doc.save('Accrued-Revenue-Report-' + new Date().toISOString().slice(0, 10) + '.pdf');
+  doc.save('Vjay-Relova-Accrued-Revenue-Report-' + new Date().toISOString().slice(0, 10) + '.pdf');
 });
 </script>
 <script>
