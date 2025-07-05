@@ -1868,6 +1868,7 @@ var projectedIncomeChart = new ApexCharts(document.querySelector("#projectedInco
 projectedIncomeChart.render();
 
 // Custom export functionality
+// Custom export functionality
 document.getElementById('exportProjectedIncome').addEventListener('click', function () {
   const seriesData = projectedIncomeOptions.series[0].data;
   const categories = projectedIncomeOptions.xaxis.categories;
@@ -1875,8 +1876,10 @@ document.getElementById('exportProjectedIncome').addEventListener('click', funct
   const tableData = [['Month', 'Accrued Revenue (₱)']];
 
   categories.forEach((month, index) => {
+    // Clean the month name - replace plus-minus with empty string
     const cleanMonth = month.toString()
-      .replace(/[^a-zA-Z0-9ñÑ\s]/g, '')  // Only keep alphanumeric, ñ, Ñ, and whitespace
+      .replace(/±/g, '')  // Explicitly remove plus-minus symbol
+      .replace(/[^a-zA-Z0-9ñÑ\s]/g, '')  // Keep alphanumeric, ñ, Ñ, and whitespace
       .trim() || `Month ${index + 1}`;
 
     let value = Number(seriesData[index]);
@@ -1938,7 +1941,7 @@ document.getElementById('exportProjectedIncome').addEventListener('click', funct
   const margin = 15;
   const availableWidth = pageWidth - (2 * margin);
   
-  // Create table
+  // Create table with adjusted settings
   doc.autoTable({
     head: [tableData[0]],
     body: tableData.slice(1, -1),
@@ -1951,20 +1954,30 @@ document.getElementById('exportProjectedIncome').addEventListener('click', funct
       fontSize: 11
     },
     columnStyles: {
-      0: { cellWidth: availableWidth * 0.4, halign: 'left' },  // Month column (40% of available width)
-      1: { cellWidth: availableWidth * 0.6, halign: 'right' } // Amount column (60% of available width)
+      0: { 
+        cellWidth: availableWidth * 0.5,  // Increased width for Month column
+        halign: 'left',
+        fontStyle: 'bold'
+      },
+      1: { 
+        cellWidth: availableWidth * 0.5,  // Adjusted width for Amount column
+        halign: 'right',
+        minCellHeight: 10  // Ensure enough height for values
+      }
     },
     styles: {
-      fontSize: 10,
-      cellPadding: 5,
+      fontSize: 9,  // Slightly smaller font to prevent overlap
+      cellPadding: 3,  // Reduced padding
       overflow: 'linebreak',
-      valign: 'middle'
+      valign: 'middle',
+      lineWidth: 0.1  // Thinner grid lines
     },
     margin: { 
       left: margin,
       right: margin,
       top: 45
     },
+    tableWidth: 'wrap',  // Let the table adjust its width
     didDrawPage: function (data) {
       if (data.pageCount === data.pageNumber) {
         const finalY = data.cursor.y + 10;
