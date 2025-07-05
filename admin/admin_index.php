@@ -1876,7 +1876,7 @@ document.getElementById('exportProjectedIncome').addEventListener('click', funct
 
   categories.forEach((month, index) => {
     const cleanMonth = month.toString()
-      .replace(/[^a-zA-Z0-9\u00F1\u00D1\s]/g, '')  // Removed ± and ₱ from exclusion
+      .replace(/[^a-zA-Z0-9ñÑ\s]/g, '')  // Only keep alphanumeric, ñ, Ñ, and whitespace
       .trim() || `Month ${index + 1}`;
 
     let value = Number(seriesData[index]);
@@ -1902,9 +1902,19 @@ document.getElementById('exportProjectedIncome').addEventListener('click', funct
 
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({
-    orientation: 'portrait' // changed from landscape
+    orientation: 'portrait'
   });
 
+  // Set document metadata
+  doc.setProperties({
+    title: 'Vjay Relova Accrued Revenue Report',
+    subject: 'Financial Report',
+    author: 'Vjay Relova Funeral Services',
+    keywords: 'revenue, report, financial',
+    creator: 'Vjay Relova Web Application'
+  });
+
+  // Add header
   doc.setFontSize(20);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(33, 37, 41);
@@ -1923,6 +1933,12 @@ document.getElementById('exportProjectedIncome').addEventListener('click', funct
     minute: '2-digit'
   }), 105, 36, { align: 'center' });
 
+  // Calculate page width and column widths
+  const pageWidth = doc.internal.pageSize.width;
+  const margin = 15;
+  const availableWidth = pageWidth - (2 * margin);
+  
+  // Create table
   doc.autoTable({
     head: [tableData[0]],
     body: tableData.slice(1, -1),
@@ -1935,23 +1951,32 @@ document.getElementById('exportProjectedIncome').addEventListener('click', funct
       fontSize: 11
     },
     columnStyles: {
-      0: { cellWidth: 70 }, // Month
-      1: { cellWidth: 60, halign: 'center' } // Amount
+      0: { cellWidth: availableWidth * 0.4, halign: 'left' },  // Month column (40% of available width)
+      1: { cellWidth: availableWidth * 0.6, halign: 'right' } // Amount column (60% of available width)
     },
     styles: {
       fontSize: 10,
-      cellPadding: 4,
+      cellPadding: 5,
       overflow: 'linebreak',
       valign: 'middle'
     },
-    margin: { horizontal: 15 },
+    margin: { 
+      left: margin,
+      right: margin,
+      top: 45
+    },
     didDrawPage: function (data) {
       if (data.pageCount === data.pageNumber) {
         const finalY = data.cursor.y + 10;
         doc.setFontSize(12);
         doc.setFont('helvetica', 'bold');
-        doc.text(tableData[tableData.length - 1][0], data.settings.margin.left, finalY);
-        doc.text(tableData[tableData.length - 1][1], doc.internal.pageSize.width - data.settings.margin.right, finalY, { align: 'right' });
+        
+        // Draw total line with full width
+        doc.setFillColor(240, 240, 240);
+        doc.rect(margin, finalY - 5, availableWidth, 10, 'F');
+        
+        doc.text(tableData[tableData.length - 1][0], margin + 5, finalY);
+        doc.text(tableData[tableData.length - 1][1], pageWidth - margin - 5, finalY, { align: 'right' });
 
         const footerY = doc.internal.pageSize.height - 10;
         doc.setFontSize(9);
