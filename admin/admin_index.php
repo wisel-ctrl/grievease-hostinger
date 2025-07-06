@@ -1237,7 +1237,7 @@ function time_elapsed_string($datetime, $full = false) {
   
   <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 w-full">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-4 sm:p-5 border-b border-sidebar-border">
-      <h3 class="font-medium text-sidebar-text">Monthly Revenue</h3>
+      <h3 class="font-medium text-sidebar-text">Cash Revenue</h3>
       
     </div>
     <div class="p-4 sm:p-5">
