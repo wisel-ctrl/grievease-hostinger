@@ -1878,50 +1878,145 @@ var chart = new ApexCharts(document.querySelector("#revenueChart"), options);
 chart.render();
 
 document.getElementById('exportRevenuePdf').addEventListener('click', function() {
-  // Get the data from PHP variables
-  const months = <?php echo json_encode($monthLabels); ?>;
-  const revenues = <?php echo json_encode($monthlyRevenueData); ?>;
-  
-  // Format the data for the table
-  const tableData = months.map((month, index) => {
-    return [month, '₱' + Number(revenues[index]).toLocaleString()];
-  });
-  
-  // Create a new PDF document
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-  
-  // Add title
-  doc.setFontSize(16);
-  doc.text('Monthly Revenue Report', 14, 15);
-  
-  // Add current date
-  const today = new Date();
-  doc.setFontSize(10);
-  doc.text(`Generated on: ${today.toLocaleDateString()}`, 14, 22);
-  
-  // Create the table
-  doc.autoTable({
-    head: [['Month', 'Revenue']],
-    body: tableData,
-    startY: 30,
-    styles: {
-      cellPadding: 5,
-      fontSize: 10,
-      valign: 'middle',
-      halign: 'right'
-    },
-    columnStyles: {
-      0: { halign: 'left' } // Left align month names
-    },
-    headStyles: {
-      fillColor: [74, 222, 128], // Green color to match your chart
-      textColor: 255
-    }
-  });
-  
-  // Save the PDF
-  doc.save('Monthly_Revenue_Report.pdf');
+    // Get the data from PHP variables
+    const months = [...<?php echo json_encode($monthLabels); ?>];
+    const revenues = [...<?php echo json_encode($monthlyRevenueData); ?>];
+    
+    // Reverse the order to show latest first (if needed)
+    months.reverse();
+    revenues.reverse();
+
+    // Format the data for the table
+    const tableData = [['Month', 'Revenue (PHP)']];
+
+    months.forEach((month, index) => {
+        const cleanMonth = month.toString()
+            .replace(/±/g, '')
+            .replace(/[^a-zA-Z0-9ñÑ\s]/g, '')
+            .trim() || `Month ${index + 1}`;
+
+        let value = Number(revenues[index]);
+        if (isNaN(value)) value = 0;
+
+        tableData.push([
+            cleanMonth,
+            'PHP ' + value.toLocaleString('en-PH', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            })
+        ]);
+    });
+
+    // Calculate total
+    const total = revenues.reduce((sum, val) => sum + (Number(val) || 0), 0);
+    tableData.push([
+        'TOTAL',
+        'PHP ' + total.toLocaleString('en-PH', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        })
+    ]);
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({
+        orientation: 'portrait'
+    });
+
+    // Set document metadata
+    doc.setProperties({
+        title: 'Vjay Relova Cash Revenue Report',
+        subject: 'Financial Report',
+        author: 'Vjay Relova Funeral Services',
+        keywords: 'revenue, report, financial',
+        creator: 'Vjay Relova Web Application'
+    });
+
+    // Add header
+    doc.setFontSize(20);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(33, 37, 41);
+    doc.text('VJAY RELOVA FUNERAL SERVICES', 105, 20, { align: 'center' });
+
+    doc.setFontSize(16);
+    doc.text('CASH REVENUE REPORT', 105, 30, { align: 'center' });
+
+    doc.setFontSize(10);
+    doc.setTextColor(100, 100, 100);
+    doc.text('Generated on: ' + new Date().toLocaleString('en-PH', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    }), 105, 36, { align: 'center' });
+
+    // Calculate page width and column widths
+    const pageWidth = doc.internal.pageSize.width;
+    const margin = 15;
+    const availableWidth = pageWidth - (2 * margin);
+    
+    // Create table with adjusted settings
+    doc.autoTable({
+        head: [tableData[0]],
+        body: tableData.slice(1, -1),
+        startY: 45,
+        theme: 'grid',
+        headStyles: {
+            fillColor: [74, 222, 128],
+            textColor: 255,
+            fontStyle: 'bold',
+            fontSize: 11,
+            halign: 'center'
+        },
+        columnStyles: {
+            0: { 
+                cellWidth: availableWidth * 0.4,
+                halign: 'left',
+                fontStyle: 'bold'
+            },
+            1: { 
+                cellWidth: availableWidth * 0.6,
+                halign: 'right',
+                minCellHeight: 10
+            }
+        },
+        styles: {
+            fontSize: 9,
+            cellPadding: 3,
+            overflow: 'linebreak',
+            valign: 'middle',
+            lineWidth: 0.1
+        },
+        margin: { 
+            left: margin,
+            right: margin,
+            top: 45
+        },
+        tableWidth: 'wrap',
+        didDrawPage: function (data) {
+            if (data.pageCount === data.pageNumber) {
+                const finalY = data.cursor.y + 10;
+                doc.setFontSize(12);
+                doc.setFont('courier', 'bold');
+                
+                // Draw total line with full width
+                doc.setFillColor(240, 240, 240);
+                doc.rect(margin, finalY - 5, availableWidth, 10, 'F');
+                
+                doc.text(tableData[tableData.length - 1][0], margin + 5, finalY);
+                doc.text(tableData[tableData.length - 1][1], pageWidth - margin - 5, finalY, { align: 'right' });
+
+                const footerY = doc.internal.pageSize.height - 10;
+                doc.setFontSize(9);
+                doc.setTextColor(100, 100, 100);
+                doc.setFont('courier', 'normal');
+                doc.text('For inquiries: Tel: (02) 1234-5678 • Mobile: 0917-123-4567 • Email: info@vjayrelova.com',
+                    105, footerY, { align: 'center' });
+            }
+        }
+    });
+
+    doc.save(`Vjay-Relova-Cash-Revenue-Report-${new Date().toISOString().slice(0, 10)}.pdf`);
 });
 </script>
 <script>
