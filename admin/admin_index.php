@@ -476,61 +476,124 @@ $pilaMetrics = getBranchMetrics($conn, 2); // Pila branch_id = 2
 $paeteMetrics = getBranchMetrics($conn, 1); // Paete branch_id = 1
 
 // Get monthly revenue data for the last 6 months
-$monthlyRevenueData = [];
-for ($i = 11; $i >= 0; $i--) {
-    $date = clone $currentDate;
-    $date->modify("-$i months");
-    $month = $date->format('m');
-    $year = $date->format('Y');
-    
-    $query = "SELECT SUM(amount_paid) as revenue FROM (
-        -- 1. Direct sales from sales_tb
-        SELECT amount_paid 
-        FROM sales_tb 
-        WHERE MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?
+$yearlyRevenueData = [];
+$yearLabels = [];
+if (isset($_GET['view']) && $_GET['view'] === 'yearly') {
+    for ($i = 5; $i >= 0; $i--) {
+        $date = clone $currentDate;
+        $date->modify("-$i years");
+        $year = $date->format('Y');
         
-        UNION ALL
+        $query = "SELECT SUM(amount_paid) as revenue FROM (
+            -- 1. Direct sales from sales_tb
+            SELECT amount_paid 
+            FROM sales_tb 
+            WHERE YEAR(get_timestamp) = ?
+            
+            UNION ALL
+            
+            -- 2. Direct custom sales from customsales_tb not referenced in analytics_tb
+            SELECT amount_paid
+            FROM customsales_tb
+            WHERE YEAR(get_timestamp) = ?
+            AND customsales_id NOT IN (
+                SELECT sales_id FROM analytics_tb 
+                WHERE sales_type = 'custom'
+                AND YEAR(sale_date) = ?
+            )
+            
+            UNION ALL
+            
+            -- 3. All analytics records (they may or may not reference other tables)
+            SELECT 
+                CASE
+                    -- If it's traditional and has a sales_id reference
+                    WHEN a.sales_type = 'traditional' AND s.sales_id IS NOT NULL THEN s.amount_paid
+                    -- If it's custom and has a customsales_id reference
+                    WHEN a.sales_type = 'custom' AND c.customsales_id IS NOT NULL THEN c.amount_paid
+                    -- Otherwise use analytics_tb's own amount_paid
+                    ELSE a.amount_paid
+                END as amount_paid
+            FROM analytics_tb a
+            LEFT JOIN sales_tb s ON a.sales_type = 'traditional' AND a.sales_id = s.sales_id
+            LEFT JOIN customsales_tb c ON a.sales_type = 'custom' AND a.sales_id = c.customsales_id
+            WHERE YEAR(a.sale_date) = ?
+        ) as combined_sales";
         
-        -- 2. Direct custom sales from customsales_tb not referenced in analytics_tb
-        SELECT amount_paid
-        FROM customsales_tb
-        WHERE MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?
-        AND customsales_id NOT IN (
-            SELECT sales_id FROM analytics_tb 
-            WHERE sales_type = 'custom'
-            AND MONTH(sale_date) = ? AND YEAR(sale_date) = ?
-        )
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("iiii", 
+            $year,        // 1. sales_tb direct
+            $year,        // 2. customsales_tb direct
+            $year,        // 2. customsales_tb not in analytics
+            $year         // 3. analytics_tb all records
+        );
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $data = $result->fetch_assoc();
         
-        UNION ALL
+        $yearlyRevenueData[] = $data['revenue'] ?? 0;
+        $yearLabels[] = $year;
+    }
+} else {
+    // Original monthly data query
+    $monthlyRevenueData = [];
+    $monthLabels = [];
+    for ($i = 11; $i >= 0; $i--) {
+        $date = clone $currentDate;
+        $date->modify("-$i months");
+        $month = $date->format('m');
+        $year = $date->format('Y');
         
-        -- 3. All analytics records (they may or may not reference other tables)
-        SELECT 
-            CASE
-                -- If it's traditional and has a sales_id reference
-                WHEN a.sales_type = 'traditional' AND s.sales_id IS NOT NULL THEN s.amount_paid
-                -- If it's custom and has a customsales_id reference
-                WHEN a.sales_type = 'custom' AND c.customsales_id IS NOT NULL THEN c.amount_paid
-                -- Otherwise use analytics_tb's own amount_paid
-                ELSE a.amount_paid
-            END as amount_paid
-        FROM analytics_tb a
-        LEFT JOIN sales_tb s ON a.sales_type = 'traditional' AND a.sales_id = s.sales_id
-        LEFT JOIN customsales_tb c ON a.sales_type = 'custom' AND a.sales_id = c.customsales_id
-        WHERE MONTH(a.sale_date) = ? AND YEAR(a.sale_date) = ?
-    ) as combined_sales";
-    
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param("iiiiiiii", 
-        $month, $year,        // 1. sales_tb direct
-        $month, $year,        // 2. customsales_tb direct
-        $month, $year,        // 2. customsales_tb not in analytics
-        $month, $year         // 3. analytics_tb all records
-    );
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $data = $result->fetch_assoc();
-    
-    $monthlyRevenueData[] = $data['revenue'] ?? 0;
+        $query = "SELECT SUM(amount_paid) as revenue FROM (
+            -- 1. Direct sales from sales_tb
+            SELECT amount_paid 
+            FROM sales_tb 
+            WHERE MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?
+            
+            UNION ALL
+            
+            -- 2. Direct custom sales from customsales_tb not referenced in analytics_tb
+            SELECT amount_paid
+            FROM customsales_tb
+            WHERE MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?
+            AND customsales_id NOT IN (
+                SELECT sales_id FROM analytics_tb 
+                WHERE sales_type = 'custom'
+                AND MONTH(sale_date) = ? AND YEAR(sale_date) = ?
+            )
+            
+            UNION ALL
+            
+            -- 3. All analytics records (they may or may not reference other tables)
+            SELECT 
+                CASE
+                    -- If it's traditional and has a sales_id reference
+                    WHEN a.sales_type = 'traditional' AND s.sales_id IS NOT NULL THEN s.amount_paid
+                    -- If it's custom and has a customsales_id reference
+                    WHEN a.sales_type = 'custom' AND c.customsales_id IS NOT NULL THEN c.amount_paid
+                    -- Otherwise use analytics_tb's own amount_paid
+                    ELSE a.amount_paid
+                END as amount_paid
+            FROM analytics_tb a
+            LEFT JOIN sales_tb s ON a.sales_type = 'traditional' AND a.sales_id = s.sales_id
+            LEFT JOIN customsales_tb c ON a.sales_type = 'custom' AND a.sales_id = c.customsales_id
+            WHERE MONTH(a.sale_date) = ? AND YEAR(a.sale_date) = ?
+        ) as combined_sales";
+        
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("iiiiiiii", 
+            $month, $year,        // 1. sales_tb direct
+            $month, $year,        // 2. customsales_tb direct
+            $month, $year,        // 2. customsales_tb not in analytics
+            $month, $year         // 3. analytics_tb all records
+        );
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $data = $result->fetch_assoc();
+        
+        $monthlyRevenueData[] = $data['revenue'] ?? 0;
+        $monthLabels[] = $date->format('M Y');
+    }
 }
 ?>
 <?php
@@ -1241,14 +1304,14 @@ function time_elapsed_string($datetime, $full = false) {
         <h3 class="font-medium text-sidebar-text">Cash Revenue</h3>
         <div class="flex items-center gap-2">
           <div class="flex items-center bg-gray-100 rounded-full p-1">
-            <button id="cashMonthlyView" class="px-3 py-1 rounded-full text-sm font-medium bg-blue-500 text-white">
+            <button id="cashMonthlyView" class="px-3 py-1 rounded-full text-sm font-medium <?php echo (!isset($_GET['view']) || $_GET['view'] !== 'yearly') ? 'bg-[#4ade80] text-white' : 'text-gray-600 hover:text-gray-800' ?>">
               Monthly
             </button>
-            <button id="cashYearlyView" class="px-3 py-1 rounded-full text-sm font-medium text-gray-600 hover:text-gray-800">
+            <button id="cashYearlyView" class="px-3 py-1 rounded-full text-sm font-medium <?php echo (isset($_GET['view']) && $_GET['view'] === 'yearly') ? 'bg-[#4ade80] text-white' : 'text-gray-600 hover:text-gray-800' ?>">
               Yearly
             </button>
           </div>
-          <button id="exportCashRevenue" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm flex items-center gap-1">
+          <button id="exportCashRevenue" class="bg-[#4ade80] hover:bg-[#3bc973] text-white px-3 py-1 rounded text-sm flex items-center gap-1">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
               <polyline points="7 10 12 15 17 10"></polyline>
@@ -1828,7 +1891,7 @@ document.addEventListener('DOMContentLoaded', () => {
 var options = {
   series: [{
     name: "Revenue",
-    data: <?php echo json_encode($monthlyRevenueData); ?>
+    data: <?php echo isset($_GET['view']) && $_GET['view'] === 'yearly' ? json_encode($yearlyRevenueData) : json_encode($monthlyRevenueData); ?>
   }],
   chart: {
     type: 'area',
@@ -1869,7 +1932,7 @@ var options = {
     }
   },
   xaxis: {
-    categories: <?php echo json_encode($monthLabels); ?>,
+    categories: <?php echo isset($_GET['view']) && $_GET['view'] === 'yearly' ? json_encode($yearLabels) : json_encode($monthLabels); ?>,
   },
   yaxis: {
     labels: {
@@ -1890,29 +1953,36 @@ var options = {
 var chart = new ApexCharts(document.querySelector("#revenueChart"), options);
 chart.render();
 
-document.getElementById('exportRevenuePdf').addEventListener('click', function() {
-    // Get the data from PHP variables
-    const months = [...<?php echo json_encode($monthLabels); ?>];
-    const revenues = [...<?php echo json_encode($monthlyRevenueData); ?>];
+// Toggle between monthly and yearly views
+document.getElementById('cashMonthlyView').addEventListener('click', function() {
+    window.location.href = window.location.pathname + '?view=monthly';
+});
+
+document.getElementById('cashYearlyView').addEventListener('click', function() {
+    window.location.href = window.location.pathname + '?view=yearly';
+});
+
+// Export PDF function
+document.getElementById('exportCashRevenue').addEventListener('click', function() {
+    // Get the data based on current view
+    const isYearly = <?php echo (isset($_GET['view']) && $_GET['view'] === 'yearly') ? 'true' : 'false'; ?>;
+    const categories = [...<?php echo isset($_GET['view']) && $_GET['view'] === 'yearly' ? json_encode($yearLabels) : json_encode($monthLabels); ?>];
+    const revenues = [...<?php echo isset($_GET['view']) && $_GET['view'] === 'yearly' ? json_encode($yearlyRevenueData) : json_encode($monthlyRevenueData); ?>];
     
-    // Reverse the order to show latest first (if needed)
-    months.reverse();
-    revenues.reverse();
-
     // Format the data for the table
-    const tableData = [['Month', 'Revenue (PHP)']];
+    const tableData = [[isYearly ? 'Year' : 'Month', 'Revenue (PHP)']];
 
-    months.forEach((month, index) => {
-        const cleanMonth = month.toString()
+    categories.forEach((category, index) => {
+        const cleanCategory = category.toString()
             .replace(/±/g, '')
             .replace(/[^a-zA-Z0-9ñÑ\s]/g, '')
-            .trim() || `Month ${index + 1}`;
+            .trim() || (isYearly ? `Year ${index + 1}` : `Month ${index + 1}`);
 
         let value = Number(revenues[index]);
         if (isNaN(value)) value = 0;
 
         tableData.push([
-            cleanMonth,
+            cleanCategory,
             'PHP ' + value.toLocaleString('en-PH', {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
@@ -1951,7 +2021,7 @@ document.getElementById('exportRevenuePdf').addEventListener('click', function()
     doc.text('VJAY RELOVA FUNERAL SERVICES', 105, 20, { align: 'center' });
 
     doc.setFontSize(16);
-    doc.text('CASH REVENUE REPORT', 105, 30, { align: 'center' });
+    doc.text('CASH REVENUE REPORT - ' + (isYearly ? 'YEARLY' : 'MONTHLY'), 105, 30, { align: 'center' });
 
     doc.setFontSize(10);
     doc.setTextColor(100, 100, 100);
@@ -2029,7 +2099,7 @@ document.getElementById('exportRevenuePdf').addEventListener('click', function()
         }
     });
 
-    doc.save(`Vjay-Relova-Cash-Revenue-Report-${new Date().toISOString().slice(0, 10)}.pdf`);
+    doc.save(`Vjay-Relova-Cash-Revenue-Report-${isYearly ? 'Yearly' : 'Monthly'}-${new Date().toISOString().slice(0, 10)}.pdf`);
 });
 </script>
 <script>
