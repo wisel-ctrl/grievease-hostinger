@@ -1237,13 +1237,26 @@ function time_elapsed_string($datetime, $full = false) {
   
   <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 w-full">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-4 sm:p-5 border-b border-sidebar-border">
-      <div class="flex items-center gap-3">
+      <div class="flex items-center justify-between w-full">
         <h3 class="font-medium text-sidebar-text">Cash Revenue</h3>
-        <button id="exportRevenuePdf" class="text-sidebar-text hover:text-green-600 transition-colors duration-200" title="Export to PDF">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
-          </svg>
-        </button>
+        <div class="flex items-center gap-2">
+          <div class="flex items-center bg-gray-100 rounded-full p-1">
+            <button id="cashMonthlyView" class="px-3 py-1 rounded-full text-sm font-medium bg-blue-500 text-white">
+              Monthly
+            </button>
+            <button id="cashYearlyView" class="px-3 py-1 rounded-full text-sm font-medium text-gray-600 hover:text-gray-800">
+              Yearly
+            </button>
+          </div>
+          <button id="exportCashRevenue" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm flex items-center gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Export
+          </button>
+        </div>
       </div>
     </div>
     <div class="p-4 sm:p-5">
