@@ -1237,12 +1237,17 @@ function time_elapsed_string($datetime, $full = false) {
   
   <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 w-full">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-4 sm:p-5 border-b border-sidebar-border">
-      <h3 class="font-medium text-sidebar-text">Cash Revenue</h3>
-      
+      <div class="flex items-center gap-3">
+        <h3 class="font-medium text-sidebar-text">Cash Revenue</h3>
+        <button id="exportRevenuePdf" class="text-sidebar-text hover:text-green-600 transition-colors duration-200" title="Export to PDF">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
+          </svg>
+        </button>
+      </div>
     </div>
     <div class="p-4 sm:p-5">
       <div class="w-full h-48 md:h-64">
-        <!-- <canvas id="revenueChart" style="width: 100%; height: 100%;"></canvas> -->
         <div id="revenueChart" style="width: 100%; height: 100%;"></div>
       </div>
     </div>
@@ -1806,7 +1811,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 
-    <script>
+<script>
 var options = {
   series: [{
     name: "Revenue",
@@ -1820,6 +1825,18 @@ var options = {
       enabled: true,
       easing: 'easeout',
       speed: 800
+    },
+    toolbar: {
+      show: true,
+      tools: {
+        download: false,
+        selection: true,
+        zoom: true,
+        zoomin: true,
+        zoomout: true,
+        pan: true,
+        reset: true
+      }
     }
   },
   colors: ['#4ade80'],
@@ -1859,6 +1876,53 @@ var options = {
 
 var chart = new ApexCharts(document.querySelector("#revenueChart"), options);
 chart.render();
+
+document.getElementById('exportRevenuePdf').addEventListener('click', function() {
+  // Get the data from PHP variables
+  const months = <?php echo json_encode($monthLabels); ?>;
+  const revenues = <?php echo json_encode($monthlyRevenueData); ?>;
+  
+  // Format the data for the table
+  const tableData = months.map((month, index) => {
+    return [month, '₱' + Number(revenues[index]).toLocaleString()];
+  });
+  
+  // Create a new PDF document
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  
+  // Add title
+  doc.setFontSize(16);
+  doc.text('Monthly Revenue Report', 14, 15);
+  
+  // Add current date
+  const today = new Date();
+  doc.setFontSize(10);
+  doc.text(`Generated on: ${today.toLocaleDateString()}`, 14, 22);
+  
+  // Create the table
+  doc.autoTable({
+    head: [['Month', 'Revenue']],
+    body: tableData,
+    startY: 30,
+    styles: {
+      cellPadding: 5,
+      fontSize: 10,
+      valign: 'middle',
+      halign: 'right'
+    },
+    columnStyles: {
+      0: { halign: 'left' } // Left align month names
+    },
+    headStyles: {
+      fillColor: [74, 222, 128], // Green color to match your chart
+      textColor: 255
+    }
+  });
+  
+  // Save the PDF
+  doc.save('Monthly_Revenue_Report.pdf');
+});
 </script>
 <script>
 // Initialize chart with monthly data
