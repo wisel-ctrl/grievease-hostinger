@@ -2421,7 +2421,7 @@ var branchRevenueOptions = {
     toolbar: {
       show: true, // This enables the toolbar with zoom/export options
       tools: {
-        download: true, // Show download options
+        download: false, // Show download options
         selection: true,
         zoom: true,
         zoomin: true,
