@@ -478,7 +478,7 @@ $paeteMetrics = getBranchMetrics($conn, 1); // Paete branch_id = 1
 // Get monthly revenue data for the last 6 months
 $yearlyRevenueData = [];
 $yearLabels = [];
-for ($i = 5; $i >= 0; $i--) {
+for ($i = 4; $i >= 0; $i--) {
     $date = clone $currentDate;
     $date->modify("-$i years");
     $year = $date->format('Y');
