@@ -3195,5 +3195,35 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 </script>
+<script>
+function loadBranchData(timePeriod) {
+    // Show loading indicator
+    document.getElementById('branchLoadingIndicator').classList.remove('hidden');
+    
+    // Update active button styling
+    const buttons = document.querySelectorAll('[onclick^="loadBranchData"]');
+    buttons.forEach(button => {
+        if (button.getAttribute('onclick').includes(timePeriod)) {
+            button.classList.add('bg-sidebar-accent', 'text-white');
+            button.classList.remove('hover:bg-sidebar-hover');
+        } else {
+            button.classList.remove('bg-sidebar-accent', 'text-white');
+            button.classList.add('hover:bg-sidebar-hover');
+        }
+    });
+    
+    // AJAX call to fetch data for the selected time period
+    fetch(`dashboard/get_branch_data.php?period=${timePeriod}`)
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('branchTableBody').innerHTML = data;
+            document.getElementById('branchLoadingIndicator').classList.add('hidden');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('branchLoadingIndicator').classList.add('hidden');
+        });
+}
+</script>
 </body>
 </html>
