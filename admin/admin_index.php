@@ -2521,8 +2521,6 @@ var branchRevenueOptions = {
 var branchRevenueChart = new ApexCharts(document.querySelector("#branchRevenueChart"), branchRevenueOptions);
 branchRevenueChart.render();
 
-
-// Add event listener to the button
 document.getElementById('exportPdfBtn').addEventListener('click', function() {
   try {
     const { jsPDF } = window.jspdf;
@@ -2530,22 +2528,36 @@ document.getElementById('exportPdfBtn').addEventListener('click', function() {
     
     // Add title and date
     doc.setFontSize(18);
-    doc.text('Branch Performance Report', 14, 15);
+    doc.text('Branch Revenue Report', 14, 15);
     doc.setFontSize(10);
     doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 22);
     
-    // Use the PHP data directly
-    const pilaData = <?php echo json_encode($pilaMetrics); ?>;
-    const paeteData = <?php echo json_encode($paeteMetrics); ?>;
+    // Get the PHP data
+    const monthLabels = <?php echo json_encode($monthLabels); ?>;
+    const pilaData = <?php echo json_encode($pilaMonthlyRevenue); ?>;
+    const paeteData = <?php echo json_encode($paeteMonthlyRevenue); ?>;
     
-    // Create a table with the metrics
-    const headers = ['Metric', 'Pila Branch', 'Paete Branch'];
-    const body = [
-      ['Revenue', `₱${pilaData.revenue.toLocaleString()}`, `₱${paeteData.revenue.toLocaleString()}`],
-      ['Profit', `₱${pilaData.profit.toLocaleString()}`, `₱${paeteData.profit.toLocaleString()}`],
-      ['Margin (%)', `${pilaData.margin.toFixed(2)}%`, `${paeteData.margin.toFixed(2)}%`],
-      ['Customers', pilaData.customers, paeteData.customers]
-    ];
+    // Create table data
+    const headers = ['Month', 'Pila Revenue', 'Paete Revenue'];
+    const body = [];
+    
+    // Add monthly data rows
+    for (let i = 0; i < monthLabels.length; i++) {
+      body.push([
+        monthLabels[i],
+        `₱${parseFloat(pilaData[i] || 0).toLocaleString()}`,
+        `₱${parseFloat(paeteData[i] || 0).toLocaleString()}`
+      ]);
+    }
+    
+    // Add totals row
+    const pilaTotal = pilaData.reduce((a, b) => a + (parseFloat(b) || 0), 0);
+    const paeteTotal = paeteData.reduce((a, b) => a + (parseFloat(b) || 0), 0);
+    body.push([
+      'TOTAL',
+      `₱${pilaTotal.toLocaleString()}`,
+      `₱${paeteTotal.toLocaleString()}`
+    ]);
     
     // Add table
     doc.autoTable({
@@ -2559,10 +2571,31 @@ document.getElementById('exportPdfBtn').addEventListener('click', function() {
       },
       styles: {
         fontSize: 10
+      },
+      // Style the totals row
+      didDrawCell: (data) => {
+        if (data.row.index === body.length - 1) {
+          doc.setFillColor(240, 240, 240);
+          doc.rect(
+            data.cell.x,
+            data.cell.y,
+            data.cell.width,
+            data.cell.height,
+            'F'
+          );
+          doc.setTextColor(0, 0, 0);
+          doc.setFont(undefined, 'bold');
+          doc.text(
+            data.cell.text,
+            data.cell.x + data.cell.width / 2,
+            data.cell.y + data.cell.height / 2 + 2,
+            { align: 'center' }
+          );
+        }
       }
     });
     
-    doc.save('branch_performance_report.pdf');
+    doc.save('branch_revenue_report.pdf');
     
   } catch (error) {
     console.error('PDF export failed:', error);
