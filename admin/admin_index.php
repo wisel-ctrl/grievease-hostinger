@@ -1452,19 +1452,26 @@ function time_elapsed_string($datetime, $full = false) {
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
   <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 w-full">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-4 sm:p-5 border-b border-sidebar-border">
-      <h3 class="font-medium text-sidebar-text">Revenue by Branch</h3>
-      <div class="flex items-center gap-3">
+      <div class="flex items-center justify-between w-full">
+        <h3 class="font-medium text-sidebar-text">Revenue by Branch</h3>
         <div class="flex items-center gap-2">
-          <span class="text-sm text-gray-600">Monthly</span>
-          <label class="relative inline-flex items-center cursor-pointer">
-            <input type="checkbox" id="timeframeToggle" class="sr-only peer">
-            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-          </label>
-          <span class="text-sm text-gray-600">Yearly</span>
+          <div class="flex items-center bg-gray-100 rounded-full p-1">
+            <button id="monthlyViewBranch" class="px-3 py-1 rounded-full text-sm font-medium bg-blue-500 text-white">
+              Monthly
+            </button>
+            <button id="yearlyViewBranch" class="px-3 py-1 rounded-full text-sm font-medium text-gray-600 hover:text-gray-800">
+              Yearly
+            </button>
+          </div>
+          <button id="exportBranchRevenue" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm flex items-center gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Export
+          </button>
         </div>
-        <button id="exportPdfBtn" class="px-3 py-1.5 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 transition-colors">
-          Export to PDF
-        </button>
       </div>
     </div>
     <div class="p-4 sm:p-5">
