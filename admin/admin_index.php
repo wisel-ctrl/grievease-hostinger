@@ -2525,50 +2525,27 @@ branchRevenueChart.render();
 // Add event listener to the button
 document.getElementById('exportPdfBtn').addEventListener('click', function() {
   try {
-    // Check if jsPDF is available
-    if (typeof window.jspdf === 'undefined') {
-      throw new Error('jsPDF library not loaded');
-    }
-
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({
-      orientation: 'portrait'
-    });
+    const doc = new jsPDF();
     
     // Add title and date
     doc.setFontSize(18);
-    doc.text('Revenue by Branch Report', 14, 15);
+    doc.text('Branch Performance Report', 14, 15);
     doc.setFontSize(10);
     doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 22);
     
-    // Safely get chart data with fallbacks
-    const seriesData = branchRevenueChart?.w?.globals?.series || [];
-    const categories = branchRevenueChart?.w?.globals?.categoryLabels || [];
+    // Use the PHP data directly
+    const pilaData = <?php echo json_encode($pilaMetrics); ?>;
+    const paeteData = <?php echo json_encode($paeteMetrics); ?>;
     
-    // Prepare table data
-    const headers = ['Month'];
-    const body = [];
-    
-    // Add headers for each series
-    branchRevenueOptions.series.forEach((series, index) => {
-      if (seriesData[index] && seriesData[index].visible !== false) {
-        headers.push(series.name || `Branch ${index + 1}`);
-      }
-    });
-    
-    // Add data rows
-    categories.forEach((month, monthIndex) => {
-      const row = [month];
-      
-      branchRevenueOptions.series.forEach((series, seriesIndex) => {
-        if (seriesData[seriesIndex] && seriesData[seriesIndex].visible !== false) {
-          const value = series.data?.[monthIndex] || 0;
-          row.push(`₱${value.toLocaleString()}`);
-        }
-      });
-      
-      body.push(row);
-    });
+    // Create a table with the metrics
+    const headers = ['Metric', 'Pila Branch', 'Paete Branch'];
+    const body = [
+      ['Revenue', `₱${pilaData.revenue.toLocaleString()}`, `₱${paeteData.revenue.toLocaleString()}`],
+      ['Profit', `₱${pilaData.profit.toLocaleString()}`, `₱${paeteData.profit.toLocaleString()}`],
+      ['Margin (%)', `${pilaData.margin.toFixed(2)}%`, `${paeteData.margin.toFixed(2)}%`],
+      ['Customers', pilaData.customers, paeteData.customers]
+    ];
     
     // Add table
     doc.autoTable({
@@ -2585,8 +2562,7 @@ document.getElementById('exportPdfBtn').addEventListener('click', function() {
       }
     });
     
-    // Save the PDF
-    doc.save('branch_revenue_report.pdf');
+    doc.save('branch_performance_report.pdf');
     
   } catch (error) {
     console.error('PDF export failed:', error);
