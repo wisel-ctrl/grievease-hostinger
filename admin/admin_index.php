@@ -1511,8 +1511,29 @@ function time_elapsed_string($datetime, $full = false) {
             <div class="flex items-center gap-3 mb-4 lg:mb-0">
                 <h4 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Branch Performance</h4>
             </div>
-</div>
-</div>
+            
+            <!-- Time Period Toggle Buttons -->
+            <div class="flex items-center gap-2">
+                <div class="inline-flex rounded-md shadow-sm" role="group">
+                    <button type="button" onclick="loadBranchData('week')" 
+                            class="px-3 py-1.5 text-sm font-medium rounded-l-lg border border-sidebar-border focus:z-10 focus:ring-2 focus:ring-sidebar-accent 
+                                   bg-sidebar-accent text-white">
+                        This Week
+                    </button>
+                    <button type="button" onclick="loadBranchData('month')" 
+                            class="px-3 py-1.5 text-sm font-medium border-t border-b border-sidebar-border focus:z-10 focus:ring-2 focus:ring-sidebar-accent 
+                                   hover:bg-sidebar-hover">
+                        This Month
+                    </button>
+                    <button type="button" onclick="loadBranchData('year')" 
+                            class="px-3 py-1.5 text-sm font-medium rounded-r-lg border border-sidebar-border focus:z-10 focus:ring-2 focus:ring-sidebar-accent 
+                                   hover:bg-sidebar-hover">
+                        This Year
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     
     <!-- Responsive Table Container with improved spacing -->
