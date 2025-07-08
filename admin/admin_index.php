@@ -1484,14 +1484,16 @@ function time_elapsed_string($datetime, $full = false) {
   <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 w-full">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-4 sm:p-5 border-b border-sidebar-border">
       <h3 class="font-medium text-sidebar-text">Top Selling Packages</h3>
-      
+      <button id="exportTopSellingPackages" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+        Export to PDF
+      </button>
     </div>
     <div class="p-4 sm:p-5">
       <div class="w-full" style="min-height: 300px; height: 60vh; max-height: 500px;">
         <div id="branchServicesChart" style="width: 100%; height: 100%;"></div>
       </div>
     </div>
-  </div>
+</div>
 </div>
   
   <!-- Branch Statistics -->
@@ -2969,6 +2971,69 @@ document.getElementById('exportPdfBtn').addEventListener('click', function() {
 
 var branchServicesChart = new ApexCharts(document.querySelector("#branchServicesChart"), branchServicesOptions);
 branchServicesChart.render();
+
+ const services = <?php echo json_encode($services); ?>;
+  const pilaData = <?php echo json_encode($pilaData); ?>;
+  const paeteData = <?php echo json_encode($paeteData); ?>;
+  
+  // Initialize jsPDF
+  const { jsPDF } = window.jspdf;
+
+  document.getElementById('exportTopSellingPackages').addEventListener('click', function() {
+    // Create a new PDF document
+    const doc = new jsPDF();
+    
+    // Add title
+    doc.setFontSize(18);
+    doc.text('Service Package Sales Report', 105, 15, { align: 'center' });
+    
+    // Add date
+    doc.setFontSize(10);
+    doc.text(`Generated on: ${new Date().toLocaleString()}`, 105, 22, { align: 'center' });
+    
+    // Create the table data
+    const tableData = [];
+    
+    // Add headers
+    tableData.push(['Service Package', 'Pila Branch', 'Paete Branch']);
+    
+    // Add rows
+    services.forEach((service, index) => {
+      tableData.push([
+        service,
+        pilaData[index],
+        paeteData[index]
+      ]);
+    });
+    
+    // Add the table
+    doc.autoTable({
+      startY: 30,
+      head: [tableData[0]],
+      body: tableData.slice(1),
+      theme: 'grid',
+      headStyles: {
+        fillColor: [79, 70, 229], // indigo-600
+        textColor: 255
+      },
+      alternateRowStyles: {
+        fillColor: [249, 250, 251] // gray-50
+      },
+      styles: {
+        cellPadding: 5,
+        fontSize: 10,
+        valign: 'middle'
+      },
+      columnStyles: {
+        0: { cellWidth: 'auto' },
+        1: { cellWidth: 'auto', halign: 'center' },
+        2: { cellWidth: 'auto', halign: 'center' }
+      }
+    });
+    
+    // Save the PDF
+    doc.save('service_package_sales_report.pdf');
+  });
 </script>
 
 <script>
