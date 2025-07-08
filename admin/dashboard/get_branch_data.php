@@ -20,7 +20,7 @@ $branchQuery = "SELECT
     (COALESCE(s.revenue, 0) + COALESCE(c.custom_revenue, 0) - (COALESCE(s.capital_total, 0) + COALESCE(e.expenses, 0))) AS profit,
     CASE 
         WHEN COALESCE(s.revenue, 0) + COALESCE(c.custom_revenue, 0) > 0 THEN 
-            (COALESCE(s.revenue, 0) + COALESCE(c.custom_revenue, 0) - (COALESCE(s.capital_total, 0) + COALESCE(e.expenses, 0)) / (COALESCE(s.revenue, 0) + COALESCE(c.custom_revenue, 0)) * 100
+            (COALESCE(s.revenue, 0) + COALESCE(c.custom_revenue, 0) - (COALESCE(s.capital_total, 0) + COALESCE(e.expenses, 0))) / (COALESCE(s.revenue, 0) + COALESCE(c.custom_revenue, 0)) * 100
         ELSE 0 
     END AS margin
 FROM 
@@ -115,8 +115,46 @@ $branchResult = $stmt->get_result();
 
 if ($branchResult->num_rows > 0) {
     while ($branch = $branchResult->fetch_assoc()) {
-        // Your existing row generation code here
-        // Same as in your original table body
+        $branchName = htmlspecialchars($branch['branch_name']);
+        $serviceCount = $branch['service_count'] ?? 0;
+        $revenue = $branch['revenue'] ?? 0;
+        $expenses = $branch['expenses'] ?? 0;
+        $capitalTotal = $branch['capital_total'] ?? 0;
+        $profit = $branch['profit'] ?? 0;
+        $margin = $branch['margin'] ?? 0;
+        
+        // Format numbers
+        $formattedRevenue = number_format($revenue, 2);
+        $formattedExpenses = number_format($expenses, 2);
+        $formattedCapital = number_format($capitalTotal, 2);
+        $formattedProfit = number_format($profit, 2);
+        $formattedMargin = number_format($margin, 1);
+        
+        // Determine styling based on PROFIT (not growth)
+        $profitClass = $profit >= 0 ? 'bg-green-100 text-green-600 border-green-200' : 'bg-red-100 text-red-600 border-red-200';
+        $profitIcon = $profit >= 0 ? 'fa-arrow-up' : 'fa-arrow-down';
+        ?>
+        <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
+            <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">
+                <div class="flex items-center">
+                    <i class="fas fa-store mr-2 text-sidebar-accent"></i>
+                    <div>
+                        <div class="branch-name"><?php echo $branchName; ?></div>
+                    </div>
+                </div>
+            </td>
+            <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo $serviceCount; ?></td>
+            <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱<?php echo $formattedRevenue; ?></td>
+            <td class="px-4 py-3.5 text-sm text-sidebar-text">₱<?php echo $formattedExpenses; ?></td>
+            <td class="px-4 py-3.5 text-sm text-sidebar-text">₱<?php echo $formattedCapital; ?></td>
+            <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱<?php echo $formattedProfit; ?></td>
+            <td class="px-4 py-3.5 text-sm">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <?php echo $profitClass; ?> border">
+                    <i class="fas <?php echo $profitIcon; ?> mr-1"></i> <?php echo $formattedMargin; ?>%
+                </span>
+            </td>
+        </tr>
+        <?php
     }
 } else {
     echo '<tr><td colspan="7" class="px-4 py-3.5 text-sm text-center text-sidebar-text">No branch data available for the selected period.</td></tr>';
