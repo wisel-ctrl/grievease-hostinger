@@ -9,18 +9,17 @@ $currentYear = $currentDate->format('Y');
 $currentMonth = $currentDate->format('m');
 $currentWeek = $currentDate->format('W');
 
-// Modify your SQL query to filter by the selected period
 $branchQuery = "SELECT 
     b.branch_id,
     b.branch_name,
-    COALESCE(s.service_count, 0) + COALESCE(c.custom_service_count, 0) AS service_count,
-    COALESCE(s.revenue, 0) + COALESCE(c.custom_revenue, 0) AS revenue,
+    COALESCE(s.service_count, 0) + COALESCE(c.custom_service_count, 0) + COALESCE(a.analytics_service_count, 0) AS service_count,
+    COALESCE(s.revenue, 0) + COALESCE(c.custom_revenue, 0) + COALESCE(a.analytics_revenue, 0) AS revenue,
     COALESCE(e.expenses, 0) AS expenses,
     COALESCE(s.capital_total, 0) AS capital_total,
-    (COALESCE(s.revenue, 0) + COALESCE(c.custom_revenue, 0) - (COALESCE(s.capital_total, 0) + COALESCE(e.expenses, 0))) AS profit,
+    (COALESCE(s.revenue, 0) + COALESCE(c.custom_revenue, 0) + COALESCE(a.analytics_revenue, 0) - (COALESCE(s.capital_total, 0) + COALESCE(e.expenses, 0))) AS profit,
     CASE 
-        WHEN COALESCE(s.revenue, 0) + COALESCE(c.custom_revenue, 0) > 0 THEN 
-            (COALESCE(s.revenue, 0) + COALESCE(c.custom_revenue, 0) - (COALESCE(s.capital_total, 0) + COALESCE(e.expenses, 0))) / (COALESCE(s.revenue, 0) + COALESCE(c.custom_revenue, 0)) * 100
+        WHEN COALESCE(s.revenue, 0) + COALESCE(c.custom_revenue, 0) + COALESCE(a.analytics_revenue, 0) > 0 THEN 
+            (COALESCE(s.revenue, 0) + COALESCE(c.custom_revenue, 0) + COALESCE(a.analytics_revenue, 0) - (COALESCE(s.capital_total, 0) + COALESCE(e.expenses, 0))) / (COALESCE(s.revenue, 0) + COALESCE(c.custom_revenue, 0) + COALESCE(a.analytics_revenue, 0)) * 100
         ELSE 0 
     END AS margin
 FROM 
@@ -78,6 +77,35 @@ switch ($period) {
 }
 
 $branchQuery .= " GROUP BY branch_id ) c ON b.branch_id = c.branch_id
+LEFT JOIN (
+    SELECT 
+        a.branch_id,
+        COUNT(DISTINCT a.analytics_id) AS analytics_service_count,
+        SUM(a.amount_paid) AS analytics_revenue
+    FROM 
+        analytics_tb a
+    WHERE 
+        (a.sales_id IS NULL OR 
+         (a.sales_type = 'traditional' AND NOT EXISTS (SELECT 1 FROM sales_tb s WHERE s.sales_id = a.sales_id)) OR
+         (a.sales_type = 'custom' AND NOT EXISTS (SELECT 1 FROM customsales_tb cs WHERE cs.customsales_id = a.sales_id))
+        ) AND ";
+
+// Add date filtering for analytics based on period
+switch ($period) {
+    case 'week':
+        $branchQuery .= "YEARWEEK(a.sale_date, 1) = YEARWEEK(CURDATE(), 1)";
+        break;
+    case 'month':
+        $branchQuery .= "MONTH(a.sale_date) = MONTH(CURDATE()) AND YEAR(a.sale_date) = YEAR(CURDATE())";
+        break;
+    case 'year':
+        $branchQuery .= "YEAR(a.sale_date) = YEAR(CURDATE())";
+        break;
+    default:
+        $branchQuery .= "MONTH(a.sale_date) = MONTH(CURDATE()) AND YEAR(a.sale_date) = YEAR(CURDATE())";
+}
+
+$branchQuery .= " GROUP BY a.branch_id ) a ON b.branch_id = a.branch_id
 LEFT JOIN (
     SELECT 
         branch_id,
