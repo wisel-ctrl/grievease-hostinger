@@ -2524,62 +2524,65 @@ branchRevenueChart.render();
 
 // Add event listener to the button
 document.getElementById('exportPdfBtn').addEventListener('click', function() {
-  // Get the currently visible series from the chart
-  const visibleSeries = branchRevenueChart.w.globals.visibleSeries;
-  const seriesNames = ['Pila Branch', 'Paete Branch'];
-  const categories = branchRevenueChart.w.globals.categoryLabels;
-  
-  const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({
-        orientation: 'portrait'
-    });
-  
-  // Add title
-  doc.setFontSize(18);
-  doc.text('Revenue by Branch Report', 14, 15);
-  
-  // Add date
-  doc.setFontSize(10);
-  doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 22);
-  
-  // Prepare data for the table
-  const headers = ['Date'];
-  const body = [];
-  
-  // Add headers based on visible series
-  if (visibleSeries[0]) headers.push('Pila Data');
-  if (visibleSeries[1]) headers.push('Paete Data');
-  
-  // Add data rows
-  categories.forEach((month, index) => {
-    const row = [month];
-    if (visibleSeries[0]) row.push('₱' + branchRevenueOptions.series[0].data[index].toLocaleString());
-    if (visibleSeries[1]) row.push('₱' + branchRevenueOptions.series[1].data[index].toLocaleString());
-    body.push(row);
-  });
-  
-  // Add table
-  doc.autoTable({
-    head: [headers],
-    body: body,
-    startY: 30,
-    theme: 'grid',
-    headStyles: {
-      fillColor: [79, 70, 229], // Indigo color
-      textColor: 255
-    },
-    styles: {
-      fontSize: 10
-    },
-    columnStyles: {
-      0: { cellWidth: 'auto' },
-      1: { cellWidth: 'auto' },
-      2: { cellWidth: 'auto' }
+  try {
+    // Check if jsPDF is available
+    if (typeof window.jspdf === 'undefined') {
+      throw new Error('jsPDF library not loaded');
     }
-  });
-  
-  // Save the PDF
-  doc.save('branch_revenue_report.pdf');
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({
+      orientation: 'portrait'
+    });
+    
+    // Add title and date
+    doc.setFontSize(18);
+    doc.text('Revenue by Branch Report', 14, 15);
+    doc.setFontSize(10);
+    doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 22);
+    
+    // Get chart data
+    const visibleSeries = branchRevenueChart.w.globals.visibleSeries;
+    const categories = branchRevenueChart.w.globals.categoryLabels;
+    
+    // Prepare table data
+    const headers = ['Month'];
+    const body = [];
+    
+    // Add headers for visible series
+    if (visibleSeries[0]) headers.push('Pila Revenue');
+    if (visibleSeries[1]) headers.push('Paete Revenue');
+    
+    // Add data rows
+    categories.forEach((month, index) => {
+      const row = [month];
+      if (visibleSeries[0]) row.push(`₱${branchRevenueOptions.series[0].data[index].toLocaleString()}`);
+      if (visibleSeries[1]) row.push(`₱${branchRevenueOptions.series[1].data[index].toLocaleString()}`);
+      body.push(row);
+    });
+    
+    // Add table
+    doc.autoTable({
+      head: [headers],
+      body: body,
+      startY: 30,
+      theme: 'grid',
+      headStyles: {
+        fillColor: [79, 70, 229],
+        textColor: 255
+      },
+      styles: {
+        fontSize: 10
+      }
+    });
+    
+    // Save the PDF
+    doc.save('branch_revenue_report.pdf');
+    
+  } catch (error) {
+    console.error('PDF export failed:', error);
+    alert('Failed to generate PDF. Please check console for details.');
+  }
 });
 </script>
 <script>
