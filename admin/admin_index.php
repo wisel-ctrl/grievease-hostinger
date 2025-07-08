@@ -1334,7 +1334,9 @@ function time_elapsed_string($datetime, $full = false) {
   <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 w-full">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-4 sm:p-5 border-b border-sidebar-border">
       <h3 class="font-medium text-sidebar-text">Revenue by Branch</h3>
-      
+      <button id="exportPdfBtn" class="px-3 py-1.5 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 transition-colors">
+        Export to PDF
+      </button>
     </div>
     <div class="p-4 sm:p-5">
     <div class="w-full" style="min-height: 300px; height: 60vh; max-height: 500px;">
@@ -2518,6 +2520,67 @@ var branchRevenueOptions = {
 
 var branchRevenueChart = new ApexCharts(document.querySelector("#branchRevenueChart"), branchRevenueOptions);
 branchRevenueChart.render();
+
+// Initialize jsPDF (make sure the library is loaded)
+const { jsPDF } = window.jspdf;
+
+// Add event listener to the button
+document.getElementById('exportPdfBtn').addEventListener('click', function() {
+  // Get the currently visible series from the chart
+  const visibleSeries = branchRevenueChart.w.globals.visibleSeries;
+  const seriesNames = ['Pila Branch', 'Paete Branch'];
+  const categories = branchRevenueChart.w.globals.categoryLabels;
+  
+  // Create PDF
+  const doc = new jsPDF();
+  
+  // Add title
+  doc.setFontSize(18);
+  doc.text('Revenue by Branch Report', 14, 15);
+  
+  // Add date
+  doc.setFontSize(10);
+  doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 22);
+  
+  // Prepare data for the table
+  const headers = ['Date'];
+  const body = [];
+  
+  // Add headers based on visible series
+  if (visibleSeries[0]) headers.push('Pila Data');
+  if (visibleSeries[1]) headers.push('Paete Data');
+  
+  // Add data rows
+  categories.forEach((month, index) => {
+    const row = [month];
+    if (visibleSeries[0]) row.push('₱' + branchRevenueOptions.series[0].data[index].toLocaleString());
+    if (visibleSeries[1]) row.push('₱' + branchRevenueOptions.series[1].data[index].toLocaleString());
+    body.push(row);
+  });
+  
+  // Add table
+  doc.autoTable({
+    head: [headers],
+    body: body,
+    startY: 30,
+    theme: 'grid',
+    headStyles: {
+      fillColor: [79, 70, 229], // Indigo color
+      textColor: 255
+    },
+    styles: {
+      fontSize: 10
+    },
+    columnStyles: {
+      0: { cellWidth: 'auto' },
+      1: { cellWidth: 'auto' },
+      2: { cellWidth: 'auto' }
+    }
+  });
+  
+  // Save the PDF
+  doc.save('branch_revenue_report.pdf');
+});
 </script>
 <script>
   var branchServicesOptions = {
