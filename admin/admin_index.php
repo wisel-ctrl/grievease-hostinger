@@ -2524,14 +2524,38 @@ branchRevenueChart.render();
 document.getElementById('exportPdfBtn').addEventListener('click', function() {
   try {
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    
-    // Add title and date
-    doc.setFontSize(18);
-    doc.text('Branch Revenue Report', 14, 15);
+    const doc = new jsPDF({
+      orientation: 'portrait'
+    });
+
+    // Set document metadata
+    doc.setProperties({
+      title: 'Vjay Relova Branch Revenue Report',
+      subject: 'Financial Report',
+      author: 'Vjay Relova Funeral Services',
+      keywords: 'revenue, report, financial, branch',
+      creator: 'Vjay Relova Web Application'
+    });
+
+    // Add header (from code 1)
+    doc.setFontSize(20);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(33, 37, 41);
+    doc.text('VJAY RELOVA FUNERAL SERVICES', 105, 20, { align: 'center' });
+
+    doc.setFontSize(16);
+    doc.text('BRANCH REVENUE REPORT', 105, 30, { align: 'center' });
+
     doc.setFontSize(10);
-    doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 22);
-    
+    doc.setTextColor(100, 100, 100);
+    doc.text('Generated on: ' + new Date().toLocaleString('en-PH', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    }), 105, 36, { align: 'center' });
+
     // Get the PHP data
     const monthLabels = <?php echo json_encode($monthLabels); ?>;
     const pilaData = <?php echo json_encode($pilaMonthlyRevenue); ?>;
@@ -2559,43 +2583,80 @@ document.getElementById('exportPdfBtn').addEventListener('click', function() {
       `₱${paeteTotal.toLocaleString()}`
     ]);
     
-    // Add table
+    // Calculate page width and column widths
+    const pageWidth = doc.internal.pageSize.width;
+    const margin = 15;
+    const availableWidth = pageWidth - (2 * margin);
+    
+    // Add table (maintaining code 2's colors)
     doc.autoTable({
       head: [headers],
-      body: body,
-      startY: 30,
+      body: body.slice(0, -1), // Exclude totals row from main body
+      startY: 45,
       theme: 'grid',
       headStyles: {
-        fillColor: [79, 70, 229],
-        textColor: 255
+        fillColor: [79, 70, 229], // Maintain code 2's indigo color
+        textColor: 255,
+        fontStyle: 'bold',
+        fontSize: 11,
+        halign: 'center'
+      },
+      columnStyles: {
+        0: { 
+          cellWidth: availableWidth * 0.4,
+          halign: 'left',
+          fontStyle: 'bold'
+        },
+        1: { 
+          cellWidth: availableWidth * 0.3,
+          halign: 'right'
+        },
+        2: { 
+          cellWidth: availableWidth * 0.3,
+          halign: 'right'
+        }
       },
       styles: {
-        fontSize: 10
+        fontSize: 9,
+        cellPadding: 3,
+        overflow: 'linebreak',
+        valign: 'middle',
+        lineWidth: 0.1
       },
-      // Style the totals row
-      didDrawCell: (data) => {
-        if (data.row.index === body.length - 1) {
+      margin: { 
+        left: margin,
+        right: margin,
+        top: 45
+      },
+      tableWidth: 'wrap',
+      didDrawPage: function (data) {
+        if (data.pageCount === data.pageNumber) {
+          const finalY = data.cursor.y + 10;
+          doc.setFontSize(12);
+          doc.setFont('courier', 'bold');
+          
+          // Draw total line with full width (maintaining code 2's style)
           doc.setFillColor(240, 240, 240);
-          doc.rect(
-            data.cell.x,
-            data.cell.y,
-            data.cell.width,
-            data.cell.height,
-            'F'
-          );
-          doc.setTextColor(0, 0, 0);
-          doc.setFont(undefined, 'bold');
-          doc.text(
-            data.cell.text,
-            data.cell.x + data.cell.width / 2,
-            data.cell.y + data.cell.height / 2 + 2,
-            { align: 'center' }
-          );
+          doc.rect(margin, finalY - 5, availableWidth, 10, 'F');
+          
+          // Add totals row
+          const totalsRow = body[body.length - 1];
+          doc.text(totalsRow[0], margin + 5, finalY);
+          doc.text(totalsRow[1], margin + availableWidth * 0.7, finalY, { align: 'right' });
+          doc.text(totalsRow[2], pageWidth - margin - 5, finalY, { align: 'right' });
+
+          // Add footer (from code 1)
+          const footerY = doc.internal.pageSize.height - 10;
+          doc.setFontSize(9);
+          doc.setTextColor(100, 100, 100);
+          doc.setFont('courier', 'normal');
+          doc.text('For inquiries: Tel: (02) 1234-5678 • Mobile: 0917-123-4567 • Email: info@vjayrelova.com',
+            105, footerY, { align: 'center' });
         }
       }
     });
     
-    doc.save('branch_revenue_report.pdf');
+    doc.save(`Vjay-Relova-Branch-Report-${new Date().toISOString().slice(0, 10)}.pdf`);
     
   } catch (error) {
     console.error('PDF export failed:', error);
