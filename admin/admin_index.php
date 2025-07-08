@@ -598,11 +598,13 @@ for ($i = 11; $i >= 0; $i--) {
 <?php
 // Get monthly revenue data for Pila branch (branch_id = 2)
 $pilaMonthlyRevenue = [];
+$monthLabels = [];
 for ($i = 11; $i >= 0; $i--) {
     $date = clone $currentDate;
     $date->modify("-$i months");
     $month = $date->format('m');
     $year = $date->format('Y');
+    $monthLabels[] = $date->format('M Y');
     
     $query = "SELECT SUM(amount_paid) as revenue FROM (
         -- 1. Direct sales from sales_tb
@@ -714,6 +716,123 @@ for ($i = 11; $i >= 0; $i--) {
     $paeteMonthlyRevenue[] = $data['revenue'] ?? 0;
 }
 
+// Get yearly revenue data for Pila branch (branch_id = 2)
+$pilaYearlyRevenue = [];
+$yearLabels = [];
+for ($i = 2; $i >= 0; $i--) {
+    $date = clone $currentDate;
+    $date->modify("-$i years");
+    $year = $date->format('Y');
+    $yearLabels[] = $year;
+    
+    $query = "SELECT SUM(amount_paid) as revenue FROM (
+        -- 1. Direct sales from sales_tb
+        SELECT amount_paid 
+        FROM sales_tb 
+        WHERE branch_id = 2 AND YEAR(get_timestamp) = ?
+        
+        UNION ALL
+        
+        -- 2. Direct custom sales from customsales_tb not referenced in analytics_tb
+        SELECT amount_paid
+        FROM customsales_tb
+        WHERE branch_id = 2 AND YEAR(get_timestamp) = ?
+        AND customsales_id NOT IN (
+            SELECT sales_id FROM analytics_tb 
+            WHERE sales_type = 'custom'
+            AND YEAR(sale_date) = ?
+        )
+        
+        UNION ALL
+        
+        -- 3. All analytics records (they may or may not reference other tables)
+        SELECT 
+            CASE
+                -- If it's traditional and has a sales_id reference
+                WHEN a.sales_type = 'traditional' AND s.sales_id IS NOT NULL THEN s.amount_paid
+                -- If it's custom and has a customsales_id reference
+                WHEN a.sales_type = 'custom' AND c.customsales_id IS NOT NULL THEN c.amount_paid
+                -- Otherwise use analytics_tb's own amount_paid
+                ELSE a.amount_paid
+            END as amount_paid
+        FROM analytics_tb a
+        LEFT JOIN sales_tb s ON a.sales_type = 'traditional' AND a.sales_id = s.sales_id AND s.branch_id = 2
+        LEFT JOIN customsales_tb c ON a.sales_type = 'custom' AND a.sales_id = c.customsales_id AND c.branch_id = 2
+        WHERE YEAR(a.sale_date) = ?
+        AND (a.branch_id = 2 OR (s.sales_id IS NOT NULL OR c.customsales_id IS NOT NULL))
+    ) as combined_sales";
+    
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("iiii", 
+        $year,        // 1. sales_tb direct
+        $year,        // 2. customsales_tb direct
+        $year,        // 2. customsales_tb not in analytics
+        $year         // 3. analytics_tb all records
+    );
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_assoc();
+    
+    $pilaYearlyRevenue[] = $data['revenue'] ?? 0;
+}
+
+// Get yearly revenue data for Paete branch (branch_id = 1)
+$paeteYearlyRevenue = [];
+for ($i = 2; $i >= 0; $i--) {
+    $date = clone $currentDate;
+    $date->modify("-$i years");
+    $year = $date->format('Y');
+    
+    $query = "SELECT SUM(amount_paid) as revenue FROM (
+        -- 1. Direct sales from sales_tb
+        SELECT amount_paid 
+        FROM sales_tb 
+        WHERE branch_id = 1 AND YEAR(get_timestamp) = ?
+        
+        UNION ALL
+        
+        -- 2. Direct custom sales from customsales_tb not referenced in analytics_tb
+        SELECT amount_paid
+        FROM customsales_tb
+        WHERE branch_id = 1 AND YEAR(get_timestamp) = ?
+        AND customsales_id NOT IN (
+            SELECT sales_id FROM analytics_tb 
+            WHERE sales_type = 'custom'
+            AND YEAR(sale_date) = ?
+        )
+        
+        UNION ALL
+        
+        -- 3. All analytics records (they may or may not reference other tables)
+        SELECT 
+            CASE
+                -- If it's traditional and has a sales_id reference
+                WHEN a.sales_type = 'traditional' AND s.sales_id IS NOT NULL THEN s.amount_paid
+                -- If it's custom and has a customsales_id reference
+                WHEN a.sales_type = 'custom' AND c.customsales_id IS NOT NULL THEN c.amount_paid
+                -- Otherwise use analytics_tb's own amount_paid
+                ELSE a.amount_paid
+            END as amount_paid
+        FROM analytics_tb a
+        LEFT JOIN sales_tb s ON a.sales_type = 'traditional' AND a.sales_id = s.sales_id AND s.branch_id = 1
+        LEFT JOIN customsales_tb c ON a.sales_type = 'custom' AND a.sales_id = c.customsales_id AND c.branch_id = 1
+        WHERE YEAR(a.sale_date) = ?
+        AND (a.branch_id = 1 OR (s.sales_id IS NOT NULL OR c.customsales_id IS NOT NULL))
+    ) as combined_sales";
+    
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("iiii", 
+        $year,        // 1. sales_tb direct
+        $year,        // 2. customsales_tb direct
+        $year,        // 2. customsales_tb not in analytics
+        $year         // 3. analytics_tb all records
+    );
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_assoc();
+    
+    $paeteYearlyRevenue[] = $data['revenue'] ?? 0;
+}
 ?>
 <?php
 $serviceSalesQuery = "SELECT 
@@ -1334,12 +1453,22 @@ function time_elapsed_string($datetime, $full = false) {
   <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 w-full">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-4 sm:p-5 border-b border-sidebar-border">
       <h3 class="font-medium text-sidebar-text">Revenue by Branch</h3>
-      <button id="exportPdfBtn" class="px-3 py-1.5 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 transition-colors">
-        Export to PDF
-      </button>
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2">
+          <span class="text-sm text-gray-600">Monthly</span>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="timeframeToggle" class="sr-only peer">
+            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+          </label>
+          <span class="text-sm text-gray-600">Yearly</span>
+        </div>
+        <button id="exportPdfBtn" class="px-3 py-1.5 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 transition-colors">
+          Export to PDF
+        </button>
+      </div>
     </div>
     <div class="p-4 sm:p-5">
-    <div class="w-full" style="min-height: 300px; height: 60vh; max-height: 500px;">
+      <div class="w-full" style="min-height: 300px; height: 60vh; max-height: 500px;">
         <div id="branchRevenueChart" style="width: 100%; height: 100%;"></div>
       </div>
     </div>
@@ -2402,124 +2531,162 @@ document.getElementById('exportProjectedIncome').addEventListener('click', funct
 var pilaRevenue = <?php echo $pilaMetrics['revenue']; ?>;
 var paeteRevenue = <?php echo $paeteMetrics['revenue']; ?>;
 
-var branchRevenueOptions = {
-  series: [
-    {
-      name: 'Pila Branch',
-      data: <?php echo json_encode($pilaMonthlyRevenue); ?>
-    },
-    {
-      name: 'Paete Branch',
-      data: <?php echo json_encode($paeteMonthlyRevenue); ?>
-    }
-  ],
-  chart: {
-    type: 'bar',
-    height: '100%',
-    width: '100%',
-    stacked: false, // Set to true if you want stacked bars
-    toolbar: {
-      show: true, // This enables the toolbar with zoom/export options
-      tools: {
-        download: false, // Show download options
-        selection: true,
-        zoom: true,
-        zoomin: true,
-        zoomout: true,
-        pan: true,
-        reset: true
-      },
-      export: {
-        csv: {
-          filename: 'branch-revenue-comparison',
-          columnDelimiter: ',',
-          headerCategory: 'Month',
-          headerValue: 'Revenue (₱)',
-        },
-        png: {
-          filename: 'branch-revenue-comparison',
-        },
-        svg: {
-          filename: 'branch-revenue-comparison',
-        }
-      }
-    }
-  },
-  plotOptions: {
-    bar: {
-      horizontal: false,
-      columnWidth: '80%',
-      endingShape: 'rounded',
-      borderRadius: 4
-    },
-  },
-  dataLabels: {
-    enabled: false
-  },
-  colors: ['#4f46e5', '#10b981'], // Different colors for each branch
-  stroke: {
-    show: true,
-    width: 2,
-    colors: ['transparent']
-  },
-  xaxis: {
-    categories: <?php echo json_encode($monthLabels); ?>,
-    labels: {
-      style: {
-        fontSize: '12px',
-        fontWeight: 500
-      },
-      rotate: -45, // Rotate labels if they're too long
-      hideOverlappingLabels: true
-    }
-  },
-  yaxis: {
-    title: {
-      text: 'Revenue (₱)'
-    },
-    labels: {
-      formatter: function(val) {
-        return "₱" + val.toLocaleString();
-      }
-    }
-  },
-  fill: {
-    opacity: 1
-  },
-  tooltip: {
-    y: {
-      formatter: function(val) {
-        return "₱" + val.toLocaleString();
-      }
-    }
-  },
-  legend: {
-    position: 'top',
-    horizontalAlign: 'center',
-    offsetY: 0,
-    markers: {
-      width: 12,
-      height: 12,
-      radius: 12,
-    }
-  },
-  responsive: [{
-    breakpoint: 768,
-    options: {
-      chart: {
-        height: 400
-      },
-      xaxis: {
-        labels: {
-          rotate: -45
-        }
-      }
-    }
-  }]
+// Store the chart data in variables
+const monthlyData = {
+  pila: <?php echo json_encode($pilaMonthlyRevenue); ?>,
+  paete: <?php echo json_encode($paeteMonthlyRevenue); ?>,
+  labels: <?php echo json_encode($monthLabels); ?>,
+  title: "Monthly Revenue by Branch"
 };
 
-var branchRevenueChart = new ApexCharts(document.querySelector("#branchRevenueChart"), branchRevenueOptions);
+const yearlyData = {
+  pila: <?php echo json_encode($pilaYearlyRevenue); ?>,
+  paete: <?php echo json_encode($paeteYearlyRevenue); ?>,
+  labels: <?php echo json_encode($yearLabels); ?>,
+  title: "Yearly Revenue by Branch"
+};
+
+// Initialize the chart with monthly data
+var branchRevenueChart = new ApexCharts(document.querySelector("#branchRevenueChart"), getChartOptions(monthlyData));
 branchRevenueChart.render();
+
+// Toggle between monthly and yearly data
+document.getElementById('timeframeToggle').addEventListener('change', function(e) {
+  const isYearly = e.target.checked;
+  const data = isYearly ? yearlyData : monthlyData;
+  
+  branchRevenueChart.updateOptions(getChartOptions(data));
+});
+
+// Function to generate chart options based on data
+function getChartOptions(data) {
+  return {
+    series: [
+      {
+        name: 'Pila Branch',
+        data: data.pila
+      },
+      {
+        name: 'Paete Branch',
+        data: data.paete
+      }
+    ],
+    chart: {
+      type: 'bar',
+      height: '100%',
+      width: '100%',
+      stacked: false,
+      toolbar: {
+        show: true,
+        tools: {
+          download: false,
+          selection: true,
+          zoom: true,
+          zoomin: true,
+          zoomout: true,
+          pan: true,
+          reset: true
+        },
+        export: {
+          csv: {
+            filename: 'branch-revenue-comparison',
+            columnDelimiter: ',',
+            headerCategory: data.title.includes('Monthly') ? 'Month' : 'Year',
+            headerValue: 'Revenue (₱)',
+          },
+          png: {
+            filename: 'branch-revenue-comparison',
+          },
+          svg: {
+            filename: 'branch-revenue-comparison',
+          }
+        }
+      }
+    },
+    plotOptions: {
+      bar: {
+        horizontal: false,
+        columnWidth: '80%',
+        endingShape: 'rounded',
+        borderRadius: 4
+      },
+    },
+    dataLabels: {
+      enabled: false
+    },
+    colors: ['#4f46e5', '#10b981'],
+    stroke: {
+      show: true,
+      width: 2,
+      colors: ['transparent']
+    },
+    xaxis: {
+      categories: data.labels,
+      title: {
+        text: data.title.includes('Monthly') ? 'Month' : 'Year'
+      },
+      labels: {
+        style: {
+          fontSize: '12px',
+          fontWeight: 500
+        },
+        rotate: -45,
+        hideOverlappingLabels: true
+      }
+    },
+    yaxis: {
+      title: {
+        text: 'Revenue (₱)'
+      },
+      labels: {
+        formatter: function(val) {
+          return "₱" + val.toLocaleString();
+        }
+      }
+    },
+    fill: {
+      opacity: 1
+    },
+    tooltip: {
+      y: {
+        formatter: function(val) {
+          return "₱" + val.toLocaleString();
+        }
+      }
+    },
+    legend: {
+      position: 'top',
+      horizontalAlign: 'center',
+      offsetY: 0,
+      markers: {
+        width: 12,
+        height: 12,
+        radius: 12,
+      }
+    },
+    responsive: [{
+      breakpoint: 768,
+      options: {
+        chart: {
+          height: 400
+        },
+        xaxis: {
+          labels: {
+            rotate: -45
+          }
+        }
+      }
+    }],
+    title: {
+      text: data.title,
+      align: 'center',
+      style: {
+        fontSize: '16px',
+        fontWeight: 'bold'
+      }
+    }
+  };
+}
 
 document.getElementById('exportPdfBtn').addEventListener('click', function() {
   try {
@@ -2537,14 +2704,19 @@ document.getElementById('exportPdfBtn').addEventListener('click', function() {
       creator: 'Vjay Relova Web Application'
     });
 
-    // Add header (from code 1)
+    // Get the current timeframe
+    const isYearly = document.getElementById('timeframeToggle').checked;
+    const currentData = isYearly ? yearlyData : monthlyData;
+    const timeframe = isYearly ? 'Yearly' : 'Monthly';
+
+    // Add header
     doc.setFontSize(20);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(33, 37, 41);
     doc.text('VJAY RELOVA FUNERAL SERVICES', 105, 20, { align: 'center' });
 
     doc.setFontSize(16);
-    doc.text('BRANCH REVENUE REPORT', 105, 30, { align: 'center' });
+    doc.text(`${timeframe.toUpperCase()} BRANCH REVENUE REPORT`, 105, 30, { align: 'center' });
 
     doc.setFontSize(10);
     doc.setTextColor(100, 100, 100);
@@ -2556,32 +2728,26 @@ document.getElementById('exportPdfBtn').addEventListener('click', function() {
       minute: '2-digit'
     }), 105, 36, { align: 'center' });
 
-    // Get the PHP data
-    const monthLabels = <?php echo json_encode($monthLabels); ?>;
-    const pilaData = <?php echo json_encode($pilaMonthlyRevenue); ?>;
-    const paeteData = <?php echo json_encode($paeteMonthlyRevenue); ?>;
-    
     // Create table data
-    const headers = ['Month', 'Pila Revenue', 'Paete Revenue'];
+    const headers = [isYearly ? 'Year' : 'Month', 'Pila Revenue', 'Paete Revenue'];
     const body = [];
     
-    // Add monthly data rows
-    for (let i = 0; i < monthLabels.length; i++) {
+    // Add data rows
+    for (let i = 0; i < currentData.labels.length; i++) {
       body.push([
-        monthLabels[i],
-        `PHP ${parseFloat(pilaData[i] || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
-        `PHP ${parseFloat(paeteData[i] || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+        currentData.labels[i],
+        `PHP ${parseFloat(currentData.pila[i] || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+        `PHP ${parseFloat(currentData.paete[i] || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
       ]);
     }
 
-    
     // Add totals row
-    const pilaTotal = pilaData.reduce((a, b) => a + (parseFloat(b) || 0), 0);
-    const paeteTotal = paeteData.reduce((a, b) => a + (parseFloat(b) || 0), 0);
+    const pilaTotal = currentData.pila.reduce((a, b) => a + (parseFloat(b) || 0), 0);
+    const paeteTotal = currentData.paete.reduce((a, b) => a + (parseFloat(b) || 0), 0);
     body.push([
       'TOTAL',
-      `PHP ${pilaTotal.toLocaleString()}`,
-      `PHP ${paeteTotal.toLocaleString()}`
+      `PHP ${pilaTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+      `PHP ${paeteTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
     ]);
     
     // Calculate page width and column widths
@@ -2589,14 +2755,14 @@ document.getElementById('exportPdfBtn').addEventListener('click', function() {
     const margin = 15;
     const availableWidth = pageWidth - (2 * margin);
     
-    // Add table (maintaining code 2's colors)
+    // Add table
     doc.autoTable({
       head: [headers],
       body: body.slice(0, -1), // Exclude totals row from main body
       startY: 45,
       theme: 'grid',
       headStyles: {
-        fillColor: [79, 70, 229], // Maintain code 2's indigo color
+        fillColor: [79, 70, 229],
         textColor: 255,
         fontStyle: 'bold',
         fontSize: 11,
@@ -2636,7 +2802,7 @@ document.getElementById('exportPdfBtn').addEventListener('click', function() {
           doc.setFontSize(12);
           doc.setFont('courier', 'bold');
           
-          // Draw total line with full width (maintaining code 2's style)
+          // Draw total line with full width
           doc.setFillColor(240, 240, 240);
           doc.rect(margin, finalY - 5, availableWidth, 10, 'F');
           
@@ -2646,7 +2812,7 @@ document.getElementById('exportPdfBtn').addEventListener('click', function() {
           doc.text(totalsRow[1], margin + availableWidth * 0.7, finalY, { align: 'right' });
           doc.text(totalsRow[2], pageWidth - margin - 5, finalY, { align: 'right' });
 
-          // Add footer (from code 1)
+          // Add footer
           const footerY = doc.internal.pageSize.height - 10;
           doc.setFontSize(9);
           doc.setTextColor(100, 100, 100);
@@ -2657,7 +2823,7 @@ document.getElementById('exportPdfBtn').addEventListener('click', function() {
       }
     });
     
-    doc.save(`Vjay-Relova-Branch-Report-${new Date().toISOString().slice(0, 10)}.pdf`);
+    doc.save(`Vjay-Relova-Branch-Report-${timeframe}-${new Date().toISOString().slice(0, 10)}.pdf`);
     
   } catch (error) {
     console.error('PDF export failed:', error);
