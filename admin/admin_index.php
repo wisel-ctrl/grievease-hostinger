@@ -745,29 +745,29 @@ for ($i = 4; $i >= 0; $i--) {
         
         UNION ALL
         
-        -- 3. All analytics records (they may or may not reference other tables)
-        SELECT 
-            CASE
-                -- If it's traditional and has a sales_id reference
-                WHEN a.sales_type = 'traditional' AND s.sales_id IS NOT NULL THEN s.amount_paid
-                -- If it's custom and has a customsales_id reference
-                WHEN a.sales_type = 'custom' AND c.customsales_id IS NOT NULL THEN c.amount_paid
-                -- Otherwise use analytics_tb's own amount_paid
-                ELSE a.amount_paid
-            END as amount_paid
+        -- 3. Analytics records that don't reference existing sales or have NULL sales_id
+        SELECT a.amount_paid
         FROM analytics_tb a
-        LEFT JOIN sales_tb s ON a.sales_type = 'traditional' AND a.sales_id = s.sales_id AND s.branch_id = 2
-        LEFT JOIN customsales_tb c ON a.sales_type = 'custom' AND a.sales_id = c.customsales_id AND c.branch_id = 2
-        WHERE YEAR(a.sale_date) = ?
-        AND (a.branch_id = 2 OR (s.sales_id IS NOT NULL OR c.customsales_id IS NOT NULL))
+        WHERE a.branch_id = 2 AND YEAR(a.sale_date) = ?
+        AND (
+            a.sales_id IS NULL OR
+            NOT EXISTS (
+                SELECT 1 FROM sales_tb s 
+                WHERE s.sales_id = a.sales_id AND s.branch_id = 2 AND a.sales_type = 'traditional'
+            ) OR
+            NOT EXISTS (
+                SELECT 1 FROM customsales_tb c 
+                WHERE c.customsales_id = a.sales_id AND c.branch_id = 2 AND a.sales_type = 'custom'
+            )
+        )
     ) as combined_sales";
     
     $stmt = $conn->prepare($query);
     $stmt->bind_param("iiii", 
-        $year,        // 1. sales_tb direct
-        $year,        // 2. customsales_tb direct
-        $year,        // 2. customsales_tb not in analytics
-        $year         // 3. analytics_tb all records
+        $year,  // 1. sales_tb direct
+        $year,  // 2. customsales_tb direct
+        $year,  // 2. customsales_tb not in analytics
+        $year   // 3. analytics_tb records
     );
     $stmt->execute();
     $result = $stmt->get_result();
@@ -803,29 +803,29 @@ for ($i = 4; $i >= 0; $i--) {
         
         UNION ALL
         
-        -- 3. All analytics records (they may or may not reference other tables)
-        SELECT 
-            CASE
-                -- If it's traditional and has a sales_id reference
-                WHEN a.sales_type = 'traditional' AND s.sales_id IS NOT NULL THEN s.amount_paid
-                -- If it's custom and has a customsales_id reference
-                WHEN a.sales_type = 'custom' AND c.customsales_id IS NOT NULL THEN c.amount_paid
-                -- Otherwise use analytics_tb's own amount_paid
-                ELSE a.amount_paid
-            END as amount_paid
+        -- 3. Analytics records that don't reference existing sales or have NULL sales_id
+        SELECT a.amount_paid
         FROM analytics_tb a
-        LEFT JOIN sales_tb s ON a.sales_type = 'traditional' AND a.sales_id = s.sales_id AND s.branch_id = 1
-        LEFT JOIN customsales_tb c ON a.sales_type = 'custom' AND a.sales_id = c.customsales_id AND c.branch_id = 1
-        WHERE YEAR(a.sale_date) = ?
-        AND (a.branch_id = 1 OR (s.sales_id IS NOT NULL OR c.customsales_id IS NOT NULL))
+        WHERE a.branch_id = 1 AND YEAR(a.sale_date) = ?
+        AND (
+            a.sales_id IS NULL OR
+            NOT EXISTS (
+                SELECT 1 FROM sales_tb s 
+                WHERE s.sales_id = a.sales_id AND s.branch_id = 1 AND a.sales_type = 'traditional'
+            ) OR
+            NOT EXISTS (
+                SELECT 1 FROM customsales_tb c 
+                WHERE c.customsales_id = a.sales_id AND c.branch_id = 1 AND a.sales_type = 'custom'
+            )
+        )
     ) as combined_sales";
     
     $stmt = $conn->prepare($query);
     $stmt->bind_param("iiii", 
-        $year,        // 1. sales_tb direct
-        $year,        // 2. customsales_tb direct
-        $year,        // 2. customsales_tb not in analytics
-        $year         // 3. analytics_tb all records
+        $year,  // 1. sales_tb direct
+        $year,  // 2. customsales_tb direct
+        $year,  // 2. customsales_tb not in analytics
+        $year   // 3. analytics_tb records
     );
     $stmt->execute();
     $result = $stmt->get_result();
