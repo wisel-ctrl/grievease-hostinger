@@ -2534,10 +2534,6 @@ document.getElementById('exportProjectedIncome').addEventListener('click', funct
 });
 </script>
 <script>
-// Get the revenue data for both branches
-var pilaRevenue = <?php echo $pilaMetrics['revenue']; ?>;
-var paeteRevenue = <?php echo $paeteMetrics['revenue']; ?>;
-
 // Store the chart data in variables
 const monthlyData = {
   pila: <?php echo json_encode($pilaMonthlyRevenue); ?>,
@@ -2558,11 +2554,22 @@ var branchRevenueChart = new ApexCharts(document.querySelector("#branchRevenueCh
 branchRevenueChart.render();
 
 // Toggle between monthly and yearly data
-document.getElementById('timeframeToggle').addEventListener('change', function(e) {
-  const isYearly = e.target.checked;
-  const data = isYearly ? yearlyData : monthlyData;
+document.getElementById('monthlyViewBranch').addEventListener('click', function() {
+  this.classList.add('bg-blue-500', 'text-white');
+  this.classList.remove('text-gray-600', 'hover:text-gray-800');
+  document.getElementById('yearlyViewBranch').classList.remove('bg-blue-500', 'text-white');
+  document.getElementById('yearlyViewBranch').classList.add('text-gray-600', 'hover:text-gray-800');
   
-  branchRevenueChart.updateOptions(getChartOptions(data));
+  branchRevenueChart.updateOptions(getChartOptions(monthlyData));
+});
+
+document.getElementById('yearlyViewBranch').addEventListener('click', function() {
+  this.classList.add('bg-blue-500', 'text-white');
+  this.classList.remove('text-gray-600', 'hover:text-gray-800');
+  document.getElementById('monthlyViewBranch').classList.remove('bg-blue-500', 'text-white');
+  document.getElementById('monthlyViewBranch').classList.add('text-gray-600', 'hover:text-gray-800');
+  
+  branchRevenueChart.updateOptions(getChartOptions(yearlyData));
 });
 
 // Function to generate chart options based on data
@@ -2711,8 +2718,8 @@ document.getElementById('exportPdfBtn').addEventListener('click', function() {
       creator: 'Vjay Relova Web Application'
     });
 
-    // Get the current timeframe
-    const isYearly = document.getElementById('timeframeToggle').checked;
+    // Get the current timeframe based on which button is active
+    const isYearly = document.getElementById('yearlyViewBranch').classList.contains('bg-blue-500');
     const currentData = isYearly ? yearlyData : monthlyData;
     const timeframe = isYearly ? 'Yearly' : 'Monthly';
 
