@@ -2569,8 +2569,8 @@ document.getElementById('exportPdfBtn').addEventListener('click', function() {
     for (let i = 0; i < monthLabels.length; i++) {
       body.push([
         monthLabels[i],
-        `₱${parseFloat(pilaData[i] || 0).toLocaleString()}`,
-        `₱${parseFloat(paeteData[i] || 0).toLocaleString()}`
+        `PHP${parseFloat(pilaData[i] || 0).toLocaleString()}`,
+        `PHP${parseFloat(paeteData[i] || 0).toLocaleString()}`
       ]);
     }
     
@@ -2579,8 +2579,8 @@ document.getElementById('exportPdfBtn').addEventListener('click', function() {
     const paeteTotal = paeteData.reduce((a, b) => a + (parseFloat(b) || 0), 0);
     body.push([
       'TOTAL',
-      `₱${pilaTotal.toLocaleString()}`,
-      `₱${paeteTotal.toLocaleString()}`
+      `PHP${pilaTotal.toLocaleString()}`,
+      `PHP${paeteTotal.toLocaleString()}`
     ]);
     
     // Calculate page width and column widths
