@@ -2980,17 +2980,40 @@ branchServicesChart.render();
   const { jsPDF } = window.jspdf;
 
   document.getElementById('exportTopSellingPackages').addEventListener('click', function() {
-    // Create a new PDF document
-    const doc = new jsPDF();
-    
-    // Add title
-    doc.setFontSize(18);
-    doc.text('Service Package Sales Report', 105, 15, { align: 'center' });
-    
-    // Add date
+  try {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({
+      orientation: 'portrait'
+    });
+
+    // Set document metadata
+    doc.setProperties({
+      title: 'Vjay Relova Service Package Sales Report',
+      subject: 'Sales Report',
+      author: 'Vjay Relova Funeral Services',
+      keywords: 'sales, report, service, package',
+      creator: 'Vjay Relova Web Application'
+    });
+
+    // Add header
+    doc.setFontSize(20);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(33, 37, 41);
+    doc.text('VJAY RELOVA FUNERAL SERVICES', 105, 20, { align: 'center' });
+
+    doc.setFontSize(16);
+    doc.text('SERVICE PACKAGE SALES REPORT', 105, 30, { align: 'center' });
+
     doc.setFontSize(10);
-    doc.text(`Generated on: ${new Date().toLocaleString()}`, 105, 22, { align: 'center' });
-    
+    doc.setTextColor(100, 100, 100);
+    doc.text('Generated on: ' + new Date().toLocaleString('en-PH', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    }), 105, 36, { align: 'center' });
+
     // Create the table data
     const tableData = [];
     
@@ -3005,35 +3028,72 @@ branchServicesChart.render();
         paeteData[index]
       ]);
     });
+
+    // Calculate page width and column widths
+    const pageWidth = doc.internal.pageSize.width;
+    const margin = 15;
+    const availableWidth = pageWidth - (2 * margin);
     
     // Add the table
     doc.autoTable({
-      startY: 30,
+      startY: 45,
       head: [tableData[0]],
       body: tableData.slice(1),
       theme: 'grid',
       headStyles: {
-        fillColor: [79, 70, 229], // indigo-600
-        textColor: 255
+        fillColor: [79, 70, 229],
+        textColor: 255,
+        fontStyle: 'bold',
+        fontSize: 11,
+        halign: 'center'
       },
       alternateRowStyles: {
-        fillColor: [249, 250, 251] // gray-50
+        fillColor: [249, 250, 251]
       },
       styles: {
-        cellPadding: 5,
-        fontSize: 10,
-        valign: 'middle'
+        cellPadding: 3,
+        fontSize: 9,
+        valign: 'middle',
+        lineWidth: 0.1
       },
       columnStyles: {
-        0: { cellWidth: 'auto' },
-        1: { cellWidth: 'auto', halign: 'center' },
-        2: { cellWidth: 'auto', halign: 'center' }
+        0: { 
+          cellWidth: availableWidth * 0.6,
+          halign: 'left'
+        },
+        1: { 
+          cellWidth: availableWidth * 0.2,
+          halign: 'right'
+        },
+        2: { 
+          cellWidth: availableWidth * 0.2,
+          halign: 'right'
+        }
+      },
+      margin: { 
+        left: margin,
+        right: margin,
+        top: 45
+      },
+      didDrawPage: function(data) {
+        // Add footer
+        const footerY = doc.internal.pageSize.height - 10;
+        doc.setFontSize(9);
+        doc.setTextColor(100, 100, 100);
+        doc.setFont('courier', 'normal');
+        doc.text('For inquiries: Tel: (02) 1234-5678 • Mobile: 0917-123-4567 • Email: info@vjayrelova.com',
+          105, footerY, { align: 'center' });
       }
     });
     
     // Save the PDF
-    doc.save('service_package_sales_report.pdf');
-  });
+    doc.save(`Vjay-Relova-Service-Packages-Report-${new Date().toISOString().slice(0, 10)}.pdf`);
+    
+  } catch (error) {
+    console.error('PDF export failed:', error);
+    alert('Failed to generate PDF. Please check console for details.');
+  }
+});
 </script>
 
 <script>
