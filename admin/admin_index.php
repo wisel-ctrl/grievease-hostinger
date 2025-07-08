@@ -719,7 +719,7 @@ for ($i = 11; $i >= 0; $i--) {
 // Get yearly revenue data for Pila branch (branch_id = 2)
 $pilaYearlyRevenue = [];
 $yearLabels = [];
-for ($i = 2; $i >= 0; $i--) {
+for ($i = 4; $i >= 0; $i--) {
     $date = clone $currentDate;
     $date->modify("-$i years");
     $year = $date->format('Y');
@@ -778,7 +778,7 @@ for ($i = 2; $i >= 0; $i--) {
 
 // Get yearly revenue data for Paete branch (branch_id = 1)
 $paeteYearlyRevenue = [];
-for ($i = 2; $i >= 0; $i--) {
+for ($i = 4; $i >= 0; $i--) {
     $date = clone $currentDate;
     $date->modify("-$i years");
     $year = $date->format('Y');
