@@ -2521,8 +2521,6 @@ var branchRevenueOptions = {
 var branchRevenueChart = new ApexCharts(document.querySelector("#branchRevenueChart"), branchRevenueOptions);
 branchRevenueChart.render();
 
-// Initialize jsPDF (make sure the library is loaded)
-const { jsPDF } = window.jspdf;
 
 // Add event listener to the button
 document.getElementById('exportPdfBtn').addEventListener('click', function() {
@@ -2531,8 +2529,10 @@ document.getElementById('exportPdfBtn').addEventListener('click', function() {
   const seriesNames = ['Pila Branch', 'Paete Branch'];
   const categories = branchRevenueChart.w.globals.categoryLabels;
   
-  // Create PDF
-  const doc = new jsPDF();
+  const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({
+        orientation: 'portrait'
+    });
   
   // Add title
   doc.setFontSize(18);
