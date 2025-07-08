@@ -2567,15 +2567,10 @@ document.getElementById('exportPdfBtn').addEventListener('click', function() {
     
     // Add monthly data rows
     for (let i = 0; i < monthLabels.length; i++) {
-      // Parse the values to float, ensure they are treated as numbers
-      const pilaValue = parseFloat(pilaData[i] || 0);
-      const paeteValue = parseFloat(paeteData[i] || 0);
-
-      // Format the values as currency with two decimal places
       body.push([
         monthLabels[i],
-        `PHP ${pilaValue.toFixed(2).toLocaleString()}`,
-        `PHP ${paeteValue.toFixed(2).toLocaleString()}`
+        `PHP ${parseFloat(pilaData[i] || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+        `PHP ${parseFloat(paeteData[i] || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
       ]);
     }
 
