@@ -2541,23 +2541,32 @@ document.getElementById('exportPdfBtn').addEventListener('click', function() {
     doc.setFontSize(10);
     doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 22);
     
-    // Get chart data
-    const visibleSeries = branchRevenueChart.w.globals.visibleSeries;
-    const categories = branchRevenueChart.w.globals.categoryLabels;
+    // Safely get chart data with fallbacks
+    const seriesData = branchRevenueChart?.w?.globals?.series || [];
+    const categories = branchRevenueChart?.w?.globals?.categoryLabels || [];
     
     // Prepare table data
     const headers = ['Month'];
     const body = [];
     
-    // Add headers for visible series
-    if (visibleSeries[0]) headers.push('Pila Revenue');
-    if (visibleSeries[1]) headers.push('Paete Revenue');
+    // Add headers for each series
+    branchRevenueOptions.series.forEach((series, index) => {
+      if (seriesData[index] && seriesData[index].visible !== false) {
+        headers.push(series.name || `Branch ${index + 1}`);
+      }
+    });
     
     // Add data rows
-    categories.forEach((month, index) => {
+    categories.forEach((month, monthIndex) => {
       const row = [month];
-      if (visibleSeries[0]) row.push(`₱${branchRevenueOptions.series[0].data[index].toLocaleString()}`);
-      if (visibleSeries[1]) row.push(`₱${branchRevenueOptions.series[1].data[index].toLocaleString()}`);
+      
+      branchRevenueOptions.series.forEach((series, seriesIndex) => {
+        if (seriesData[seriesIndex] && seriesData[seriesIndex].visible !== false) {
+          const value = series.data?.[monthIndex] || 0;
+          row.push(`₱${value.toLocaleString()}`);
+        }
+      });
+      
       body.push(row);
     });
     
