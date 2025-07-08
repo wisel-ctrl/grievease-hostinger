@@ -2567,20 +2567,26 @@ document.getElementById('exportPdfBtn').addEventListener('click', function() {
     
     // Add monthly data rows
     for (let i = 0; i < monthLabels.length; i++) {
+      // Parse the values to float, ensure they are treated as numbers
+      const pilaValue = parseFloat(pilaData[i] || 0);
+      const paeteValue = parseFloat(paeteData[i] || 0);
+
+      // Format the values as currency with two decimal places
       body.push([
         monthLabels[i],
-        `PHP${parseFloat(pilaData[i] || 0).toLocaleString()}`,
-        `PHP${parseFloat(paeteData[i] || 0).toLocaleString()}`
+        `PHP ${pilaValue.toFixed(2).toLocaleString()}`,
+        `PHP ${paeteValue.toFixed(2).toLocaleString()}`
       ]);
     }
+
     
     // Add totals row
     const pilaTotal = pilaData.reduce((a, b) => a + (parseFloat(b) || 0), 0);
     const paeteTotal = paeteData.reduce((a, b) => a + (parseFloat(b) || 0), 0);
     body.push([
       'TOTAL',
-      `PHP${pilaTotal.toLocaleString()}`,
-      `PHP${paeteTotal.toLocaleString()}`
+      `PHP ${pilaTotal.toLocaleString()}`,
+      `PHP ${paeteTotal.toLocaleString()}`
     ]);
     
     // Calculate page width and column widths
