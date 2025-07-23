@@ -106,6 +106,7 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
   <style>
     body.modal-open {
       overflow: hidden;
