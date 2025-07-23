@@ -3409,10 +3409,26 @@ function savePayment() {
   const paymentDate = document.getElementById('paymentDate').value;
   const notes = document.getElementById('paymentNotes').value;
   
+  // Validate payment amount not greater than current balance
+  if (paymentAmount > currentBalance) {
+    swal({
+      title: "Invalid Payment Amount",
+      text: "Payment amount cannot be greater than current balance.",
+      icon: "error",
+      button: "OK",
+    });
+    return;
+  }
+  
   // Validate all fields
   if (!serviceId || !customerID || !branchID || !clientName || isNaN(paymentAmount) || 
-      paymentAmount <= 0 || paymentAmount > currentBalance || !paymentMethod || !paymentDate) {
-    alert('Please fill all fields with valid values.');
+      paymentAmount <= 0 || !paymentMethod || !paymentDate) {
+    swal({
+      title: "Validation Error",
+      text: "Please fill all fields with valid values.",
+      icon: "error",
+      button: "OK",
+    });
     return;
   }
 
@@ -3455,17 +3471,27 @@ function savePayment() {
   })
   .then(data => {
     if (data.success) {
-      alert(`Payment recorded successfully! Total paid: ₱${data.new_amount_paid.toFixed(2)}`);
-      
-      // Refresh the page to show updated values
-      location.reload();
+      swal({
+        title: "Success!",
+        text: `Payment recorded successfully! Total paid: ₱${data.new_amount_paid.toFixed(2)}`,
+        icon: "success",
+        button: "OK",
+      }).then(() => {
+        // Refresh the page to show updated values
+        location.reload();
+      });
     } else {
       throw new Error(data.message || 'Failed to record payment');
     }
   })
   .catch(error => {
     console.error('Error:', error);
-    alert('Error: ' + error.message);
+    swal({
+      title: "Error!",
+      text: error.message,
+      icon: "error",
+      button: "OK",
+    });
   })
   .finally(() => {
     // Restore button state
