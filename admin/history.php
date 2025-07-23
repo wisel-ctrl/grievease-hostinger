@@ -7023,7 +7023,7 @@ function formatCurrency(amount) {
     
     // Check if the conversion resulted in a valid number
     if (isNaN(num)) {
-        return '₱ 000,000.00';
+        return '₱ 0.00';
     }
     
     // Format the number with commas and 2 decimal places
@@ -7033,20 +7033,7 @@ function formatCurrency(amount) {
         useGrouping: true
     });
     
-    // Pad with leading zeros if needed to reach the format 000,000.00
-    const parts = formattedAmount.split('.');
-    let integerPart = parts[0].replace(/,/g, '');
-    const decimalPart = parts[1] || '00';
-    
-    // Pad integer part with leading zeros to reach at least 6 digits
-    while (integerPart.length < 6) {
-        integerPart = '0' + integerPart;
-    }
-    
-    // Add commas back in the correct positions
-    const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    
-    return `₱ ${formattedInteger}.${decimalPart}`;
+    return `₱ ${formattedAmount}`;
 }
 
 
