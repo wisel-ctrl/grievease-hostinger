@@ -4667,7 +4667,7 @@ function loadOngoingServices(page = 1) {
                                     <i class="fas fa-pause-circle mr-1"></i> ${row.status}
                                 </span>
                             </td>
-                            <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱${parseFloat(row.balance).toFixed(2)}</td>
+                            <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">${formatCurrency(row.balance || 0)}</td>
                             <td class="px-4 py-3.5 text-sm">
                                 <div class="flex space-x-2">
                                     <button class="p-2 bg-yellow-100 text-yellow-600 rounded-lg hover:bg-yellow-200 transition-all tooltip" title="Edit Service" onclick="openEditServiceModal('${row.sales_id}')">
@@ -4864,7 +4864,7 @@ function loadOutstandingServices(page = 1) {
                                     <i class="fas fa-exclamation-circle mr-1"></i> ${row.payment_status}
                                 </span>
                             </td>
-                            <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱${parseFloat(row.balance).toFixed(2)}</td>
+                            <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">${formatCurrency(row.balance || 0)}</td>
                             <td class="px-4 py-3.5 text-sm">
                                 <div class="flex space-x-2">
                                     <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details" onclick="viewServiceDetails('${row.sales_id}')">
@@ -5103,7 +5103,7 @@ function loadCustomOngoingServices(page = 1, search = '', sort = '') {
                   <i class="fas fa-pause-circle mr-1"></i> ${row.status}
                 </span>
               </td>
-              <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱${parseFloat(row.balance || 0).toFixed(2)}</td>
+              <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">${formatCurrency(row.balance || 0)}</td>
               <td class="px-4 py-3.5 text-sm">
                 <div class="flex space-x-2">
                   <button class="p-2 bg-yellow-100 text-yellow-600 rounded-lg hover:bg-yellow-200 transition-all tooltip" title="Edit Service" onclick="openEditCustomServiceModal('${row.customsales_id}')">
@@ -5254,7 +5254,7 @@ function loadCustomOutstandingServices(page = 1, search = '', sort = '') {
                   <i class="fas fa-check-circle mr-1"></i> ${row.status}
                 </span>
               </td>
-              <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱${parseFloat(row.balance || 0).toFixed(2)}</td>
+              <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">${formatCurrency(row.balance || 0)}</td>
               <td class="px-4 py-3.5 text-sm">
                 <div class="flex space-x-2">
                   <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details" onclick="viewCustomServiceDetails('${row.customsales_id}')">
@@ -7016,6 +7016,39 @@ function validatePaymentAmount(input) {
         input.value = '';
     }
 }
+
+function formatCurrency(amount) {
+    // Convert the amount to a number if it's not already
+    const num = typeof amount === 'number' ? amount : parseFloat(amount);
+    
+    // Check if the conversion resulted in a valid number
+    if (isNaN(num)) {
+        return '₱ 000,000.00';
+    }
+    
+    // Format the number with commas and 2 decimal places
+    const formattedAmount = num.toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+        useGrouping: true
+    });
+    
+    // Pad with leading zeros if needed to reach the format 000,000.00
+    const parts = formattedAmount.split('.');
+    let integerPart = parts[0].replace(/,/g, '');
+    const decimalPart = parts[1] || '00';
+    
+    // Pad integer part with leading zeros to reach at least 6 digits
+    while (integerPart.length < 6) {
+        integerPart = '0' + integerPart;
+    }
+    
+    // Add commas back in the correct positions
+    const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    
+    return `₱ ${formattedInteger}.${decimalPart}`;
+}
+
 
 </script>
 
