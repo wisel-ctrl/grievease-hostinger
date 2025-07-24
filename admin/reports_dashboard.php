@@ -64,7 +64,7 @@ header("Pragma: no-cache");
 // Fetch monthly revenue data for forecasting
 $revenueQuery = "WITH RECURSIVE date_series AS (
     SELECT 
-        DATE_FORMAT(MIN(sale_date), '%Y-%m-01') as month_start
+        DATE_FORMAT(CONVERT_TZ(MIN(sale_date), '+00:00', '+08:00'), '%Y-%m-01') as month_start
     FROM 
         analytics_tb
     
@@ -75,7 +75,7 @@ $revenueQuery = "WITH RECURSIVE date_series AS (
     FROM 
         date_series
     WHERE 
-        DATE_ADD(month_start, INTERVAL 1 MONTH) <= DATE_FORMAT(CURRENT_DATE, '%Y-%m-01')
+        DATE_ADD(month_start, INTERVAL 1 MONTH) <= DATE_FORMAT(CONVERT_TZ(CURRENT_DATE(), '+00:00', '+08:00'), '%Y-%m-01')
 )
 
 SELECT 
@@ -84,7 +84,7 @@ SELECT
 FROM 
     date_series ds
 LEFT JOIN 
-    analytics_tb at ON DATE_FORMAT(at.sale_date, '%Y-%m-01') = ds.month_start
+    analytics_tb at ON DATE_FORMAT(CONVERT_TZ(at.sale_date, '+00:00', '+08:00'), '%Y-%m-01') = ds.month_start
 GROUP BY 
     ds.month_start
 ORDER BY 
@@ -416,7 +416,13 @@ $ratioChange = number_format($changes['ratio_change'] ?? 0, 1);
 <!-- JavaScript for Charts -->
 <script>
     // Pass PHP data to JavaScript
-    const historicalRevenueData = <?php echo json_encode($revenueData); ?>;
+  const historicalRevenueData = <?php echo json_encode($revenueData); ?>;
+
+  function createManilaDate(dateString) {
+      const date = new Date(dateString);
+      // Manila is UTC+8, so we need to adjust the time accordingly
+      return new Date(date.getTime() + (8 * 60 * 60 * 1000));
+  }
 </script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -437,9 +443,9 @@ document.addEventListener('DOMContentLoaded', function() {
   function calculateLinearRegressionForecast(historicalData, forecastMonths = 6) {
       // Convert historical data to numerical format
       const dataPoints = historicalData.map((item, index) => ({
-          x: new Date(item.month_start + 'T00:00:00'), // Add time component to avoid timezone issues
+          x: createManilaDate(item.month_start).getTime(),
           y: parseFloat(item.monthly_revenue),
-          date: new Date(item.month_start + 'T00:00:00')
+          date: createManilaDate(item.month_start)
       }));
       
       // Calculate means
@@ -460,8 +466,8 @@ document.addEventListener('DOMContentLoaded', function() {
       
       // Generate forecast
       const forecastData = [];
-      const lastHistoricalDate = new Date(historicalData[historicalData.length - 1].month_start);
-      
+      const lastHistoricalDate = createManilaDate(historicalData[historicalData.length - 1].month_start);
+
       for (let i = 1; i <= forecastMonths; i++) {
           const forecastDate = new Date(lastHistoricalDate);
           forecastDate.setMonth(forecastDate.getMonth() + i);
@@ -471,7 +477,7 @@ document.addEventListener('DOMContentLoaded', function() {
           
           forecastData.push({
               x: forecastDate.getTime(),
-              y: Math.max(0, predictedY) // Ensure revenue doesn't go negative
+              y: Math.max(0, predictedY)
           });
       }
       
@@ -495,6 +501,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const lastActual = regressionResults.historicalChartData[regressionResults.historicalChartData.length - 1].y;
       const firstForecast = regressionResults.forecastData[0].y;
       const forecastAccuracy = 100 - Math.abs((firstForecast - lastActual) / lastActual * 100);
+      
       
       // Update the forecast accuracy display
       document.querySelector('.forecast-accuracy-value').textContent = forecastAccuracy.toFixed(1) + '%';
@@ -534,9 +541,13 @@ document.addEventListener('DOMContentLoaded', function() {
               labels: {
                   formatter: function(value) {
                       const date = new Date(value);
-                      return date.toLocaleDateString('default', { month: 'short', year: 'numeric' });
-                  },
-                  datetimeUTC: false // Display dates in local time
+                      // Format in Manila time
+                      return date.toLocaleDateString('en-PH', { 
+                          timeZone: 'Asia/Manila',
+                          month: 'short', 
+                          year: 'numeric' 
+                      });
+                  }
               }
           },
           yaxis: {
@@ -567,11 +578,17 @@ document.addEventListener('DOMContentLoaded', function() {
           },
           tooltip: {
               x: {
-                  format: 'MMM yyyy'
+                  formatter: function(value) {
+                      return new Date(value).toLocaleDateString('en-PH', {
+                          timeZone: 'Asia/Manila',
+                          month: 'short',
+                          year: 'numeric'
+                      });
+                  }
               },
               y: {
                   formatter: function(value) {
-                      return '₱' + value.toLocaleString();
+                      return '₱' + value.toLocaleString('en-PH');
                   }
               }
           }
