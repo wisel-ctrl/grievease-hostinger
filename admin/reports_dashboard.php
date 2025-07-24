@@ -640,21 +640,30 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <script>
   function processDataForHeatmap(data, forecastMonths = 6) {
+    console.group('Initial Data Processing');
+    console.log('Raw data from PHP:', data);
+    
     // Get unique item names
     const items = [...new Set(data.map(d => d.item_name))];
+    console.log('Unique items:', items);
     
     // Separate actual and forecast data
     const actualData = data.filter(d => !d.is_forecast);
     const forecastData = data.filter(d => d.is_forecast);
+    console.log('Actual data records:', actualData.length);
+    console.log('Forecast data records:', forecastData.length);
     
     // Get unique months (sorted)
     const months = [...new Set(actualData.map(d => d.sale_month))].sort();
+    console.log('Actual months:', months);
     
     // Get forecast months (already included in the SQL query)
     const forecastDates = [...new Set(forecastData.map(d => d.sale_month))].sort();
+    console.log('Forecast months:', forecastDates);
     
     // Combine actual and forecast months
     const allMonths = [...months, ...forecastDates];
+    console.log('All months combined:', allMonths);
     
     // Calculate total sales per item to find top casket
     const itemTotals = {};
@@ -663,29 +672,37 @@ document.addEventListener('DOMContentLoaded', function() {
         .filter(d => d.item_name === item)
         .reduce((sum, d) => sum + d.casket_sold, 0);
     });
+    console.log('Item totals:', itemTotals);
     
     // Find the top casket (highest total sales)
     const topCasket = Object.keys(itemTotals).reduce((a, b) => 
       itemTotals[a] > itemTotals[b] ? a : b
     );
+    console.log('Top casket:', topCasket, 'with', itemTotals[topCasket], 'units');
     
     // Calculate overall growth rate
     let overallGrowthRate = 0;
     let seasonalityImpact = "Low";
     
+    console.group('Series Processing');
     // Create series for each item
     const series = items.map(item => {
+      console.group(`Processing item: ${item}`);
+      
       // Combine actual and forecast data for this item
       const itemData = data.filter(d => d.item_name === item);
+      console.log('Item data:', itemData);
       
       // Format the data for the heatmap
       const formattedData = allMonths.map(month => {
         const found = itemData.find(d => d.sale_month === month);
-        return {
+        const dataPoint = {
           x: month,
           y: found ? found.casket_sold : 0,
           forecast: found ? found.is_forecast : false
         };
+        console.log(`Data point for ${month}:`, dataPoint);
+        return dataPoint;
       });
       
       // Calculate growth rate for display (only based on actual data)
@@ -694,12 +711,17 @@ document.addEventListener('DOMContentLoaded', function() {
       
       if (actualItemData.length >= 2) {
         const recentValues = actualItemData.slice(-3).map(d => d.casket_sold).filter(y => y > 0);
+        console.log('Recent values for growth calculation:', recentValues);
+        
         if (recentValues.length >= 2) {
           const oldest = recentValues[0];
           const newest = recentValues[recentValues.length - 1];
+          console.log(`Growth calc - oldest: ${oldest}, newest: ${newest}`);
+          
           if (oldest > 0) {
             growthRate = (newest / oldest - 1) / recentValues.length;
             growthRate = Math.max(-0.2, Math.min(0.3, growthRate));
+            console.log('Calculated growth rate:', growthRate);
           }
         }
       }
@@ -707,6 +729,7 @@ document.addEventListener('DOMContentLoaded', function() {
       // If this is the top casket, use its growth rate for display
       if (item === topCasket) {
         overallGrowthRate = growthRate;
+        console.log('Setting overall growth rate to:', overallGrowthRate);
         
         // Calculate seasonality impact
         if (actualItemData.length >= 4) {
@@ -716,19 +739,34 @@ document.addEventListener('DOMContentLoaded', function() {
           const stdDev = Math.sqrt(variance);
           const variationCoeff = stdDev / avg;
           
+          console.log('Seasonality calculation:', {
+            values: values,
+            average: avg,
+            variance: variance,
+            stdDev: stdDev,
+            coeff: variationCoeff
+          });
+          
           if (variationCoeff < 0.1) seasonalityImpact = "Low";
           else if (variationCoeff < 0.25) seasonalityImpact = "Medium";
           else seasonalityImpact = "High";
+          
+          console.log('Seasonality impact:', seasonalityImpact);
         }
       }
       
-      return {
+      const seriesItem = {
         name: item,
         data: formattedData
       };
+      
+      console.log('Final series item:', seriesItem);
+      console.groupEnd();
+      return seriesItem;
     });
+    console.groupEnd();
     
-    return {
+    const result = {
       items,
       months: allMonths,
       series,
@@ -736,13 +774,22 @@ document.addEventListener('DOMContentLoaded', function() {
       growthRate: overallGrowthRate,
       seasonalityImpact
     };
-  }
+    
+    console.log('Final processed data:', result);
+    console.groupEnd();
+    
+    return result;
+}
 
 // Create the heatmap chart with improved configuration
 // Create the heatmap chart with improved configuration
 // Create the heatmap chart with improved configuration
 const rawCasketData = <?php echo json_encode($casketData); ?>;
 const heatmapData = processDataForHeatmap(rawCasketData);
+
+console.log('Raw PHP data:', <?php echo json_encode($casketData); ?>);
+console.log('Raw casket data (JS):', rawCasketData);
+console.log('Processed heatmap data:', heatmapData);
 
 // Create the heatmap chart with enhanced design that matches sales forecast style
 var options = {
@@ -929,6 +976,7 @@ var options = {
 
 // Render the chart
 var chart = new ApexCharts(document.querySelector("#demandPredictionChart"), options);
+console.log('Chart options:', options);
 chart.render();
 
 // Update the summary information boxes with calculated values
