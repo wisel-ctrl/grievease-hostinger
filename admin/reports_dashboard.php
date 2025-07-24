@@ -79,7 +79,7 @@ $revenueQuery = "WITH RECURSIVE date_series AS (
 )
 
 SELECT 
-    ds.month_start,
+    DATE_FORMAT(ds.month_start, '%Y-%m-%d') as month_start,
     COALESCE(SUM(at.discounted_price), 0) as monthly_revenue
 FROM 
     date_series ds
@@ -437,9 +437,9 @@ document.addEventListener('DOMContentLoaded', function() {
   function calculateLinearRegressionForecast(historicalData, forecastMonths = 6) {
       // Convert historical data to numerical format
       const dataPoints = historicalData.map((item, index) => ({
-          x: index,
+          x: new Date(item.month_start + 'T00:00:00'), // Add time component to avoid timezone issues
           y: parseFloat(item.monthly_revenue),
-          date: new Date(item.month_start)
+          date: new Date(item.month_start + 'T00:00:00')
       }));
       
       // Calculate means
@@ -533,8 +533,10 @@ document.addEventListener('DOMContentLoaded', function() {
               tickAmount: 10,
               labels: {
                   formatter: function(value) {
-                      return new Date(value).toLocaleDateString('default', { month: 'short', year: 'numeric' });
-                  }
+                      const date = new Date(value);
+                      return date.toLocaleDateString('default', { month: 'short', year: 'numeric' });
+                  },
+                  datetimeUTC: false // Display dates in local time
               }
           },
           yaxis: {
