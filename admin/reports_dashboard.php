@@ -97,20 +97,42 @@ while ($row = $revenueResult->fetch_assoc()) {
     $revenueData[] = $row;
 }  
 
-$casketQuery = "SELECT 
-    DATE_FORMAT(sale_date, '%Y-%m') AS sale_month,
-    item_name,
-    COUNT(*) AS casket_sold
+$casketQuery = "WITH RECURSIVE all_months AS (
+    SELECT DATE_FORMAT(MIN(sale_date), '%Y-%m-01') AS month
+    FROM analytics_tb
+    UNION ALL
+    SELECT DATE_ADD(month, INTERVAL 1 MONTH)
+    FROM all_months
+    WHERE month < DATE_FORMAT(CURDATE(), '%Y-%m-01')
+),
+casket_sales AS (
+    SELECT 
+        DATE_FORMAT(sale_date, '%Y-%m') AS sale_month,
+        item_name,
+        COUNT(*) AS casket_sold
+    FROM 
+        analytics_tb
+    JOIN 
+        inventory_tb 
+    ON 
+        casket_id = inventory_id
+    WHERE 
+        casket_id IS NOT NULL
+    GROUP BY 
+        DATE_FORMAT(sale_date, '%Y-%m'), item_name
+)
+SELECT 
+    DATE_FORMAT(am.month, '%Y-%m') AS sale_month,
+    it.item_name,
+    COALESCE(cs.casket_sold, 0) AS casket_sold
 FROM 
-    analytics_tb
-JOIN 
-    inventory_tb 
+    all_months am
+CROSS JOIN 
+    (SELECT DISTINCT item_name FROM inventory_tb) it
+LEFT JOIN 
+    casket_sales cs 
 ON 
-    casket_id = inventory_id
-WHERE 
-    casket_id IS NOT NULL
-GROUP BY 
-    DATE_FORMAT(sale_date, '%Y-%m'), item_name
+    DATE_FORMAT(am.month, '%Y-%m') = cs.sale_month AND it.item_name = cs.item_name
 ORDER BY 
     sale_month, item_name";
 
