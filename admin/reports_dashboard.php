@@ -443,7 +443,7 @@ document.addEventListener('DOMContentLoaded', function() {
   function calculateLinearRegressionForecast(historicalData, forecastMonths = 6) {
       // Convert historical data to numerical format
       const dataPoints = historicalData.map((item, index) => ({
-          x: createManilaDate(item.month_start).getTime(),
+          x: index, // Use index as x-value instead of timestamp for better scaling
           y: parseFloat(item.monthly_revenue),
           date: createManilaDate(item.month_start)
       }));
@@ -476,7 +476,7 @@ document.addEventListener('DOMContentLoaded', function() {
           const predictedY = slope * xValue + intercept;
           
           forecastData.push({
-              x: forecastDate.getTime(),
+              x: forecastDate.getTime(), // Use actual date for display
               y: Math.max(0, predictedY)
           });
       }
@@ -485,8 +485,8 @@ document.addEventListener('DOMContentLoaded', function() {
           slope,
           intercept,
           forecastData,
-          historicalChartData: dataPoints.map(point => ({
-              x: point.date.getTime(),
+          historicalChartData: dataPoints.map((point, index) => ({
+              x: point.date.getTime(), // Use actual date for display
               y: point.y
           }))
       };
