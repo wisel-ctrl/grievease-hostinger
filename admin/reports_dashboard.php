@@ -97,7 +97,8 @@ while ($row = $revenueResult->fetch_assoc()) {
     $revenueData[] = $row;
 }  
 
-$casketQuery = "WITH RECURSIVE all_months AS (
+$casketQuery = "
+WITH RECURSIVE all_months AS (
     SELECT DATE_FORMAT(MIN(sale_date), '%Y-%m-01') AS month
     FROM analytics_tb
     UNION ALL
@@ -118,6 +119,7 @@ casket_sales AS (
         casket_id = inventory_id
     WHERE 
         casket_id IS NOT NULL
+        AND inventory_tb.category_id = 1
     GROUP BY 
         DATE_FORMAT(sale_date, '%Y-%m'), item_name
 )
@@ -128,13 +130,15 @@ SELECT
 FROM 
     all_months am
 CROSS JOIN 
-    (SELECT DISTINCT item_name FROM inventory_tb) it
+    (SELECT DISTINCT item_name FROM inventory_tb WHERE category_id = 1) it
 LEFT JOIN 
     casket_sales cs 
 ON 
     DATE_FORMAT(am.month, '%Y-%m') = cs.sale_month AND it.item_name = cs.item_name
 ORDER BY 
-    sale_month, item_name";
+    sale_month, item_name
+";
+
 
 $casketStmt = $conn->prepare($casketQuery);
 $casketStmt->execute();
