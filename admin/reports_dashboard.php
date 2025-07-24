@@ -104,7 +104,7 @@ WITH RECURSIVE all_months AS (
     UNION ALL
     SELECT DATE_ADD(month, INTERVAL 1 MONTH)
     FROM all_months
-    WHERE month < DATE_FORMAT(CURDATE(), '%Y-%m-01')
+    WHERE month < DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL 6 MONTH), '%Y-%m-01')
 ),
 casket_sales AS (
     SELECT 
@@ -126,7 +126,8 @@ casket_sales AS (
 SELECT 
     DATE_FORMAT(am.month, '%Y-%m') AS sale_month,
     it.item_name,
-    COALESCE(cs.casket_sold, 0) AS casket_sold
+    COALESCE(cs.casket_sold, 0) AS casket_sold,
+    CASE WHEN am.month > DATE_FORMAT(CURDATE(), '%Y-%m-01') THEN 1 ELSE 0 END AS is_forecast
 FROM 
     all_months am
 CROSS JOIN 
@@ -139,7 +140,6 @@ ORDER BY
     sale_month, item_name
 ";
 
-
 $casketStmt = $conn->prepare($casketQuery);
 $casketStmt->execute();
 $casketResult = $casketStmt->get_result();
@@ -149,7 +149,8 @@ while ($row = $casketResult->fetch_assoc()) {
     $casketData[] = [
         'sale_month' => $row['sale_month'],
         'item_name' => $row['item_name'],
-        'casket_sold' => (int)$row['casket_sold']
+        'casket_sold' => (int)$row['casket_sold'],
+        'is_forecast' => (bool)$row['is_forecast']
     ];
 }
 
@@ -642,18 +643,15 @@ document.addEventListener('DOMContentLoaded', function() {
     // Get unique item names
     const items = [...new Set(data.map(d => d.item_name))];
     
-    // Get unique months (sorted)
-    const months = [...new Set(data.map(d => d.sale_month))].sort();
+    // Separate actual and forecast data
+    const actualData = data.filter(d => !d.is_forecast);
+    const forecastData = data.filter(d => d.is_forecast);
     
-    // Generate forecast months
-    const lastDate = new Date(months[months.length-1] + '-01');
-    const forecastDates = [];
-    for (let i = 1; i <= forecastMonths; i++) {
-      lastDate.setMonth(lastDate.getMonth() + 1);
-      const year = lastDate.getFullYear();
-      const month = String(lastDate.getMonth() + 1).padStart(2, '0');
-      forecastDates.push(`${year}-${month}`);
-    }
+    // Get unique months (sorted)
+    const months = [...new Set(actualData.map(d => d.sale_month))].sort();
+    
+    // Get forecast months (already included in the SQL query)
+    const forecastDates = [...new Set(forecastData.map(d => d.sale_month))].sort();
     
     // Combine actual and forecast months
     const allMonths = [...months, ...forecastDates];
@@ -661,7 +659,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Calculate total sales per item to find top casket
     const itemTotals = {};
     items.forEach(item => {
-      itemTotals[item] = data
+      itemTotals[item] = actualData
         .filter(d => d.item_name === item)
         .reduce((sum, d) => sum + d.casket_sold, 0);
     });
@@ -677,29 +675,30 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Create series for each item
     const series = items.map(item => {
+      // Combine actual and forecast data for this item
       const itemData = data.filter(d => d.item_name === item);
       
-      // Create data points for actual months
-      const actualData = months.map(month => {
+      // Format the data for the heatmap
+      const formattedData = allMonths.map(month => {
         const found = itemData.find(d => d.sale_month === month);
         return {
           x: month,
-          y: found ? found.casket_sold : 0
+          y: found ? found.casket_sold : 0,
+          forecast: found ? found.is_forecast : false
         };
       });
       
-      // Calculate growth rate for this item based on historical data
+      // Calculate growth rate for display (only based on actual data)
+      const actualItemData = actualData.filter(d => d.item_name === item);
       let growthRate = 0.05; // Default 5%
       
-      if (actualData.length >= 2) {
-        // Look at last few months to calculate growth rate
-        const recentValues = actualData.slice(-3).map(d => d.y).filter(y => y > 0);
+      if (actualItemData.length >= 2) {
+        const recentValues = actualItemData.slice(-3).map(d => d.casket_sold).filter(y => y > 0);
         if (recentValues.length >= 2) {
           const oldest = recentValues[0];
           const newest = recentValues[recentValues.length - 1];
           if (oldest > 0) {
             growthRate = (newest / oldest - 1) / recentValues.length;
-            // Cap growth rate between -20% and +30%
             growthRate = Math.max(-0.2, Math.min(0.3, growthRate));
           }
         }
@@ -709,9 +708,9 @@ document.addEventListener('DOMContentLoaded', function() {
       if (item === topCasket) {
         overallGrowthRate = growthRate;
         
-        // Calculate seasonality impact by looking at variance
-        if (actualData.length >= 4) {
-          const values = actualData.map(d => d.y);
+        // Calculate seasonality impact
+        if (actualItemData.length >= 4) {
+          const values = actualItemData.map(d => d.casket_sold);
           const avg = values.reduce((sum, val) => sum + val, 0) / values.length;
           const variance = values.reduce((sum, val) => sum + Math.pow(val - avg, 2), 0) / values.length;
           const stdDev = Math.sqrt(variance);
@@ -723,20 +722,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       }
       
-      // Create forecast data points with calculated growth rate
-      const lastActual = actualData[actualData.length - 1].y;
-      const forecastData = forecastDates.map((month, i) => {
-        const forecastValue = Math.round(lastActual * Math.pow(1 + growthRate, i + 1));
-        return {
-          x: month,
-          y: forecastValue,
-          forecast: true
-        };
-      });
-      
       return {
         name: item,
-        data: [...actualData, ...forecastData]
+        data: formattedData
       };
     });
     
