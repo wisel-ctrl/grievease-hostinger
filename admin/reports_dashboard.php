@@ -62,15 +62,33 @@ header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 
 // Fetch monthly revenue data for forecasting
-$revenueQuery = "SELECT 
-    DATE_FORMAT(sale_date, '%Y-%m-01') as month_start,
-    SUM(discounted_price) as monthly_revenue
+$revenueQuery = "WITH RECURSIVE date_series AS (
+    SELECT 
+        DATE_FORMAT(MIN(sale_date), '%Y-%m-01') as month_start
+    FROM 
+        analytics_tb
+    
+    UNION ALL
+    
+    SELECT 
+        DATE_ADD(month_start, INTERVAL 1 MONTH)
+    FROM 
+        date_series
+    WHERE 
+        DATE_ADD(month_start, INTERVAL 1 MONTH) <= DATE_FORMAT(CURRENT_DATE, '%Y-%m-01')
+)
+
+SELECT 
+    ds.month_start,
+    COALESCE(SUM(at.discounted_price), 0) as monthly_revenue
 FROM 
-    analytics_tb
+    date_series ds
+LEFT JOIN 
+    analytics_tb at ON DATE_FORMAT(at.sale_date, '%Y-%m-01') = ds.month_start
 GROUP BY 
-    DATE_FORMAT(sale_date, '%Y-%m-01')
+    ds.month_start
 ORDER BY 
-    month_start";
+    ds.month_start;";
 $revenueStmt = $conn->prepare($revenueQuery);
 $revenueStmt->execute();
 $revenueResult = $revenueStmt->get_result();
