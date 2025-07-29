@@ -623,69 +623,70 @@ const namePattern = /^[a-zA-Z\s'-]+$/;
     
     // Form submission validation
     document.getElementById('personal-details-form').addEventListener('submit', function(e) {
-        let hasError = false;
-        let hasChanges = false;
-        
-        ['first_name', 'last_name', 'middle_name', 'suffix'].forEach(field => {
-            const input = document.getElementById(field);
-            const value = input.value.trim();
-            if ((field === 'first_name' || field === 'last_name') && !value) {
-                showError(field, 'This field is required');
-                hasError = true;
-            } else if (value && !namePattern.test(value)) {
-                showError(field, 'Can only contain letters, spaces, hyphens, or apostrophes');
-                hasError = true;
-            }
-            if (value !== originalValues[field]) {
-                hasChanges = true;
-            }
-        });
-        
-        const phone = phoneInput.value.trim();
-        if (!phone) {
-            showError('phone_number', 'Phone number is required');
+    let hasError = false;
+    let hasChanges = false;
+    
+    ['first_name', 'last_name', 'middle_name', 'suffix', 'birthdate'].forEach(field => {
+        const input = document.getElementById(field);
+        const value = input.value.trim();
+        if ((field === 'first_name' || field === 'last_name') && !value) {
+            showError(field, 'This field is required');
             hasError = true;
-        } else if (!phonePattern.test(phone)) {
-            showError('phone_number', 'Phone number must be 11 digits, or 13 characters starting with +63');
+        } else if ((field === 'middle_name' || field === 'suffix') && value && !namePattern.test(value)) {
+            showError(field, 'Can only contain letters, spaces, hyphens, or apostrophes');
             hasError = true;
         }
-        if (phone !== originalValues.phone_number) {
+        if (value !== originalValues[field]) {
             hasChanges = true;
-        }
-        
-        const email = emailInput.value.trim();
-        if (!email) {
-            showError('email', 'Email is required');
-            hasError = true;
-        } else if (!emailPattern.test(email)) {
-            showError('email', 'Please enter a valid email address');
-            hasError = true;
-        }
-        if (email !== originalValues.email) {
-            hasChanges = true;
-        }
-        
-        if (!hasChanges) {
-            e.preventDefault();
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'bg-yellow-50 border-l-4 border-yellow-600 text-yellow-800 px-6 py-4 rounded-lg relative mb-6 shadow-input';
-            messageDiv.innerHTML = `
-                <div class="flex items-center">
-                    <i class="fas fa-exclamation-circle text-yellow-600 mr-3"></i>
-                    <span class="font-medium">No changes were made to the form.</span>
-                </div>
-            `;
-            const mainContent = document.getElementById('main-content');
-            const existingMessages = mainContent.querySelectorAll('.bg-yellow-50');
-            existingMessages.forEach(msg => msg.remove());
-            mainContent.insertBefore(messageDiv, mainContent.children[2]);
-            setTimeout(() => messageDiv.remove(), 3000);
-        }
-        
-        if (hasError) {
-            e.preventDefault();
         }
     });
+    
+    const phone = phoneInput.value.trim();
+    if (!phone) {
+        showError('phone_number', 'Phone number is required');
+        hasError = true;
+    } else if (!phonePattern.test(phone)) {
+        showError('phone_number', 'Phone number must be 11 digits, or 13 characters starting with +63');
+        hasError = true;
+    }
+    if (phone !== originalValues.phone_number) {
+        hasChanges = true;
+    }
+    
+    const email = emailInput.value.trim();
+    if (!email) {
+        showError('email', 'Email is required');
+        hasError = true;
+    } else if (!emailPattern.test(email)) {
+        showError('email', 'Please enter a valid email address');
+        hasError = true;
+    }
+    if (email !== originalValues.email) {
+        hasChanges = true;
+    }
+    
+    if (!hasChanges) {
+        e.preventDefault();
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'bg-yellow-50 border-l-4 border-yellow-600 text-yellow-800 px-6 py-4 rounded-lg relative mb-6 shadow-input';
+        messageDiv.innerHTML = `
+            <div class="flex items-center">
+                <i class="fas fa-exclamation-circle text-yellow-600 mr-3"></i>
+                <span class="font-medium">No changes were made to the form.</span>
+            </div>
+        `;
+        const mainContent = document.getElementById('main-content');
+        const existingMessages = mainContent.querySelectorAll('.bg-yellow-50');
+        existingMessages.forEach(msg => msg.remove());
+        mainContent.insertBefore(messageDiv, mainContent.children[2]);
+        setTimeout(() => messageDiv.remove(), 3000);
+    }
+    
+    if (hasError) {
+        e.preventDefault();
+    }
+});
+
     </script>
 </body>
 </html>
