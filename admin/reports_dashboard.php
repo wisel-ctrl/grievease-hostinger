@@ -419,7 +419,7 @@ $ratioChange = number_format($changes['ratio_change'] ?? 0, 1);
     
   </div>
   <div class="p-5">
-    <div id="salesSplineChart" class="h-96"></div>
+    <canvas id="salesSplineChart" class="h-96"></canvas>
   </div>
   <div class="grid grid-cols-1 md:grid-cols-3 gap-5 px-5 pb-5">
     <div class="bg-gray-50 p-4 rounded-lg">
