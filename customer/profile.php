@@ -427,11 +427,17 @@ input[name*="LastName"] {
                 
                 <div class="relative group">
                     <button class="flex items-center space-x-2">
-                    <div class="w-8 h-8 rounded-full bg-yellow-600 flex items-center justify-center text-sm">
-                        <?php 
-                            $initials = strtoupper(substr($first_name, 0, 1) . substr($last_name, 0, 1)); 
-                            echo htmlspecialchars($initials);
-                        ?>
+                    <div class="w-8 h-8 rounded-full bg-yellow-600 flex items-center justify-center text-sm overflow-hidden">
+                        <?php if ($profile_picture && file_exists('../profile_picture/' . $profile_picture)): ?>
+                            <img src="../profile_picture/<?php echo htmlspecialchars($profile_picture); ?>" 
+                                 alt="Profile Picture" 
+                                 class="w-full h-full object-cover">
+                        <?php else: ?>
+                            <?php 
+                                $initials = strtoupper(substr($first_name, 0, 1) . substr($last_name, 0, 1)); 
+                                echo htmlspecialchars($initials);
+                            ?>
+                        <?php endif; ?>
                     </div>
                     <span class="hidden md:inline text-sm">
                         <?php echo htmlspecialchars(ucwords($first_name . ' ' . $last_name)); ?>
