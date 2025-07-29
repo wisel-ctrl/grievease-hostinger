@@ -1,7 +1,6 @@
 <?php
 session_start();
 require_once '../../db_connect.php';
-// Don't set Content-Type header here - only set it before the actual JSON output
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../../Landing_Page/login.php");
@@ -12,7 +11,6 @@ require_once '../../addressDB.php';
 require_once '../booking/sms_notification.php';
 
 date_default_timezone_set('Asia/Manila');
-
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user_id = $_SESSION['user_id'];
@@ -36,7 +34,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     // Basic validation
     if (empty($first_name) || empty($last_name) || empty($email) || empty($phone)) {
-        // Return JSON response for AJAX
         header('Content-Type: application/json');
         echo json_encode(['success' => false, 'message' => 'Required fields are missing']);
         exit();
@@ -46,9 +43,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $conn->begin_transaction();
     
     try {
-        // Handle file upload if present
+        // Initialize variable to track if ID was uploaded
+        $id_uploaded = false;
         $validated_id = 'no'; // Default to no unless we have a valid ID upload
+        $upload_at = null; // Initialize upload_at
         
+        // Handle file upload if present
         if (isset($_FILES['id-upload']) && $_FILES['id-upload']['error'] === UPLOAD_ERR_OK) {
             $file = $_FILES['id-upload'];
             
@@ -101,6 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->close();
             
             $validated_id = 'no';
+            $id_uploaded = true; // Set flag to indicate ID was uploaded
         }
         
         // Update user's basic information
@@ -136,7 +137,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($region_id && $province_id && $city_id && $barangay_id) {
             // Get the names from respective tables
             $region_name = '';
-            // Get region name
             $query = "SELECT region_name FROM table_region WHERE region_id = ?";
             $stmt = $addressDB->prepare($query);
             $stmt->bind_param("i", $region_id);
@@ -146,7 +146,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->close();
 
             $province_name = '';
-            // Get province name
             $query = "SELECT province_name FROM table_province WHERE province_id = ?";
             $stmt = $addressDB->prepare($query);
             $stmt->bind_param("i", $province_id);
@@ -156,7 +155,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->close();
 
             $city_name = '';
-            // Get municipality/city name
             $query = "SELECT municipality_name FROM table_municipality WHERE municipality_id = ?";
             $stmt = $addressDB->prepare($query);
             $stmt->bind_param("i", $city_id);
@@ -166,7 +164,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->close();
 
             $barangay_name = '';
-            // Get barangay name
             $query = "SELECT barangay_name FROM table_barangay WHERE barangay_id = ?";
             $stmt = $addressDB->prepare($query);
             $stmt->bind_param("i", $barangay_id);
@@ -227,24 +224,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->close();
         }
         
-        // Prepare ID upload details for SMS
-        $idUploadDetails = [
-            'user_id' => $user_id,
-            'first_name' => $first_name,
-            'last_name' => $last_name,
-            'upload_time' => $upload_at
-        ];
-        
-        // Send SMS notification to admin about new ID upload
-        $smsResults = sendAdminIDUploadNotification($conn, $idUploadDetails);
-        
-        // You can log or handle the SMS results if needed
-        error_log("ID Upload SMS Results: " . print_r($smsResults, true));
+        // Send SMS notification only if an ID was uploaded
+        if ($id_uploaded && $upload_at) {
+            $idUploadDetails = [
+                'user_id' => $user_id,
+                'first_name' => $first_name,
+                'last_name' => $last_name,
+                'upload_time' => $upload_at
+            ];
+            
+            // Send SMS notification to admin about new ID upload
+            $smsResults = sendAdminIDUploadNotification($conn, $idUploadDetails);
+            
+            // Log SMS results for debugging
+            error_log("ID Upload SMS Results: " . print_r($smsResults, true));
+        }
         
         // Commit the transaction
         $conn->commit();
         
-        // Instead of redirecting, return a JSON success response
         header('Content-Type: application/json');
         echo json_encode([
             'success' => true, 
@@ -257,17 +255,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Rollback the transaction if something failed
         $conn->rollback();
         
-        // Return error JSON response for AJAX
         header('Content-Type: application/json');
         echo json_encode(['success' => false, 'message' => 'Error updating profile: ' . $e->getMessage()]);
         exit();
     }
     
 } else {
-    // Return error for non-POST requests
     header('Content-Type: application/json');
     echo json_encode(['success' => false, 'message' => 'Invalid request method']);
     exit();
 }
-
 ?>
