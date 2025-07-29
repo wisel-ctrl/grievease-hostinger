@@ -1118,12 +1118,34 @@ document.addEventListener('DOMContentLoaded', function() {
       isForecast: item.is_forecast || false
     }));
     
+    // Create range area data (min and max values)
+    const rangeData = combinedData.map(item => ({
+      x: new Date(item.month_start).getTime(),
+      y: [
+        parseFloat(item.monthly_amount_paid) || 0,
+        parseFloat(item.monthly_revenue) || 0
+      ],
+      isForecast: item.is_forecast || false
+    }));
+    
     // Create ApexCharts options
     const options = {
       series: [
         {
+          name: 'Amount Paid',
+          type: 'line',
+          data: paymentsData.filter(item => !item.isForecast),
+          color: '#10B981',
+          stroke: {
+            width: 3,
+            curve: 'smooth',
+            lineCap: 'round'
+          }
+        },
+        {
           name: 'Total Price (Discounted)',
-          data: revenueData,
+          type: 'line',
+          data: revenueData.filter(item => !item.isForecast),
           color: '#3B82F6',
           stroke: {
             width: 3,
@@ -1132,13 +1154,47 @@ document.addEventListener('DOMContentLoaded', function() {
           }
         },
         {
-          name: 'Amount Paid',
-          data: paymentsData,
+          name: 'Price Range',
+          type: 'rangeArea',
+          data: rangeData.filter(item => !item.isForecast),
+          color: '#EFF6FF',
+          fillOpacity: 0.8,
+          stroke: {
+            width: 0
+          }
+        },
+        {
+          name: 'Forecast - Amount Paid',
+          type: 'line',
+          data: paymentsData.filter(item => item.isForecast),
           color: '#10B981',
           stroke: {
             width: 3,
             curve: 'smooth',
-            lineCap: 'round'
+            lineCap: 'round',
+            dashArray: [5, 5]
+          }
+        },
+        {
+          name: 'Forecast - Total Price',
+          type: 'line',
+          data: revenueData.filter(item => item.isForecast),
+          color: '#3B82F6',
+          stroke: {
+            width: 3,
+            curve: 'smooth',
+            lineCap: 'round',
+            dashArray: [5, 5]
+          }
+        },
+        {
+          name: 'Forecast Range',
+          type: 'rangeArea',
+          data: rangeData.filter(item => item.isForecast),
+          color: '#EFF6FF',
+          fillOpacity: 0.3,
+          stroke: {
+            width: 0
           }
         }
       ],
@@ -1164,15 +1220,6 @@ document.addEventListener('DOMContentLoaded', function() {
             enabled: true,
             speed: 350
           }
-        },
-        events: {
-          mounted: function(chartContext, config) {
-            const chart = chartContext;
-            const el = chart.el;
-            // Ensure all elements have proper pointer events
-            el.querySelectorAll('.apexcharts-series-markers, .apexcharts-series path')
-              .forEach(el => el.style.pointerEvents = 'auto');
-          }
         }
       },
       dataLabels: {
@@ -1183,13 +1230,8 @@ document.addEventListener('DOMContentLoaded', function() {
         width: 3
       },
       fill: {
-        type: 'gradient',
-        gradient: {
-          shadeIntensity: 1,
-          opacityFrom: 0.4,
-          opacityTo: 0.1,
-          stops: [0, 95, 100]
-        }
+        type: 'solid',
+        opacity: [0.8, 0.8, 1, 0.3, 0.3, 1]
       },
       grid: {
         borderColor: '#f1f1f1',
@@ -1233,7 +1275,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
           }
         },
-        min: 0 // Ensure chart starts at 0 to properly show forecast
+        min: 0
       },
       tooltip: {
         enabled: true,
@@ -1241,29 +1283,24 @@ document.addEventListener('DOMContentLoaded', function() {
         intersect: false,
         followCursor: true,
         x: {
-          format: 'MMM yyyy', // Format for the date display
+          format: 'MMM yyyy',
           show: true
         },
         y: {
           formatter: function(value, { series, seriesIndex, dataPointIndex, w }) {
-            // Get the full data point
-            const point = w.config.series[seriesIndex].data[dataPointIndex];
-            
-            // Format all values consistently
             return '₱' + value.toLocaleString('en-US', {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2
             });
           },
           title: {
-            formatter: (seriesName) => seriesName // Show series name
+            formatter: (seriesName) => seriesName
           }
         },
         custom: function({ series, seriesIndex, dataPointIndex, w }) {
           const point = w.config.series[seriesIndex].data[dataPointIndex];
           
-          // Only apply custom formatting for forecast points
-          if (point.isForecast) {
+          if (point && point.isForecast) {
             return `
               <div class="forecast-tooltip">
                 <div class="forecast-badge">Forecast</div>
@@ -1277,11 +1314,7 @@ document.addEventListener('DOMContentLoaded', function() {
               </div>
             `;
           }
-          // Return undefined to use default tooltip for non-forecast points
           return undefined;
-        },
-        marker: {
-          show: true
         }
       },
       markers: {
@@ -1290,11 +1323,7 @@ document.addEventListener('DOMContentLoaded', function() {
         hover: {
           size: 7
         },
-        shape: "circle",
-        showNullDataPoints: true,
-        discrete: [], // Remove this if present
-        onClick: undefined, // Remove any custom click handlers if present
-        onDblClick: undefined
+        shape: "circle"
       },
       legend: {
         position: 'top',
@@ -1346,9 +1375,6 @@ document.addEventListener('DOMContentLoaded', function() {
       .tooltip-content {
         font-size: 13px;
         font-weight: 500;
-      }
-      .apexcharts-tooltip {
-        pointer-events: auto !important;
       }
     `;
     document.head.appendChild(style);
