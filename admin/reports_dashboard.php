@@ -1028,13 +1028,12 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 </script>
-please change this into range area with forecast line combo apexchart
-
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 const salesData = <?php echo json_encode($salesData); ?>;
 
 document.addEventListener('DOMContentLoaded', function() {
-  // Function to calculate simple forecast based on historical data
+  // Function to calculate simple forecast (same as before)
   function calculateForecast(historicalData, monthsToForecast = 6) {
     // Filter out months with zero sales to get meaningful data for forecasting
     const nonZeroData = historicalData.filter(item => 
@@ -1101,259 +1100,178 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Prepare data for chart
   if (salesData && salesData.length > 0) {
-    // Calculate forecast for the next 6 months
     const forecastData = calculateForecast(salesData, 6);
-    
-    // Combine historical and forecast data
     const combinedData = [...salesData, ...forecastData];
     
-    // Prepare series data - ensure all points are properly formatted
-    const revenueData = combinedData.map(item => ({
-      x: new Date(item.month_start).getTime(),
-      y: parseFloat(item.monthly_revenue) || 0,
-      isForecast: item.is_forecast || false
-    }));
-
-    const paymentsData = combinedData.map(item => ({
-      x: new Date(item.month_start).getTime(),
-      y: parseFloat(item.monthly_amount_paid) || 0,
-      isForecast: item.is_forecast || false
-    }));
+    // Format dates for Chart.js
+    const labels = combinedData.map(item => {
+      const date = new Date(item.month_start);
+      return date.toLocaleDateString('default', { month: 'short', year: 'numeric' });
+    });
     
-    // Create ApexCharts options
-    const options = {
-      series: [
-        {
-          name: 'Total Price (Discounted)',
-          data: revenueData,
-          color: '#3B82F6',
-          stroke: {
-            width: 3,
-            curve: 'smooth',
-            lineCap: 'round'
-          }
-        },
-        {
-          name: 'Amount Paid',
-          data: paymentsData,
-          color: '#10B981',
-          stroke: {
-            width: 3,
-            curve: 'smooth',
-            lineCap: 'round'
-          }
+    // Prepare datasets
+    const datasets = [
+      {
+        label: 'Total Price (Discounted)',
+        data: combinedData.map(item => parseFloat(item.monthly_revenue) || 0),
+        borderColor: '#3B82F6', // Blue
+        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+        borderWidth: 3,
+        tension: 0.3,
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        borderDash: combinedData.map(item => item.is_forecast ? [5, 5] : [0, 0]),
+        segment: {
+          borderDash: ctx => ctx.p1.raw.is_forecast ? [5, 5] : undefined
         }
-      ],
-      chart: {
-        height: 380,
-        type: 'line',
-        fontFamily: 'Inter, Helvetica, sans-serif',
-        toolbar: {
-          show: true
-        },
-        zoom: {
-          enabled: false
-        },
-        animations: {
-          enabled: true,
-          easing: 'easeinout',
-          speed: 800,
-          animateGradually: {
-            enabled: true,
-            delay: 150
+      },
+      {
+        label: 'Amount Paid',
+        data: combinedData.map(item => parseFloat(item.monthly_amount_paid) || 0),
+        borderColor: '#10B981', // Green
+        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+        borderWidth: 3,
+        tension: 0.3,
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        borderDash: combinedData.map(item => item.is_forecast ? [5, 5] : [0, 0]),
+        segment: {
+          borderDash: ctx => ctx.p1.raw.is_forecast ? [5, 5] : undefined
+        }
+      }
+    ];
+    
+    // Create Chart.js config
+    const config = {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: datasets
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'top',
+            align: 'end'
           },
-          dynamicAnimation: {
-            enabled: true,
-            speed: 350
-          }
-        },
-        events: {
-          mounted: function(chartContext, config) {
-            const chart = chartContext;
-            const el = chart.el;
-            // Ensure all elements have proper pointer events
-            el.querySelectorAll('.apexcharts-series-markers, .apexcharts-series path')
-              .forEach(el => el.style.pointerEvents = 'auto');
-          }
-        }
-      },
-      dataLabels: {
-        enabled: false
-      },
-      stroke: {
-        curve: 'smooth',
-        width: 3
-      },
-      fill: {
-        type: 'gradient',
-        gradient: {
-          shadeIntensity: 1,
-          opacityFrom: 0.4,
-          opacityTo: 0.1,
-          stops: [0, 95, 100]
-        }
-      },
-      grid: {
-        borderColor: '#f1f1f1',
-        strokeDashArray: 4,
-        xaxis: {
-          lines: {
-            show: true
-          }
-        }
-      },
-      xaxis: {
-        type: 'datetime',
-        labels: {
-          formatter: function(value) {
-            return new Date(value).toLocaleDateString('default', { month: 'short', year: 'numeric' });
-          }
-        },
-        title: {
-          text: 'Month',
-          style: {
-            fontSize: '14px',
-            fontWeight: 600,
-            color: '#64748b'
-          }
-        }
-      },
-      yaxis: {
-        title: {
-          text: 'Amount (₱)',
-          style: {
-            fontSize: '14px',
-            fontWeight: 600,
-            color: '#64748b'
-          }
-        },
-        labels: {
-          formatter: function(value) {
-            return '₱' + value.toLocaleString('en-US', {
-              minimumFractionDigits: 0,
-              maximumFractionDigits: 0
-            });
-          }
-        },
-        min: 0 // Ensure chart starts at 0 to properly show forecast
-      },
-      tooltip: {
-        enabled: true,
-        shared: true,
-        intersect: false,
-        followCursor: true,
-        x: {
-          format: 'MMM yyyy', // Format for the date display
-          show: true
-        },
-        y: {
-          formatter: function(value, { series, seriesIndex, dataPointIndex, w }) {
-            // Get the full data point
-            const point = w.config.series[seriesIndex].data[dataPointIndex];
-            
-            // Format all values consistently
-            return '₱' + value.toLocaleString('en-US', {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2
-            });
-          },
-          title: {
-            formatter: (seriesName) => seriesName // Show series name
-          }
-        },
-        custom: function({ series, seriesIndex, dataPointIndex, w }) {
-          const point = w.config.series[seriesIndex].data[dataPointIndex];
-          
-          // Only apply custom formatting for forecast points
-          if (point.isForecast) {
-            return `
-              <div class="forecast-tooltip">
-                <div class="forecast-badge">Forecast</div>
-                <div class="tooltip-content">
-                  ${w.globals.seriesNames[seriesIndex]}: 
-                  ₱${point.y.toLocaleString('en-US', {
+          tooltip: {
+            mode: 'index',
+            intersect: false,
+            callbacks: {
+              label: function(context) {
+                let label = context.dataset.label || '';
+                if (label) {
+                  label += ': ';
+                }
+                if (context.parsed.y !== null) {
+                  label += '₱' + context.parsed.y.toLocaleString('en-US', {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2
-                  })}
-                </div>
-              </div>
-            `;
+                  });
+                }
+                
+                // Add forecast indicator if this is a forecast point
+                const dataIndex = context.dataIndex;
+                if (dataIndex >= salesData.length) {
+                  label += ' (forecast)';
+                }
+                
+                return label;
+              }
+            }
           }
-          // Return undefined to use default tooltip for non-forecast points
-          return undefined;
         },
-        marker: {
-          show: true
-        }
-      },
-      markers: {
-        size: 5,
-        strokeWidth: 2,
-        hover: {
-          size: 7
-        },
-        shape: "circle",
-        showNullDataPoints: true,
-        discrete: [], // Remove this if present
-        onClick: undefined, // Remove any custom click handlers if present
-        onDblClick: undefined
-      },
-      legend: {
-        position: 'top',
-        horizontalAlign: 'right',
-        floating: true,
-        offsetY: -25,
-        offsetX: -5
-      },
-      annotations: {
-        xaxis: [{
-          x: new Date(salesData[salesData.length - 1].month_start).getTime(),
-          strokeDashArray: 0,
-          borderColor: '#775DD0',
-          label: {
-            borderColor: '#775DD0',
-            style: {
-              color: '#fff',
-              background: '#775DD0'
+        scales: {
+          x: {
+            title: {
+              display: true,
+              text: 'Month',
+              color: '#64748b',
+              font: {
+                size: 14,
+                weight: 'bold'
+              }
             },
-            text: 'Current'
+            grid: {
+              color: '#f1f1f1',
+              drawOnChartArea: true
+            }
+          },
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Amount (₱)',
+              color: '#64748b',
+              font: {
+                size: 14,
+                weight: 'bold'
+              }
+            },
+            grid: {
+              color: '#f1f1f1',
+              drawOnChartArea: true
+            },
+            ticks: {
+              callback: function(value) {
+                return '₱' + value.toLocaleString('en-US', {
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 0
+                });
+              }
+            }
           }
-        }]
+        },
+        interaction: {
+          intersect: false,
+          mode: 'index'
+        }
       }
     };
     
     // Render the chart
-    const chart = new ApexCharts(document.querySelector("#salesSplineChart"), options);
-    chart.render();
+    const ctx = document.getElementById('salesSplineChart').getContext('2d');
+    new Chart(ctx, config);
     
-    // Add custom styles for forecast tooltip
-    const style = document.createElement('style');
-    style.innerHTML = `
-      .forecast-tooltip {
-        padding: 10px;
-        background: #fff;
-        border-radius: 5px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-        border: 1px solid #eee;
+    // Add vertical line at the end of historical data
+    const addVerticalLine = () => {
+      const chartCanvas = document.getElementById('salesSplineChart');
+      const chartInstance = Chart.getChart(chartCanvas);
+      
+      if (chartInstance) {
+        const xAxis = chartInstance.scales.x;
+        const yAxis = chartInstance.scales.y;
+        
+        // Get the x-coordinate of the last historical data point
+        const lastHistoricalIndex = salesData.length - 1;
+        const xPos = xAxis.getPixelForValue(labels[lastHistoricalIndex]);
+        
+        // Draw the line
+        chartInstance.ctx.save();
+        chartInstance.ctx.beginPath();
+        chartInstance.ctx.moveTo(xPos, yAxis.top);
+        chartInstance.ctx.lineTo(xPos, yAxis.bottom);
+        chartInstance.ctx.lineWidth = 1;
+        chartInstance.ctx.strokeStyle = '#775DD0';
+        chartInstance.ctx.stroke();
+        chartInstance.ctx.restore();
+        
+        // Add label
+        chartInstance.ctx.save();
+        chartInstance.ctx.fillStyle = '#775DD0';
+        chartInstance.ctx.fillRect(xPos - 30, yAxis.bottom - 20, 60, 20);
+        chartInstance.ctx.fillStyle = '#fff';
+        chartInstance.ctx.textAlign = 'center';
+        chartInstance.ctx.fillText('Current', xPos, yAxis.bottom - 5);
+        chartInstance.ctx.restore();
       }
-      .forecast-badge {
-        background: #775DD0;
-        color: white;
-        padding: 2px 6px;
-        border-radius: 4px;
-        font-size: 11px;
-        margin-bottom: 5px;
-        display: inline-block;
-      }
-      .tooltip-content {
-        font-size: 13px;
-        font-weight: 500;
-      }
-      .apexcharts-tooltip {
-        pointer-events: auto !important;
-      }
-    `;
-    document.head.appendChild(style);
+    };
+    
+    // Wait for chart to render then add the line
+    setTimeout(addVerticalLine, 500);
+    
   } else {
     document.querySelector("#salesSplineChart").innerHTML = '<div class="p-4 text-center text-gray-500">No sales data available</div>';
   }
