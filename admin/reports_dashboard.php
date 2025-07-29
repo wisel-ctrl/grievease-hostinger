@@ -1061,7 +1061,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Average monthly growth rate (with safeguards)
-    const avgGrowthRateRevenue = countPairs > 0 ? totalGrowthRateRevenue / countPairs : 0.05; // Default 5% if no data
+    const avgGrowthRateRevenue = countPairs > 0 ? totalGrowthRateRevenue / countPairs : 0.05;
     const avgGrowthRatePayment = countPairs > 0 ? totalGrowthRatePayment / countPairs : 0.05;
     
     // Cap growth rates between -15% and +25%
@@ -1103,19 +1103,17 @@ document.addEventListener('DOMContentLoaded', function() {
     // Combine historical and forecast data
     const combinedData = [...salesData, ...forecastData];
     
-    // Prepare series data
+    // Prepare series data - ensure all points are properly formatted
     const revenueData = combinedData.map(item => ({
       x: new Date(item.month_start).getTime(),
-      y: parseFloat(item.monthly_revenue),
-      isForecast: item.is_forecast || false,
-      isZero: parseFloat(item.monthly_revenue) === 0
+      y: parseFloat(item.monthly_revenue) || 0, // Ensure zero values are properly set
+      isForecast: item.is_forecast || false
     }));
     
     const paymentsData = combinedData.map(item => ({
       x: new Date(item.month_start).getTime(),
-      y: parseFloat(item.monthly_amount_paid),
-      isForecast: item.is_forecast || false,
-      isZero: parseFloat(item.monthly_amount_paid) === 0
+      y: parseFloat(item.monthly_amount_paid) || 0, // Ensure zero values are properly set
+      isForecast: item.is_forecast || false
     }));
     
     // Create ApexCharts options
@@ -1124,7 +1122,7 @@ document.addEventListener('DOMContentLoaded', function() {
         {
           name: 'Total Price (Discounted)',
           data: revenueData,
-          color: '#3B82F6', // Blue
+          color: '#3B82F6',
           stroke: {
             width: 3,
             curve: 'smooth',
@@ -1134,7 +1132,7 @@ document.addEventListener('DOMContentLoaded', function() {
         {
           name: 'Amount Paid',
           data: paymentsData,
-          color: '#10B981', // Green
+          color: '#10B981',
           stroke: {
             width: 3,
             curve: 'smooth',
@@ -1144,7 +1142,7 @@ document.addEventListener('DOMContentLoaded', function() {
       ],
       chart: {
         height: 380,
-        type: 'line', // Changed from 'area' to 'line' to better show zero values
+        type: 'line',
         fontFamily: 'Inter, Helvetica, sans-serif',
         toolbar: {
           show: true
@@ -1163,6 +1161,14 @@ document.addEventListener('DOMContentLoaded', function() {
           dynamicAnimation: {
             enabled: true,
             speed: 350
+          }
+        },
+        events: {
+          mounted: function(chartContext, config) {
+            // This ensures tooltips work on all points
+            const chart = chartContext;
+            const el = chart.el;
+            el.querySelector('.apexcharts-series-markers').style.pointerEvents = 'auto';
           }
         }
       },
@@ -1223,16 +1229,19 @@ document.addEventListener('DOMContentLoaded', function() {
               maximumFractionDigits: 0
             });
           }
-        }
+        },
+        min: 0 // Ensure chart starts at 0 to properly show forecast
       },
       tooltip: {
+        enabled: true,
         shared: true,
+        intersect: false, // This ensures tooltips show even if not directly hovering a point
         x: {
           format: 'MMM yyyy'
         },
         y: {
           formatter: function(value) {
-            return '₱' + value.toLocaleString('en-US', { // Changed from $ to ₱
+            return '₱' + value.toLocaleString('en-US', {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2
             });
@@ -1240,8 +1249,7 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         custom: function({ seriesIndex, dataPointIndex, w }) {
           const point = w.config.series[seriesIndex].data[dataPointIndex];
-          const isForecast = point.isForecast;
-          const isZero = point.isZero;
+          const isForecast = point && point.isForecast;
           
           if (isForecast) {
             return `<div class="forecast-tooltip">
@@ -1255,27 +1263,26 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>`;
           }
           
-          if (isZero) {
-            return `<div class="forecast-tooltip">
-                      <div class="tooltip-content">
-                        ${w.globals.seriesNames[seriesIndex]}: ₱0.00
-                      </div>
-                    </div>`;
-          }
-          
           return undefined; // Use default tooltip
+        },
+        marker: {
+          show: true
+        },
+        fixed: {
+          enabled: false,
+          position: 'topRight',
+          offsetX: 0,
+          offsetY: 0
         }
       },
       markers: {
-        size: 4,
+        size: 5,
         strokeWidth: 2,
         hover: {
           size: 7
         },
-        // Hide markers for zero values
-        filter: function(_, { dataPointIndex, w }) {
-          return !w.config.series[0].data[dataPointIndex].isZero;
-        }
+        shape: "circle",
+        showNullDataPoints: true // This ensures markers show even for zero values
       },
       legend: {
         position: 'top',
@@ -1327,6 +1334,9 @@ document.addEventListener('DOMContentLoaded', function() {
       .tooltip-content {
         font-size: 13px;
         font-weight: 500;
+      }
+      .apexcharts-tooltip {
+        pointer-events: auto !important;
       }
     `;
     document.head.appendChild(style);
