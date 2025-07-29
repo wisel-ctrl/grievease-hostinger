@@ -4,15 +4,16 @@
 
   // Get user's first name from database
   $user_id = $_SESSION['user_id'];
-  $query = "SELECT first_name , last_name , email , birthdate FROM users WHERE id = ?";
-  $stmt = $conn->prepare($query);
-  $stmt->bind_param("i", $user_id);
-  $stmt->execute();
-  $result = $stmt->get_result();
-  $row = $result->fetch_assoc();
-  $first_name = $row['first_name']; // We're confident user_id exists
-  $last_name = $row['last_name'];
-  $email = $row['email'];
+    $query = "SELECT first_name, last_name, email, birthdate, profile_picture FROM users WHERE id = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    $first_name = $row['first_name'];
+    $last_name = $row['last_name'];
+    $email = $row['email'];
+    $profile_picture = $row['profile_picture'] ? '../' . $row['profile_picture'] : '../default.png';
   ?>
 
 <?php
@@ -240,20 +241,20 @@ if ($count_result->num_rows > 0) {
       
     <!-- User Profile -->
     <div class="flex items-center px-5 py-4 border-b border-sidebar-border bg-gradient-to-r from-navy to-primary">
-      <div class="w-10 h-10 rounded-full bg-yellow-600 flex items-center justify-center shadow-md">
-        <i class="fas fa-user text-white"></i>
-      </div>
-      <div class="ml-3">
-        <div class="text-sm font-medium text-sidebar-text">
-          <span class="md:inline text-sm">
-            <?php echo htmlspecialchars($first_name . ' ' . $last_name); ?>
-          </span>
+        <div class="w-10 h-10 rounded-full bg-yellow-600 flex items-center justify-center shadow-md overflow-hidden">
+            <img src="<?php echo htmlspecialchars($profile_picture); ?>" alt="Profile Picture" class="w-full h-full object-cover">
         </div>
-        <div class="text-xs text-sidebar-text opacity-70">Administrator</div>
-      </div>
-      <div class="ml-auto">
-        <span class="w-3 h-3 bg-success rounded-full block"></span>
-      </div>
+        <div class="ml-3">
+            <div class="text-sm font-medium text-sidebar-text">
+                <span class="md:inline text-sm">
+                    <?php echo htmlspecialchars(ucfirst($first_name) . ' ' . ucfirst($last_name)); ?>
+                </span>
+            </div>
+            <div class="text-xs text-sidebar-text opacity-70">Administrator</div>
+        </div>
+        <div class="ml-auto">
+            <span class="w-3 h-3 bg-success rounded-full block"></span>
+        </div>
     </div>
       
     <!-- Menu Items -->
@@ -389,6 +390,14 @@ if ($count_result->num_rows > 0) {
       <div class="px-5 mb-2 py-2 menu-header">
         <h5 class="text-xs font-medium text-sidebar-accent uppercase tracking-wider">Account</h5>
       </div>
+        <ul class="list-none p-0">
+            <li>
+                <a href="admin_settings.php" class="sidebar-link flex items-center px-5 py-3 text-sidebar-text opacity-80 hover:opacity-100 no-underline transition-all duration-300 hover:bg-sidebar-hover">
+                    <i class="fas fa-cog w-5 text-center mr-3 text-sidebar-accent"></i>
+                    <span>Settings</span>
+                </a>
+            </li>
+        </ul>
       <ul class="list-none p-0">
         <li>
           <a href="../logout.php" class="sidebar-link flex items-center px-5 py-3 text-sidebar-text opacity-80 hover:opacity-100 no-underline transition-all duration-300 hover:bg-sidebar-hover hover:text-error">
