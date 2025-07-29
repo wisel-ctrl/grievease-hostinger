@@ -154,18 +154,31 @@ while ($row = $casketResult->fetch_assoc()) {
     ];
 }
 
-$salesQuery = "SELECT 
-    DATE_FORMAT(sale_date, '%Y-%m-01') AS month_start, 
-    SUM(discounted_price) AS monthly_revenue, 
-    SUM(amount_paid) AS monthly_amount_paid 
+$currentMonth = date('Y-m-01');
+
+// Modified sales query to include all months from current month backwards
+$salesQuery = "WITH RECURSIVE all_months AS (
+    SELECT DATE(?) AS month_start
+    UNION ALL
+    SELECT DATE_SUB(month_start, INTERVAL 1 MONTH)
+    FROM all_months
+    WHERE month_start > DATE_SUB(?, INTERVAL 12 MONTH) -- Adjust 12 to show more/fewer months
+)
+SELECT 
+    DATE_FORMAT(am.month_start, '%Y-%m-01') AS month_start,
+    COALESCE(SUM(a.discounted_price), 0) AS monthly_revenue,
+    COALESCE(SUM(a.amount_paid), 0) AS monthly_amount_paid
 FROM 
-    analytics_tb 
+    all_months am
+LEFT JOIN 
+    analytics_tb a ON DATE_FORMAT(a.sale_date, '%Y-%m-01') = DATE_FORMAT(am.month_start, '%Y-%m-01')
 GROUP BY 
-    DATE_FORMAT(sale_date, '%Y-%m-01') 
+    DATE_FORMAT(am.month_start, '%Y-%m-01')
 ORDER BY 
-    month_start";
+    month_start DESC";  // Changed to DESC to show recent months first
 
 $salesStmt = $conn->prepare($salesQuery);
+$salesStmt->bind_param("ss", $currentMonth, $currentMonth);
 $salesStmt->execute();
 $salesResult = $salesStmt->get_result();
 $salesData = [];
@@ -174,7 +187,9 @@ while ($row = $salesResult->fetch_assoc()) {
     $salesData[] = $row;
 }
 
+$lastDate = date('Y-m-d');
 
+// The rest of your queries remain the same but use $lastDate
 $basicStatsQuery = "SELECT 
     AVG(discounted_price) as avg_price,
     AVG(amount_paid) as avg_payment,
@@ -184,13 +199,7 @@ $basicStatsStmt = $conn->prepare($basicStatsQuery);
 $basicStatsStmt->execute();
 $basicStats = $basicStatsStmt->get_result()->fetch_assoc();
 
-// Get last month's date from data
-$lastDateQuery = "SELECT MAX(sale_date) as max_date FROM analytics_tb";
-$lastDateStmt = $conn->prepare($lastDateQuery);
-$lastDateStmt->execute();
-$lastDate = $lastDateStmt->get_result()->fetch_assoc()['max_date'];
-
-// Calculate changes
+// Calculate changes using current date as lastDate
 $changesQuery = "SELECT 
     CASE 
         WHEN (SELECT AVG(discounted_price) FROM analytics_tb WHERE sale_date < DATE_SUB(?, INTERVAL 1 MONTH)) > 0 
