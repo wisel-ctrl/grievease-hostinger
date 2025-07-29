@@ -251,6 +251,7 @@ $ratioChange = number_format($changes['ratio_change'] ?? 0, 1);
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>  
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
         
 </head>
@@ -1028,7 +1029,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 </script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script>
 const salesData = <?php echo json_encode($salesData); ?>;
 
