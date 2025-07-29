@@ -1108,13 +1108,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // Prepare series data - ensure all points are properly formatted
     const revenueData = combinedData.map(item => ({
       x: new Date(item.month_start).getTime(),
-      y: parseFloat(item.monthly_revenue) || 0, // Ensure zero values are properly set
+      y: parseFloat(item.monthly_revenue) || 0,
       isForecast: item.is_forecast || false
     }));
-    
+
     const paymentsData = combinedData.map(item => ({
       x: new Date(item.month_start).getTime(),
-      y: parseFloat(item.monthly_amount_paid) || 0, // Ensure zero values are properly set
+      y: parseFloat(item.monthly_amount_paid) || 0,
       isForecast: item.is_forecast || false
     }));
     
@@ -1167,10 +1167,11 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         events: {
           mounted: function(chartContext, config) {
-            // This ensures tooltips work on all points
             const chart = chartContext;
             const el = chart.el;
-            el.querySelector('.apexcharts-series-markers').style.pointerEvents = 'auto';
+            // Ensure all elements have proper pointer events
+            el.querySelectorAll('.apexcharts-series-markers, .apexcharts-series path')
+              .forEach(el => el.style.pointerEvents = 'auto');
           }
         }
       },
@@ -1238,6 +1239,7 @@ document.addEventListener('DOMContentLoaded', function() {
         enabled: true,
         shared: true,
         intersect: false, // This ensures tooltips show even if not directly hovering a point
+        followCursor: true, // Add this
         x: {
           format: 'MMM yyyy'
         },
@@ -1284,7 +1286,10 @@ document.addEventListener('DOMContentLoaded', function() {
           size: 7
         },
         shape: "circle",
-        showNullDataPoints: true // This ensures markers show even for zero values
+        showNullDataPoints: true,
+        discrete: [], // Remove this if present
+        onClick: undefined, // Remove any custom click handlers if present
+        onDblClick: undefined
       },
       legend: {
         position: 'top',
