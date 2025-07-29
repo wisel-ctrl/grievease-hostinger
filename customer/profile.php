@@ -178,6 +178,17 @@ header("Pragma: no-cache");
                 $stmt->fetch();
 
                 $stmt->close();
+                
+                // Get profile picture and created_at separately
+                $profile_query = "SELECT profile_picture, created_at FROM users WHERE id = ?";
+                $profile_stmt = $conn->prepare($profile_query);
+                $profile_stmt->bind_param("i", $user_id);
+                $profile_stmt->execute();
+                $profile_result = $profile_stmt->get_result();
+                $profile_data = $profile_result->fetch_assoc();
+                
+                $profile_picture = $profile_data['profile_picture'];
+                $created_at = $profile_data['created_at'] ?? date('Y-m-d H:i:s');
 
                 // Get regions for dropdown
                 $regions = [];
@@ -333,6 +344,32 @@ input[name*="LastName"] {
         flex-direction: column;
         min-height: 100%;
     }
+    
+    /* Profile picture upload styles */
+.group:hover .group-hover\:opacity-100 {
+    opacity: 1 !important;
+}
+
+.profile-upload-btn {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: rgba(0,0,0,0.7);
+    color: white;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.profile-upload-btn:hover {
+    background: rgba(0,0,0,0.9);
+    transform: scale(1.1);
+}
     
     </style>
 </head>
@@ -511,29 +548,38 @@ input[name*="LastName"] {
             
             <!-- Profile Info Positioned at Bottom of Banner -->
             <div class="absolute bottom-0 left-0 right-0 p-6 md:p-12 z-10 flex items-end">
-                <div class="relative">
-                    <div class="absolute -top-16 w-24 h-24 rounded-full border-4 border-cream overflow-hidden bg-white">
+            <div class="relative">
+                <div class="absolute -top-16 w-24 h-24 rounded-full border-4 border-cream overflow-hidden bg-white group">
+                    <?php if ($profile_picture && file_exists('../profile_picture/' . $profile_picture)): ?>
+                        <img src="../profile_picture/<?php echo htmlspecialchars($profile_picture); ?>" 
+                             alt="Profile Picture" 
+                             class="w-full h-full object-cover">
+                    <?php else: ?>
                         <div class="w-full h-full bg-gray-300 flex items-center justify-center text-3xl font-bold text-gray-600">
-                            <?php 
-                                // Get initials from first letter of first_name and first letter of last_name
-                                $initials = strtoupper(substr($first_name, 0, 1) . substr($last_name, 0, 1)); 
-                                echo htmlspecialchars($initials);
-                            ?>
+                            <?php echo htmlspecialchars(strtoupper(substr($first_name, 0, 1) . substr($last_name, 0, 1))); ?>
                         </div>
-                    </div>
-                    <div class="ml-32">
-                        <h1 class="font-hedvig text-3xl text-white"><?php echo htmlspecialchars(ucwords($first_name . ' ' . $last_name)); ?></h1>
-                        <p class="text-white/80">
-                            Member since <?php 
-                                // Format the created_at date (assuming it's stored in your $row variable)
-                                $created_at = isset($row['created_at']) ? $row['created_at'] : date('Y-m-d H:i:s');
-                                echo date('F Y', strtotime($created_at)); 
-                            ?>
-                        </p>
+                    <?php endif; ?>
+                    <!-- Upload Button Overlay -->
+                    <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer" 
+                         onclick="document.getElementById('profile-picture-upload').click()">
+                        <span class="text-white text-xs text-center px-2">
+                            <i class="fas fa-camera text-lg mb-1"></i><br>
+                            Change Photo
+                        </span>
                     </div>
                 </div>
+                <div class="ml-32">
+                    <h1 class="font-hedvig text-3xl text-white"><?php echo htmlspecialchars(ucwords($first_name . ' ' . $last_name)); ?></h1>
+                    <p class="text-white/80">
+                        Member since <?php echo date('F Y', strtotime($created_at)); ?>
+                    </p>
+                </div>
             </div>
-            
+        </div>
+        
+        <!-- Hidden file input for profile picture upload -->
+        <input type="file" id="profile-picture-upload" accept="image/*" class="hidden" onchange="uploadProfilePicture(this)">
+                    
             <!-- Decorative Elements -->
             <div class="absolute top-6 right-6 w-16 h-16 border-t-2 border-r-2 border-white/20 pointer-events-none"></div>
             <div class="absolute bottom-6 left-6 w-16 h-16 border-b-2 border-l-2 border-white/20 pointer-events-none"></div>
@@ -977,6 +1023,85 @@ input[name*="LastName"] {
 
 <!-- JavaScript to handle modals -->
 <script>
+    
+    function uploadProfilePicture(input) {
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        const maxSize = 5 * 1024 * 1024; // 5MB
+        
+        // Validate file size
+        if (file.size > maxSize) {
+            Swal.fire({
+                icon: 'error',
+                title: 'File too large',
+                text: 'Maximum file size is 5MB',
+            });
+            return;
+        }
+        
+        // Validate file type
+        const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+        if (!validTypes.includes(file.type)) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Invalid file type',
+                text: 'Only JPG and PNG images are allowed',
+            });
+            return;
+        }
+        
+        // Show loading indicator
+        Swal.fire({
+            title: 'Uploading...',
+            html: 'Please wait while we upload your profile picture',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+        
+        // Create FormData
+        const formData = new FormData();
+        formData.append('profile_picture', file);
+        
+        // Send to server
+        fetch('profile/upload_profile_picture.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            Swal.close();
+            if (data.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: 'Profile picture updated successfully',
+                    timer: 2000,
+                    showConfirmButton: false
+                }).then(() => {
+                    // Reload the page to show the new image
+                    location.reload();
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: data.message || 'Failed to upload profile picture',
+                });
+            }
+        })
+        .catch(error => {
+            Swal.close();
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'An error occurred while uploading',
+            });
+            console.error('Error:', error);
+        });
+    }
+}
     // Function to open image modal
     function openImageModal(imageSrc) {
         document.getElementById('enlargedImage').src = imageSrc;
