@@ -1348,7 +1348,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-    <script src="script.js"></script>
     <script src="tailwind.js"></script>
 </body>
 </html>
