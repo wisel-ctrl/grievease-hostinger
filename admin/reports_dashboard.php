@@ -1113,7 +1113,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Prepare datasets
     const datasets = [
       {
-        label: 'Total Price (Discounted)',
+        label: 'Accrued revenue',
         data: combinedData.map(item => parseFloat(item.monthly_revenue) || 0),
         borderColor: '#3B82F6', // Blue
         backgroundColor: 'rgba(59, 130, 246, 0.1)',
@@ -1127,7 +1127,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       },
       {
-        label: 'Amount Paid',
+        label: 'Cash revenue',
         data: combinedData.map(item => parseFloat(item.monthly_amount_paid) || 0),
         borderColor: '#10B981', // Green
         backgroundColor: 'rgba(16, 185, 129, 0.1)',
