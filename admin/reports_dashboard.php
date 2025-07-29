@@ -154,16 +154,27 @@ while ($row = $casketResult->fetch_assoc()) {
     ];
 }
 
-$salesQuery = "SELECT 
-    DATE_FORMAT(sale_date, '%Y-%m-01') AS month_start, 
-    SUM(discounted_price) AS monthly_revenue, 
-    SUM(amount_paid) AS monthly_amount_paid 
+$salesQuery = "WITH RECURSIVE months AS (
+    SELECT DATE_FORMAT(MIN(sale_date), '%Y-%m-01') AS month_start
+    FROM analytics_tb
+    UNION ALL
+    SELECT DATE_ADD(month_start, INTERVAL 1 MONTH)
+    FROM months
+    WHERE month_start < DATE_FORMAT(CURDATE(), '%Y-%m-01')
+)
+
+SELECT 
+    m.month_start,
+    COALESCE(SUM(a.discounted_price), 0) AS monthly_revenue,
+    COALESCE(SUM(a.amount_paid), 0) AS monthly_amount_paid
 FROM 
-    analytics_tb 
+    months m
+LEFT JOIN 
+    analytics_tb a ON DATE_FORMAT(a.sale_date, '%Y-%m-01') = m.month_start
 GROUP BY 
-    DATE_FORMAT(sale_date, '%Y-%m-01') 
+    m.month_start
 ORDER BY 
-    month_start";
+    m.month_start;";
 
 $salesStmt = $conn->prepare($salesQuery);
 $salesStmt->execute();
