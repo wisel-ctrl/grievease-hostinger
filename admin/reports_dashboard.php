@@ -1027,15 +1027,20 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 <script>
-  const salesData = <?php echo json_encode($salesData); ?>;
+const salesData = <?php echo json_encode($salesData); ?>;
 
 document.addEventListener('DOMContentLoaded', function() {
   // Function to calculate simple forecast based on historical data
   function calculateForecast(historicalData, monthsToForecast = 6) {
-    if (!historicalData || historicalData.length < 2) return [];
+    // Filter out months with zero sales to get meaningful data for forecasting
+    const nonZeroData = historicalData.filter(item => 
+      parseFloat(item.monthly_revenue) > 0 || parseFloat(item.monthly_amount_paid) > 0
+    );
+    
+    if (!nonZeroData || nonZeroData.length < 2) return [];
     
     // Get last few months of data for forecasting
-    const recentData = historicalData.slice(-6);
+    const recentData = nonZeroData.slice(-6);
     
     // Calculate average monthly growth rate
     let totalGrowthRateRevenue = 0;
@@ -1102,13 +1107,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const revenueData = combinedData.map(item => ({
       x: new Date(item.month_start).getTime(),
       y: parseFloat(item.monthly_revenue),
-      isForecast: item.is_forecast || false
+      isForecast: item.is_forecast || false,
+      isZero: parseFloat(item.monthly_revenue) === 0
     }));
     
     const paymentsData = combinedData.map(item => ({
       x: new Date(item.month_start).getTime(),
       y: parseFloat(item.monthly_amount_paid),
-      isForecast: item.is_forecast || false
+      isForecast: item.is_forecast || false,
+      isZero: parseFloat(item.monthly_amount_paid) === 0
     }));
     
     // Create ApexCharts options
@@ -1137,7 +1144,7 @@ document.addEventListener('DOMContentLoaded', function() {
       ],
       chart: {
         height: 380,
-        type: 'area',
+        type: 'line', // Changed from 'area' to 'line' to better show zero values
         fontFamily: 'Inter, Helvetica, sans-serif',
         toolbar: {
           show: true
@@ -1225,7 +1232,7 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         y: {
           formatter: function(value) {
-            return '$' + value.toLocaleString('en-US', {
+            return '₱' + value.toLocaleString('en-US', { // Changed from $ to ₱
               minimumFractionDigits: 2,
               maximumFractionDigits: 2
             });
@@ -1234,15 +1241,24 @@ document.addEventListener('DOMContentLoaded', function() {
         custom: function({ seriesIndex, dataPointIndex, w }) {
           const point = w.config.series[seriesIndex].data[dataPointIndex];
           const isForecast = point.isForecast;
+          const isZero = point.isZero;
           
           if (isForecast) {
             return `<div class="forecast-tooltip">
                       <div class="forecast-badge">Forecast</div>
                       <div class="tooltip-content">
-                        ${w.globals.seriesNames[seriesIndex]}: $${point.y.toLocaleString('en-US', {
+                        ${w.globals.seriesNames[seriesIndex]}: ₱${point.y.toLocaleString('en-US', {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2
                         })}
+                      </div>
+                    </div>`;
+          }
+          
+          if (isZero) {
+            return `<div class="forecast-tooltip">
+                      <div class="tooltip-content">
+                        ${w.globals.seriesNames[seriesIndex]}: ₱0.00
                       </div>
                     </div>`;
           }
@@ -1255,6 +1271,10 @@ document.addEventListener('DOMContentLoaded', function() {
         strokeWidth: 2,
         hover: {
           size: 7
+        },
+        // Hide markers for zero values
+        filter: function(_, { dataPointIndex, w }) {
+          return !w.config.series[0].data[dataPointIndex].isZero;
         }
       },
       legend: {
@@ -1266,7 +1286,7 @@ document.addEventListener('DOMContentLoaded', function() {
       },
       annotations: {
         xaxis: [{
-          x: salesData[salesData.length - 1].month_start,
+          x: new Date(salesData[salesData.length - 1].month_start).getTime(),
           strokeDashArray: 0,
           borderColor: '#775DD0',
           label: {
