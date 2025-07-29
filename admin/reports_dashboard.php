@@ -1238,45 +1238,50 @@ document.addEventListener('DOMContentLoaded', function() {
       tooltip: {
         enabled: true,
         shared: true,
-        intersect: false, // This ensures tooltips show even if not directly hovering a point
-        followCursor: true, // Add this
+        intersect: false,
+        followCursor: true,
         x: {
-          format: 'MMM yyyy'
+          format: 'MMM yyyy', // Format for the date display
+          show: true
         },
         y: {
-          formatter: function(value) {
+          formatter: function(value, { series, seriesIndex, dataPointIndex, w }) {
+            // Get the full data point
+            const point = w.config.series[seriesIndex].data[dataPointIndex];
+            
+            // Format all values consistently
             return '₱' + value.toLocaleString('en-US', {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2
             });
+          },
+          title: {
+            formatter: (seriesName) => seriesName // Show series name
           }
         },
-        custom: function({ seriesIndex, dataPointIndex, w }) {
+        custom: function({ series, seriesIndex, dataPointIndex, w }) {
           const point = w.config.series[seriesIndex].data[dataPointIndex];
-          const isForecast = point && point.isForecast;
           
-          if (isForecast) {
-            return `<div class="forecast-tooltip">
-                      <div class="forecast-badge">Forecast</div>
-                      <div class="tooltip-content">
-                        ${w.globals.seriesNames[seriesIndex]}: ₱${point.y.toLocaleString('en-US', {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2
-                        })}
-                      </div>
-                    </div>`;
+          // Only apply custom formatting for forecast points
+          if (point.isForecast) {
+            return `
+              <div class="forecast-tooltip">
+                <div class="forecast-badge">Forecast</div>
+                <div class="tooltip-content">
+                  ${w.globals.seriesNames[seriesIndex]}: 
+                  ₱${point.y.toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                  })}
+                </div>
+              </div>
+            `;
           }
-          
-          return undefined; // Use default tooltip
+          // Return undefined to use default tooltip for non-forecast points
+          return undefined;
         },
         marker: {
           show: true
-        },
-        fixed: {
-          enabled: false,
-          position: 'topRight',
-          offsetX: 0,
-          offsetY: 0
         }
       },
       markers: {
