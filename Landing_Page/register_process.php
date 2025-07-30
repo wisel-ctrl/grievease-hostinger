@@ -62,22 +62,36 @@ try {
                 
                 // Insert user data into database
                 // Add is_verified column with value 1
-                $stmt = $conn->prepare("INSERT INTO users (first_name, last_name, middle_name, birthdate, email, password, user_type, is_verified, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, 1, NOW())");
-                $stmt->bind_param("ssssssi", 
+                date_default_timezone_set('Asia/Manila');
+                $philippines_time = date('Y-m-d H:i:s');
+                $stmt = $conn->prepare("INSERT INTO users (first_name, last_name, middle_name, birthdate, email, password, user_type, is_verified, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, 1, ?)");
+                $stmt->bind_param("ssssssis", 
                     $userData['firstName'], 
                     $userData['lastName'], 
                     $userData['middleName'], 
                     $userData['birthdate'], 
                     $userData['email'], 
                     $userData['hashed_password'],
-                    $userData['userType']
+                    $userData['userType'],
+                    $philippines_time
                 );
                 
                 if ($stmt->execute()) {
+                    $user_id = $conn->insert_id;
                     $response['success'] = true;
                     $response['message'] = 'Registration successful!';
-                    $response['user_id'] = $conn->insert_id;
+                    $response['user_id'] = $user_id;
                     $response['is_verified'] = true;
+                    
+                    // Send SMS notification to admin
+                    $customerName = $userData['firstName'] . ' ' . $userData['lastName'];
+                    $smsMessage = "New customer registered: $customerName ({$userData['email']}). User ID: $user_id";
+                    
+                    try {
+                        sendAdminSMS($smsMessage);
+                    } catch (Exception $e) {
+                        logToFile("Failed to send admin SMS notification: " . $e->getMessage());
+                    }
                     
                     // Clear session data
                     unset($_SESSION['otp']);
@@ -198,6 +212,67 @@ function sendOTP($email, $otp, $firstName) {
         logToFile("SMTP Error: " . $mail->ErrorInfo);
         return false;
     }
+}
+
+
+function sendAdminSMS($message) {
+    $apiKey = '024cb8782cdb71b2925fb933f6f8635f';
+    $senderName = 'GrievEase';
+    
+    // Get all admin phone numbers (user_type = 1)
+    global $conn;
+    $adminNumbers = array();
+    
+    $stmt = $conn->prepare("SELECT phone_number FROM users WHERE user_type = 1 AND phone_number IS NOT NULL");
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    while ($row = $result->fetch_assoc()) {
+        $adminNumbers[] = $row['phone_number'];
+    }
+    
+    if (empty($adminNumbers)) {
+        logToFile("No admin phone numbers found for SMS notification");
+        return false;
+    }
+    
+    // Send SMS to each admin
+    foreach ($adminNumbers as $number) {
+        // Clean the phone number (remove any non-digit characters)
+        $cleanNumber = preg_replace('/[^0-9]/', '', $number);
+        
+        // Check if the number starts with 0 and has 11 digits (Philippines format)
+        if (strlen($cleanNumber) === 11 && $cleanNumber[0] === '0') {
+            // Convert to international format for Semaphore (e.g., 09171234567 -> +639171234567)
+            $internationalNumber = '+63' . substr($cleanNumber, 1);
+            
+            $ch = curl_init();
+            $parameters = array(
+                'apikey' => $apiKey,
+                'number' => $internationalNumber,
+                'message' => $message,
+                'sendername' => $senderName
+            );
+            
+            curl_setopt($ch, CURLOPT_URL, 'https://api.semaphore.co/api/v4/messages');
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($parameters));
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            
+            $output = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            
+            curl_close($ch);
+            
+            if ($httpCode !== 200) {
+                logToFile("Failed to send SMS to admin: " . $internationalNumber . " - Response: " . $output);
+            }
+        } else {
+            logToFile("Invalid phone number format for admin: " . $number);
+        }
+    }
+    
+    return true;
 }
 
 // Return JSON response - this should be the ONLY output from this file
