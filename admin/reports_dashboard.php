@@ -267,9 +267,25 @@ $ratioChange = number_format($changes['ratio_change'] ?? 0, 1);
       <h1 class="text-2xl font-bold text-sidebar-text">Reports</h1>
     </div>
     <div class="flex space-x-3">
-      <button class="p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
-        <i class="fas fa-bell"></i>
-      </button>
+      <div class="relative">
+        <button id="branchDropdownButton" class="flex items-center justify-between p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300 w-32">
+          <span class="truncate">All Branches</span>
+          <i class="fas fa-chevron-down ml-2 text-xs"></i>
+        </button>
+        <div id="branchDropdown" class="hidden absolute right-0 mt-1 w-48 bg-white rounded-md shadow-lg z-10 border border-sidebar-border">
+          <ul class="py-1">
+            <li>
+              <a href="#" class="block px-4 py-2 text-sm text-sidebar-text hover:bg-sidebar-hover branch-option" data-branch="all">All Branches</a>
+            </li>
+            <li>
+              <a href="#" class="block px-4 py-2 text-sm text-sidebar-text hover:bg-sidebar-hover branch-option" data-branch="pila">Pila</a>
+            </li>
+            <li>
+              <a href="#" class="block px-4 py-2 text-sm text-sidebar-text hover:bg-sidebar-hover branch-option" data-branch="paete">Paete</a>
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
 
