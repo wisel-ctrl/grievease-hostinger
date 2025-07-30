@@ -1294,6 +1294,70 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 </script>
+<script>
+  // Branch selection dropdown functionality
+  document.addEventListener('DOMContentLoaded', function() {
+    const dropdownButton = document.getElementById('branchDropdownButton');
+    const dropdownMenu = document.getElementById('branchDropdown');
+    const branchOptions = document.querySelectorAll('.branch-option');
+    
+    // Toggle dropdown
+    dropdownButton.addEventListener('click', function(e) {
+      e.stopPropagation();
+      dropdownMenu.classList.toggle('hidden');
+      const icon = this.querySelector('i');
+      icon.classList.toggle('fa-chevron-down');
+      icon.classList.toggle('fa-chevron-up');
+    });
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function() {
+      dropdownMenu.classList.add('hidden');
+      const icon = dropdownButton.querySelector('i');
+      icon.classList.remove('fa-chevron-up');
+      icon.classList.add('fa-chevron-down');
+    });
+    
+    // Handle branch selection
+    branchOptions.forEach(option => {
+      option.addEventListener('click', function(e) {
+        e.preventDefault();
+        const branch = this.getAttribute('data-branch');
+        const branchName = this.textContent;
+        
+        // Update button text
+        dropdownButton.querySelector('span').textContent = branchName;
+        
+        // Close dropdown
+        dropdownMenu.classList.add('hidden');
+        const icon = dropdownButton.querySelector('i');
+        icon.classList.remove('fa-chevron-up');
+        icon.classList.add('fa-chevron-down');
+        
+        // Here you would typically make an AJAX call to filter data by branch
+        // For now, we'll just log the selection
+        console.log('Selected branch:', branch);
+        
+        // You can add your AJAX call here to filter the data
+        // filterDataByBranch(branch);
+      });
+    });
+  });
+  
+  // Example function for filtering data by branch
+  function filterDataByBranch(branch) {
+    // This would be where you make an AJAX call to your backend
+    // to get data filtered by the selected branch
+    fetch(`/api/reports?branch=${branch}`)
+      .then(response => response.json())
+      .then(data => {
+        // Update your charts and data with the filtered results
+        console.log('Filtered data:', data);
+        // updateCharts(data);
+      })
+      .catch(error => console.error('Error:', error));
+  }
+</script>
 
     <script src="tailwind.js"></script>
 </body>
