@@ -272,110 +272,6 @@ if (isset($_GET['action'])) {
 }
 ?>
 
-
-<!-- Main Content -->
-<div id="main-content" class="p-6 bg-gray-100 min-h-screen transition-all duration-300 ml-64 main-content">
-    <div class="flex justify-between items-center mb-6 bg-white p-4 rounded-lg shadow">
-      <h1 class="text-2xl font-bold text-gray-800">Customer Messages</h1>
-      <div class="flex gap-2">
-        <div class="relative">
-          <input type="text" id="customer-search" placeholder="Search customers..." class="px-4 py-2 pl-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent">
-          <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
-        </div>
-        <button id="refresh-messages" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-md flex items-center gap-2">
-          <i class="fas fa-sync-alt"></i> Refresh
-        </button>
-        <div class="relative">
-          <button id="filter-dropdown-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-md flex items-center gap-2">
-            <i class="fas fa-filter"></i> Filter
-          </button>
-          <div id="filter-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
-            <div class="py-1">
-              <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="filterMessages('all')">All Messages</button>
-              <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="filterMessages('unread')">Unread Only</button>
-              <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="filterMessages('today')">Today</button>
-              <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="filterMessages('week')">This Week</button>
-              <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="filterMessages('month')">This Month</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Customer Messages Interface -->
-    <div class="bg-white rounded-lg shadow-md overflow-hidden">
-      <!-- Messages Header -->
-      <div class="border-b border-gray-200 bg-gray-50 p-4">
-        <div class="flex justify-between items-center">
-          <h2 class="text-lg font-semibold text-gray-800">Incoming Customer Messages</h2>
-          <div class="text-sm text-gray-500">Showing <span id="message-count" class="font-medium">0</span> messages</div>
-        </div>
-      </div>
-      
-      <!-- Messages Content -->
-      <div class="divide-y divide-gray-200">
-        <!-- Empty state - No messages -->
-        <div id="empty-state" class="py-12 flex flex-col items-center justify-center text-gray-500">
-          <div class="bg-gray-100 rounded-full p-4 mb-4">
-            <i class="fas fa-inbox text-3xl"></i>
-          </div>
-          <h3 class="text-lg font-medium mb-1">No customer messages</h3>
-          <p class="text-sm">Customer messages will appear here when received</p>
-          <button id="load-messages-btn" class="mt-4 bg-[#008080] text-white px-4 py-2 rounded-md hover:bg-opacity-90 transition-colors">
-            Load Messages
-          </button>
-        </div>
-        
-        <!-- Message list container -->
-        <div id="message-list" class="hidden">
-          <!-- Messages will be loaded here dynamically -->
-        </div>
-      </div>
-    </div>
-  </div>  
-
-  <!-- Message Detail Modal -->
-  <div id="message-detail-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
-      <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[80vh] flex flex-col">
-        <!-- Modal Header -->
-        <div class="p-4 border-b border-gray-200 flex justify-between items-center">
-          <div>
-            <h3 class="text-lg font-semibold" id="modal-customer-name">Customer Name</h3>
-            <p class="text-sm text-gray-500" id="modal-message-date">Date</p>
-          </div>
-          <button id="close-modal" class="text-gray-500 hover:text-gray-700">
-            <i class="fas fa-times text-xl"></i>
-          </button>
-        </div>
-        
-        <!-- Modal Body - Conversation -->
-        <div class="p-4 overflow-y-auto flex-grow" id="modal-conversation">
-          <!-- Conversation messages will be loaded here -->
-        </div>
-        
-        <!-- Modal Footer - Reply Form -->
-        <div class="p-4 border-t border-gray-200">
-          <div class="flex gap-2 mb-2">
-            <button class="text-gray-500 hover:text-gray-700" title="Attach File">
-              <i class="fas fa-paperclip"></i>
-            </button>
-            <button class="text-gray-500 hover:text-gray-700" title="Quick Reply Template">
-              <i class="fas fa-reply-all"></i>
-            </button>
-            <button class="text-gray-500 hover:text-gray-700" title="Format Text">
-              <i class="fas fa-font"></i>
-            </button>
-          </div>
-          <div class="flex gap-2">
-            <textarea id="reply-input" class="flex-1 p-2.5 border border-gray-300 rounded text-sm" placeholder="Type your reply..."></textarea>
-            <button class="bg-[#008080] text-white px-4 py-2 rounded-md hover:bg-opacity-90" id="send-reply">
-              <i class="fas fa-paper-plane mr-2"></i> Send
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
   <script>
     // Employee Messaging JavaScript
 
@@ -847,123 +743,110 @@ function capitalizeWords(str) {
 </head>
 <body class="flex bg-gray-50">
   <!-- Modify the sidebar structure to include a dedicated space for the hamburger menu -->
-<nav id="sidebar" class="w-64 h-screen bg-sidebar-bg font-hedvig fixed transition-all duration-300 overflow-y-auto z-10 scrollbar-thin shadow-sidebar animate-sidebar sidebar">
-  <!-- Logo and Header with hamburger menu -->
-  <div class="flex items-center px-5 py-6 border-b border-sidebar-border">
-    <button id="hamburger-menu" class="p-2 mr-2 bg-white rounded-lg shadow-md text-gray-600 hover:text-gray-900 transition-all duration-300">
-      <i class="fas fa-bars"></i>
-    </button>
-    <!-- <img src="../Landing_Page/Landing_images/logo.png" alt="GrievEase Logo" class="h-10 w-auto mr-3"> -->
-    <div class="text-2xl font-cinzel font-bold text-sidebar-accent">GrievEase</div>
-  </div>
-    
-    <!-- User Profile -->
-    <div class="flex items-center px-5 py-4 border-b border-sidebar-border bg-gradient-to-r from-navy to-primary">
-      <div class="w-10 h-10 rounded-full bg-yellow-600 flex items-center justify-center shadow-md">
-        <i class="fas fa-user text-white"></i>
-      </div>
-      <div class="ml-3">
-        <div class="text-sm font-medium text-sidebar-text">
-          <?php echo htmlspecialchars($first_name . ' ' . $last_name); ?>
+<?php include 'employee_sidebar.php'; ?>
+
+  <!-- Main Content -->
+<div id="main-content" class="p-6 bg-gray-100 min-h-screen transition-all duration-300 ml-64 main-content">
+    <div class="flex justify-between items-center mb-6 bg-white p-4 rounded-lg shadow">
+      <h1 class="text-2xl font-bold text-gray-800">Customer Messages</h1>
+      <div class="flex gap-2">
+        <div class="relative">
+          <input type="text" id="customer-search" placeholder="Search customers..." class="px-4 py-2 pl-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+          <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
         </div>
-        <div class="text-xs text-sidebar-text opacity-70">Employee</div>
-      </div>
-      <div class="ml-auto">
-        <span class="w-3 h-3 bg-success rounded-full block"></span>
-      </div>
-    </div>
-    
-    <!-- Menu Items -->
-    <div class="pt-4 pb-8">
-      <!-- Main Navigation -->
-      <div class="px-5 mb-2 py-2 menu-header">
-        <h5 class="text-xs font-medium text-sidebar-accent uppercase tracking-wider">Main</h5>
-      </div>
-      <ul class="list-none p-0 mb-6">
-        <li>
-          <a href="index.php" class="sidebar-link flex items-center px-5 py-3 text-sidebar-text opacity-80 hover:opacity-100 no-underline transition-all duration-300 hover:bg-sidebar-hover">
-            <i class="fas fa-tachometer-alt w-5 text-center mr-3 text-sidebar-accent"></i>
-            <span>Dashboard</span>
-          </a>
-        </li> 
-        <li>
-          <a href="employee_customer_account_creation.php" class="sidebar-link flex items-center px-5 py-3 text-sidebar-text opacity-80 hover:opacity-100 no-underline transition-all duration-300 hover:bg-sidebar-hover">
-            <i class="fas fa-user-circle w-5 text-center mr-3 text-sidebar-accent"></i>
-            <span>Customer Account Management</span>
-          </a>
-        </li>
-        <li>
-          <a href="employee_inventory.php" class="sidebar-link flex items-center px-5 py-3 text-sidebar-text opacity-80 hover:opacity-100 no-underline transition-all duration-300 hover:bg-sidebar-hover">
-            <i class="fas fa-boxes w-5 text-center mr-3 text-sidebar-accent"></i>
-            <span>View Inventory</span>
-          </a>
-        </li>
-        <li>
-          <a href="employee_pos.php" class="sidebar-link flex items-center px-5 py-3 text-sidebar-text opacity-80 hover:opacity-100 no-underline transition-all duration-300 hover:bg-sidebar-hover">
-            <i class="fas fa-cash-register w-5 text-center mr-3 text-sidebar-accent"></i>
-            <span>Point-Of-Sale (POS)</span>
-          </a>
-        </li>
-      </ul>
-        
-      <!-- Reports & Analytics -->
-      <div class="px-5 mb-2 py-2 menu-header">
-        <h5 class="text-xs font-medium text-sidebar-accent uppercase tracking-wider">Reports & Analytics</h5>
-      </div>
-      <ul class="list-none p-0 mb-6">
-        <li>
-          <a href="employee_expenses.php" class="sidebar-link flex items-center px-5 py-3 text-sidebar-text opacity-80 hover:opacity-100 no-underline transition-all duration-300 hover:bg-sidebar-hover">
-            <i class="fas fa-money-bill-wave w-5 text-center mr-3 text-sidebar-accent"></i>
-            <span>Expenses</span>
-          </a>
-        </li>
-        <li>
-          <a href="history.php" class="sidebar-link flex items-center px-5 py-3 text-sidebar-text opacity-80 hover:opacity-100 no-underline transition-all duration-300 hover:bg-sidebar-hover">
-            <i class="fas fa-history w-5 text-center mr-3 text-sidebar-accent"></i>
-            <span>Service History</span>
-          </a>
-        </li>
-      </ul>
-        
-      <!-- Services & Staff -->
-      <div class="px-5 mb-2 py-2 menu-header">
-        <h5 class="text-xs font-medium text-sidebar-accent uppercase tracking-wider">Communication</h5>
-      </div>
-      <ul class="list-none p-0 mb-6">
-          <a href="employee_chat.php" class="sidebar-link flex items-center px-5 py-3 text-sidebar-text opacity-80 hover:opacity-100 no-underline transition-all duration-300 hover:bg-sidebar-hover">
-            <i class="fas fa-comments w-5 text-center mr-3 text-sidebar-accent"></i>
-            <span>Chats</span>
-          </a>
-        </li>
-      </ul>
-        
-      <!-- Account -->
-      <div class="px-5 mb-2 py-2 menu-header">
-        <h5 class="text-xs font-medium text-sidebar-accent uppercase tracking-wider">Account</h5>
-      </div>
-      <ul class="list-none p-0">
-        <li>
-          <a href="../logout.php" class="sidebar-link flex items-center px-5 py-3 text-sidebar-text opacity-80 hover:opacity-100 no-underline transition-all duration-300 hover:bg-sidebar-hover hover:text-error">
-            <i class="fas fa-sign-out-alt w-5 text-center mr-3 text-error"></i>
-            <span>Logout</span>
-          </a>
-        </li>
-      </ul>
-    </div>
-    
-    <!-- Footer -->
-    <div class="relative bottom-0 left-0 right-0 px-5 py-3 border-t border-sidebar-border bg-gradient-to-r from-navy to-primary">
-      <div class="flex justify-between items-center">
-        <p class="text-xs text-sidebar-text opacity-60">© 2025 GrievEase</p>
-        <div class="text-xs text-sidebar-accent">
-          <i class="fas fa-heart"></i> With Compassion
+        <button id="refresh-messages" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-md flex items-center gap-2">
+          <i class="fas fa-sync-alt"></i> Refresh
+        </button>
+        <div class="relative">
+          <button id="filter-dropdown-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-md flex items-center gap-2">
+            <i class="fas fa-filter"></i> Filter
+          </button>
+          <div id="filter-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
+            <div class="py-1">
+              <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="filterMessages('all')">All Messages</button>
+              <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="filterMessages('unread')">Unread Only</button>
+              <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="filterMessages('today')">Today</button>
+              <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="filterMessages('week')">This Week</button>
+              <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="filterMessages('month')">This Month</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  </nav>
 
-  
+    <!-- Customer Messages Interface -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+      <!-- Messages Header -->
+      <div class="border-b border-gray-200 bg-gray-50 p-4">
+        <div class="flex justify-between items-center">
+          <h2 class="text-lg font-semibold text-gray-800">Incoming Customer Messages</h2>
+          <div class="text-sm text-gray-500">Showing <span id="message-count" class="font-medium">0</span> messages</div>
+        </div>
+      </div>
+      
+      <!-- Messages Content -->
+      <div class="divide-y divide-gray-200">
+        <!-- Empty state - No messages -->
+        <div id="empty-state" class="py-12 flex flex-col items-center justify-center text-gray-500">
+          <div class="bg-gray-100 rounded-full p-4 mb-4">
+            <i class="fas fa-inbox text-3xl"></i>
+          </div>
+          <h3 class="text-lg font-medium mb-1">No customer messages</h3>
+          <p class="text-sm">Customer messages will appear here when received</p>
+          <button id="load-messages-btn" class="mt-4 bg-[#008080] text-white px-4 py-2 rounded-md hover:bg-opacity-90 transition-colors">
+            Load Messages
+          </button>
+        </div>
+        
+        <!-- Message list container -->
+        <div id="message-list" class="hidden">
+          <!-- Messages will be loaded here dynamically -->
+        </div>
+      </div>
+    </div>
+  </div>  
 
+  <!-- Message Detail Modal -->
+  <div id="message-detail-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
+      <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[80vh] flex flex-col">
+        <!-- Modal Header -->
+        <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+          <div>
+            <h3 class="text-lg font-semibold" id="modal-customer-name">Customer Name</h3>
+            <p class="text-sm text-gray-500" id="modal-message-date">Date</p>
+          </div>
+          <button id="close-modal" class="text-gray-500 hover:text-gray-700">
+            <i class="fas fa-times text-xl"></i>
+          </button>
+        </div>
+        
+        <!-- Modal Body - Conversation -->
+        <div class="p-4 overflow-y-auto flex-grow" id="modal-conversation">
+          <!-- Conversation messages will be loaded here -->
+        </div>
+        
+        <!-- Modal Footer - Reply Form -->
+        <div class="p-4 border-t border-gray-200">
+          <div class="flex gap-2 mb-2">
+            <button class="text-gray-500 hover:text-gray-700" title="Attach File">
+              <i class="fas fa-paperclip"></i>
+            </button>
+            <button class="text-gray-500 hover:text-gray-700" title="Quick Reply Template">
+              <i class="fas fa-reply-all"></i>
+            </button>
+            <button class="text-gray-500 hover:text-gray-700" title="Format Text">
+              <i class="fas fa-font"></i>
+            </button>
+          </div>
+          <div class="flex gap-2">
+            <textarea id="reply-input" class="flex-1 p-2.5 border border-gray-300 rounded text-sm" placeholder="Type your reply..."></textarea>
+            <button class="bg-[#008080] text-white px-4 py-2 rounded-md hover:bg-opacity-90" id="send-reply">
+              <i class="fas fa-paper-plane mr-2"></i> Send
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
 
 
   <script src="sidebar.js"></script>
