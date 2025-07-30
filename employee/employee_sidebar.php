@@ -10,19 +10,38 @@
     
     <!-- User Profile -->
     <div class="flex items-center px-5 py-4 border-b border-sidebar-border bg-gradient-to-r from-navy to-primary">
-      <div class="w-10 h-10 rounded-full bg-yellow-600 flex items-center justify-center shadow-md">
-        <i class="fas fa-user text-white"></i>
-      </div>
-      <div class="ml-3">
-        <div class="text-sm font-medium text-sidebar-text">
-          <?php echo htmlspecialchars($first_name . ' ' . $last_name); ?>
+    <?php if (!empty($employee['profile_picture'])): ?>
+        <div class="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center shadow-md">
+            <img src="../profile_picture/<?php echo htmlspecialchars($employee['profile_picture']); ?>" 
+                 alt="Profile" 
+                 class="w-full h-full object-cover">
+        </div>
+    <?php else: ?>
+        <div class="w-10 h-10 rounded-full bg-yellow-600 flex items-center justify-center shadow-md">
+            <span class="text-white font-medium">
+                <?php 
+                    $first_initial = !empty($first_name) ? strtoupper(substr($first_name, 0, 1)) : '';
+                    $last_initial = !empty($last_name) ? strtoupper(substr($last_name, 0, 1)) : '';
+                    echo $first_initial . $last_initial;
+                ?>
+            </span>
+        </div>
+    <?php endif; ?>
+    <div class="ml-3">
+        <div class="text-sm font-medium text-sidebar-text capitalize">
+            <?php 
+                // Capitalize first letter of each name
+                $display_first = !empty($first_name) ? ucfirst(strtolower($first_name)) : '';
+                $display_last = !empty($last_name) ? ucfirst(strtolower($last_name)) : '';
+                echo htmlspecialchars($display_first . ' ' . $display_last); 
+            ?>
         </div>
         <div class="text-xs text-sidebar-text opacity-70">Employee</div>
-      </div>
-      <div class="ml-auto">
-        <span class="w-3 h-3 bg-success rounded-full block"></span>
-      </div>
     </div>
+    <div class="ml-auto">
+        <span class="w-3 h-3 bg-success rounded-full block"></span>
+    </div>
+</div>
     
     <!-- Menu Items -->
     <div class="pt-4 pb-8">
