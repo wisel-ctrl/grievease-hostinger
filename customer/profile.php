@@ -3023,6 +3023,8 @@ function getSamplePaymentHistory(packageType) {
                                 <div class="relative">
                                     <input type="tel" id="phone" name="phone" pattern="^(\+63\d{10}|0\d{10}|\d{10})$"
                                     title="Phone number (09XXXXXXXXX or +639XXXXXXXXX)" value="<?php echo htmlspecialchars($phone_number); ?>" maxlength="11" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent pr-10 text-base shadow-sm transition-all duration-200">
+                                    <p id="phone-error" class="mt-1 text-sm text-red-600 hidden"></p>
+                                    <p id="phone-availability" class="mt-1 text-sm text-gray-600 hidden"></p>
                                     <span class="absolute right-4 top-1/2 transform -translate-y-1/2 text-yellow-600">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
@@ -5419,25 +5421,182 @@ function updateBarangays() {
         });
 }
 
-// Phone number validation with format instructions
+// Phone number validation function
 function validatePhoneNumber(phone) {
-    // Remove all non-digit and non-plus characters
     const cleaned = phone.replace(/[^0-9+]/g, '');
-    
-    // Check if starts with +63 (Philippines country code)
     if (phone.startsWith('+63')) {
         return cleaned.length === 13; // +63 plus 10 digits
     }
-    
-    // Check if starts with 0 (local number)
     if (phone.startsWith('0')) {
         return cleaned.length === 11; // 0 plus 10 digits
     }
-    
-    // If doesn't start with 0 or +63, must be 10 digits
-    return cleaned.length === 10;
+    return cleaned.length === 10; // 10 digits without leading 0 or +63
 }
 
+// Real-time phone number validation with availability check
+function setupPhoneValidation() {
+    const phoneInput = document.getElementById('phone');
+    const errorElement = document.getElementById('phone-error');
+    const availabilityElement = document.getElementById('phone-availability');
+    const originalPhone = phoneInput.value.trim(); // Store the user's current phone number
+    let debounceTimeout;
+
+    phoneInput.addEventListener('input', function() {
+        const value = this.value.trim();
+        // Clean input by removing invalid characters
+        this.value = value.replace(/[^0-9+]/g, '');
+
+        // Clear previous messages
+        errorElement.classList.add('hidden');
+        availabilityElement.classList.add('hidden');
+        phoneInput.classList.remove('border-red-500', 'border-green-500');
+
+
+    
+
+        // Skip availability check if the number hasn't changed
+        if (value === originalPhone) {
+            availabilityElement.textContent = 'Phone number is valid';
+            availabilityElement.classList.remove('text-red-600');
+            availabilityElement.classList.add('text-green-600');
+            phoneInput.classList.add('border-green-500');
+            document.querySelector('button[type="submit"]').disabled = false;
+            return;
+        }
+
+        // Debounced availability check for changed numbers
+        clearTimeout(debounceTimeout);
+        debounceTimeout = setTimeout(() => {
+            checkPhoneAvailability(value);
+        }, 500);
+    });
+
+    // Prevent invalid characters
+    phoneInput.addEventListener('keydown', function(e) {
+        if ([46, 8, 9, 27, 13].includes(e.keyCode) || 
+            (e.keyCode === 65 && e.ctrlKey) || 
+            (e.keyCode === 67 && e.ctrlKey) || 
+            (e.keyCode === 86 && e.ctrlKey) || 
+            (e.keyCode === 88 && e.ctrlKey) ||
+            (e.keyCode >= 35 && e.keyCode <= 39)) {
+            return;
+        }
+        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && 
+            (e.keyCode < 96 || e.keyCode > 105) && 
+            (e.keyCode !== 187 || this.value.length !== 0)) {
+            e.preventDefault();
+        }
+    });
+
+    // Validate on blur
+    phoneInput.addEventListener('blur', function() {
+        const value = this.value.trim();
+        if (value === originalPhone) {
+            availabilityElement.textContent = 'Phone number is valid';
+            availabilityElement.classList.remove('text-red-600', 'hidden');
+            availabilityElement.classList.add('text-green-600');
+            phoneInput.classList.add('border-green-500');
+            document.querySelector('button[type="submit"]').disabled = false;
+        }
+    });
+
+    // Check phone number availability via AJAX
+    function checkPhoneAvailability(phone) {
+        // Skip check if format is invalid
+        if (!validatePhoneNumber(phone)) return;
+
+        fetch('profile/check_phone.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'phone=' + encodeURIComponent(phone) + '&user_id=' + encodeURIComponent(<?php echo json_encode($user_id); ?>)
+        })
+        .then(response => response.json())
+        .then(data => {
+            availabilityElement.classList.remove('hidden');
+            if (data.exists) {
+                availabilityElement.textContent = 'This phone number is already in use';
+                availabilityElement.classList.remove('text-green-600');
+                availabilityElement.classList.add('text-red-600');
+                phoneInput.classList.add('border-red-500');
+                phoneInput.classList.remove('border-green-500');
+                document.querySelector('button[type="submit"]').disabled = true;
+            } else {
+                availabilityElement.textContent = 'Phone number is available';
+                availabilityElement.classList.remove('text-red-600');
+                availabilityElement.classList.add('text-green-600');
+                phoneInput.classList.add('border-green-500');
+                phoneInput.classList.remove('border-red-500');
+                document.querySelector('button[type="submit"]').disabled = false;
+            }
+        })
+        .catch(error => {
+            availabilityElement.textContent = 'Error checking availability';
+            availabilityElement.classList.remove('text-green-600');
+            availabilityElement.classList.add('text-red-600');
+            phoneInput.classList.add('border-red-500');
+            console.error('Error:', error);
+            document.querySelector('button[type="submit"]').disabled = true;
+        });
+    }
+
+    // Trigger initial validation for existing phone number
+    document.getElementById('edit-profile-btn').addEventListener('click', function() {
+        const phoneValue = phoneInput.value.trim();
+        if (phoneValue && validatePhoneNumber(phoneValue)) {
+            // Treat the original phone number as valid without checking
+            availabilityElement.textContent = 'Phone number is valid';
+            availabilityElement.classList.remove('text-red-600', 'hidden');
+            availabilityElement.classList.add('text-green-600');
+            phoneInput.classList.add('border-green-500');
+            phoneInput.classList.remove('border-red-500');
+            document.querySelector('button[type="submit"]').disabled = false;
+        }
+    });
+}
+
+// Update form validation to include availability check
+function validateForm() {
+    let isValid = true;
+
+    // Existing validations...
+    const firstName = document.getElementById('firstName').value.trim();
+    if (!firstName) {
+        isValid = false;
+        showError('firstName', 'First name is required');
+    } else {
+        clearError('firstName');
+    }
+
+    const lastName = document.getElementById('lastName').value.trim();
+    if (!lastName) {
+        isValid = false;
+        showError('lastName', 'Last name is required');
+    } else {
+        clearError('lastName');
+    }
+
+    const phone = document.getElementById('phone').value.trim();
+    const phoneAvailability = document.getElementById('phone-availability').textContent;
+    const originalPhone = <?php echo json_encode($phone_number); ?>;
+    if (phone !== originalPhone && phoneAvailability === 'This phone number is already in use') {
+        isValid = false;
+        showError('phone', 'This phone number is already in use');
+    } else {
+        clearError('phone');
+    }
+
+    // ... rest of your existing validations ...
+
+    return isValid;
+}
+
+// Update DOMContentLoaded to include phone validation
+document.addEventListener('DOMContentLoaded', function() {
+    setupPhoneValidation();
+    // ... other existing initialization code ...
+});
 // Restrict phone input to numbers and + only
 function restrictPhoneInput() {
     const phoneInput = document.getElementById('phone');
