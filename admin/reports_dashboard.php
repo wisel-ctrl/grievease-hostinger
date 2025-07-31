@@ -438,7 +438,13 @@ document.addEventListener('DOMContentLoaded', function() {
               height: 350,
               type: 'line',
               animations: {
-                  enabled: false // More precise rendering
+                  enabled: false
+              },
+              toolbar: {
+                  show: true,
+                  tools: {
+                      download: false // Disables the download menu
+                  }
               }
           },
           xaxis: {
@@ -679,7 +685,7 @@ var options = {
     toolbar: {
       show: true,
       tools: {
-        download: true,
+        download: false,
         selection: false,
         zoom: false,
         zoomin: false,
