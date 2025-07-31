@@ -153,7 +153,7 @@ $ratioChange = number_format($changes['ratio_change'] ?? 0, 1);
                 </div>
             </div>
             <div class="flex items-end">
-                <span class="text-2xl md:text-3xl font-bold text-gray-800 sales-forecast-value">$142,850</span>
+                <span class="text-2xl md:text-3xl font-bold text-gray-800 sales-forecast-value">₱000,000</span>
             </div>
         </div>
         
@@ -892,6 +892,46 @@ document.addEventListener('DOMContentLoaded', function() {
       seasonalityElement.className = 'text-yellow-600 font-medium';  
     } else {
       seasonalityElement.className = 'text-red-600 font-medium';
+    }
+  }
+});
+
+// After processing the heatmap data, calculate total forecasted orders
+const forecastedOrders = heatmapData.series.reduce((total, series) => {
+  const forecastDataPoints = series.data.filter(point => point.forecast);
+  const seriesForecast = forecastDataPoints.reduce((sum, point) => sum + point.y, 0);
+  return total + seriesForecast;
+}, 0);
+
+console.log('Total forecasted orders:', forecastedOrders);
+
+// Update the Projected Orders card
+document.addEventListener('DOMContentLoaded', function() {
+  const projectedOrdersElement = document.querySelector('.bg-gradient-to-r.from-purple-100.to-purple-200 .text-2xl');
+  if (projectedOrdersElement) {
+    projectedOrdersElement.textContent = forecastedOrders;
+  }
+  
+  // You can also update the percentage change if you have historical data to compare
+  const changeElement = document.querySelector('.bg-white.border-t.border-gray-100 .font-medium.text-xs');
+  if (changeElement) {
+    // Calculate percentage change (this is just an example - adjust based on your business logic)
+    const historicalSales = heatmapData.series.reduce((total, series) => {
+      const actualDataPoints = series.data.filter(point => !point.forecast);
+      const seriesSales = actualDataPoints.reduce((sum, point) => sum + point.y, 0);
+      return total + seriesSales;
+    }, 0);
+    
+    const avgHistoricalQuarterlySales = historicalSales / (heatmapData.months.filter(m => !m.is_forecast).length / 3);
+    const percentageChange = ((forecastedOrders - avgHistoricalQuarterlySales) / avgHistoricalQuarterlySales * 100).toFixed(1);
+    
+    changeElement.textContent = `${percentageChange}%`;
+    
+    // Set color based on positive/negative change
+    if (parseFloat(percentageChange) >= 0) {
+      changeElement.parentElement.className = 'flex items-center text-emerald-600';
+    } else {
+      changeElement.parentElement.className = 'flex items-center text-red-600';
     }
   }
 });
