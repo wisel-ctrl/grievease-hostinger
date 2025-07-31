@@ -3,6 +3,7 @@
 session_start();
 
 include 'faviconLogo.php'; 
+include 'reportAPI/report_queries.php';
 
 require_once '../db_connect.php'; // Database connection
 
@@ -61,174 +62,23 @@ header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 
-// Fetch monthly revenue data for forecasting
-$revenueQuery = "WITH RECURSIVE date_series AS (
-    SELECT 
-        DATE_FORMAT(CONVERT_TZ(MIN(sale_date), '+00:00', '+08:00'), '%Y-%m-01') as month_start
-    FROM 
-        analytics_tb
-    
-    UNION ALL
-    
-    SELECT 
-        DATE_ADD(month_start, INTERVAL 1 MONTH)
-    FROM 
-        date_series
-    WHERE 
-        DATE_ADD(month_start, INTERVAL 1 MONTH) <= DATE_FORMAT(CONVERT_TZ(CURRENT_DATE(), '+00:00', '+08:00'), '%Y-%m-01')
-)
+// Get branch filter from request
+$branchFilter = isset($_GET['branch']) ? $_GET['branch'] : 'all';
+$branchId = null;
 
-SELECT 
-    DATE_FORMAT(ds.month_start, '%Y-%m-%d') as month_start,
-    COALESCE(SUM(at.discounted_price), 0) as monthly_revenue
-FROM 
-    date_series ds
-LEFT JOIN 
-    analytics_tb at ON DATE_FORMAT(CONVERT_TZ(at.sale_date, '+00:00', '+08:00'), '%Y-%m-01') = ds.month_start
-GROUP BY 
-    ds.month_start
-ORDER BY 
-    ds.month_start;";
-$revenueStmt = $conn->prepare($revenueQuery);
-$revenueStmt->execute();
-$revenueResult = $revenueStmt->get_result();
-$revenueData = [];
-while ($row = $revenueResult->fetch_assoc()) {
-    $revenueData[] = $row;
-}  
-
-$casketQuery = "
-WITH RECURSIVE all_months AS (
-    SELECT DATE_FORMAT(MIN(sale_date), '%Y-%m-01') AS month
-    FROM analytics_tb
-    UNION ALL
-    SELECT DATE_ADD(month, INTERVAL 1 MONTH)
-    FROM all_months
-    WHERE month < DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL 6 MONTH), '%Y-%m-01')
-),
-casket_sales AS (
-    SELECT 
-        DATE_FORMAT(sale_date, '%Y-%m') AS sale_month,
-        item_name,
-        COUNT(*) AS casket_sold
-    FROM 
-        analytics_tb
-    JOIN 
-        inventory_tb 
-    ON 
-        casket_id = inventory_id
-    WHERE 
-        casket_id IS NOT NULL
-        AND inventory_tb.category_id = 1
-    GROUP BY 
-        DATE_FORMAT(sale_date, '%Y-%m'), item_name
-)
-SELECT 
-    DATE_FORMAT(am.month, '%Y-%m') AS sale_month,
-    it.item_name,
-    COALESCE(cs.casket_sold, 0) AS casket_sold,
-    CASE WHEN am.month > DATE_FORMAT(CURDATE(), '%Y-%m-01') THEN 1 ELSE 0 END AS is_forecast
-FROM 
-    all_months am
-CROSS JOIN 
-    (SELECT DISTINCT item_name FROM inventory_tb WHERE category_id = 1) it
-LEFT JOIN 
-    casket_sales cs 
-ON 
-    DATE_FORMAT(am.month, '%Y-%m') = cs.sale_month AND it.item_name = cs.item_name
-ORDER BY 
-    sale_month, item_name
-";
-
-$casketStmt = $conn->prepare($casketQuery);
-$casketStmt->execute();
-$casketResult = $casketStmt->get_result();
-
-$casketData = [];
-while ($row = $casketResult->fetch_assoc()) {
-    $casketData[] = [
-        'sale_month' => $row['sale_month'],
-        'item_name' => $row['item_name'],
-        'casket_sold' => (int)$row['casket_sold'],
-        'is_forecast' => (bool)$row['is_forecast']
-    ];
+if ($branchFilter === 'paete') {
+    $branchId = 1;
+} elseif ($branchFilter === 'pila') {
+    $branchId = 2;
 }
 
-$salesQuery = "WITH RECURSIVE months AS (
-    SELECT DATE_FORMAT(MIN(sale_date), '%Y-%m-01') AS month_start
-    FROM analytics_tb
-    UNION ALL
-    SELECT DATE_ADD(month_start, INTERVAL 1 MONTH)
-    FROM months
-    WHERE month_start < DATE_FORMAT(CURDATE(), '%Y-%m-01')
-)
-
-SELECT 
-    m.month_start,
-    COALESCE(SUM(a.discounted_price), 0) AS monthly_revenue,
-    COALESCE(SUM(a.amount_paid), 0) AS monthly_amount_paid
-FROM 
-    months m
-LEFT JOIN 
-    analytics_tb a ON DATE_FORMAT(a.sale_date, '%Y-%m-01') = m.month_start
-GROUP BY 
-    m.month_start
-ORDER BY 
-    m.month_start;";
-
-$salesStmt = $conn->prepare($salesQuery);
-$salesStmt->execute();
-$salesResult = $salesStmt->get_result();
-$salesData = [];
-
-while ($row = $salesResult->fetch_assoc()) {
-    $salesData[] = $row;
-}
-
-
-$basicStatsQuery = "SELECT 
-    AVG(discounted_price) as avg_price,
-    AVG(amount_paid) as avg_payment,
-    (SUM(amount_paid) / SUM(discounted_price)) * 100 as payment_ratio
-FROM analytics_tb";
-$basicStatsStmt = $conn->prepare($basicStatsQuery);
-$basicStatsStmt->execute();
-$basicStats = $basicStatsStmt->get_result()->fetch_assoc();
-
-// Get last month's date from data
-$lastDateQuery = "SELECT MAX(sale_date) as max_date FROM analytics_tb";
-$lastDateStmt = $conn->prepare($lastDateQuery);
-$lastDateStmt->execute();
-$lastDate = $lastDateStmt->get_result()->fetch_assoc()['max_date'];
-
-// Calculate changes
-$changesQuery = "SELECT 
-    CASE 
-        WHEN (SELECT AVG(discounted_price) FROM analytics_tb WHERE sale_date < DATE_SUB(?, INTERVAL 1 MONTH)) > 0 
-        THEN (SELECT AVG(discounted_price) FROM analytics_tb WHERE sale_date >= DATE_SUB(?, INTERVAL 1 MONTH)) / 
-             (SELECT AVG(discounted_price) FROM analytics_tb WHERE sale_date < DATE_SUB(?, INTERVAL 1 MONTH)) * 100 - 100 
-        ELSE 0 
-    END as price_change,
-    
-    CASE 
-        WHEN (SELECT AVG(amount_paid) FROM analytics_tb WHERE sale_date < DATE_SUB(?, INTERVAL 1 MONTH)) > 0 
-        THEN (SELECT AVG(amount_paid) FROM analytics_tb WHERE sale_date >= DATE_SUB(?, INTERVAL 1 MONTH)) / 
-             (SELECT AVG(amount_paid) FROM analytics_tb WHERE sale_date < DATE_SUB(?, INTERVAL 1 MONTH)) * 100 - 100 
-        ELSE 0 
-    END as payment_change,
-    
-    CASE 
-        WHEN (SELECT SUM(discounted_price) FROM analytics_tb WHERE sale_date < DATE_SUB(?, INTERVAL 1 MONTH)) > 0 
-             AND (SELECT SUM(amount_paid) FROM analytics_tb WHERE sale_date < DATE_SUB(?, INTERVAL 1 MONTH)) > 0 
-        THEN (SELECT (SUM(amount_paid)/SUM(discounted_price)*100) FROM analytics_tb WHERE sale_date >= DATE_SUB(?, INTERVAL 1 MONTH)) / 
-             (SELECT (SUM(amount_paid)/SUM(discounted_price)*100) FROM analytics_tb WHERE sale_date < DATE_SUB(?, INTERVAL 1 MONTH)) * 100 - 100 
-        ELSE 0 
-    END as ratio_change";
-
-$changesStmt = $conn->prepare($changesQuery);
-$changesStmt->bind_param("ssssssssss", $lastDate, $lastDate, $lastDate, $lastDate, $lastDate, $lastDate, $lastDate, $lastDate, $lastDate, $lastDate);
-$changesStmt->execute();
-$changes = $changesStmt->get_result()->fetch_assoc();
+// Fetch data using our new functions
+$revenueData = getRevenueData($conn, $branchId);
+$casketData = getCasketData($conn, $branchId);
+$salesData = getSalesData($conn, $branchId);
+$basicStats = getBasicStats($conn, $branchId);
+$lastDate = getLastDate($conn, $branchId);
+$changes = getChanges($conn, $lastDate, $branchId);
 
 // Extract values for display
 // Extract values for display with null checks
@@ -1295,68 +1145,65 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 <script>
-  // Branch selection dropdown functionality
+  // Update the branch selection script
   document.addEventListener('DOMContentLoaded', function() {
-    const dropdownButton = document.getElementById('branchDropdownButton');
-    const dropdownMenu = document.getElementById('branchDropdown');
-    const branchOptions = document.querySelectorAll('.branch-option');
-    
-    // Toggle dropdown
-    dropdownButton.addEventListener('click', function(e) {
-      e.stopPropagation();
-      dropdownMenu.classList.toggle('hidden');
-      const icon = this.querySelector('i');
-      icon.classList.toggle('fa-chevron-down');
-      icon.classList.toggle('fa-chevron-up');
-    });
-    
-    // Close dropdown when clicking outside
-    document.addEventListener('click', function() {
-      dropdownMenu.classList.add('hidden');
-      const icon = dropdownButton.querySelector('i');
-      icon.classList.remove('fa-chevron-up');
-      icon.classList.add('fa-chevron-down');
-    });
-    
-    // Handle branch selection
-    branchOptions.forEach(option => {
-      option.addEventListener('click', function(e) {
-        e.preventDefault();
-        const branch = this.getAttribute('data-branch');
-        const branchName = this.textContent;
-        
-        // Update button text
-        dropdownButton.querySelector('span').textContent = branchName;
-        
-        // Close dropdown
-        dropdownMenu.classList.add('hidden');
-        const icon = dropdownButton.querySelector('i');
-        icon.classList.remove('fa-chevron-up');
-        icon.classList.add('fa-chevron-down');
-        
-        // Here you would typically make an AJAX call to filter data by branch
-        // For now, we'll just log the selection
-        console.log('Selected branch:', branch);
-        
-        // You can add your AJAX call here to filter the data
-        // filterDataByBranch(branch);
+      const dropdownButton = document.getElementById('branchDropdownButton');
+      const dropdownMenu = document.getElementById('branchDropdown');
+      const branchOptions = document.querySelectorAll('.branch-option');
+      
+      // Get current branch from URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const currentBranch = urlParams.get('branch') || 'all';
+      
+      // Set initial button text
+      const initialBranchText = currentBranch === 'all' ? 'All Branches' : 
+                              (currentBranch === 'paete' ? 'Paete' : 'Pila');
+      dropdownButton.querySelector('span').textContent = initialBranchText;
+      
+      // Toggle dropdown
+      dropdownButton.addEventListener('click', function(e) {
+          e.stopPropagation();
+          dropdownMenu.classList.toggle('hidden');
+          const icon = this.querySelector('i');
+          icon.classList.toggle('fa-chevron-down');
+          icon.classList.toggle('fa-chevron-up');
       });
-    });
+      
+      // Close dropdown when clicking outside
+      document.addEventListener('click', function() {
+          dropdownMenu.classList.add('hidden');
+          const icon = dropdownButton.querySelector('i');
+          icon.classList.remove('fa-chevron-up');
+          icon.classList.add('fa-chevron-down');
+      });
+      
+      // Handle branch selection
+      branchOptions.forEach(option => {
+          option.addEventListener('click', function(e) {
+              e.preventDefault();
+              const branch = this.getAttribute('data-branch');
+              const branchName = this.textContent;
+              
+              // Update button text
+              dropdownButton.querySelector('span').textContent = branchName;
+              
+              // Close dropdown
+              dropdownMenu.classList.add('hidden');
+              const icon = dropdownButton.querySelector('i');
+              icon.classList.remove('fa-chevron-up');
+              icon.classList.add('fa-chevron-down');
+              
+              // Reload page with new branch filter
+              const url = new URL(window.location.href);
+              if (branch === 'all') {
+                  url.searchParams.delete('branch');
+              } else {
+                  url.searchParams.set('branch', branch);
+              }
+              window.location.href = url.toString();
+          });
+      });
   });
-  
-  // Example function for filtering data by branch
-  function filterDataByBranch(branch) {
-    // This would be where you make an AJAX call to your backend
-    // to get data filtered by the selected branch
-    fetch(`/api/reports?branch=${branch}`)
-      .then(response => response.json())
-      .then(data => {
-        // Update your charts and data with the filtered results
-        console.log('Filtered data:', data);
-        // updateCharts(data);
-      })
-      .catch(error => console.error('Error:', error));
-  }
 </script>
 
     <script src="tailwind.js"></script>
