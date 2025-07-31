@@ -39,9 +39,23 @@ function getRevenueData($conn, $branchId = null) {
     $stmt = $conn->prepare($query);
     
     if ($branchId) {
-        $stmt->bind_param("i", $branchId);
-        if (strpos($branchJoinCondition, '?') !== false) {
-            $stmt->bind_param("i", $branchId);
+        $params = [];
+        $types = '';
+        
+        // First parameter for branchCondition
+        if ($branchCondition) {
+            $params[] = $branchId;
+            $types .= 'i';
+        }
+        
+        // Second parameter for branchJoinCondition
+        if ($branchJoinCondition) {
+            $params[] = $branchId;
+            $types .= 'i';
+        }
+        
+        if (!empty($params)) {
+            $stmt->bind_param($types, ...$params);
         }
     }
     
@@ -105,9 +119,21 @@ function getCasketData($conn, $branchId = null) {
     $stmt = $conn->prepare($query);
     
     if ($branchId) {
-        $stmt->bind_param("i", $branchId);
-        if (strpos($branchJoinCondition, '?') !== false) {
-            $stmt->bind_param("i", $branchId);
+        $params = [];
+        $types = '';
+        
+        if ($branchCondition) {
+            $params[] = $branchId;
+            $types .= 'i';
+        }
+        
+        if ($branchJoinCondition) {
+            $params[] = $branchId;
+            $types .= 'i';
+        }
+        
+        if (!empty($params)) {
+            $stmt->bind_param($types, ...$params);
         }
     }
     
@@ -158,9 +184,21 @@ function getSalesData($conn, $branchId = null) {
     $stmt = $conn->prepare($query);
     
     if ($branchId) {
-        $stmt->bind_param("i", $branchId);
-        if (strpos($branchJoinCondition, '?') !== false) {
-            $stmt->bind_param("i", $branchId);
+        $params = [];
+        $types = '';
+        
+        if ($branchCondition) {
+            $params[] = $branchId;
+            $types .= 'i';
+        }
+        
+        if ($branchJoinCondition) {
+            $params[] = $branchId;
+            $types .= 'i';
+        }
+        
+        if (!empty($params)) {
+            $stmt->bind_param($types, ...$params);
         }
     }
     
@@ -206,12 +244,12 @@ function getLastDate($conn, $branchId = null) {
     }
     
     $stmt->execute();
-    return $stmt->get_result()->fetch_assoc()['max_date'];
+    $result = $stmt->get_result();
+    return $result->fetch_assoc()['max_date'];
 }
 
 function getChanges($conn, $lastDate, $branchId = null) {
     $branchCondition = $branchId ? "AND branch_id = ?" : "";
-    $branchParams = $branchId ? str_repeat("i", 10) : "";
     
     $query = "SELECT 
         CASE 
@@ -239,14 +277,15 @@ function getChanges($conn, $lastDate, $branchId = null) {
     $stmt = $conn->prepare($query);
     
     if ($branchId) {
-        $params = array_merge(
-            array_fill(0, 10, $lastDate),
-            array_fill(0, 10, $branchId)
-        );
-        $stmt->bind_param(str_repeat("s", 10) . str_repeat("i", 10), ...$params);
+        // For branch filtering, we need to pass the branch ID 10 times (once for each subquery)
+        $params = array_fill(0, 10, $lastDate);
+        $params = array_merge($params, array_fill(0, 10, $branchId));
+        $types = str_repeat("s", 10) . str_repeat("i", 10);
+        $stmt->bind_param($types, ...$params);
     } else {
         $params = array_fill(0, 10, $lastDate);
-        $stmt->bind_param(str_repeat("s", 10), ...$params);
+        $types = str_repeat("s", 10);
+        $stmt->bind_param($types, ...$params);
     }
     
     $stmt->execute();
