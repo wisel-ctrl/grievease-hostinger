@@ -287,7 +287,11 @@ $ratioChange = number_format($changes['ratio_change'] ?? 0, 1);
 <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
   <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
     <h3 class="font-medium text-sidebar-text">Sales & Payment Trends</h3>
-    
+    <button class="w-10 h-10 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center hover:bg-gray-200" title="Print/Export">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+        </svg>
+    </button>
   </div>
   <div class="p-5">
     <canvas id="salesSplineChart" class="h-96"></canvas>
