@@ -1253,10 +1253,23 @@ document.addEventListener('DOMContentLoaded', function() {
             <!-- Header -->
             <div class="bookings bg-navy p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 tab-header">
                 <h3 class="font-hedvig text-xl sm:text-2xl text-white font-semibold">Traditional Funeral Bookings</h3>
+                <div class="flex space-x-4">
+                    <select id="traditional-status-filter" class="border border-gray-300 rounded-lg px-3 py-2 text-sm text-navy focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                        <option value="all">All Statuses</option>
+                        <option value="Accepted">Accepted</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Declined">Declined</option>
+                        <option value="Cancelled">Cancelled</option>
+                    </select>
+                    <select id="traditional-sort-filter" class="border border-gray-300 rounded-lg px-3 py-2 text-sm text-navy focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                        <option value="newest">Newest to Oldest</option>
+                        <option value="oldest">Oldest to Newest</option>
+                    </select>
+                </div>
             </div>
             
             <!-- Content -->
-            <div class="p-6">
+            <div id="traditional-bookings-list" class="p-6">
                 <?php
                 // Fetch all traditional bookings for the current customer
                 $query = "SELECT b.*, s.service_name, s.selling_price, br.branch_name 
@@ -1368,25 +1381,21 @@ document.addEventListener('DOMContentLoaded', function() {
                             <button class="view-details bg-navy/5 text-navy px-3 py-1 rounded hover:bg-navy/10 transition text-sm mr-2" data-booking="<?php echo $booking['booking_id']; ?>">
                                 <i class="fas fa-file-alt mr-1"></i> View Details
                             </button>
-                            
                             <?php if ($booking['status'] === 'Accepted' && empty($booking['deathcert_url'])): ?>
                                 <button class="upload-death-cert bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition text-sm mr-2" data-booking="<?php echo $booking['booking_id']; ?>">
                                     <i class="fas fa-upload mr-1"></i> Upload Death Cert
                                 </button>
                             <?php endif; ?>
-                            
                             <?php if ($booking['status'] === 'Accepted'): ?>
                                 <button class="view-receipt bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition text-sm mr-2" data-booking="<?php echo $booking['booking_id']; ?>">
                                     <i class="fas fa-receipt mr-1"></i> View Receipt
                                 </button>
                             <?php endif; ?>
-                            
                             <?php if ($booking['status'] === 'Pending' || $booking['status'] === 'Declined'): ?>
                                 <button class="modify-booking bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition text-sm mr-2" data-booking="<?php echo $booking['booking_id']; ?>">
                                     <i class="fas fa-edit mr-1"></i> Modify
                                 </button>
                             <?php endif; ?>
-                            
                             <?php if ($booking['status'] === 'Pending'): ?>
                                 <button class="cancel-booking bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition text-sm" data-booking="<?php echo $booking['booking_id']; ?>">
                                     <i class="fas fa-times mr-1"></i> Cancel
@@ -1407,6 +1416,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 $stmt->close();
                 ?>
             </div>
+            <div id="traditional-pagination" class="mt-6 flex justify-center items-center space-x-2"></div>
         </div>
     </div>
     
@@ -1416,10 +1426,23 @@ document.addEventListener('DOMContentLoaded', function() {
             <!-- Header -->
             <div class="bookings bg-blue-600 p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 tab-header">
                 <h3 class="font-hedvig text-xl sm:text-2xl text-white font-semibold">Life Plan Bookings</h3>
+                <div class="flex space-x-4">
+                    <select id="lifeplan-status-filter" class="border border-gray-300 rounded-lg px-3 py-2 text-sm text-navy focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                        <option value="all">All Statuses</option>
+                        <option value="accepted">Accepted</option>
+                        <option value="pending">Pending</option>
+                        <option value="decline">Declined</option>
+                        <option value="cancel">Cancelled</option>
+                    </select>
+                    <select id="lifeplan-sort-filter" class="border border-gray-300 rounded-lg px-3 py-2 text-sm text-navy focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                        <option value="newest">Newest to Oldest</option>
+                        <option value="oldest">Oldest to Newest</option>
+                    </select>
+                </div>
             </div>
             
             <!-- Content -->
-            <div class="p-6">
+            <div id="lifeplan-bookings-list" class="p-6">
                 <?php
                 // Fetch all life plan bookings for the current customer
                 $query = "SELECT lb.*, s.service_name, s.selling_price as package_price, br.branch_name 
@@ -1526,17 +1549,19 @@ document.addEventListener('DOMContentLoaded', function() {
                             <button class="view-lifeplan-details bg-blue-600/5 text-blue-600 px-3 py-1 rounded hover:bg-blue-600/10 transition text-sm mr-2" data-booking="<?php echo $booking['lpbooking_id']; ?>">
                                 <i class="fas fa-file-alt mr-1"></i> View Details
                             </button>
-                            
                             <?php if ($booking['booking_status'] === 'pending' || $booking['booking_status'] === 'decline'): ?>
                                 <button class="modify-lifeplan-booking bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition text-sm mr-2" data-booking="<?php echo $booking['lpbooking_id']; ?>">
                                     <i class="fas fa-edit mr-1"></i> Modify
                                 </button>
                             <?php endif; ?>
-                            
                             <?php if ($booking['booking_status'] === 'pending'): ?>
                                 <button class="cancel-lifeplan-booking bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition text-sm" data-booking="<?php echo $booking['lpbooking_id']; ?>">
                                     <i class="fas fa-times mr-1"></i> Cancel
                                 </button>
+                            <?php elseif ($booking['booking_status'] === 'cancel'): ?>
+                                <span class="text-gray-500 text-sm py-1 px-3">
+                                    <i class="fas fa-ban mr-1"></i> Cancelled
+                                </span>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -1549,113 +1574,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 $stmt->close();
                 ?>
             </div>
+            <div id="lifeplan-pagination" class="mt-6 flex justify-center items-center space-x-2"></div>
         </div>
     </div>
 </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize booking tabs
-    const bookingTabs = document.querySelectorAll('#bookings .service-tab');
-    const bookingContents = document.querySelectorAll('#bookings .service-content');
-    
-    bookingTabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            // Remove active class from all tabs
-            bookingTabs.forEach(t => {
-                t.classList.remove('border-yellow-600', 'text-navy');
-                t.classList.add('text-gray-500');
-            });
-            
-            // Add active class to clicked tab
-            tab.classList.add('border-yellow-600', 'text-navy');
-            tab.classList.remove('text-gray-500');
-            
-            // Hide all content
-            bookingContents.forEach(content => {
-                content.style.display = 'none';
-            });
-            
-            // Show the corresponding content
-            const contentId = tab.dataset.tab + '-content';
-            document.getElementById(contentId).style.display = 'block';
-        });
-    });
-    
-    // Initialize all existing booking functionality
-    initializeBookingFunctions();
-});
-
-function initializeBookingFunctions() {
-    // All your existing booking-related JavaScript functions would go here
-    // This includes the event handlers for:
-    // - view-details
-    // - upload-death-cert
-    // - view-receipt
-    // - modify-booking
-    // - cancel-booking
-    // - view-lifeplan-details
-    // - modify-lifeplan-booking
-    // - cancel-lifeplan-booking
-    
-    // Example of one of those handlers:
-    document.querySelectorAll('.view-details').forEach(button => {
-        button.addEventListener('click', function() {
-            const bookingId = this.getAttribute('data-booking');
-            // Your existing view details logic
-        });
-    });
-    
-    document.querySelectorAll('.upload-death-cert').forEach(button => {
-        button.addEventListener('click', function() {
-            const bookingId = this.getAttribute('data-booking');
-            // Your existing upload death cert logic
-        });
-    });
-    
-    document.querySelectorAll('.view-receipt').forEach(button => {
-        button.addEventListener('click', function() {
-            const bookingId = this.getAttribute('data-booking');
-            // Your existing view receipt logic
-        });
-    });
-    
-    document.querySelectorAll('.modify-booking').forEach(button => {
-        button.addEventListener('click', function() {
-            const bookingId = this.getAttribute('data-booking');
-            // Your existing modify booking logic
-        });
-    });
-    
-    document.querySelectorAll('.cancel-booking').forEach(button => {
-        button.addEventListener('click', function() {
-            const bookingId = this.getAttribute('data-booking');
-            // Your existing cancel booking logic
-        });
-    });
-    
-    document.querySelectorAll('.view-lifeplan-details').forEach(button => {
-        button.addEventListener('click', function() {
-            const bookingId = this.getAttribute('data-booking');
-            // Your existing view lifeplan details logic
-        });
-    });
-    
-    document.querySelectorAll('.modify-lifeplan-booking').forEach(button => {
-        button.addEventListener('click', function() {
-            const bookingId = this.getAttribute('data-booking');
-            // Your existing modify lifeplan booking logic
-        });
-    });
-    
-    document.querySelectorAll('.cancel-lifeplan-booking').forEach(button => {
-        button.addEventListener('click', function() {
-            const bookingId = this.getAttribute('data-booking');
-            // Your existing cancel lifeplan booking logic
-        });
-    });
-}
-</script>
 
 
 <?php
@@ -4448,51 +4370,217 @@ function populateReceipt(data) {
 </script>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // View Details Modal
-    const viewDetailsButtons = document.querySelectorAll('.view-details');
-    const viewDetailsModal = document.getElementById('viewDetailsModal');
-    
-    viewDetailsButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const bookingId = this.getAttribute('data-booking');
+    function initializeBookingFunctions() {
+    document.getElementById('traditional-bookings-list').addEventListener('click', function(e) {
+        const target = e.target.closest('button');
+        if (!target) return;
+
+        const bookingId = target.getAttribute('data-booking');
+        if (!bookingId) return;
+
+        if (target.classList.contains('view-details')) {
             fetchBookingDetails(bookingId);
-        });
-    });
-
-    // Modify Booking Modal
-    const modifyButtons = document.querySelectorAll('.modify-booking');
-    const modifyModal = document.getElementById('modifyBookingModal');
-    
-    modifyButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const bookingId = this.getAttribute('data-booking');
+        } else if (target.classList.contains('upload-death-cert')) {
+            document.getElementById('death-cert-booking-id').value = bookingId;
+            const uploadModal = document.getElementById('uploadDeathCertModal');
+            if (uploadModal) {
+                uploadModal.classList.remove('hidden');
+            } else {
+                console.error('Upload Death Cert Modal not found');
+            }
+        } else if (target.classList.contains('view-receipt')) {
+            showDocument('Payment Proof', currentPaymentUrl);
+        } else if (target.classList.contains('modify-booking')) {
             fetchBookingForModification(bookingId);
+        } else if (target.classList.contains('cancel-booking')) {
+            const cancelModal = document.getElementById('cancelBookingModal');
+            if (cancelModal) {
+                document.getElementById('cancel-booking-id').value = bookingId;
+                cancelModal.classList.remove('hidden');
+            } else {
+                console.error('Cancel Booking Modal not found');
+            }
+        }
+    });
+
+    document.getElementById('lifeplan-bookings-list').addEventListener('click', function(e) {
+        const target = e.target.closest('button');
+        if (!target) return;
+
+        const bookingId = target.getAttribute('data-booking');
+        if (!bookingId) return;
+
+        if (target.classList.contains('view-lifeplan-details')) {
+            fetchLifeplanDetails(bookingId);
+        } else if (target.classList.contains('modify-lifeplan-booking')) {
+            fetchLifeplanForModification(bookingId);
+        } else if (target.classList.contains('cancel-lifeplan-booking')) {
+            const cancelModal = document.getElementById('cancelLifeplanModal');
+            if (cancelModal) {
+                document.getElementById('cancel-lifeplan-id').value = bookingId;
+                cancelModal.classList.remove('hidden');
+            } else {
+                console.error('Cancel Lifeplan Modal not found');
+            }
+        }
+    });
+}
+
+function loadBookings(bookingType, page = 1) {
+    const container = bookingType === 'traditional' 
+        ? document.getElementById('traditional-bookings-list')
+        : document.getElementById('lifeplan-bookings-list');
+    const paginationContainer = bookingType === 'traditional' 
+        ? document.getElementById('traditional-pagination')
+        : document.getElementById('lifeplan-pagination');
+    const statusFilter = bookingType === 'traditional'
+        ? document.getElementById('traditional-status-filter')
+        : document.getElementById('lifeplan-status-filter');
+    const sortFilter = bookingType === 'traditional'
+        ? document.getElementById('traditional-sort-filter')
+        : document.getElementById('lifeplan-sort-filter');
+
+    container.innerHTML = '<p class="text-gray-500 text-center py-4"><i class="fas fa-spinner fa-spin mr-2"></i>Loading...</p>';
+
+    const status = statusFilter ? statusFilter.value : 'all';
+    const sort = sortFilter ? sortFilter.value : 'newest';
+
+    fetch('profile/fetch_bookings_ajax_pagination.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `booking_type=${bookingType}&page=${page}&status=${status}&sort=${sort}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            container.innerHTML = data.html;
+            paginationContainer.innerHTML = data.pagination;
+
+            document.querySelectorAll(`#${bookingType}-pagination .pagination-btn`).forEach(button => {
+                button.addEventListener('click', function() {
+                    const page = this.getAttribute('data-page');
+                    loadBookings(bookingType, page);
+                });
+            });
+        } else {
+            container.innerHTML = '<p class="text-red-600 text-center py-4">Error loading bookings</p>';
+            paginationContainer.innerHTML = '';
+            console.error('Error loading bookings:', data.message);
+        }
+    })
+    .catch(error => {
+        container.innerHTML = '<p class="text-red-600 text-center py-4">Error: ' + error.message + '</p>';
+        paginationContainer.innerHTML = '';
+        console.error('Fetch error:', error);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const bookingTabs = document.querySelectorAll('#bookings .service-tab');
+    const bookingContents = document.querySelectorAll('#bookings .service-content');
+
+    bookingTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            bookingTabs.forEach(t => {
+                t.classList.remove('border-yellow-600', 'text-navy');
+                t.classList.add('text-gray-500');
+            });
+            tab.classList.add('border-yellow-600', 'text-navy');
+            tab.classList.remove('text-gray-500');
+
+            bookingContents.forEach(content => {
+                content.style.display = 'none';
+            });
+            const contentId = tab.dataset.tab + '-content';
+            document.getElementById(contentId).style.display = 'block';
+
+            const bookingType = tab.getAttribute('data-tab') === 'traditional-booking' ? 'traditional' : 'lifeplan';
+            loadBookings(bookingType, 1);
         });
     });
 
-    // Cancel Booking Modal
-    const cancelButtons = document.querySelectorAll('.cancel-booking');
-    const cancelModal = document.getElementById('cancelBookingModal');
-    
-    cancelButtons.forEach(button => {
+    document.getElementById('traditional-status-filter')?.addEventListener('change', function() {
+        loadBookings('traditional', 1);
+    });
+    document.getElementById('traditional-sort-filter')?.addEventListener('change', function() {
+        loadBookings('traditional', 1);
+    });
+    document.getElementById('lifeplan-status-filter')?.addEventListener('change', function() {
+        loadBookings('lifeplan', 1);
+    });
+    document.getElementById('lifeplan-sort-filter')?.addEventListener('change', function() {
+        loadBookings('lifeplan', 1);
+    });
+
+    initializeBookingFunctions();
+
+    const activeTab = document.querySelector('.service-tab.border-yellow-600');
+    if (activeTab) {
+        const bookingType = activeTab.getAttribute('data-tab') === 'traditional-booking' ? 'traditional' : 'lifeplan';
+        loadBookings(bookingType, 1);
+    }
+
+    // Consolidated modal close handler
+    const modals = [
+        'viewDetailsModal',
+        'modifyBookingModal',
+        'cancelBookingModal',
+        'viewLifeplanDetailsModal',
+        'modifyLifeplanModal',
+        'cancelLifeplanModal',
+        'viewDocumentModal',
+        'uploadDeathCertModal'
+    ];
+
+    document.querySelectorAll('.close-modal, .close-lifeplan-modal, .close-document-modal').forEach(button => {
         button.addEventListener('click', function() {
-            const bookingId = this.getAttribute('data-booking');
-            document.getElementById('cancel-booking-id').value = bookingId;
-            cancelModal.classList.remove('hidden');
+            modals.forEach(modalId => {
+                const modal = document.getElementById(modalId);
+                if (modal) {
+                    modal.classList.add('hidden');
+                } else {
+                    console.error(`Modal ${modalId} not found`);
+                }
+            });
         });
     });
 
-    // View Document Buttons
-    const viewDeathCertBtn = document.getElementById('viewDeathCertBtn');
-    const viewPaymentBtn = document.getElementById('viewPaymentBtn');
-    const viewDocumentModal = document.getElementById('viewDocumentModal');
-    
-    let currentDocumentType = '';
-    let currentDocumentUrl = '';
-    
-    // Update your document viewing functions
-viewDeathCertBtn.addEventListener('click', function() {
+    window.addEventListener('click', function(e) {
+        modals.forEach(modalId => {
+            const modal = document.getElementById(modalId);
+            if (modal && e.target === modal) {
+                modal.classList.add('hidden');
+            }
+        });
+    });
+});
+
+document.getElementById('modifyBookingForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    submitBookingModification();
+});
+
+document.getElementById('cancelBookingForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    submitBookingCancellation();
+});
+
+document.getElementById('modifyLifeplanForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    submitLifeplanModification();
+});
+
+document.getElementById('cancelLifeplanForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    submitLifeplanCancellation();
+});
+
+let currentDeathCertUrl = '';
+let currentPaymentUrl = '';
+
+document.getElementById('viewDeathCertBtn').addEventListener('click', function() {
     if (!currentDeathCertUrl) {
         showError('No death certificate available');
         return;
@@ -4500,255 +4588,14 @@ viewDeathCertBtn.addEventListener('click', function() {
     showDocument('Death Certificate', currentDeathCertUrl);
 });
 
-viewPaymentBtn.addEventListener('click', function() {
+document.getElementById('viewPaymentBtn').addEventListener('click', function() {
     if (!currentPaymentUrl) {
         showError('No payment proof available');
         return;
     }
     showDocument('Payment Proof', currentPaymentUrl);
 });
-    // Close document modal
-document.querySelectorAll('.close-document-modal').forEach(button => {
-    button.addEventListener('click', function() {
-        document.getElementById('viewDocumentModal').classList.add('hidden');
-    });
-});
 
-// Close details modal (keep existing functionality)
-document.querySelectorAll('.close-modal').forEach(button => {
-    button.addEventListener('click', function() {
-        document.getElementById('viewDetailsModal').classList.add('hidden');
-        document.getElementById('modifyBookingModal').classList.add('hidden');
-        document.getElementById('cancelBookingModal').classList.add('hidden');
-    });
-});
-
-// Click outside modal to close
-window.addEventListener('click', function(e) {
-    if (e.target === document.getElementById('viewDetailsModal')) {
-        document.getElementById('viewDetailsModal').classList.add('hidden');
-    }
-    if (e.target === document.getElementById('modifyBookingModal')) {
-        document.getElementById('modifyBookingModal').classList.add('hidden');
-    }
-    if (e.target === document.getElementById('cancelBookingModal')) {
-        document.getElementById('cancelBookingModal').classList.add('hidden');
-    }
-    if (e.target === document.getElementById('viewDocumentModal')) {
-        document.getElementById('viewDocumentModal').classList.add('hidden');
-    }
-});
-
-    // Form Submissions
-    document.getElementById('modifyBookingForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        submitBookingModification();
-    });
-    
-    document.getElementById('cancelBookingForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        submitBookingCancellation();
-    });
-
-    // Click outside modal to close
-    window.addEventListener('click', function(e) {
-        if (e.target === viewDetailsModal) viewDetailsModal.classList.add('hidden');
-        if (e.target === modifyModal) modifyModal.classList.add('hidden');
-        if (e.target === cancelModal) cancelModal.classList.add('hidden');
-        if (e.target === viewDocumentModal) viewDocumentModal.classList.add('hidden');
-    });
-
-    // Functions
-    function fetchBookingDetails(bookingId) {
-    fetch(`profile/fetch_booking_details.php?booking_id=${bookingId}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // First clear any existing date info paragraphs
-                const statusContainer = document.getElementById('detail-status').parentNode;
-                const nextElement = statusContainer.nextElementSibling;
-                
-                // Remove any existing date paragraphs
-                if (nextElement && (nextElement.textContent.includes('Accepted Date:') || 
-                                   nextElement.textContent.includes('Declined Date:'))) {
-                    nextElement.remove();
-                }
-
-                // Populate the view details modal
-                document.getElementById('detail-service').textContent = data.service_name;
-                document.getElementById('detail-branch').textContent = data.branch_name 
-                    ? data.branch_name.toLowerCase().replace(/\b\w/g, c => c.toUpperCase())
-                    : '';
-                document.getElementById('detail-status').textContent = data.status;
-                document.getElementById('detail-booking-date').textContent = formatDate(data.booking_date);
-                document.getElementById('detail-total').textContent = `₱${parseFloat(data.selling_price).toFixed(2)}`;
-
-                // Only show dates if status matches
-                if (data.status === 'Accepted' && data.accepted_date) {
-                    const acceptedDateP = document.createElement('p');
-                    acceptedDateP.innerHTML = `<span class="text-gray-500">Accepted Date:</span> <span class="text-navy">${formatDate(data.accepted_date)}</span>`;
-                    document.getElementById('detail-status').parentNode.insertAdjacentElement('afterend', acceptedDateP);
-                } 
-                else if (data.status === 'Declined' && data.decline_date) {
-                    const declinedDateP = document.createElement('p');
-                    declinedDateP.innerHTML = `<span class="text-gray-500">Declined Date:</span> <span class="text-navy">${formatDate(data.decline_date)}</span>`;
-                    document.getElementById('detail-status').parentNode.insertAdjacentElement('afterend', declinedDateP);
-                }
-                
-                // Deceased info
-                let deceasedName = `${data.deceased_lname}, ${data.deceased_fname}`;
-                if (data.deceased_midname) deceasedName += ` ${data.deceased_midname}`;
-                if (data.deceased_suffix) deceasedName += ` ${data.deceased_suffix}`;
-                
-                document.getElementById('detail-deceased-name').textContent = deceasedName 
-                    ? deceasedName.toLowerCase().replace(/\b\w/g, c => c.toUpperCase())
-                    : '';
-                document.getElementById('detail-birth').textContent = data.deceased_birth ? formatDate(data.deceased_birth) : 'Not provided';
-                document.getElementById('detail-dod').textContent = data.deceased_dodeath ? formatDate(data.deceased_dodeath) : 'Not provided';
-                document.getElementById('detail-burial').textContent = data.deceased_dateOfBurial ? formatDate(data.deceased_dateOfBurial) : 'Not set';
-                document.getElementById('detail-address').textContent = data.deceased_address || 'Not provided';
-                
-                // Payment info
-                document.getElementById('detail-paid').textContent = `₱${parseFloat(data.amount_paid || 0).toFixed(2)}`;
-                const balance = parseFloat(data.selling_price) - parseFloat(data.amount_paid || 0);
-                document.getElementById('detail-balance').textContent = `₱${balance.toFixed(2)}`;
-                document.getElementById('detail-reference').textContent = data.reference_code || 'N/A';
-                
-                // Store document URLs for viewing
-                currentDeathCertUrl = data.death_certificate || '';
-                currentPaymentUrl = data.payment_proof || '';
-                
-                // Show/hide document buttons based on availability
-                document.getElementById('viewDeathCertBtn').style.display = currentDeathCertUrl ? 'block' : 'none';
-                document.getElementById('viewPaymentBtn').style.display = currentPaymentUrl ? 'block' : 'none';
-                
-                // Show the modal
-                viewDetailsModal.classList.remove('hidden');
-            } else {
-                showError(data.message || 'Failed to fetch booking details');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showError('An error occurred while fetching booking details');
-        });
-}
-// Update your document viewing functions
-viewDeathCertBtn.addEventListener('click', function() {
-    showDocument('Death Certificate', currentDeathCertUrl);
-});
-
-viewPaymentBtn.addEventListener('click', function() {
-    showDocument('Payment Proof', currentPaymentUrl);
-});
-
-function showDocument(title, url) {
-    if (!url) {
-        showError('No document available');
-        return;
-    }
-    
-    document.getElementById('document-modal-title').textContent = title;
-    const imgElement = document.getElementById('document-image');
-    const pdfElement = document.getElementById('document-pdf');
-    
-    // Check if the URL is a PDF
-    if (url.toLowerCase().endsWith('.pdf')) {
-        imgElement.style.display = 'none';
-        pdfElement.style.display = 'block';
-        pdfElement.src = url;
-    } else {
-        // For images
-        imgElement.style.display = 'block';
-        pdfElement.style.display = 'none';
-        imgElement.src = url;
-    }
-    
-    document.getElementById('viewDocumentModal').classList.remove('hidden');
-}
-
-function fetchBookingForModification(bookingId) {
-    fetch(`profile/fetch_booking_for_modification.php?booking_id=${bookingId}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Populate the modify form
-                const form = document.getElementById('modifyBookingForm');
-                form.reset();
-                
-                // Set booking ID and hidden service/branch IDs
-                document.getElementById('modify-booking-id').value = data.booking_id;
-                document.getElementById('modify-service-id').value = data.service_id;
-                document.getElementById('modify-branch-id').value = data.branch_id;
-                
-                // Display service package and branch name in read-only divs
-                document.getElementById('display-service-package').textContent = data.service_name + 
-                    ' (₱' + parseFloat(data.selling_price).toFixed(2) + ')';
-                document.getElementById('display-branch-location').textContent = data.branch_name;
-                
-                // Set dates
-                form.querySelector('input[name="deceased_dateOfBurial"]').value = data.deceased_dateOfBurial || '';
-                form.querySelector('input[name="deceased_birth"]').value = data.deceased_birth || '';
-                form.querySelector('input[name="deceased_dodeath"]').value = data.deceased_dodeath || '';
-                
-                // Set deceased info
-                form.querySelector('input[name="deceased_fname"]').value = data.deceased_fname || '';
-                form.querySelector('input[name="deceased_midname"]').value = data.deceased_midname || '';
-                form.querySelector('input[name="deceased_lname"]').value = data.deceased_lname || '';
-                form.querySelector('input[name="deceased_suffix"]').value = data.deceased_suffix || '';
-                form.querySelector('textarea[name="deceased_address"]').value = data.deceased_address || '';
-                form.querySelector('input[name="with_cremate"]').checked = data.with_cremate == 'yes' || data.with_cremate == 1;
-                
-                // Show the modal
-                document.getElementById('modifyBookingModal').classList.remove('hidden');
-            } else {
-                showError(data.message || 'Failed to fetch booking for modification');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showError('An error occurred while fetching booking for modification');
-        });
-}
-
-function submitBookingModification() {
-    const form = document.getElementById('modifyBookingForm');
-    const formData = new FormData(form);
-    const submitBtn = document.getElementById('modifyBookingSubmit'); // Target by ID
-    
-    // Disable submit button during processing
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Saving...';
-    
-    fetch('booking/update_booking.php', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showSuccess(data.message || 'Booking updated successfully!');
-            document.getElementById('modifyBookingModal').classList.add('hidden');
-            
-            // Refresh the bookings list after a short delay
-            setTimeout(() => {
-                location.reload();
-            }, 1500);
-        } else {
-            showError(data.message || 'Failed to update booking');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showError('An error occurred while updating booking');
-    })
-    .finally(() => {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = '<i class="fas fa-save mr-2"></i> Save Changes';
-    });
-}
-
-// Function to send OTP
 document.getElementById('sendOtpBtn').addEventListener('click', function() {
     const bookingId = document.getElementById('cancel-booking-id').value;
     if (!bookingId) {
@@ -4756,7 +4603,6 @@ document.getElementById('sendOtpBtn').addEventListener('click', function() {
         return;
     }
     
-    // Disable button to prevent multiple clicks
     const otpBtn = this;
     otpBtn.disabled = true;
     otpBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Sending...';
@@ -4787,12 +4633,192 @@ document.getElementById('sendOtpBtn').addEventListener('click', function() {
     });
 });
 
-// Form submission handler
-document.getElementById('cancelBookingForm').addEventListener('submit', function(e) {
-    e.preventDefault();
+document.getElementById('lifeplan-sendOtpBtn').addEventListener('click', function() {
+    const bookingId = document.getElementById('cancel-lifeplan-id').value;
+    if (!bookingId) {
+        showError('No booking selected');
+        return;
+    }
     
-    const form = this;
+    const otpBtn = this;
+    otpBtn.disabled = true;
+    otpBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Sending...';
+    
+    fetch('profile/send_cancel_otp.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+            booking_id: bookingId,
+            booking_type: 'lifeplan'
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showSuccess('OTP sent to your email!');
+            document.getElementById('lifeplan-otpInput').focus();
+        } else {
+            showError(data.message || 'Failed to send OTP');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showError('Failed to send OTP');
+    })
+    .finally(() => {
+        otpBtn.disabled = false;
+        otpBtn.textContent = 'Send OTP';
+    });
+});
+
+function fetchBookingDetails(bookingId) {
+    fetch(`profile/fetch_booking_details.php?booking_id=${bookingId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const statusContainer = document.getElementById('detail-status').parentNode;
+                const nextElement = statusContainer.nextElementSibling;
+                
+                if (nextElement && (nextElement.textContent.includes('Accepted Date:') || 
+                                   nextElement.textContent.includes('Declined Date:'))) {
+                    nextElement.remove();
+                }
+
+                document.getElementById('detail-service').textContent = data.service_name;
+                document.getElementById('detail-branch').textContent = data.branch_name 
+                    ? data.branch_name.toLowerCase().replace(/\b\w/g, c => c.toUpperCase())
+                    : '';
+                document.getElementById('detail-status').textContent = data.status;
+                document.getElementById('detail-booking-date').textContent = formatDate(data.booking_date);
+                document.getElementById('detail-total').textContent = `₱${parseFloat(data.selling_price).toFixed(2)}`;
+
+                if (data.status === 'Accepted' && data.accepted_date) {
+                    const acceptedDateP = document.createElement('p');
+                    acceptedDateP.innerHTML = `<span class="text-gray-500">Accepted Date:</span> <span class="text-navy">${formatDate(data.accepted_date)}</span>`;
+                    document.getElementById('detail-status').parentNode.insertAdjacentElement('afterend', acceptedDateP);
+                } 
+                else if (data.status === 'Declined' && data.decline_date) {
+                    const declinedDateP = document.createElement('p');
+                    declinedDateP.innerHTML = `<span class="text-gray-500">Declined Date:</span> <span class="text-navy">${formatDate(data.decline_date)}</span>`;
+                    document.getElementById('detail-status').parentNode.insertAdjacentElement('afterend', declinedDateP);
+                }
+                
+                let deceasedName = `${data.deceased_lname}, ${data.deceased_fname}`;
+                if (data.deceased_midname) deceasedName += ` ${data.deceased_midname}`;
+                if (data.deceased_suffix) deceasedName += ` ${data.deceased_suffix}`;
+                
+                document.getElementById('detail-deceased-name').textContent = deceasedName 
+                    ? deceasedName.toLowerCase().replace(/\b\w/g, c => c.toUpperCase())
+                    : '';
+                document.getElementById('detail-birth').textContent = data.deceased_birth ? formatDate(data.deceased_birth) : 'Not provided';
+                document.getElementById('detail-dod').textContent = data.deceased_dodeath ? formatDate(data.deceased_dodeath) : 'Not provided';
+                document.getElementById('detail-burial').textContent = data.deceased_dateOfBurial ? formatDate(data.deceased_dateOfBurial) : 'Not set';
+                document.getElementById('detail-address').textContent = data.deceased_address || 'Not provided';
+                
+                document.getElementById('detail-paid').textContent = `₱${parseFloat(data.amount_paid || 0).toFixed(2)}`;
+                const balance = parseFloat(data.selling_price) - parseFloat(data.amount_paid || 0);
+                document.getElementById('detail-balance').textContent = `₱${balance.toFixed(2)}`;
+                document.getElementById('detail-reference').textContent = data.reference_code || 'N/A';
+                
+                currentDeathCertUrl = data.death_certificate || '';
+                currentPaymentUrl = data.payment_proof || '';
+                
+                document.getElementById('viewDeathCertBtn').style.display = currentDeathCertUrl ? 'block' : 'none';
+                document.getElementById('viewPaymentBtn').style.display = currentPaymentUrl ? 'block' : 'none';
+                
+                document.getElementById('viewDetailsModal').classList.remove('hidden');
+            } else {
+                showError(data.message || 'Failed to fetch booking details');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showError('An error occurred while fetching booking details');
+        });
+}
+
+function fetchBookingForModification(bookingId) {
+    fetch(`profile/fetch_booking_for_modification.php?booking_id=${bookingId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const form = document.getElementById('modifyBookingForm');
+                form.reset();
+                
+                document.getElementById('modify-booking-id').value = data.booking_id;
+                document.getElementById('modify-service-id').value = data.service_id;
+                document.getElementById('modify-branch-id').value = data.branch_id;
+                
+                document.getElementById('display-service-package').textContent = data.service_name + 
+                    ' (₱' + parseFloat(data.selling_price).toFixed(2) + ')';
+                document.getElementById('display-branch-location').textContent = data.branch_name;
+                
+                form.querySelector('input[name="deceased_dateOfBurial"]').value = data.deceased_dateOfBurial || '';
+                form.querySelector('input[name="deceased_birth"]').value = data.deceased_birth || '';
+                form.querySelector('input[name="deceased_dodeath"]').value = data.deceased_dodeath || '';
+                
+                form.querySelector('input[name="deceased_fname"]').value = data.deceased_fname || '';
+                form.querySelector('input[name="deceased_midname"]').value = data.deceased_midname || '';
+                form.querySelector('input[name="deceased_lname"]').value = data.deceased_lname || '';
+                form.querySelector('input[name="deceased_suffix"]').value = data.deceased_suffix || '';
+                form.querySelector('textarea[name="deceased_address"]').value = data.deceased_address || '';
+                form.querySelector('input[name="with_cremate"]').checked = data.with_cremate == 'yes' || data.with_cremate == 1;
+                
+                document.getElementById('modifyBookingModal').classList.remove('hidden');
+            } else {
+                showError(data.message || 'Failed to fetch booking for modification');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showError('An error occurred while fetching booking for modification');
+        });
+}
+
+function submitBookingModification() {
+    const form = document.getElementById('modifyBookingForm');
     const formData = new FormData(form);
+    const submitBtn = document.getElementById('modifyBookingSubmit');
+    
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Saving...';
+    
+    fetch('booking/update_booking.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showSuccess(data.message || 'Booking updated successfully!');
+            document.getElementById('modifyBookingModal').classList.add('hidden');
+            
+            setTimeout(() => {
+                location.reload();
+            }, 1500);
+        } else {
+            showError(data.message || 'Failed to update booking');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showError('An error occurred while updating booking');
+    })
+    .finally(() => {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-save mr-2"></i> Save Changes';
+    });
+}
+
+function submitBookingCancellation() {
+    const form = document.getElementById('cancelBookingForm');
+    const formData = new FormData(form);
+    const submitBtn = document.querySelector('button[type="submit"][form="cancelBookingForm"]');
+    
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...';
     
     fetch('profile/cancel_booking.php', {
         method: 'POST',
@@ -4802,20 +4828,10 @@ document.getElementById('cancelBookingForm').addEventListener('submit', function
     .then(data => {
         if (data.success) {
             showSuccess('Booking cancelled successfully!');
-            // Close modal and update UI without full page reload
             document.getElementById('cancelBookingModal').classList.add('hidden');
             
-            // Option 1: If you're using a bookings list, refresh just that section
-            // loadBookings(); // Your function to reload bookings
-            
-            // Option 2: If you must reload, delay slightly for user to see success message
             setTimeout(() => {
-                // Only reload if necessary
-                if (window.location.pathname.includes('profile')) {
-                    window.location.reload();
-                } else {
-                    // Update UI as needed
-                }
+                location.reload();
             }, 1500);
         } else {
             showError(data.message || 'Failed to cancel booking');
@@ -4829,227 +4845,103 @@ document.getElementById('cancelBookingForm').addEventListener('submit', function
         submitBtn.disabled = false;
         submitBtn.innerHTML = '<i class="fas fa-times mr-2"></i> Confirm Cancellation';
     });
-});
+}
 
-
-// Life Plan View Details
-    const viewLifeplanDetailsButtons = document.querySelectorAll('.view-lifeplan-details');
-    const viewLifeplanDetailsModal = document.getElementById('viewLifeplanDetailsModal');
-    
-    viewLifeplanDetailsButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const bookingId = this.getAttribute('data-booking');
-            fetchLifeplanDetails(bookingId);
-        });
-    });
-
-    // Life Plan Modify Booking
-    const modifyLifeplanButtons = document.querySelectorAll('.modify-lifeplan-booking');
-    const modifyLifeplanModal = document.getElementById('modifyLifeplanModal');
-    
-    modifyLifeplanButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const bookingId = this.getAttribute('data-booking');
-            fetchLifeplanForModification(bookingId);
-        });
-    });
-
-    // Life Plan Cancel Booking
-    const cancelLifeplanButtons = document.querySelectorAll('.cancel-lifeplan-booking');
-    const cancelLifeplanModal = document.getElementById('cancelLifeplanModal');
-    
-    cancelLifeplanButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const bookingId = this.getAttribute('data-booking');
-            document.getElementById('cancel-lifeplan-id').value = bookingId;
-            cancelLifeplanModal.classList.remove('hidden');
-        });
-    });
-
-    
-
-    // Close life plan modals
-    document.querySelectorAll('.close-lifeplan-modal').forEach(button => {
-        button.addEventListener('click', function() {
-            document.getElementById('viewLifeplanDetailsModal').classList.add('hidden');
-            document.getElementById('modifyLifeplanModal').classList.add('hidden');
-            document.getElementById('cancelLifeplanModal').classList.add('hidden');
-        });
-    });
-
-    // Click outside life plan modals to close
-    window.addEventListener('click', function(e) {
-        if (e.target === document.getElementById('viewLifeplanDetailsModal')) {
-            document.getElementById('viewLifeplanDetailsModal').classList.add('hidden');
-        }
-        if (e.target === document.getElementById('modifyLifeplanModal')) {
-            document.getElementById('modifyLifeplanModal').classList.add('hidden');
-        }
-        if (e.target === document.getElementById('cancelLifeplanModal')) {
-            document.getElementById('cancelLifeplanModal').classList.add('hidden');
-        }
-    });
-
-    // Life Plan Form Submissions
-    document.getElementById('modifyLifeplanForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        submitLifeplanModification();
-    });
-    
-    document.getElementById('cancelLifeplanForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        submitLifeplanCancellation();
-    });
-
-    // Life Plan OTP Send
-    document.getElementById('lifeplan-sendOtpBtn').addEventListener('click', function() {
-        const bookingId = document.getElementById('cancel-lifeplan-id').value;
-        if (!bookingId) {
-            showError('No booking selected');
-            return;
-        }
-        
-        const otpBtn = this;
-        otpBtn.disabled = true;
-        otpBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Sending...';
-        
-        fetch('profile/send_cancel_otp.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ 
-                booking_id: bookingId,
-                booking_type: 'lifeplan'
-            })
-        })
+function fetchLifeplanDetails(bookingId) {
+    fetch(`profile/fetch_lifeplan_details.php?booking_id=${bookingId}`)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                showSuccess('OTP sent to your email!');
-                document.getElementById('lifeplan-otpInput').focus();
+                document.getElementById('lifeplan-detail-service').textContent = data.data.service_name;
+                document.getElementById('lifeplan-detail-branch').textContent = data.data.branch_name;
+                
+                let statusText = data.data.booking_status.charAt(0).toUpperCase() + data.data.booking_status.slice(1);
+                document.getElementById('lifeplan-detail-status').textContent = statusText;
+                
+                const statusBanner = document.getElementById('lifeplan-status-banner');
+                if (data.data.booking_status === 'accepted') {
+                    statusBanner.className = 'px-6 py-3 bg-green-50 border-b border-green-100 flex items-center';
+                    document.getElementById('lifeplan-detail-status').className = 'ml-2 text-green-600 font-bold';
+                } else if (data.data.booking_status === 'decline') {
+                    statusBanner.className = 'px-6 py-3 bg-red-50 border-b border-red-100 flex items-center';
+                    document.getElementById('lifeplan-detail-status').className = 'ml-2 text-red-600 font-bold';
+                } else {
+                    statusBanner.className = 'px-6 py-3 bg-yellow-50 border-b border-yellow-100 flex items-center';
+                    document.getElementById('lifeplan-detail-status').className = 'ml-2 text-yellow-600 font-bold';
+                }
+                
+                document.getElementById('lifeplan-detail-booking-date').textContent = formatDate(data.data.initial_date);
+                document.getElementById('lifeplan-detail-total').textContent = `₱${parseFloat(data.data.package_price).toFixed(2)}`;
+                document.getElementById('lifeplan-detail-duration').textContent = `${data.data.payment_duration} months`;
+                document.getElementById('lifeplan-detail-end-date').textContent = data.data.end_date ? formatDate(data.data.end_date) : 'Not set';
+                document.getElementById('lifeplan-detail-reference').textContent = data.data.reference_code || 'N/A';
+                
+                let beneficiaryName = `${data.data.benefeciary_lname}, ${data.data.benefeciary_fname}`;
+                if (data.data.benefeciary_mname) beneficiaryName += ` ${data.data.benefeciary_mname}`;
+                if (data.data.benefeciary_suffix) beneficiaryName += ` ${data.data.benefeciary_suffix}`;
+                
+                document.getElementById('lifeplan-detail-beneficiary-name').textContent = beneficiaryName;
+                document.getElementById('lifeplan-detail-birth').textContent = data.data.benefeciary_birth ? formatDate(data.data.benefeciary_birth) : 'Not provided';
+                document.getElementById('lifeplan-detail-relationship').textContent = data.data.relationship_to_client || 'Not provided';
+                document.getElementById('lifeplan-detail-phone').textContent = data.data.phone || 'Not provided';
+                document.getElementById('lifeplan-detail-address').textContent = data.data.benefeciary_address || 'Not provided';
+                
+                document.getElementById('lifeplan-detail-paid').textContent = `₱${parseFloat(data.data.amount_paid || 0).toFixed(2)}`;
+                const balance = parseFloat(data.data.package_price) - parseFloat(data.data.amount_paid || 0);
+                document.getElementById('lifeplan-detail-balance').textContent = `₱${balance.toFixed(2)}`;
+                
+                document.getElementById('viewLifeplanDetailsModal').classList.remove('hidden');
             } else {
-                showError(data.message || 'Failed to send OTP');
+                showError(data.message || 'Failed to fetch life plan details');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            showError('Failed to send OTP');
-        })
-        .finally(() => {
-            otpBtn.disabled = false;
-            otpBtn.textContent = 'Send OTP';
+            showError('An error occurred while fetching life plan details');
         });
-    });
+}
 
-    // Life Plan Functions
-    function fetchLifeplanDetails(bookingId) {
-        fetch(`profile/fetch_lifeplan_details.php?booking_id=${bookingId}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Populate the life plan details modal
-                    document.getElementById('lifeplan-detail-service').textContent = data.data.service_name;
-                    document.getElementById('lifeplan-detail-branch').textContent = data.data.branch_name;
-                    
-                    // Format status
-                    let statusText = data.data.booking_status.charAt(0).toUpperCase() + data.data.booking_status.slice(1);
-                    document.getElementById('lifeplan-detail-status').textContent = statusText;
-                    
-                    // Update status banner color
-                    const statusBanner = document.getElementById('lifeplan-status-banner');
-                    if (data.data.booking_status === 'accepted') {
-                        statusBanner.className = 'px-6 py-3 bg-green-50 border-b border-green-100 flex items-center';
-                        document.getElementById('lifeplan-detail-status').className = 'ml-2 text-green-600 font-bold';
-                    } else if (data.data.booking_status === 'decline') {
-                        statusBanner.className = 'px-6 py-3 bg-red-50 border-b border-red-100 flex items-center';
-                        document.getElementById('lifeplan-detail-status').className = 'ml-2 text-red-600 font-bold';
-                    } else {
-                        statusBanner.className = 'px-6 py-3 bg-yellow-50 border-b border-yellow-100 flex items-center';
-                        document.getElementById('lifeplan-detail-status').className = 'ml-2 text-yellow-600 font-bold';
-                    }
-                    
-                    document.getElementById('lifeplan-detail-booking-date').textContent = formatDate(data.data.initial_date);
-                    document.getElementById('lifeplan-detail-total').textContent = `₱${parseFloat(data.data.package_price).toFixed(2)}`;
-                    document.getElementById('lifeplan-detail-duration').textContent = `${data.data.payment_duration} months`;
-                    document.getElementById('lifeplan-detail-end-date').textContent = data.data.end_date ? formatDate(data.data.end_date) : 'Not set';
-                    document.getElementById('lifeplan-detail-reference').textContent = data.data.reference_code || 'N/A';
-                    
-                    // Beneficiary info
-                    let beneficiaryName = `${data.data.benefeciary_lname}, ${data.data.benefeciary_fname}`;
-                    if (data.data.benefeciary_mname) beneficiaryName += ` ${data.data.benefeciary_mname}`;
-                    if (data.data.benefeciary_suffix) beneficiaryName += ` ${data.data.benefeciary_suffix}`;
-                    
-                    document.getElementById('lifeplan-detail-beneficiary-name').textContent = beneficiaryName;
-                    document.getElementById('lifeplan-detail-birth').textContent = data.data.benefeciary_birth ? formatDate(data.data.benefeciary_birth) : 'Not provided';
-                    document.getElementById('lifeplan-detail-relationship').textContent = data.data.relationship_to_client || 'Not provided';
-                    document.getElementById('lifeplan-detail-phone').textContent = data.data.phone || 'Not provided';
-                    document.getElementById('lifeplan-detail-address').textContent = data.data.benefeciary_address || 'Not provided';
-                    
-                    // Payment info
-                    document.getElementById('lifeplan-detail-paid').textContent = `₱${parseFloat(data.data.amount_paid || 0).toFixed(2)}`;
-                    const balance = parseFloat(data.data.package_price) - parseFloat(data.data.amount_paid || 0);
-                    document.getElementById('lifeplan-detail-balance').textContent = `₱${balance.toFixed(2)}`;
-                    
-                    // Show the modal
-                    viewLifeplanDetailsModal.classList.remove('hidden');
-                } else {
-                    showError(data.message || 'Failed to fetch life plan details');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showError('An error occurred while fetching life plan details');
-            });
-    }
+function fetchLifeplanForModification(bookingId) {
+    fetch(`profile/fetch_lifeplan_for_modification.php?booking_id=${bookingId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const form = document.getElementById('modifyLifeplanForm');
+                form.reset();
+                
+                document.getElementById('modify-lifeplan-id').value = data.data.lpbooking_id;
+                document.getElementById('modify-lifeplan-service-id').value = data.data.service_id;
+                document.getElementById('modify-lifeplan-branch-id').value = data.data.branch_id;
+                
+                document.getElementById('display-lifeplan-service').textContent = 
+                    `${data.data.service_name} (₱${parseFloat(data.data.package_price).toFixed(2)})`;
+                document.getElementById('display-lifeplan-branch').textContent = data.data.branch_name;
+                
+                form.querySelector('input[name="benefeciary_fname"]').value = data.data.benefeciary_fname || '';
+                form.querySelector('input[name="benefeciary_mname"]').value = data.data.benefeciary_mname || '';
+                form.querySelector('input[name="benefeciary_lname"]').value = data.data.benefeciary_lname || '';
+                form.querySelector('input[name="benefeciary_suffix"]').value = data.data.benefeciary_suffix || '';
+                form.querySelector('input[name="benefeciary_birth"]').value = data.data.benefeciary_birth || '';
+                form.querySelector('textarea[name="benefeciary_address"]').value = data.data.benefeciary_address || '';
+                form.querySelector('input[name="phone"]').value = data.data.phone || '';
+                form.querySelector('input[name="relationship_to_client"]').value = data.data.relationship_to_client || '';
+                form.querySelector('input[name="with_cremate"]').checked = data.data.with_cremate === 'yes';
+                
+                document.getElementById('modifyLifeplanModal').classList.remove('hidden');
+            } else {
+                showError(data.message || 'Failed to fetch life plan for modification');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showError('An error occurred while fetching life plan for modification');
+        });
+}
 
-    function fetchLifeplanForModification(bookingId) {
-        fetch(`profile/fetch_lifeplan_for_modification.php?booking_id=${bookingId}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Populate the modify form
-                    const form = document.getElementById('modifyLifeplanForm');
-                    form.reset();
-                    
-                    // Set booking ID and hidden service/branch IDs
-                    document.getElementById('modify-lifeplan-id').value = data.data.lpbooking_id;
-                    document.getElementById('modify-lifeplan-service-id').value = data.data.service_id;
-                    document.getElementById('modify-lifeplan-branch-id').value = data.data.branch_id;
-                    
-                    // Display service package and branch name
-                    document.getElementById('display-lifeplan-service').textContent = 
-                        `${data.data.service_name} (₱${parseFloat(data.data.package_price).toFixed(2)})`;
-                    document.getElementById('display-lifeplan-branch').textContent = data.data.branch_name;
-                    
-                    // Set beneficiary info
-                    form.querySelector('input[name="benefeciary_fname"]').value = data.data.benefeciary_fname || '';
-                    form.querySelector('input[name="benefeciary_mname"]').value = data.data.benefeciary_mname || '';
-                    form.querySelector('input[name="benefeciary_lname"]').value = data.data.benefeciary_lname || '';
-                    form.querySelector('input[name="benefeciary_suffix"]').value = data.data.benefeciary_suffix || '';
-                    form.querySelector('input[name="benefeciary_birth"]').value = data.data.benefeciary_birth || '';
-                    form.querySelector('textarea[name="benefeciary_address"]').value = data.data.benefeciary_address || '';
-                    form.querySelector('input[name="phone"]').value = data.data.phone || '';
-                    form.querySelector('input[name="relationship_to_client"]').value = data.data.relationship_to_client || '';
-                    form.querySelector('input[name="with_cremate"]').checked = data.data.with_cremate === 'yes';
-                    
-                    // Show the modal
-                    modifyLifeplanModal.classList.remove('hidden');
-                } else {
-                    showError(data.message || 'Failed to fetch life plan for modification');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showError('An error occurred while fetching life plan for modification');
-            });
-    }
-
-    function submitLifeplanModification() {
+function submitLifeplanModification() {
     const form = document.getElementById('modifyLifeplanForm');
     const formData = new FormData(form);
     
-    // Explicitly set the status to pending
     formData.set('booking_status', 'pending');
     
     const submitBtn = document.getElementById('modifyLifeplanSubmit');
@@ -5089,101 +4981,104 @@ document.getElementById('cancelBookingForm').addEventListener('submit', function
     });
 }
 
-    function submitLifeplanCancellation() {
-        const form = document.getElementById('cancelLifeplanForm');
-        const formData = new FormData(form);
-        const submitBtn = document.querySelector('button[type="submit"][form="cancelLifeplanForm"]');
+function submitLifeplanCancellation() {
+    const form = document.getElementById('cancelLifeplanForm');
+    const formData = new FormData(form);
+    const submitBtn = document.querySelector('button[type="submit"][form="cancelLifeplanForm"]');
     
-        if (!submitBtn) {
-            console.error('Submit button not found');
-            return;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...';
+    
+    fetch('profile/cancel_lifeplan.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showSuccess('Life plan booking cancelled successfully!');
+            document.getElementById('cancelLifeplanModal').classList.add('hidden');
+            
+            setTimeout(() => {
+                location.reload();
+            }, 1500);
+        } else {
+            showError(data.message || 'Failed to cancel life plan booking');
         }
-        
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...';
-        
-        fetch('profile/cancel_lifeplan.php', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                showSuccess('Life plan booking cancelled successfully!');
-                document.getElementById('cancelLifeplanModal').classList.add('hidden');
-                
-                setTimeout(() => {
-                    location.reload();
-                }, 1500);
-            } else {
-                showError(data.message || 'Failed to cancel life plan booking');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showError('An error occurred while cancelling life plan booking');
-        })
-        .finally(() => {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = '<i class="fas fa-times mr-2"></i> Confirm Cancellation';
-        });
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showError('An error occurred while cancelling life plan booking');
+    })
+    .finally(() => {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-times mr-2"></i> Confirm Cancellation';
+    });
+}
+
+function showDocument(title, url) {
+    if (!url) {
+        showError('No document available');
+        return;
     }
-
-// Remove the redundant submitBookingCancellation() function
-
-
-
-    function formatDate(dateString) {
-        const options = { year: 'numeric', month: 'long', day: 'numeric' };
-        return new Date(dateString).toLocaleDateString('en-US', options);
+    
+    document.getElementById('document-modal-title').textContent = title;
+    const imgElement = document.getElementById('document-image');
+    const pdfElement = document.getElementById('document-pdf');
+    
+    if (url.toLowerCase().endsWith('.pdf')) {
+        imgElement.style.display = 'none';
+        pdfElement.style.display = 'block';
+        pdfElement.src = url;
+    } else {
+        imgElement.style.display = 'block';
+        pdfElement.style.display = 'none';
+        imgElement.src = url;
     }
+    
+    document.getElementById('viewDocumentModal').classList.remove('hidden');
+}
 
-    function formatDateForInput(dateString) {
-        const date = new Date(dateString);
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    }
+function formatDate(dateString) {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString('en-US', options);
+}
 
-    function showSuccess(message) {
-        const notification = document.getElementById('successNotification');
-        document.getElementById('successMessage').textContent = message;
-        notification.classList.remove('hidden');
-        
-        setTimeout(() => {
-            notification.classList.add('hidden');
-        }, 5000);
-    }
+function formatDateForInput(dateString) {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
 
-    function showError(message) {
-        const notification = document.getElementById('errorNotification');
-        document.getElementById('errorMessage').textContent = message;
-        notification.classList.remove('hidden');
-        
-        setTimeout(() => {
-            notification.classList.add('hidden');
-        }, 5000);
-    }
-});// Add this to your existing JavaScript
-function showError(message) {
-    const notification = document.getElementById('errorNotification');
-    document.getElementById('errorMessage').textContent = message;
+function showSuccess(message) {
+    const notification = document.getElementById('successNotification');
+    document.getElementById('successMessage').textContent = message;
     notification.classList.remove('hidden');
     
-    // Add click handler to dismiss
     notification.addEventListener('click', function() {
         this.classList.add('hidden');
     });
     
-    // Auto-hide after 5 seconds
     setTimeout(() => {
         notification.classList.add('hidden');
     }, 5000);
 }
 
-
-
+function showError(message) {
+    const notification = document.getElementById('errorNotification');
+    document.getElementById('errorMessage').textContent = message;
+    notification.classList.remove('hidden');
+    
+    notification.addEventListener('click', function() {
+        this.classList.add('hidden');
+    });
+    
+    setTimeout(() => {
+        notification.classList.add('hidden');
+    }, 5000);
+}
 </script>
 
 <script>

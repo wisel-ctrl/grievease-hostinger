@@ -266,6 +266,10 @@ if ($booking_type === 'traditional') {
                     $status_class = 'bg-red-500/10 text-red-500';
                     $status_text = 'Declined';
                     break;
+                case 'cancel':
+                    $status_class = 'bg-gray-500/10 text-gray-500';
+                    $status_text = 'Cancelled';
+                    break;
                 default:
                     $status_class = 'bg-blue-500/10 text-blue-500';
                     $status_text = ucfirst($booking['booking_status']);
