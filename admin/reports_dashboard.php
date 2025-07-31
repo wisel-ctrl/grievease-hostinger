@@ -284,44 +284,45 @@ $ratioChange = number_format($changes['ratio_change'] ?? 0, 1);
       </div>
     </div>
   </div>
-</div>
 
-<div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
-  <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
-    <h3 class="font-medium text-sidebar-text">Sales & Payment Trends</h3>
-    <button class="w-10 h-10 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center hover:bg-gray-200" title="Print/Export">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-        </svg>
-    </button>
-  </div>
-  <div class="p-5">
-    <canvas id="salesSplineChart" class="h-96"></canvas>
-  </div>
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-5 px-5 pb-5">
-    <div class="bg-gray-50 p-4 rounded-lg">
-        <div class="text-sm font-medium text-gray-600 mb-2">Average Price</div>
-          <div class="text-2xl font-bold text-sidebar-text">₱<?php echo $avgPrice; ?> 
-              <span class="<?php echo ($priceChange >= 0) ? 'text-green-600' : 'text-red-600'; ?> text-sm font-normal">
-                  <?php echo ($priceChange >= 0) ? '+' : ''; ?><?php echo $priceChange; ?>%
+
+  <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
+    <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
+      <h3 class="font-medium text-sidebar-text">Sales & Payment Trends</h3>
+      <button class="w-10 h-10 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center hover:bg-gray-200" title="Print/Export">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+          </svg>
+      </button>
+    </div>
+    <div class="p-5">
+      <canvas id="salesSplineChart" class="h-96"></canvas>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 px-5 pb-5">
+      <div class="bg-gray-50 p-4 rounded-lg">
+          <div class="text-sm font-medium text-gray-600 mb-2">Average Price</div>
+            <div class="text-2xl font-bold text-sidebar-text">₱<?php echo $avgPrice; ?> 
+                <span class="<?php echo ($priceChange >= 0) ? 'text-green-600' : 'text-red-600'; ?> text-sm font-normal">
+                    <?php echo ($priceChange >= 0) ? '+' : ''; ?><?php echo $priceChange; ?>%
+                </span>
+            </div>
+          </div>
+      <div class="bg-gray-50 p-4 rounded-lg">
+          <div class="text-sm font-medium text-gray-600 mb-2">Average Payment</div>
+            <div class="text-2xl font-bold text-sidebar-text">₱<?php echo $avgPayment; ?> 
+                <span class="<?php echo ($paymentChange >= 0) ? 'text-green-600' : 'text-red-600'; ?> text-sm font-normal">
+                    <?php echo ($paymentChange >= 0) ? '+' : ''; ?><?php echo $paymentChange; ?>%
+                </span>
+            </div>
+          </div>
+      <div class="bg-gray-50 p-4 rounded-lg">
+          <div class="text-sm font-medium text-gray-600 mb-2">Payment Ratio</div>
+          <div class="text-2xl font-bold text-sidebar-text"><?php echo $paymentRatio; ?>% 
+              <span class="<?php echo ($ratioChange >= 0) ? 'text-green-600' : 'text-red-600'; ?> text-sm font-normal">
+                  <?php echo ($ratioChange >= 0) ? '+' : ''; ?><?php echo $ratioChange; ?>%
               </span>
           </div>
-        </div>
-    <div class="bg-gray-50 p-4 rounded-lg">
-        <div class="text-sm font-medium text-gray-600 mb-2">Average Payment</div>
-          <div class="text-2xl font-bold text-sidebar-text">₱<?php echo $avgPayment; ?> 
-              <span class="<?php echo ($paymentChange >= 0) ? 'text-green-600' : 'text-red-600'; ?> text-sm font-normal">
-                  <?php echo ($paymentChange >= 0) ? '+' : ''; ?><?php echo $paymentChange; ?>%
-              </span>
-          </div>
-        </div>
-    <div class="bg-gray-50 p-4 rounded-lg">
-        <div class="text-sm font-medium text-gray-600 mb-2">Payment Ratio</div>
-        <div class="text-2xl font-bold text-sidebar-text"><?php echo $paymentRatio; ?>% 
-            <span class="<?php echo ($ratioChange >= 0) ? 'text-green-600' : 'text-red-600'; ?> text-sm font-normal">
-                <?php echo ($ratioChange >= 0) ? '+' : ''; ?><?php echo $ratioChange; ?>%
-            </span>
-        </div>
+      </div>
     </div>
   </div>
 </div>
