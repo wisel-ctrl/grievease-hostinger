@@ -226,20 +226,16 @@ $ratioChange = number_format($changes['ratio_change'] ?? 0, 1);
       <div class="bg-gradient-to-r from-blue-100 to-blue-200 px-6 py-4">
           <div class="flex items-center justify-between mb-1">
               <h3 class="text-sm font-medium text-gray-700">Sales Forecast (Next 6 Months)</h3>
-              <button class="w-10 h-10 rounded-full bg-white/90 text-blue-600 flex items-center justify-center hover:bg-blue-50" title="Print/Export">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                  </svg>
-              </button>
+              <div class="w-10 h-10 rounded-full bg-white/90 text-blue-600 flex items-center justify-center">
+                  <i class="fas fa-chart-line"></i>
+              </div>
           </div>
       </div>
       <div id="salesForecastChart"></div>
       <!-- Card footer with change indicator -->
       <div class="px-6 py-3 bg-white border-t border-gray-100">
           <div class="flex items-center text-emerald-600">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
-              </svg>
+              <i class="fas fa-arrow-up mr-1.5 text-xs"></i>
               <span class="font-medium text-xs forecast-accuracy-value">0% </span>
               <span class="text-xs text-gray-500 ml-1">forecast accuracy</span>
           </div>
@@ -252,11 +248,9 @@ $ratioChange = number_format($changes['ratio_change'] ?? 0, 1);
     <div class="bg-gradient-to-r from-purple-100 to-purple-200 px-6 py-4">
       <div class="flex items-center justify-between mb-1">
         <h3 class="text-sm font-medium text-gray-700">Demand Prediction</h3>
-        <button class="w-10 h-10 rounded-full bg-white/90 text-purple-600 flex items-center justify-center hover:bg-purple-50" title="Print/Export">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-            </svg>
-        </button>
+        <div class="w-10 h-10 rounded-full bg-white/90 text-purple-600 flex items-center justify-center">
+          <i class="fas fa-box-open"></i>
+        </div>
       </div>
     </div>
     
@@ -284,47 +278,41 @@ $ratioChange = number_format($changes['ratio_change'] ?? 0, 1);
       </div>
     </div>
   </div>
+</div>
 
-
-  <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
-    <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
-      <h3 class="font-medium text-sidebar-text">Sales & Payment Trends</h3>
-      <button class="w-10 h-10 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center hover:bg-gray-200" title="Print/Export">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-          </svg>
-      </button>
-    </div>
-    <div class="p-5">
-      <canvas id="salesSplineChart" class="h-96"></canvas>
-    </div>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 px-5 pb-5">
-      <div class="bg-gray-50 p-4 rounded-lg">
-          <div class="text-sm font-medium text-gray-600 mb-2">Average Price</div>
-            <div class="text-2xl font-bold text-sidebar-text">₱<?php echo $avgPrice; ?> 
-                <span class="<?php echo ($priceChange >= 0) ? 'text-green-600' : 'text-red-600'; ?> text-sm font-normal">
-                    <?php echo ($priceChange >= 0) ? '+' : ''; ?><?php echo $priceChange; ?>%
-                </span>
-            </div>
-          </div>
-      <div class="bg-gray-50 p-4 rounded-lg">
-          <div class="text-sm font-medium text-gray-600 mb-2">Average Payment</div>
-            <div class="text-2xl font-bold text-sidebar-text">₱<?php echo $avgPayment; ?> 
-                <span class="<?php echo ($paymentChange >= 0) ? 'text-green-600' : 'text-red-600'; ?> text-sm font-normal">
-                    <?php echo ($paymentChange >= 0) ? '+' : ''; ?><?php echo $paymentChange; ?>%
-                </span>
-            </div>
-          </div>
-      <div class="bg-gray-50 p-4 rounded-lg">
-          <div class="text-sm font-medium text-gray-600 mb-2">Payment Ratio</div>
-          <div class="text-2xl font-bold text-sidebar-text"><?php echo $paymentRatio; ?>% 
-              <span class="<?php echo ($ratioChange >= 0) ? 'text-green-600' : 'text-red-600'; ?> text-sm font-normal">
-                  <?php echo ($ratioChange >= 0) ? '+' : ''; ?><?php echo $ratioChange; ?>%
+<div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
+  <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
+    <h3 class="font-medium text-sidebar-text">Sales & Payment Trends</h3>
+    
+  </div>
+  <div class="p-5">
+    <canvas id="salesSplineChart" class="h-96"></canvas>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-5 px-5 pb-5">
+    <div class="bg-gray-50 p-4 rounded-lg">
+        <div class="text-sm font-medium text-gray-600 mb-2">Average Price</div>
+          <div class="text-2xl font-bold text-sidebar-text">₱<?php echo $avgPrice; ?> 
+              <span class="<?php echo ($priceChange >= 0) ? 'text-green-600' : 'text-red-600'; ?> text-sm font-normal">
+                  <?php echo ($priceChange >= 0) ? '+' : ''; ?><?php echo $priceChange; ?>%
               </span>
           </div>
-      </div>
+        </div>
+    <div class="bg-gray-50 p-4 rounded-lg">
+        <div class="text-sm font-medium text-gray-600 mb-2">Average Payment</div>
+          <div class="text-2xl font-bold text-sidebar-text">₱<?php echo $avgPayment; ?> 
+              <span class="<?php echo ($paymentChange >= 0) ? 'text-green-600' : 'text-red-600'; ?> text-sm font-normal">
+                  <?php echo ($paymentChange >= 0) ? '+' : ''; ?><?php echo $paymentChange; ?>%
+              </span>
+          </div>
+        </div>
+    <div class="bg-gray-50 p-4 rounded-lg">
+        <div class="text-sm font-medium text-gray-600 mb-2">Payment Ratio</div>
+        <div class="text-2xl font-bold text-sidebar-text"><?php echo $paymentRatio; ?>% 
+            <span class="<?php echo ($ratioChange >= 0) ? 'text-green-600' : 'text-red-600'; ?> text-sm font-normal">
+                <?php echo ($ratioChange >= 0) ? '+' : ''; ?><?php echo $ratioChange; ?>%
+            </span>
+        </div>
     </div>
-  </div>
 </div>
 
 </div>
