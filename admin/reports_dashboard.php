@@ -226,7 +226,7 @@ $ratioChange = number_format($changes['ratio_change'] ?? 0, 1);
       <div class="bg-gradient-to-r from-blue-100 to-blue-200 px-6 py-4">
           <div class="flex items-center justify-between mb-1">
               <h3 class="text-sm font-medium text-gray-700">Sales Forecast (Next 6 Months)</h3>
-              <button class="w-10 h-10 rounded-full bg-white/90 text-blue-600 flex items-center justify-center hover:bg-blue-50" title="Print/Export">
+              <button  onclick="printRevenueTables()" class="w-10 h-10 rounded-full bg-white/90 text-blue-600 flex items-center justify-center hover:bg-blue-50" title="Print/Export">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                   </svg>
@@ -323,6 +323,46 @@ $ratioChange = number_format($changes['ratio_change'] ?? 0, 1);
     </div>
 </div>
 
+<div id="printContent" style="display:none;">
+    <div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
+        <!-- Header -->
+        <div style="text-align: center; margin-bottom: 20px; border-bottom: 2px solid #3A57E8; padding-bottom: 10px;">
+            <h1 style="color: #3A57E8; margin-bottom: 5px;">Revenue Report</h1>
+            <p style="color: #666; margin-top: 0;">Generated on: <span id="printDate"></span></p>
+        </div>
+        
+        <!-- Historical Revenue Table -->
+        <h2 style="color: #3A57E8; margin-top: 30px; margin-bottom: 15px;">Historical Revenue</h2>
+        <table id="historicalTable" style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+            <thead>
+                <tr style="background-color: #f5f7ff;">
+                    <th style="padding: 10px; text-align: left; border-bottom: 2px solid #3A57E8;">Month</th>
+                    <th style="padding: 10px; text-align: right; border-bottom: 2px solid #3A57E8;">Revenue (PHP)</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        
+        <!-- Forecasted Revenue Table -->
+        <h2 style="color: #FF5733; margin-top: 30px; margin-bottom: 15px;">Forecasted Revenue</h2>
+        <table id="forecastTable" style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+            <thead>
+                <tr style="background-color: #fff5f3;">
+                    <th style="padding: 10px; text-align: left; border-bottom: 2px solid #FF5733;">Month</th>
+                    <th style="padding: 10px; text-align: right; border-bottom: 2px solid #FF5733;">Revenue (PHP)</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        
+        <!-- Footer -->
+        <div style="text-align: center; margin-top: 30px; border-top: 2px solid #3A57E8; padding-top: 10px; color: #666; font-size: 12px;">
+            <p>Forecast Accuracy: <span id="printAccuracy"></span></p>
+            <p>© <?php echo date('Y'); ?> Your Company Name</p>
+        </div>
+    </div>
+</div>
+
 </div>
 <footer class="bg-white rounded-lg shadow-sidebar border border-sidebar-border p-4 text-center text-sm text-gray-500 mt-8">
     <p>© 2025 GrievEase.</p>
@@ -337,6 +377,125 @@ $ratioChange = number_format($changes['ratio_change'] ?? 0, 1);
       // Manila is UTC+8, so we need to adjust the time accordingly
       return new Date(date.getTime() + (8 * 60 * 60 * 1000));
   }
+
+   function formatCurrency(value) {
+        return '₱' + parseFloat(value).toLocaleString('en-PH', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    }
+
+    function formatDate(date) {
+        return date.toLocaleDateString('en-PH', {
+            timeZone: 'Asia/Manila',
+            month: 'short',
+            year: 'numeric'
+        });
+    }
+
+    function printRevenueTables() {
+        if (!historicalRevenueData || historicalRevenueData.length === 0) {
+            alert('No revenue data available to print');
+            return;
+        }
+
+        const regressionResults = calculateLinearRegressionForecast(historicalRevenueData, 6);
+        
+        // Set the current date in the print content
+        const now = new Date();
+        document.getElementById('printDate').textContent = now.toLocaleString('en-PH', {
+            timeZone: 'Asia/Manila',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        
+        // Calculate forecast accuracy
+        const lastActual = regressionResults.historicalChartData[regressionResults.historicalChartData.length - 1].y;
+        const firstForecast = regressionResults.forecastData[0].y;
+        let forecastAccuracy = 0;
+        if (lastActual !== 0) {
+            forecastAccuracy = 100 - Math.abs((firstForecast - lastActual) / lastActual * 100);
+        }
+        document.getElementById('printAccuracy').textContent = forecastAccuracy.toFixed(1) + '%';
+        
+        // Populate historical table
+        const historicalTableBody = document.querySelector('#historicalTable tbody');
+        historicalTableBody.innerHTML = '';
+        regressionResults.historicalChartData.forEach(item => {
+            const row = document.createElement('tr');
+            row.style.borderBottom = '1px solid #eee';
+            
+            const dateCell = document.createElement('td');
+            dateCell.style.padding = '8px 10px';
+            dateCell.textContent = formatDate(new Date(item.x));
+            
+            const revenueCell = document.createElement('td');
+            revenueCell.style.padding = '8px 10px';
+            revenueCell.style.textAlign = 'right';
+            revenueCell.textContent = formatCurrency(item.y);
+            
+            row.appendChild(dateCell);
+            row.appendChild(revenueCell);
+            historicalTableBody.appendChild(row);
+        });
+        
+        // Populate forecast table
+        const forecastTableBody = document.querySelector('#forecastTable tbody');
+        forecastTableBody.innerHTML = '';
+        regressionResults.forecastData.forEach(item => {
+            const row = document.createElement('tr');
+            row.style.borderBottom = '1px solid #eee';
+            
+            const dateCell = document.createElement('td');
+            dateCell.style.padding = '8px 10px';
+            dateCell.textContent = formatDate(new Date(item.x));
+            
+            const revenueCell = document.createElement('td');
+            revenueCell.style.padding = '8px 10px';
+            revenueCell.style.textAlign = 'right';
+            revenueCell.textContent = formatCurrency(item.y);
+            
+            row.appendChild(dateCell);
+            row.appendChild(revenueCell);
+            forecastTableBody.appendChild(row);
+        });
+        
+        // Show the print content
+        const printContent = document.getElementById('printContent').cloneNode(true);
+        printContent.style.display = 'block';
+        
+        // Create a new window for printing
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+            <html>
+                <head>
+                    <title>Revenue Report</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 20px; }
+                        table { width: 100%; border-collapse: collapse; }
+                        th { text-align: left; padding: 8px 10px; background-color: #f5f5f5; }
+                        td { padding: 8px 10px; border-bottom: 1px solid #eee; }
+                        .text-right { text-align: right; }
+                    </style>
+                </head>
+                <body>
+                    ${printContent.innerHTML}
+                </body>
+            </html>
+        `);
+        printWindow.document.close();
+        
+        // Wait for content to load before printing
+        printWindow.onload = function() {
+            setTimeout(() => {
+                printWindow.print();
+                printWindow.close();
+            }, 500);
+        };
+    }
 </script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
