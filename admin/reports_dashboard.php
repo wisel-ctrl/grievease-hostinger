@@ -1119,99 +1119,109 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function printDemandPrediction() {
-    // Create a print-friendly version of the content
-    const printContent = `
-        <div style="font-family: Arial, sans-serif; padding: 20px;">
-            <h1 style="color: #4B5563; border-bottom: 1px solid #E5E7EB; padding-bottom: 10px;">
-                Demand Prediction Report
-            </h1>
-            
-            <div style="margin-top: 20px;">
-                <h2 style="color: #4B5563;">Chart Overview</h2>
-                <div id="chart-container" style="width: 100%; height: 400px;"></div>
-            </div>
-            
-            <div style="margin-top: 30px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
-                <div style="border: 1px solid #E5E7EB; padding: 15px; border-radius: 8px;">
-                    <h3 style="color: #4B5563; margin-bottom: 10px;">Top Casket</h3>
-                    <p style="font-weight: bold; font-size: 18px; color: #111827;">${document.getElementById('topCasketValue').textContent}</p>
-                    <p style="margin-top: 10px; color: #6B7280;">
-                        This is the casket model with the highest sales volume historically. 
-                        It represents our best-selling product and is a key indicator of 
-                        market preferences.
-                    </p>
-                </div>
-                
-                <div style="border: 1px solid #E5E7EB; padding: 15px; border-radius: 8px;">
-                    <h3 style="color: #4B5563; margin-bottom: 10px;">Growth Rate</h3>
-                    <p style="font-weight: bold; font-size: 18px; color: #111827;">${document.getElementById('growthRateValue').textContent}</p>
-                    <p style="margin-top: 10px; color: #6B7280;">
-                        The projected growth rate based on recent sales trends. 
-                        A positive value indicates increasing demand, while a negative 
-                        value suggests declining interest in our products.
-                    </p>
-                </div>
-                
-                <div style="border: 1px solid #E5E7EB; padding: 15px; border-radius: 8px;">
-                    <h3 style="color: #4B5563; margin-bottom: 10px;">Seasonality Impact</h3>
-                    <p style="font-weight: bold; font-size: 18px; color: #111827;">${document.getElementById('seasonalityImpactValue').textContent}</p>
-                    <p style="margin-top: 10px; color: #6B7280;">
-                        Measures how much seasonal factors affect demand. 
-                        "High" means significant seasonal variation, "Medium" indicates 
-                        moderate variation, and "Low" suggests stable demand year-round.
-                    </p>
-                </div>
-            </div>
-            
-            <div style="margin-top: 30px; color: #6B7280; font-size: 12px;">
-                <p>Report generated on ${new Date().toLocaleDateString()}</p>
-            </div>
-        </div>
-    `;
+    // Clone the chart options for printing
+    const printOptions = JSON.parse(JSON.stringify(options));
     
-    // Create a new window for printing
+    // Adjust options for printing
+    printOptions.chart.height = 400;
+    printOptions.chart.toolbar.show = false;
+    printOptions.chart.animations.enabled = false;
+    printOptions.chart.dropShadow.enabled = false;
+    
+    // Create a print window
     const printWindow = window.open('', '_blank');
+    
+    // Get the current date for the report
+    const currentDate = new Date().toLocaleDateString();
+    
+    // Get the metric values
+    const topCasket = document.getElementById('topCasketValue').textContent;
+    const growthRate = document.getElementById('growthRateValue').textContent;
+    const seasonalityImpact = document.getElementById('seasonalityImpactValue').textContent;
+    
+    // Write the print content
     printWindow.document.write(`
+        <!DOCTYPE html>
         <html>
             <head>
                 <title>Demand Prediction Report</title>
                 <style>
+                    body { font-family: Arial, sans-serif; padding: 20px; color: #333; }
+                    h1 { color: #4B5563; border-bottom: 1px solid #E5E7EB; padding-bottom: 10px; }
+                    h2 { color: #4B5563; margin-top: 30px; }
+                    .metrics-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px; }
+                    .metric-box { border: 1px solid #E5E7EB; padding: 15px; border-radius: 8px; }
+                    .metric-title { color: #4B5563; margin-bottom: 10px; font-weight: bold; }
+                    .metric-value { font-weight: bold; font-size: 18px; color: #111827; }
+                    .metric-description { margin-top: 10px; color: #6B7280; font-size: 14px; }
+                    #chart-container { width: 100%; height: 400px; margin: 20px 0; }
+                    .footer { margin-top: 30px; color: #6B7280; font-size: 12px; }
                     @media print {
-                        @page {
-                            size: auto;
-                            margin: 10mm;
-                        }
-                        body {
-                            font-family: Arial, sans-serif;
-                        }
+                        @page { size: auto; margin: 10mm; }
+                        body { -webkit-print-color-adjust: exact; }
                     }
                 </style>
+                <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
             </head>
             <body>
-                ${printContent}
-                <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-                <script>
-                    // Clone the chart options and adjust for printing
-                    const printOptions = ${JSON.stringify(options)};
-                    printOptions.chart.height = 400;
-                    printOptions.chart.toolbar.show = false;
-                    printOptions.chart.animations.enabled = false;
+                <h1>Demand Prediction Report</h1>
+                
+                <div id="chart-container"></div>
+                
+                <div class="metrics-container">
+                    <div class="metric-box">
+                        <div class="metric-title">Top Casket</div>
+                        <div class="metric-value">${topCasket}</div>
+                        <div class="metric-description">
+                            The casket model with the highest sales volume historically. 
+                            Indicates market preferences and best-performing product.
+                        </div>
+                    </div>
                     
-                    // Render the chart in the print window
-                    setTimeout(() => {
-                        const chart = new ApexCharts(document.querySelector("#chart-container"), printOptions);
+                    <div class="metric-box">
+                        <div class="metric-title">Growth Rate</div>
+                        <div class="metric-value">${growthRate}</div>
+                        <div class="metric-description">
+                            Projected demand trend based on recent sales. Positive values 
+                            indicate increasing demand, negative values suggest decline.
+                        </div>
+                    </div>
+                    
+                    <div class="metric-box">
+                        <div class="metric-title">Seasonality Impact</div>
+                        <div class="metric-value">${seasonalityImpact}</div>
+                        <div class="metric-description">
+                            Measures seasonal demand fluctuations. "High" means significant 
+                            seasonal variation, "Low" suggests stable year-round demand.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="footer">
+                    <p>Report generated on ${currentDate}</p>
+                </div>
+                
+                <script>
+                    // Render the chart
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const chart = new ApexCharts(
+                            document.querySelector("#chart-container"),
+                            ${JSON.stringify(printOptions)}
+                        );
                         chart.render();
                         
-                        // Wait for chart to render before printing
-                        setTimeout(() => {
+                        // Print after short delay to ensure chart renders
+                        setTimeout(function() {
                             window.print();
                             window.close();
                         }, 500);
-                    }, 100);
+                    });
                 </script>
             </body>
         </html>
     `);
+    
+    // Close the document
     printWindow.document.close();
 }
 </script>
