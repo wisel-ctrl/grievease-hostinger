@@ -1119,7 +1119,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function printDemandPrediction() {
-    // Clone the chart options for printing
     const printOptions = JSON.parse(JSON.stringify(options));
 
     // Adjust options for printing
@@ -1128,17 +1127,18 @@ function printDemandPrediction() {
     printOptions.chart.animations.enabled = false;
     printOptions.chart.dropShadow.enabled = false;
 
-    // Get the metric values
     const topCasket = document.getElementById('topCasketValue').textContent;
     const growthRate = document.getElementById('growthRateValue').textContent;
     const seasonalityImpact = document.getElementById('seasonalityImpactValue').textContent;
 
     const currentDate = new Date().toLocaleDateString();
 
-    // Open print window
+    const chartConfig = JSON.stringify(printOptions).replace(/<\/script>/gi, '<\\/script>');
+
     const printWindow = window.open('', '_blank');
 
-    const htmlContent = `
+    printWindow.document.open();
+    printWindow.document.write(`
         <!DOCTYPE html>
         <html>
         <head>
@@ -1198,10 +1198,11 @@ function printDemandPrediction() {
             </div>
 
             <script>
+                const options = ${chartConfig};
                 window.addEventListener('load', function () {
                     const chart = new ApexCharts(
                         document.querySelector("#chart-container"),
-                        ${JSON.stringify(printOptions)}
+                        options
                     );
                     chart.render().then(() => {
                         setTimeout(() => {
@@ -1210,16 +1211,13 @@ function printDemandPrediction() {
                         }, 500);
                     });
                 });
-            </script>
+            <\/script>
         </body>
         </html>
-    `;
-
-    // Write the full content at once
-    printWindow.document.open();
-    printWindow.document.write(htmlContent);
+    `);
     printWindow.document.close();
 }
+
 
 </script>
 
