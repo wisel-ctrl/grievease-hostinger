@@ -951,6 +951,7 @@ function printDemandData() {
     printWindow.document.close();
 }
 
+window.printDemandData = printDemandData;
 
 // Create the heatmap chart with enhanced design that matches sales forecast style
 var options = {
