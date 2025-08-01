@@ -183,7 +183,18 @@ require_once '../db_connect.php'; // Database connection
                 $profile_picture = $profile_data['profile_picture'];
 
                 
-                
+$query_gcash = "SELECT qr_number, qr_image FROM gcash_qr_tb WHERE is_available = 1";
+$result_gcash = $conn->query($query_gcash);
+$gcash_qrs = [];
+if ($result_gcash) {
+    while ($row_gcash = $result_gcash->fetch_assoc()) {
+        $gcash_qrs[] = [
+            'qr_number' => $row_gcash['qr_number'],
+            'qr_image' => '../' . $row_gcash['qr_image']
+        ];
+    }
+    $result_gcash->free();
+}    
 ?>
 
 <script src="customer_support.js"></script>
@@ -257,6 +268,26 @@ require_once '../db_connect.php'; // Database connection
         }
         html {
         scroll-behavior: smooth;
+    }
+    
+    .landscape-img {
+        object-fit: contain;
+        object-position: center;
+        transform: rotate(0deg); /* Ensure landscape orientation */
+    }
+    
+    .gcash-qr-option {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    @media (max-width: 640px) {
+        .gcash-qr-option > div {
+            width: 100% !important;
+            height: auto !important;
+            aspect-ratio: 3/2; /* Maintain landscape aspect ratio */
+        }
     }
     </style>
     <script>
@@ -1248,18 +1279,34 @@ require_once '../db_connect.php'; // Database connection
                         <!-- QR Code Modal -->
                         <!-- QR Code Modal (for traditional) -->
 <div id="qrCodeModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
-    <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+    <div class="bg-white rounded-lg p-4 sm:p-6 max-w-[90vw] sm:max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
         <div class="flex justify-between items-center mb-4">
-            <h3 class="text-lg font-hedvig text-navy">Scan to Pay</h3>
+            <h3 class="text-lg sm:text-xl font-hedvig text-navy">Scan to Pay</h3>
             <button id="closeQrModal" class="text-gray-500 hover:text-navy">
                 <i class="fas fa-times text-xl"></i>
             </button>
         </div>
         <div class="flex flex-col items-center justify-center">
-            <img id="qrCodeImage" src="../image/qrnivjaygcash.jpg" alt="Payment QR Code" 
-                 class="w-64 h-64 object-contain mb-4 cursor-pointer hover:scale-105 transition-transform"
-                 onclick="enlargeQrCode(this)">
-            <p class="text-center text-sm text-gray-600 mb-2">Scan this QR code with your GCash app to make payment</p>
+            <?php if (!empty($gcash_qrs)): ?>
+                <div id="gcashQrContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+                    <?php foreach ($gcash_qrs as $qr): ?>
+                        <div class="gcash-qr-option cursor-pointer p-2 border border-gray-200 rounded-lg hover:border-yellow-600 transition-colors flex justify-center items-center"
+                             data-qr-number="<?= htmlspecialchars($qr['qr_number']) ?>">
+                            <div class="w-48 h-32 sm:w-64 sm:h-40">
+                                <img src="<?= htmlspecialchars($qr['qr_image']) ?>" 
+                                     alt="GCash QR Code <?= htmlspecialchars($qr['qr_number']) ?>" 
+                                     class="w-full h-full object-contain landscape-img"
+                                     onclick="enlargeQrCode(this)">
+                                <p class="text-center text-xs sm:text-sm font-medium text-gray-600 mt-2"><?= htmlspecialchars($qr['qr_number']) ?></p>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+                <input type="hidden" id="selectedGcashQr" name="gcashQrNumber" value="">
+            <?php else: ?>
+                <p class="text-center text-sm text-gray-500">No GCash QR codes available</p>
+            <?php endif; ?>
+            <p class="text-center text-sm text-gray-600 mt-4 mb-2">Scan a QR code with your GCash app to make payment</p>
             <p class="text-center font-bold text-yellow-600" id="qrCodeAmount">Amount: ₱0</p>
         </div>
     </div>
@@ -3280,6 +3327,57 @@ document.addEventListener('DOMContentLoaded', function() {
     const mobileMenu = document.getElementById('mobile-menu');
     mobileMenu.classList.toggle('hidden');
     }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+    // Handle GCash QR selection
+    const gcashQrOptions = document.querySelectorAll('#gcashQrContainer .gcash-qr-option');
+    const selectedGcashQrInput = document.getElementById('selectedGcashQr');
+    
+    gcashQrOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            // Remove selected class from all options
+            gcashQrOptions.forEach(opt => opt.classList.remove('border-yellow-600', 'bg-yellow-50'));
+            // Add selected class to clicked option
+            this.classList.add('border-yellow-600', 'bg-yellow-50');
+            // Update hidden input with selected QR number
+            selectedGcashQrInput.value = this.dataset.qrNumber;
+            // Trigger enlarge QR code
+            enlargeQrCode(this.querySelector('img'));
+        });
+    });
+
+    // Traditional modal QR code
+    const showQrCodeBtn = document.getElementById('showQrCodeBtn');
+    const qrCodeModal = document.getElementById('qrCodeModal');
+    const closeQrModal = document.getElementById('closeQrModal');
+    const qrCodeAmount = document.getElementById('qrCodeAmount');
+    
+    if (showQrCodeBtn && qrCodeModal) {
+        showQrCodeBtn.addEventListener('click', function() {
+            const amountDue = document.getElementById('traditionalAmountDue').textContent;
+            qrCodeAmount.textContent = 'Amount: ' + amountDue;
+            qrCodeModal.classList.remove('hidden');
+        });
+        
+        closeQrModal.addEventListener('click', function() {
+            qrCodeModal.classList.add('hidden');
+        });
+        
+        // Prevent closing by clicking outside
+        qrCodeModal.addEventListener('click', function(e) {
+            if (e.target === qrCodeModal) {
+                e.stopPropagation(); // Prevent closing
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                qrCodeModal.classList.add('hidden');
+            }
+        });
+    }
+});
 </script>
 
 
