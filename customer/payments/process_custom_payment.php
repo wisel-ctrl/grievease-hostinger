@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once '../../db_connect.php';
+require_once 'send_sms_helper.php';
 
 $response = ['success' => false, 'message' => ''];
 
@@ -53,10 +54,13 @@ try {
                            (customer_id, customsales_id, amount, payment_method, payment_url, request_date) 
                            VALUES (?, ?, ?, ?, ?, ?)");
 
-                           date_default_timezone_set('Asia/Manila');
-                           $now = date('Y-m-d H:i:s');
+    date_default_timezone_set('Asia/Manila');
+    $now = date('Y-m-d H:i:s');
     $stmt->bind_param("iidsss", $customerID, $salesId, $amount, $method, $receiptPath, $now);
     $stmt->execute();
+    
+    // Send SMS notification to admins
+    sendAdminSMSNotification($conn, $customerID, $amount, 'Custom Payment');
     
     $response['success'] = true;
     $response['message'] = 'Installment request submitted successfully';
