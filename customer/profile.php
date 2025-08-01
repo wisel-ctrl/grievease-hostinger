@@ -199,6 +199,16 @@ header("Pragma: no-cache");
                 }
 
                 $addressDB->close();
+                
+                $gcash_query = "SELECT qr_number, qr_image FROM gcash_qr_tb WHERE is_available = 1";
+                $gcash_stmt = $conn->prepare($gcash_query);
+                $gcash_stmt->execute();
+                $gcash_result = $gcash_stmt->get_result();
+                $gcash_accounts = [];
+                while ($row = $gcash_result->fetch_assoc()) {
+                    $gcash_accounts[] = $row;
+                }
+                $gcash_stmt->close();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -370,7 +380,33 @@ input[name*="LastName"] {
     background: rgba(0,0,0,0.9);
     transform: scale(1.1);
 }
+    #bank-wallets-modal .modal-scroll-container {
+        max-height: 90vh;
+        display: flex;
+        flex-direction: column;
+    }
     
+    @media (max-width: 640px) {
+        #bank-wallets-modal .max-w-4xl {
+            max-width: 95vw;
+        }
+        
+        #bank-wallets-modal .grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    
+    @media (min-width: 640px) and (max-width: 1024px) {
+        #bank-wallets-modal .grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+    
+    @media (min-width: 1024px) {
+        #bank-wallets-modal .grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+    }
     </style>
 </head>
 <body class="bg-cream overflow-x-hidden w-full max-w-full m-0 p-0 font-hedvig">
@@ -1976,71 +2012,64 @@ $lifeplanStmt->close();
 
 <!-- Bank & Wallets Modal (new modal) -->
 <div id="bank-wallets-modal" class="fixed inset-0 z-60 flex items-center justify-center bg-black bg-opacity-50 p-4 hidden">
-  <!-- Modal Content -->
-  <div class="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden max-h-[90vh]">
-    <div class="modal-scroll-container overflow-y-auto max-h-[90vh]">
-      <!-- Header with close button -->
-      <div class="bg-navy p-6 flex justify-between items-center">
-        <h2 class="text-2xl font-hedvig text-white">Bank & Wallets Information</h2>
-        <button onclick="closeModal('bank-wallets-modal')" class="text-white hover:text-yellow-300">
-          <i class="fas fa-times text-2xl"></i>
-        </button>
-      </div>
-      
-      <!-- Modal Body -->
-      <div class="p-6 bg-cream">
-        <div class="space-y-4 sm:space-y-6">
-          <!-- Bank Information -->
-          <div>
-            <h3 class="text-lg font-medium text-navy mb-3">Bank Accounts</h3>
-            <div class="bg-white p-4 rounded-lg border border-gray-200 mb-4">
-              <h4 class="font-medium text-navy">Bank of the Philippine Islands (BPI)</h4>
-              <p class="text-sm text-gray-600">Account Name: Golden Future Life Plans, Inc.</p>
-              <p class="text-sm text-gray-600">Account Number: 1234-5678-9012</p>
+    <!-- Modal Content -->
+    <div class="w-full max-w-4xl bg-white rounded-2xl shadow-xl overflow-hidden max-h-[90vh] flex flex-col">
+        <div class="modal-scroll-container overflow-y-auto">
+            <!-- Header with close button -->
+            <div class="bg-navy p-6 flex justify-between items-center flex-shrink-0">
+                <h2 class="text-2xl font-hedvig text-white">GCash Payment Information</h2>
+                <button onclick="closeModal('bank-wallets-modal')" class="text-white hover:text-yellow-300">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
             </div>
-            <div class="bg-white p-4 rounded-lg border border-gray-200 mb-4">
-              <h4 class="font-medium text-navy">Metropolitan Bank (Metrobank)</h4>
-              <p class="text-sm text-gray-600">Account Name: Golden Future Life Plans, Inc.</p>
-              <p class="text-sm text-gray-600">Account Number: 9876-5432-1098</p>
+            
+            <!-- Modal Body -->
+            <div class="p-6 bg-cream">
+                <div class="space-y-6">
+                    <!-- GCash QR Codes -->
+                    <div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <?php foreach ($gcash_accounts as $account): ?>
+                            <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                                <div class="relative w-full aspect-[4/3] overflow-hidden rounded-md cursor-pointer group"
+                                     onclick="openImageModal('../<?php echo htmlspecialchars($account['qr_image']); ?>')">
+                                    <img 
+                                        src="../<?php echo htmlspecialchars($account['qr_image']); ?>" 
+                                        alt="GCash QR Code"
+                                        class="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
+                                    >
+                                    <div class="absolute inset-0 bg-navy bg-opacity-0 group-hover:bg-opacity-30 flex items-center justify-center transition-all duration-300">
+                                        <svg class="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                        </svg>
+                                    </div>
+                                </div>
+                                <p class="mt-2 text-sm text-gray-600 text-center">
+                                     <?php echo htmlspecialchars($account['qr_number']); ?>
+                                </p>
+                            </div>
+                            <?php endforeach; ?>
+                            <?php if (empty($gcash_accounts)): ?>
+                            <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm col-span-full text-center">
+                                <p class="text-gray-600">No GCash QR codes available at the moment.</p>
+                            </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
-          
-          <!-- E-Wallets -->
-          <div>
-            <h3 class="text-lg font-medium text-navy mb-3">E-Wallets</h3>
-            <div class="bg-white p-4 rounded-lg border border-gray-200 mb-4">
-              <h4 class="font-medium text-navy">GCash</h4>
-              <p class="text-sm text-gray-600">Account Name: Golden Future Life Plans, Inc.</p>
-              <p class="text-sm text-gray-600">Mobile Number: 0917-123-4567</p>
+            
+            <!-- Modal Footer -->
+            <div class="modal-sticky-footer px-6 py-4 flex justify-center border-t border-gray-200 bg-white flex-shrink-0">
+                <button onclick="closeModal('bank-wallets-modal')" class="px-6 py-3 bg-navy hover:bg-navy-dark text-white rounded-lg font-medium transition-all duration-200">
+                    Close
+                </button>
             </div>
-            <div class="bg-white p-4 rounded-lg border border-gray-200">
-              <h4 class="font-medium text-navy">PayMaya</h4>
-              <p class="text-sm text-gray-600">Account Name: Golden Future Life Plans, Inc.</p>
-              <p class="text-sm text-gray-600">Mobile Number: 0918-765-4321</p>
-            </div>
-          </div>
-          
-          <!-- Instructions -->
-          <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-            <h4 class="font-medium text-navy mb-2">Payment Instructions</h4>
-            <ul class="text-sm text-gray-600 list-disc pl-5 space-y-1">
-              <li>Include your reference number in the payment description</li>
-              <li>Send the receipt after payment</li>
-              <li>Payments may take 1-2 business days to reflect</li>
-            </ul>
-          </div>
         </div>
-      </div>
-      
-      <!-- Modal Footer -->
-      <div class="modal-sticky-footer px-6 py-4 flex justify-center border-t border-gray-200 bg-white">
-        <button onclick="closeModal('bank-wallets-modal')" class="px-6 py-3 bg-navy hover:bg-navy-dark text-white rounded-lg font-medium transition-all duration-200">
-          Close
-        </button>
-      </div>
     </div>
-  </div>
 </div>
+
+
 
 <!-- Upload Death Certificate Modal -->
 <div id="uploadDeathCertModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 hidden">
@@ -2117,6 +2146,16 @@ $lifeplanStmt->close();
         </div>
     </div>
 </div>
+
+<div id="image-zoom-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black bg-opacity-75 hidden">
+    <div class="relative max-w-4xl w-full m-4">
+        <button class="absolute top-4 right-4 text-white hover:text-yellow-300 z-[110]" onclick="closeImageModal()">
+            <i class="fas fa-times text-2xl"></i>
+        </button>
+        <img id="zoomed-image" src="" alt="Zoomed Image" class="w-full h-auto max-h-[80vh] object-contain rounded-lg">
+    </div>
+</div>
+
 
 <script>
 // Pass PHP data to JavaScript
@@ -6923,6 +6962,19 @@ document.addEventListener('DOMContentLoaded', function() {
     preview.querySelector('img').src = '';
     preview.classList.add('hidden');
   }
+  
+function openImageModal(imageSrc) {
+    const modal = document.getElementById('image-zoom-modal');
+    const img = document.getElementById('zoomed-image');
+    img.src = imageSrc;
+    modal.classList.remove('hidden');
+}
+
+function closeImageModal() {
+    const modal = document.getElementById('image-zoom-modal');
+    modal.classList.add('hidden');
+    document.getElementById('zoomed-image').src = '';
+}
 
 </script>
 </body> 
