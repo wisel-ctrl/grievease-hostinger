@@ -852,6 +852,110 @@ console.log('Raw PHP data:', <?php echo json_encode($casketData); ?>);
 console.log('Raw casket data (JS):', rawCasketData);
 console.log('Processed heatmap data:', heatmapData);
 
+function printDemandData() {
+    // Get the metrics
+    const topCasket = document.getElementById('topCasketValue').textContent;
+    const growthRate = document.getElementById('growthRateValue').textContent;
+    const seasonalityImpact = document.getElementById('seasonalityImpactValue').textContent;
+    
+    // Create table data from the heatmap data
+    let tableHTML = `
+        <table border="1" cellpadding="5" cellspacing="0" style="width:100%; border-collapse:collapse; margin-top:20px;">
+            <thead>
+                <tr style="background-color:#f3f4f6;">
+                    <th>Product</th>
+    `;
+    
+    // Add month headers
+    heatmapData.months.forEach(month => {
+        tableHTML += `<th>${month}</th>`;
+    });
+    
+    tableHTML += `</tr></thead><tbody>`;
+    
+    // Add product data rows
+    heatmapData.series.forEach(product => {
+        tableHTML += `<tr><td style="font-weight:bold;">${product.name}</td>`;
+        
+        product.data.forEach(item => {
+            const value = item.y === 0 ? '-' : item.y;
+            const forecastClass = item.forecast ? 'style="background-color:#f0f9ff; color:#0369a1;"' : '';
+            tableHTML += `<td ${forecastClass}>${value}${item.forecast ? ' (F)' : ''}</td>`;
+        });
+        
+        tableHTML += `</tr>`;
+    });
+    
+    tableHTML += `</tbody></table>`;
+    
+    // Create print window content
+    const printContent = `
+        <!DOCTYPE html>
+        <html>
+            <head>
+                <title>Demand Prediction Report</title>
+                <style>
+                    body { font-family: Arial, sans-serif; padding:20px; }
+                    h1 { color: #333; border-bottom:1px solid #ddd; padding-bottom:10px; }
+                    .metrics { display:flex; margin:20px 0; gap:15px; }
+                    .metric-box { border:1px solid #eee; padding:15px; border-radius:5px; flex:1; }
+                    .metric-title { font-weight:bold; margin-bottom:5px; color:#555; }
+                    .metric-value { font-size:18px; font-weight:bold; }
+                    table th { background-color:#f3f4f6; text-align:left; }
+                    .footer { margin-top:30px; font-size:12px; color:#777; }
+                    @media print {
+                        @page { size:auto; margin:10mm; }
+                        body { -webkit-print-color-adjust:exact; }
+                    }
+                </style>
+            </head>
+            <body>
+                <h1>Demand Prediction Report</h1>
+                
+                <div class="metrics">
+                    <div class="metric-box">
+                        <div class="metric-title">Top Casket</div>
+                        <div class="metric-value">${topCasket}</div>
+                        <p>Best-selling product based on historical data</p>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-title">Growth Rate</div>
+                        <div class="metric-value">${growthRate}</div>
+                        <p>Projected demand trend (positive = growth)</p>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-title">Seasonality Impact</div>
+                        <div class="metric-value">${seasonalityImpact}</div>
+                        <p>How much demand fluctuates seasonally</p>
+                    </div>
+                </div>
+                
+                <h2>Demand Data</h2>
+                ${tableHTML}
+                
+                <div class="footer">
+                    <p>Report generated on ${new Date().toLocaleDateString()}</p>
+                    <p>(F) indicates forecasted values</p>
+                </div>
+                
+                <script>
+                    window.onload = function() {
+                        setTimeout(function() {
+                            window.print();
+                            window.close();
+                        }, 200);
+                    };
+                </script>
+            </body>
+        </html>
+    `;
+    
+    // Open print window
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(printContent);
+    printWindow.document.close();
+}
+
 // Create the heatmap chart with enhanced design that matches sales forecast style
 var options = {
   series: heatmapData.series,
@@ -1117,112 +1221,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 });
-
-function printDemandData() {
-    // Get the metrics
-    const topCasket = document.getElementById('topCasketValue').textContent;
-    const growthRate = document.getElementById('growthRateValue').textContent;
-    const seasonalityImpact = document.getElementById('seasonalityImpactValue').textContent;
-    
-    // Create table data from the heatmap data
-    let tableHTML = `
-        <table border="1" cellpadding="5" cellspacing="0" style="width:100%; border-collapse:collapse; margin-top:20px;">
-            <thead>
-                <tr style="background-color:#f3f4f6;">
-                    <th>Product</th>
-    `;
-    
-    // Add month headers
-    heatmapData.months.forEach(month => {
-        tableHTML += `<th>${month}</th>`;
-    });
-    
-    tableHTML += `</tr></thead><tbody>`;
-    
-    // Add product data rows
-    heatmapData.series.forEach(product => {
-        tableHTML += `<tr><td style="font-weight:bold;">${product.name}</td>`;
-        
-        product.data.forEach(item => {
-            const value = item.y === 0 ? '-' : item.y;
-            const forecastClass = item.forecast ? 'style="background-color:#f0f9ff; color:#0369a1;"' : '';
-            tableHTML += `<td ${forecastClass}>${value}${item.forecast ? ' (F)' : ''}</td>`;
-        });
-        
-        tableHTML += `</tr>`;
-    });
-    
-    tableHTML += `</tbody></table>`;
-    
-    // Create print window content
-    const printContent = `
-        <!DOCTYPE html>
-        <html>
-            <head>
-                <title>Demand Prediction Report</title>
-                <style>
-                    body { font-family: Arial, sans-serif; padding:20px; }
-                    h1 { color: #333; border-bottom:1px solid #ddd; padding-bottom:10px; }
-                    .metrics { display:flex; margin:20px 0; gap:15px; }
-                    .metric-box { border:1px solid #eee; padding:15px; border-radius:5px; flex:1; }
-                    .metric-title { font-weight:bold; margin-bottom:5px; color:#555; }
-                    .metric-value { font-size:18px; font-weight:bold; }
-                    table th { background-color:#f3f4f6; text-align:left; }
-                    .footer { margin-top:30px; font-size:12px; color:#777; }
-                    @media print {
-                        @page { size:auto; margin:10mm; }
-                        body { -webkit-print-color-adjust:exact; }
-                    }
-                </style>
-            </head>
-            <body>
-                <h1>Demand Prediction Report</h1>
-                
-                <div class="metrics">
-                    <div class="metric-box">
-                        <div class="metric-title">Top Casket</div>
-                        <div class="metric-value">${topCasket}</div>
-                        <p>Best-selling product based on historical data</p>
-                    </div>
-                    <div class="metric-box">
-                        <div class="metric-title">Growth Rate</div>
-                        <div class="metric-value">${growthRate}</div>
-                        <p>Projected demand trend (positive = growth)</p>
-                    </div>
-                    <div class="metric-box">
-                        <div class="metric-title">Seasonality Impact</div>
-                        <div class="metric-value">${seasonalityImpact}</div>
-                        <p>How much demand fluctuates seasonally</p>
-                    </div>
-                </div>
-                
-                <h2>Demand Data</h2>
-                ${tableHTML}
-                
-                <div class="footer">
-                    <p>Report generated on ${new Date().toLocaleDateString()}</p>
-                    <p>(F) indicates forecasted values</p>
-                </div>
-                
-                <script>
-                    window.onload = function() {
-                        setTimeout(function() {
-                            window.print();
-                            window.close();
-                        }, 200);
-                    };
-                </script>
-            </body>
-        </html>
-    `;
-    
-    // Open print window
-    const printWindow = window.open('', '_blank');
-    printWindow.document.write(printContent);
-    printWindow.document.close();
-}
-
-
 </script>
 
 <script>
