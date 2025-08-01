@@ -565,6 +565,8 @@ document.addEventListener('DOMContentLoaded', function() {
       };
   }
 
+  window.calculateLinearRegressionForecast = calculateLinearRegressionForecast;
+
   // Only proceed if we have historical data
   // Only proceed if we have historical data
   if (historicalRevenueData && historicalRevenueData.length > 0) {
