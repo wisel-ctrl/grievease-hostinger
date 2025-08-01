@@ -1118,6 +1118,108 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
+function printDemandPrediction() {
+    // Clone the chart options for printing
+    const printOptions = JSON.parse(JSON.stringify(options));
+
+    // Adjust options for printing
+    printOptions.chart.height = 400;
+    printOptions.chart.toolbar.show = false;
+    printOptions.chart.animations.enabled = false;
+    printOptions.chart.dropShadow.enabled = false;
+
+    // Get the metric values
+    const topCasket = document.getElementById('topCasketValue').textContent;
+    const growthRate = document.getElementById('growthRateValue').textContent;
+    const seasonalityImpact = document.getElementById('seasonalityImpactValue').textContent;
+
+    const currentDate = new Date().toLocaleDateString();
+
+    // Open print window
+    const printWindow = window.open('', '_blank');
+
+    const htmlContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Demand Prediction Report</title>
+            <style>
+                body { font-family: Arial, sans-serif; padding: 20px; color: #333; }
+                h1 { color: #4B5563; border-bottom: 1px solid #E5E7EB; padding-bottom: 10px; }
+                h2 { color: #4B5563; margin-top: 30px; }
+                .metrics-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px; }
+                .metric-box { border: 1px solid #E5E7EB; padding: 15px; border-radius: 8px; }
+                .metric-title { color: #4B5563; margin-bottom: 10px; font-weight: bold; }
+                .metric-value { font-weight: bold; font-size: 18px; color: #111827; }
+                .metric-description { margin-top: 10px; color: #6B7280; font-size: 14px; }
+                #chart-container { width: 100%; height: 400px; margin: 20px 0; }
+                .footer { margin-top: 30px; color: #6B7280; font-size: 12px; }
+                @media print {
+                    @page { size: auto; margin: 10mm; }
+                    body { -webkit-print-color-adjust: exact; }
+                }
+            </style>
+            <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+        </head>
+        <body>
+            <h1>Demand Prediction Report</h1>
+
+            <div id="chart-container"></div>
+
+            <div class="metrics-container">
+                <div class="metric-box">
+                    <div class="metric-title">Top Casket</div>
+                    <div class="metric-value">${topCasket}</div>
+                    <div class="metric-description">
+                        The casket model with the highest sales volume historically. 
+                        Indicates market preferences and best-performing product.
+                    </div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">Growth Rate</div>
+                    <div class="metric-value">${growthRate}</div>
+                    <div class="metric-description">
+                        Projected demand trend based on recent sales. Positive values 
+                        indicate increasing demand, negative values suggest decline.
+                    </div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">Seasonality Impact</div>
+                    <div class="metric-value">${seasonalityImpact}</div>
+                    <div class="metric-description">
+                        Measures seasonal demand fluctuations. "High" means significant 
+                        seasonal variation, "Low" suggests stable year-round demand.
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer">
+                <p>Report generated on ${currentDate}</p>
+            </div>
+
+            <script>
+                window.addEventListener('load', function () {
+                    const chart = new ApexCharts(
+                        document.querySelector("#chart-container"),
+                        ${JSON.stringify(printOptions)}
+                    );
+                    chart.render().then(() => {
+                        setTimeout(() => {
+                            window.print();
+                            window.close();
+                        }, 500);
+                    });
+                });
+            </script>
+        </body>
+        </html>
+    `;
+
+    // Write the full content at once
+    printWindow.document.open();
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+}
 
 </script>
 
