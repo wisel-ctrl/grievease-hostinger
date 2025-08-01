@@ -857,37 +857,34 @@ function printDemandData() {
     const topCasket = document.getElementById('topCasketValue').textContent;
     const growthRate = document.getElementById('growthRateValue').textContent;
     const seasonalityImpact = document.getElementById('seasonalityImpactValue').textContent;
-    
+
     // Create table data from the heatmap data
     let tableHTML = `
         <table border="1" cellpadding="5" cellspacing="0" style="width:100%; border-collapse:collapse; margin-top:20px;">
             <thead>
                 <tr style="background-color:#f3f4f6;">
-                    <th>Product</th>
-    `;
-    
-    // Add month headers
+                    <th>Product</th>`;
+
     heatmapData.months.forEach(month => {
         tableHTML += `<th>${month}</th>`;
     });
-    
+
     tableHTML += `</tr></thead><tbody>`;
-    
-    // Add product data rows
+
     heatmapData.series.forEach(product => {
         tableHTML += `<tr><td style="font-weight:bold;">${product.name}</td>`;
-        
+
         product.data.forEach(item => {
             const value = item.y === 0 ? '-' : item.y;
             const forecastClass = item.forecast ? 'style="background-color:#f0f9ff; color:#0369a1;"' : '';
             tableHTML += `<td ${forecastClass}>${value}${item.forecast ? ' (F)' : ''}</td>`;
         });
-        
+
         tableHTML += `</tr>`;
     });
-    
+
     tableHTML += `</tbody></table>`;
-    
+
     // Create print window content
     const printContent = `
         <!DOCTYPE html>
@@ -911,7 +908,7 @@ function printDemandData() {
             </head>
             <body>
                 <h1>Demand Prediction Report</h1>
-                
+
                 <div class="metrics">
                     <div class="metric-box">
                         <div class="metric-title">Top Casket</div>
@@ -929,15 +926,15 @@ function printDemandData() {
                         <p>How much demand fluctuates seasonally</p>
                     </div>
                 </div>
-                
+
                 <h2>Demand Data</h2>
                 ${tableHTML}
-                
+
                 <div class="footer">
                     <p>Report generated on ${new Date().toLocaleDateString()}</p>
                     <p>(F) indicates forecasted values</p>
                 </div>
-                
+
                 <script>
                     window.onload = function() {
                         setTimeout(function() {
@@ -945,16 +942,15 @@ function printDemandData() {
                             window.close();
                         }, 200);
                     };
-                </script>
+                <\/script>
             </body>
-        </html>
-    `;
-    
-    // Open print window
+        </html>`;
+
     const printWindow = window.open('', '_blank');
     printWindow.document.write(printContent);
     printWindow.document.close();
 }
+
 
 // Create the heatmap chart with enhanced design that matches sales forecast style
 var options = {
