@@ -1769,6 +1769,12 @@ $lifeplanStmt->close();
               <option>G-Cash</option>
             </select>
           </div>
+
+          <div>
+            <button onclick="openBankWalletsModal()" class="w-full px-4 py-2 bg-gray-100 hover:bg-gray-200 text-navy rounded-lg border border-gray-300 transition-all duration-200 flex items-center justify-center">
+              <i class="fas fa-university mr-2"></i> Show Bank & Wallets
+            </button>
+          </div>
           
           <!-- Upload Receipt -->
           <div>
@@ -1846,6 +1852,13 @@ $lifeplanStmt->close();
               <option>G-Cash</option>
             </select>
           </div>
+
+          <div>
+            <button onclick="openBankWalletsModal()" class="w-full px-4 py-2 bg-gray-100 hover:bg-gray-200 text-navy rounded-lg border border-gray-300 transition-all duration-200 flex items-center justify-center">
+              <i class="fas fa-university mr-2"></i> Show Bank & Wallets
+            </button>
+          </div>
+          
           
           <!-- Upload Receipt -->
           <div>
@@ -1918,6 +1931,13 @@ $lifeplanStmt->close();
               <option>G-Cash</option>
             </select>
           </div>
+
+          <div>
+            <button onclick="openBankWalletsModal()" class="w-full px-4 py-2 bg-gray-100 hover:bg-gray-200 text-navy rounded-lg border border-gray-300 transition-all duration-200 flex items-center justify-center">
+              <i class="fas fa-university mr-2"></i> Show Bank & Wallets
+            </button>
+          </div>
+          
           
           <!-- Upload Receipt -->
           <div>
@@ -1948,6 +1968,74 @@ $lifeplanStmt->close();
         </button>
         <button onclick="submitLifeplanPayment()" class="w-full sm:w-auto px-6 py-3 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg shadow-md transition-all duration-300 flex items-center justify-center">
           Submit Payment
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bank & Wallets Modal (new modal) -->
+<div id="bank-wallets-modal" class="fixed inset-0 z-60 flex items-center justify-center bg-black bg-opacity-50 p-4 hidden">
+  <!-- Modal Content -->
+  <div class="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden max-h-[90vh]">
+    <div class="modal-scroll-container overflow-y-auto max-h-[90vh]">
+      <!-- Header with close button -->
+      <div class="bg-navy p-6 flex justify-between items-center">
+        <h2 class="text-2xl font-hedvig text-white">Bank & Wallets Information</h2>
+        <button onclick="closeModal('bank-wallets-modal')" class="text-white hover:text-yellow-300">
+          <i class="fas fa-times text-2xl"></i>
+        </button>
+      </div>
+      
+      <!-- Modal Body -->
+      <div class="p-6 bg-cream">
+        <div class="space-y-4 sm:space-y-6">
+          <!-- Bank Information -->
+          <div>
+            <h3 class="text-lg font-medium text-navy mb-3">Bank Accounts</h3>
+            <div class="bg-white p-4 rounded-lg border border-gray-200 mb-4">
+              <h4 class="font-medium text-navy">Bank of the Philippine Islands (BPI)</h4>
+              <p class="text-sm text-gray-600">Account Name: Golden Future Life Plans, Inc.</p>
+              <p class="text-sm text-gray-600">Account Number: 1234-5678-9012</p>
+            </div>
+            <div class="bg-white p-4 rounded-lg border border-gray-200 mb-4">
+              <h4 class="font-medium text-navy">Metropolitan Bank (Metrobank)</h4>
+              <p class="text-sm text-gray-600">Account Name: Golden Future Life Plans, Inc.</p>
+              <p class="text-sm text-gray-600">Account Number: 9876-5432-1098</p>
+            </div>
+          </div>
+          
+          <!-- E-Wallets -->
+          <div>
+            <h3 class="text-lg font-medium text-navy mb-3">E-Wallets</h3>
+            <div class="bg-white p-4 rounded-lg border border-gray-200 mb-4">
+              <h4 class="font-medium text-navy">GCash</h4>
+              <p class="text-sm text-gray-600">Account Name: Golden Future Life Plans, Inc.</p>
+              <p class="text-sm text-gray-600">Mobile Number: 0917-123-4567</p>
+            </div>
+            <div class="bg-white p-4 rounded-lg border border-gray-200">
+              <h4 class="font-medium text-navy">PayMaya</h4>
+              <p class="text-sm text-gray-600">Account Name: Golden Future Life Plans, Inc.</p>
+              <p class="text-sm text-gray-600">Mobile Number: 0918-765-4321</p>
+            </div>
+          </div>
+          
+          <!-- Instructions -->
+          <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+            <h4 class="font-medium text-navy mb-2">Payment Instructions</h4>
+            <ul class="text-sm text-gray-600 list-disc pl-5 space-y-1">
+              <li>Include your reference number in the payment description</li>
+              <li>Send the receipt after payment</li>
+              <li>Payments may take 1-2 business days to reflect</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Modal Footer -->
+      <div class="modal-sticky-footer px-6 py-4 flex justify-center border-t border-gray-200 bg-white">
+        <button onclick="closeModal('bank-wallets-modal')" class="px-6 py-3 bg-navy hover:bg-navy-dark text-white rounded-lg font-medium transition-all duration-200">
+          Close
         </button>
       </div>
     </div>
@@ -2640,6 +2728,13 @@ function openCustomPaymentModal(salesId) {
 function openLifeplanPaymentModal(lifeplanId) {
     document.getElementById('lifeplan-id').value = lifeplanId;
     document.getElementById('lifeplan-payment-modal').classList.remove('hidden');
+}
+
+function openBankWalletsModal() {
+// Close any other modal that might be open
+document.getElementById('bank-wallets-modal').classList.remove('hidden');
+// Bring to front by setting higher z-index
+document.getElementById('bank-wallets-modal').style.zIndex = '60';
 }
 
 function closeModal(modalId) {
