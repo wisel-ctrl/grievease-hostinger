@@ -327,7 +327,9 @@ $ratioChange = number_format($changes['ratio_change'] ?? 0, 1);
     <div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
         <!-- Header -->
         <div style="text-align: center; margin-bottom: 20px; border-bottom: 2px solid #3A57E8; padding-bottom: 10px;">
-            <h1 style="color: #3A57E8; margin-bottom: 5px;">Revenue Report</h1>
+            <h1 style="color: #3A57E8; margin-bottom: 5px;">VJay Relova Funeral Services</h1>
+            <h3 style="color: #666; margin-top: 0; margin-bottom: 5px;">#6 J.P Rizal St. Brgy. Sta Clara Sur, (Pob) Pila, Laguna</h3>
+            <h2 style="color: #3A57E8; margin-bottom: 5px;">Revenue Report</h2>
             <p style="color: #666; margin-top: 0;">Generated on: <span id="printDate"></span></p>
         </div>
         
@@ -358,7 +360,8 @@ $ratioChange = number_format($changes['ratio_change'] ?? 0, 1);
         <!-- Footer -->
         <div style="text-align: center; margin-top: 30px; border-top: 2px solid #3A57E8; padding-top: 10px; color: #666; font-size: 12px;">
             <p>Forecast Accuracy: <span id="printAccuracy"></span></p>
-            <p>© <?php echo date('Y'); ?> Your Company Name</p>
+            <p>Contact: (0956) 814-3000 | (0961) 345-4283 | Email: GrievEase@gmail.com</p>
+            <p>© <?php echo date('Y'); ?> VJay Relova Funeral Services. All rights reserved.</p>
         </div>
     </div>
 </div>
@@ -472,7 +475,7 @@ $ratioChange = number_format($changes['ratio_change'] ?? 0, 1);
         printWindow.document.write(`
             <html>
                 <head>
-                    <title>Revenue Report</title>
+                    <title>Revenue Report - VJay Relova Funeral Services</title>
                     <style>
                         body { font-family: Arial, sans-serif; margin: 20px; }
                         table { width: 100%; border-collapse: collapse; }
