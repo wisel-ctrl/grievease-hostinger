@@ -3,6 +3,34 @@ session_start();
 require_once '../../db_connect.php';
 date_default_timezone_set('Asia/Manila');
 
+// Semaphore API credentials
+define('SEMAPHORE_API_KEY', '024cb8782cdb71b2925fb933f6f8635f');
+define('SEMAPHORE_SENDER_NAME', 'GrievEase');
+
+// Function to send SMS via Semaphore
+function sendSMS($phone_number, $message) {
+    $api_key = SEMAPHORE_API_KEY;
+    $sender_name = SEMAPHORE_SENDER_NAME;
+    
+    $ch = curl_init();
+    $parameters = array(
+        'apikey' => $api_key,
+        'number' => $phone_number,
+        'message' => $message,
+        'sendername' => $sender_name
+    );
+    
+    curl_setopt($ch, CURLOPT_URL, 'https://api.semaphore.co/api/v4/messages');
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($parameters));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    
+    $response = curl_exec($ch);
+    curl_close($ch);
+    
+    return $response;
+}
+
 // Check if user is logged in and is admin
 if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] != 1) {
     header("HTTP/1.1 401 Unauthorized");
@@ -17,13 +45,13 @@ if (!isset($_GET['payment_id']) || !isset($_GET['amount'])) {
 
 $payment_id = $_GET['payment_id'];
 $amount = $_GET['amount'];
-$current_month = date('F Y'); // Get current month and year for notes
+$current_month = date('F Y');
 
 try {
     // Start transaction
     $conn->begin_transaction();
 
-    // Get the customsales_id and payment details first to validate the amount
+    // Get the customsales_id and payment details
     $sales_query = "SELECT cr.customsales_id, cr.payment_method, cs.balance 
                    FROM custompayment_request_tb cr
                    JOIN customsales_tb cs ON cr.customsales_id = cs.customsales_id
@@ -47,7 +75,7 @@ try {
         throw new Exception("Input amount should not be greater than the current balance of ₱" . number_format($balance, 2));
     }
 
-    // Update the payment request status to 'accepted' and set accept date
+    // Update the payment request status to 'accepted'
     $update_query = "UPDATE custompayment_request_tb 
                     SET status = 'accepted', 
                         acceptdecline_date = CURRENT_TIMESTAMP 
@@ -56,10 +84,12 @@ try {
     $stmt->bind_param("s", $payment_id);
     $stmt->execute();
 
-    // Get customer details from customsales_tb
-    $customer_query = "SELECT customer_id, discounted_price, payment_status, branch_id 
-                      FROM customsales_tb 
-                      WHERE customsales_id = ?";
+    // Get customer details and phone number
+    $customer_query = "SELECT cs.customer_id, cs.discounted_price, cs.payment_status, cs.branch_id, 
+                      u.phone_number
+                      FROM customsales_tb cs
+                      JOIN users u ON cs.customer_id = u.id
+                      WHERE cs.customsales_id = ?";
     $stmt = $conn->prepare($customer_query);
     $stmt->bind_param("i", $customsales_id);
     $stmt->execute();
@@ -70,8 +100,9 @@ try {
     $discounted_price = $customer_data['discounted_price'];
     $payment_status = $customer_data['payment_status'];
     $branch_id = $customer_data['branch_id'];
+    $phone_number = $customer_data['phone_number'];
 
-    // Get customer name from users table
+    // Get customer name
     $name_query = "SELECT CONCAT(COALESCE(first_name, ''), ' ', COALESCE(middle_name, ''), ' ', COALESCE(last_name, ''), ' ', COALESCE(suffix, '')) 
                   AS client_name 
                   FROM users 
@@ -105,6 +136,12 @@ try {
     $stmt->bind_param("di", $amount, $customsales_id);
     $stmt->execute();
 
+    // Send SMS notification
+    if ($phone_number) {
+        $sms_message = "Dear $client_name, your payment of ₱" . number_format($amount, 2) . " for $current_month has been approved. New balance: ₱" . number_format($after_payment_balance, 2) . ". Thank you!";
+        sendSMS($phone_number, $sms_message);
+    }
+
     // Commit transaction
     $conn->commit();
 
@@ -113,6 +150,12 @@ try {
 } catch (Exception $e) {
     // Rollback transaction on error
     $conn->rollback();
+    
+    // Send SMS notification for failed attempt
+    if (isset($phone_number) && $phone_number) {
+        $sms_message = "Dear $client_name, we encountered an issue processing your payment for $current_month. Please contact support. Error: " . $e->getMessage();
+        sendSMS($phone_number, $sms_message);
+    }
     
     // Return error response
     header("HTTP/1.1 400 Bad Request");
