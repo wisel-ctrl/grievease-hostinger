@@ -414,7 +414,13 @@ document.addEventListener('DOMContentLoaded', function() {
       // Calculate forecast accuracy metrics
       const lastActual = regressionResults.historicalChartData[regressionResults.historicalChartData.length - 1].y;
       const firstForecast = regressionResults.forecastData[0].y;
-      const forecastAccuracy = 100 - Math.abs((firstForecast - lastActual) / lastActual * 100);
+      let forecastAccuracy = 0;
+      if (lastActual !== 0) {
+          forecastAccuracy = 100 - Math.abs((firstForecast - lastActual) / lastActual * 100);
+      } else {
+          // Handle zero case - maybe show N/A or use a different metric
+          forecastAccuracy = 100; // Or whatever makes sense for your business
+      }
       
       
       // Update the forecast accuracy display
