@@ -852,7 +852,7 @@ console.log('Raw PHP data:', <?php echo json_encode($casketData); ?>);
 console.log('Raw casket data (JS):', rawCasketData);
 console.log('Processed heatmap data:', heatmapData);
 
-function printDemandData() {
+function printDemandPrediction() {
     // Get the metrics
     const topCasket = document.getElementById('topCasketValue').textContent;
     const growthRate = document.getElementById('growthRateValue').textContent;
@@ -951,7 +951,7 @@ function printDemandData() {
     printWindow.document.close();
 }
 
-window.printDemandData = printDemandData;
+window.printDemandPrediction = printDemandPrediction;
 
 // Create the heatmap chart with enhanced design that matches sales forecast style
 var options = {
