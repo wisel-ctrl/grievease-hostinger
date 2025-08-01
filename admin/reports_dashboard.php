@@ -953,7 +953,7 @@ document.addEventListener('DOMContentLoaded', function() {
 const salesData = <?php echo json_encode($salesData); ?>;
 
 document.addEventListener('DOMContentLoaded', function() {
-  // Function to calculate simple forecast (same as before)
+  // Function to calculate simple forecast
   function calculateForecast(historicalData, monthsToForecast = 6) {
     // Filter out months with zero sales to get meaningful data for forecasting
     const nonZeroData = historicalData.filter(item => 
@@ -991,21 +991,25 @@ document.addEventListener('DOMContentLoaded', function() {
     const cappedGrowthRateRevenue = Math.max(-0.15, Math.min(0.25, avgGrowthRateRevenue));
     const cappedGrowthRatePayment = Math.max(-0.15, Math.min(0.25, avgGrowthRatePayment));
     
-    // Get the last data point's date and values
+    // Get the current date and set it to the first of the next month
+    const currentDate = new Date();
+    const forecastStartDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
+    
+    // Get the last data point's values
     const lastDataPoint = recentData[recentData.length - 1];
-    const lastDate = new Date(lastDataPoint.month_start);
     const lastRevenue = parseFloat(lastDataPoint.monthly_revenue);
     const lastPayment = parseFloat(lastDataPoint.monthly_amount_paid);
     
-    // Generate forecast data
+    // Generate forecast data starting from next month
     const forecastData = [];
     
-    for (let i = 1; i <= monthsToForecast; i++) {
-      const forecastDate = new Date(lastDate);
+    for (let i = 0; i < monthsToForecast; i++) {
+      const forecastDate = new Date(forecastStartDate);
       forecastDate.setMonth(forecastDate.getMonth() + i);
       
-      const forecastRevenue = lastRevenue * Math.pow(1 + cappedGrowthRateRevenue, i);
-      const forecastPayment = lastPayment * Math.pow(1 + cappedGrowthRatePayment, i);
+      // Calculate forecast values (starting with last actual values)
+      const forecastRevenue = lastRevenue * Math.pow(1 + cappedGrowthRateRevenue, i + 1);
+      const forecastPayment = lastPayment * Math.pow(1 + cappedGrowthRatePayment, i + 1);
       
       forecastData.push({
         month_start: forecastDate.toISOString().split('T')[0],
@@ -1029,6 +1033,7 @@ document.addEventListener('DOMContentLoaded', function() {
       return date.toLocaleDateString('default', { month: 'short', year: 'numeric' });
     });
     
+    // Rest of your chart rendering code remains the same...
     // Prepare datasets
     const datasets = [
       {
