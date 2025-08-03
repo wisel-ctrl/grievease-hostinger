@@ -1010,6 +1010,12 @@ input[name*="LastName"] {
                                     </svg>
                                     Avoid glare, shadows, or reflections
                                 </li>
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-4 sm:w-4 text-blue-500 mt-0.5 mr-1 sm:mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    <span class="font-medium">Accepted ID Types:</span> Passport, Driver's License, National ID, SSS ID, GSIS ID, Voter's ID, Postal ID, Senior Citizen ID, UMID, PhilHealth ID, PRC ID, Other Government ID
+                                </li>
                             </ul>
                         </div>
                     </div>
@@ -3360,6 +3366,7 @@ function getSamplePaymentHistory(packageType) {
                                         <li>High-resolution (at least 300 DPI)</li>
                                         <li>Personal information is legible</li>
                                         <li>No cuts or cropped edges</li>
+                                        <li><strong>Accepted ID Types:</strong> Passport, Driver's License, National ID, SSS ID, GSIS ID, Voter's ID, Postal ID, Senior Citizen ID, UMID, PhilHealth ID, PRC ID, Other Government ID</li>
                                     </ul>
                                     <div class="mt-3 flex justify-center">
                                         <div class="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0">
