@@ -3333,11 +3333,13 @@ function getSamplePaymentHistory(packageType) {
                                     name="id-number" 
                                     placeholder="Enter your ID number"
                                     required 
+                                    maxlength="20"
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-base shadow-sm transition-all duration-200"
                                     pattern="[0-9\-]+"
-                                    title="ID number can contain numbers and hyphens only"
+                                    title="ID number must be 5-20 characters long and contain only numbers and hyphens"
                                     oninput="validateIdNumber(this)"
                                     onkeypress="return allowIdNumberInput(event)">
+                                <p class="text-xs text-gray-500 mt-1">Must be 5-20 characters long</p>
                             </div>
                         </div>
                         
@@ -5776,12 +5778,13 @@ function validateIdNumber(input) {
         input.value = cleanedValue;
     }
     
-    // Validate the pattern
+    // Validate the pattern and length
     const isValid = /^[0-9\-]+$/.test(cleanedValue);
+    const isValidLength = cleanedValue.length >= 5 && cleanedValue.length <= 20; // Minimum 5, maximum 20 characters
     
     // Update visual feedback
     if (cleanedValue.length > 0) {
-        if (isValid) {
+        if (isValid && isValidLength) {
             input.classList.remove('border-red-500');
             input.classList.add('border-green-500');
         } else {
@@ -5792,7 +5795,7 @@ function validateIdNumber(input) {
         input.classList.remove('border-green-500', 'border-red-500');
     }
     
-    return isValid;
+    return isValid && isValidLength;
 }
 
 function allowIdNumberInput(event) {
