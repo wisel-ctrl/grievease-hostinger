@@ -3301,6 +3301,19 @@ function getSamplePaymentHistory(packageType) {
                             </select>
                         </div>
                         
+                        <!-- ID Number Input -->
+                        <div class="mb-6">
+                            <label for="id-number" class="block text-sm font-medium text-gray-700 mb-2">ID Number <span class="text-red-500">*</span></label>
+                            <input type="text" 
+                                id="id-number" 
+                                name="id-number" 
+                                placeholder="Enter your ID number"
+                                required 
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-base shadow-sm transition-all duration-200"
+                                pattern="[A-Za-z0-9\-]+"
+                                title="ID number can contain letters, numbers, and hyphens only">
+                        </div>
+                        
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <!-- ID Upload -->
                             <div>
