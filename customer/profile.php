@@ -1302,7 +1302,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <button class="service-tab px-4 py-2 text-gray-500 font-medium mx-2" data-tab="custom-booking">
                 Custom Package
             </button>
-            <button class="service-tab px-4 py-2 text-gray-500 font-medium" data-tab="lifeplan-booking">
+            <button class="service-tab px-4 py-2 text-gray-500 font-medium mx-2" data-tab="lifeplan-booking">
                 Life Plan
             </button>
         </div>
@@ -1481,159 +1481,6 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     </div>
     
-    <!-- Custom Package Bookings Content -->
-    <div id="custom-booking-content" class="service-content" style="display: none;">
-        <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
-            <!-- Header -->
-            <div class="bookings bg-purple-600 p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 tab-header">
-                <h3 class="font-hedvig text-xl sm:text-2xl text-white font-semibold">Custom Package Bookings</h3>
-                <div class="flex space-x-4">
-                    <select id="custom-status-filter" class="border border-gray-300 rounded-lg px-3 py-2 text-sm text-navy focus:outline-none focus:ring-2 focus:ring-yellow-600">
-                        <option value="all">All Statuses</option>
-                        <option value="accepted">Accepted</option>
-                        <option value="pending">Pending</option>
-                        <option value="decline">Declined</option>
-                        <option value="cancel">Cancelled</option>
-                    </select>
-                    <select id="custom-sort-filter" class="border border-gray-300 rounded-lg px-3 py-2 text-sm text-navy focus:outline-none focus:ring-2 focus:ring-yellow-600">
-                        <option value="newest">Newest to Oldest</option>
-                        <option value="oldest">Oldest to Newest</option>
-                    </select>
-                </div>
-            </div>
-            
-            <!-- Content -->
-            <div id="custom-bookings-list" class="p-6">
-                <?php
-                // Fetch all custom package bookings for the current customer
-                $query = "SELECT cb.*, br.branch_name 
-                          FROM custom_booking_tb cb
-                          JOIN branch_tb br ON cb.branch_id = br.branch_id
-                          WHERE cb.customer_id = ?
-                          ORDER BY CASE 
-                              WHEN cb.booking_status = 'pending' THEN 1
-                              WHEN cb.booking_status = 'accepted' THEN 2
-                              WHEN cb.booking_status = 'decline' THEN 3
-                              ELSE 4
-                          END, cb.booking_date DESC";
-                
-                $stmt = $conn->prepare($query);
-                $stmt->bind_param("i", $user_id);
-                $stmt->execute();
-                $result = $stmt->get_result();
-                
-                if ($result->num_rows > 0) {
-                    while ($booking = $result->fetch_assoc()) {
-                        // Determine status color and text for custom package
-                        $status_class = '';
-                        $status_text = '';
-                        switch ($booking['booking_status']) {
-                            case 'pending':
-                                $status_class = 'bg-yellow-600/10 text-yellow-600';
-                                $status_text = 'Pending';
-                                break;
-                            case 'accepted':
-                                $status_class = 'bg-green-500/10 text-green-500';
-                                $status_text = 'Accepted';
-                                break;
-                            case 'decline':
-                                $status_class = 'bg-red-500/10 text-red-500';
-                                $status_text = 'Declined';
-                                break;
-                            default:
-                                $status_class = 'bg-purple-500/10 text-purple-500';
-                                $status_text = ucfirst($booking['booking_status']);
-                        }
-                        
-                        // Format dates
-                        $booking_date = date('F j, Y', strtotime($booking['booking_date']));
-                        $service_date = $booking['service_date'] ? date('F j, Y', strtotime($booking['service_date'])) : 'Not set';
-                        
-                        // Format deceased name
-                        $deceased_name = $booking['deceased_lname'] . ', ' . $booking['deceased_fname'];
-                        if (!empty($booking['deceased_mname'])) {
-                            $deceased_name .= ' ' . $booking['deceased_mname'];
-                        }
-                        if (!empty($booking['deceased_suffix'])) {
-                            $deceased_name .= ' ' . $booking['deceased_suffix'];
-                        }
-                        
-                        // Format price
-                        $price = number_format($booking['total_amount'], 2);
-                        $amount_paid = $booking['amount_paid'] ? number_format($booking['amount_paid'], 2) : '0.00';
-                        $balance = number_format($booking['total_amount'] - ($booking['amount_paid'] ?? 0), 2);
-                ?>
-                
-                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-4">
-                    <div class="bg-purple-600 bg-opacity-10 px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200">
-                        <div class="flex items-center justify-between mb-3">
-                            <span class="<?php echo $status_class; ?> text-xs px-2 py-1 rounded-full"><?php echo $status_text; ?></span>
-                            <p class="text-sm text-gray-500">Custom Booking ID: <?php echo $booking['custom_booking_id']; ?></p>
-                        </div>
-                        <h4 class="font-hedvig text-lg text-purple-600 mb-2">Custom Package</h4>
-                    </div>
-                    <div class="p-4 sm:p-6 space-y-3 sm:space-y-4">
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
-                            <div>
-                                <p class="text-sm text-gray-500">Deceased Name</p>
-                                <p class="text-purple-600"><?php echo ucwords(strtolower($deceased_name)); ?></p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500">Branch</p>
-                                <p class="text-purple-600"><?php echo ucwords(strtolower($booking['branch_name'])); ?></p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500">Service Date</p>
-                                <p class="text-purple-600"><?php echo $service_date; ?></p>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
-                            <div>
-                                <p class="text-sm text-gray-500">Total Amount</p>
-                                <p class="text-purple-600 font-bold">₱<?php echo $price; ?></p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500">Amount Paid</p>
-                                <p class="text-purple-600">₱<?php echo $amount_paid; ?></p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500">Balance</p>
-                                <p class="text-purple-600">₱<?php echo $balance; ?></p>
-                            </div>
-                        </div>
-                        <div class="flex justify-end">
-                            <button class="view-custom-details bg-purple-600/5 text-purple-600 px-3 py-1 rounded hover:bg-purple-600/10 transition text-sm mr-2" data-booking="<?php echo $booking['custom_booking_id']; ?>">
-                                <i class="fas fa-file-alt mr-1"></i> View Details
-                            </button>
-                            <?php if ($booking['booking_status'] === 'pending' || $booking['booking_status'] === 'decline'): ?>
-                                <button class="modify-custom-booking bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition text-sm mr-2" data-booking="<?php echo $booking['custom_booking_id']; ?>">
-                                    <i class="fas fa-edit mr-1"></i> Modify
-                                </button>
-                            <?php endif; ?>
-                            <?php if ($booking['booking_status'] === 'pending'): ?>
-                                <button class="cancel-custom-booking bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition text-sm" data-booking="<?php echo $booking['custom_booking_id']; ?>">
-                                    <i class="fas fa-times mr-1"></i> Cancel
-                                </button>
-                            <?php elseif ($booking['booking_status'] === 'cancel'): ?>
-                                <span class="text-gray-500 text-sm py-1 px-3">
-                                    <i class="fas fa-ban mr-1"></i> Cancelled
-                                </span>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                </div>
-                <?php
-                    }
-                } else {
-                    echo '<p class="text-gray-500">You have no custom package bookings yet.</p>';
-                }
-                $stmt->close();
-                ?>
-            </div>
-            <div id="custom-pagination" class="mt-6 flex justify-center items-center space-x-2"></div>
-        </div>
-    </div>
-    
     <!-- Life Plan Bookings Content -->
     <div id="lifeplan-booking-content" class="service-content" style="display: none;">
         <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
@@ -1789,6 +1636,170 @@ document.addEventListener('DOMContentLoaded', function() {
                 ?>
             </div>
             <div id="lifeplan-pagination" class="mt-6 flex justify-center items-center space-x-2"></div>
+        </div>
+    </div>
+    
+    <!-- Custom Package Bookings Content -->
+    <div id="custom-booking-content" class="service-content" style="display: none;">
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
+            <!-- Header -->
+            <div class="bookings bg-purple-600 p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 tab-header">
+                <h3 class="font-hedvig text-xl sm:text-2xl text-white font-semibold">Custom Package Bookings</h3>
+                <div class="flex space-x-4">
+                    <select id="custom-status-filter" class="border border-gray-300 rounded-lg px-3 py-2 text-sm text-navy focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                        <option value="all">All Statuses</option>
+                        <option value="Accepted">Accepted</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Declined">Declined</option>
+                        <option value="Cancelled">Cancelled</option>
+                    </select>
+                    <select id="custom-sort-filter" class="border border-gray-300 rounded-lg px-3 py-2 text-sm text-navy focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                        <option value="newest">Newest to Oldest</option>
+                        <option value="oldest">Oldest to Newest</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Content -->
+            <div id="custom-bookings-list" class="p-6">
+                <?php
+                // Fetch all custom package bookings for the current customer
+                $query = "SELECT cb.*, br.branch_name 
+                          FROM custom_booking_tb cb
+                          JOIN branch_tb br ON cb.branch_id = br.branch_id
+                          WHERE cb.customer_id = ?
+                          ORDER BY CASE 
+                              WHEN cb.status = 'Pending' THEN 1
+                              WHEN cb.status = 'Accepted' THEN 2
+                              WHEN cb.status = 'Declined' THEN 3
+                              WHEN cb.status = 'Cancelled' THEN 4
+                              ELSE 5
+                          END, cb.booking_date DESC";
+                
+                $stmt = $conn->prepare($query);
+                $stmt->bind_param("i", $user_id);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                
+                if ($result->num_rows > 0) {
+                    while ($booking = $result->fetch_assoc()) {
+                        // Determine status color and text
+                        $status_class = '';
+                        $status_text = '';
+                        switch ($booking['status']) {
+                            case 'Pending':
+                                $status_class = 'bg-yellow-600/10 text-yellow-600';
+                                $status_text = 'Pending';
+                                break;
+                            case 'Accepted':
+                                $status_class = 'bg-green-500/10 text-green-500';
+                                $status_text = 'Accepted';
+                                break;
+                            case 'Declined':
+                                $status_class = 'bg-red-500/10 text-red-500';
+                                $status_text = 'Declined';
+                                break;
+                            case 'Cancelled':
+                                $status_class = 'bg-gray-500/10 text-gray-500';
+                                $status_text = 'Cancelled';
+                                break;
+                            default:
+                                $status_class = 'bg-blue-500/10 text-blue-500';
+                                $status_text = $booking['status'];
+                        }
+                        
+                        // Format dates
+                        $booking_date = date('F j, Y', strtotime($booking['booking_date']));
+                        $service_date = $booking['service_date'] ? date('F j, Y', strtotime($booking['service_date'])) : 'Not set';
+                        
+                        // Format deceased name
+                        $deceased_name = $booking['deceased_lname'] . ', ' . $booking['deceased_fname'];
+                        if (!empty($booking['deceased_midname'])) {
+                            $deceased_name .= ' ' . $booking['deceased_midname'];
+                        }
+                        if (!empty($booking['deceased_suffix'])) {
+                            $deceased_name .= ' ' . $booking['deceased_suffix'];
+                        }
+                        
+                        // Format price
+                        $total_price = number_format($booking['total_price'], 2);
+                        $amount_paid = $booking['amount_paid'] ? number_format($booking['amount_paid'], 2) : '0.00';
+                        $balance = number_format($booking['total_price'] - ($booking['amount_paid'] ?? 0), 2);
+                ?>
+                
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-4">
+                    <div class="bg-purple-600 bg-opacity-10 px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="<?php echo $status_class; ?> text-xs px-2 py-1 rounded-full"><?php echo $status_text; ?></span>
+                            <p class="text-sm text-gray-500">Custom Booking ID: <?php echo $booking['custom_booking_id']; ?></p>
+                        </div>
+                        <h4 class="font-hedvig text-lg text-purple-600 mb-2">Custom Package</h4>
+                    </div>
+                    <div class="p-4 sm:p-6 space-y-3 sm:space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+                            <div>
+                                <p class="text-sm text-gray-500 mb-1">Deceased Name</p>
+                                <p class="font-medium text-gray-900"><?php echo htmlspecialchars($deceased_name); ?></p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500 mb-1">Branch</p>
+                                <p class="font-medium text-gray-900"><?php echo htmlspecialchars($booking['branch_name']); ?></p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500 mb-1">Booking Date</p>
+                                <p class="font-medium text-gray-900"><?php echo $booking_date; ?></p>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+                            <div>
+                                <p class="text-sm text-gray-500 mb-1">Service Date</p>
+                                <p class="font-medium text-gray-900"><?php echo $service_date; ?></p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500 mb-1">Total Price</p>
+                                <p class="font-medium text-gray-900">₱<?php echo $total_price; ?></p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500 mb-1">Amount Paid</p>
+                                <p class="font-medium text-gray-900">₱<?php echo $amount_paid; ?></p>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <p class="text-sm text-gray-500 mb-1">Balance</p>
+                                <p class="font-medium text-gray-900">₱<?php echo $balance; ?></p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500 mb-1">Package Details</p>
+                                <p class="font-medium text-gray-900"><?php echo htmlspecialchars($booking['package_details'] ?? 'Custom Package'); ?></p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex flex-wrap gap-2 mt-4">
+                            <button class="view-custom-details bg-blue-600/5 text-blue-600 px-3 py-1 rounded hover:bg-blue-600/10 transition text-sm mr-2" data-booking="<?php echo $booking['custom_booking_id']; ?>">
+                                View Details
+                            </button>
+                            <button class="modify-custom-booking bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition text-sm mr-2" data-booking="<?php echo $booking['custom_booking_id']; ?>">
+                                Modify
+                            </button>
+                            <button class="cancel-custom-booking bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition text-sm" data-booking="<?php echo $booking['custom_booking_id']; ?>">
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <?php
+                    }
+                } else {
+                    echo '<p class="text-gray-500">You have no custom package bookings yet.</p>';
+                }
+                $stmt->close();
+                ?>
+            </div>
+            <div id="custom-pagination" class="mt-6 flex justify-center items-center space-x-2"></div>
         </div>
     </div>
 </div>
@@ -4794,15 +4805,23 @@ function populateReceipt(data) {
 function loadBookings(bookingType, page = 1) {
     const container = bookingType === 'traditional' 
         ? document.getElementById('traditional-bookings-list')
+        : bookingType === 'custom'
+        ? document.getElementById('custom-bookings-list')
         : document.getElementById('lifeplan-bookings-list');
     const paginationContainer = bookingType === 'traditional' 
         ? document.getElementById('traditional-pagination')
+        : bookingType === 'custom'
+        ? document.getElementById('custom-pagination')
         : document.getElementById('lifeplan-pagination');
     const statusFilter = bookingType === 'traditional'
         ? document.getElementById('traditional-status-filter')
+        : bookingType === 'custom'
+        ? document.getElementById('custom-status-filter')
         : document.getElementById('lifeplan-status-filter');
     const sortFilter = bookingType === 'traditional'
         ? document.getElementById('traditional-sort-filter')
+        : bookingType === 'custom'
+        ? document.getElementById('custom-sort-filter')
         : document.getElementById('lifeplan-sort-filter');
 
     container.innerHTML = '<p class="text-gray-500 text-center py-4"><i class="fas fa-spinner fa-spin mr-2"></i>Loading...</p>';
@@ -4861,7 +4880,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const contentId = tab.dataset.tab + '-content';
             document.getElementById(contentId).style.display = 'block';
 
-            const bookingType = tab.getAttribute('data-tab') === 'traditional-booking' ? 'traditional' : 'lifeplan';
+            const bookingType = tab.getAttribute('data-tab') === 'traditional-booking' ? 'traditional' : 
+                               tab.getAttribute('data-tab') === 'custom-booking' ? 'custom' : 'lifeplan';
             loadBookings(bookingType, 1);
         });
     });
@@ -4878,12 +4898,19 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('lifeplan-sort-filter')?.addEventListener('change', function() {
         loadBookings('lifeplan', 1);
     });
+    document.getElementById('custom-status-filter')?.addEventListener('change', function() {
+        loadBookings('custom', 1);
+    });
+    document.getElementById('custom-sort-filter')?.addEventListener('change', function() {
+        loadBookings('custom', 1);
+    });
 
     initializeBookingFunctions();
 
     const activeTab = document.querySelector('.service-tab.border-yellow-600');
     if (activeTab) {
-        const bookingType = activeTab.getAttribute('data-tab') === 'traditional-booking' ? 'traditional' : 'lifeplan';
+        const bookingType = activeTab.getAttribute('data-tab') === 'traditional-booking' ? 'traditional' : 
+                           activeTab.getAttribute('data-tab') === 'custom-booking' ? 'custom' : 'lifeplan';
         loadBookings(bookingType, 1);
     }
 
