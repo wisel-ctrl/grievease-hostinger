@@ -1299,6 +1299,9 @@ document.addEventListener('DOMContentLoaded', function() {
             <button class="service-tab px-4 py-2 text-navy font-medium border-b-2 border-yellow-600" data-tab="traditional-booking">
                 Traditional Funeral
             </button>
+            <button class="service-tab px-4 py-2 text-gray-500 font-medium mx-2" data-tab="custom-booking">
+                Custom Package
+            </button>
             <button class="service-tab px-4 py-2 text-gray-500 font-medium mx-2" data-tab="lifeplan-booking">
                 Life Plan
             </button>
@@ -1475,6 +1478,175 @@ document.addEventListener('DOMContentLoaded', function() {
                 ?>
             </div>
             <div id="traditional-pagination" class="mt-6 flex justify-center items-center space-x-2"></div>
+        </div>
+    </div>
+    
+    <!-- Custom Package Bookings Content -->
+    <div id="custom-booking-content" class="service-content" style="display: none;">
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
+            <!-- Header -->
+            <div class="bookings bg-purple-600 p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 tab-header">
+                <h3 class="font-hedvig text-xl sm:text-2xl text-white font-semibold">Custom Package Bookings</h3>
+                <div class="flex space-x-4">
+                    <select id="custom-status-filter" class="border border-gray-300 rounded-lg px-3 py-2 text-sm text-navy focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                        <option value="all">All Statuses</option>
+                        <option value="Accepted">Accepted</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Declined">Declined</option>
+                        <option value="Cancelled">Cancelled</option>
+                    </select>
+                    <select id="custom-sort-filter" class="border border-gray-300 rounded-lg px-3 py-2 text-sm text-navy focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                        <option value="newest">Newest to Oldest</option>
+                        <option value="oldest">Oldest to Newest</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Content -->
+            <div id="custom-bookings-list" class="p-6">
+                <?php
+                // Fetch all custom package bookings for the current customer
+                $query = "SELECT b.*, br.branch_name 
+                          FROM booking_tb b
+                          JOIN branch_tb br ON b.branch_id = br.branch_id
+                          WHERE b.customerID = ? AND b.service_id IS NULL
+                          ORDER BY CASE 
+                              WHEN b.status = 'Pending' THEN 1
+                              WHEN b.status = 'Accepted' THEN 2
+                              WHEN b.status = 'Declined' THEN 3
+                              WHEN b.status = 'Cancelled' THEN 4
+                              ELSE 5
+                          END, b.booking_date DESC";
+                
+                $stmt = $conn->prepare($query);
+                $stmt->bind_param("i", $user_id);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                
+                if ($result->num_rows > 0) {
+                    while ($booking = $result->fetch_assoc()) {
+                        // Determine status color and text
+                        $status_class = '';
+                        $status_text = '';
+                        switch ($booking['status']) {
+                            case 'Pending':
+                                $status_class = 'bg-yellow-600/10 text-yellow-600';
+                                $status_text = 'Pending';
+                                break;
+                            case 'Accepted':
+                                $status_class = 'bg-green-500/10 text-green-500';
+                                $status_text = 'Accepted';
+                                break;
+                            case 'Declined':
+                                $status_class = 'bg-red-500/10 text-red-500';
+                                $status_text = 'Declined';
+                                break;
+                            case 'Cancelled':
+                                $status_class = 'bg-gray-500/10 text-gray-500';
+                                $status_text = 'Cancelled';
+                                break;
+                            default:
+                                $status_class = 'bg-blue-500/10 text-blue-500';
+                                $status_text = $booking['status'];
+                        }
+                        
+                        // Format dates
+                        $booking_date = date('F j, Y', strtotime($booking['booking_date']));
+                        $burial_date = $booking['deceased_dateOfBurial'] ? date('F j, Y', strtotime($booking['deceased_dateOfBurial'])) : 'Not set';
+                        
+                        // Format deceased name
+                        $deceased_name = $booking['deceased_lname'] . ', ' . $booking['deceased_fname'];
+                        if (!empty($booking['deceased_midname'])) {
+                            $deceased_name .= ' ' . $booking['deceased_midname'];
+                        }
+                        if (!empty($booking['deceased_suffix'])) {
+                            $deceased_name .= ' ' . $booking['deceased_suffix'];
+                        }
+                        
+                        // Custom package details
+                        $service_name = 'Custom Package';
+                        $selling_price = $booking['package_total'] ?? 0;
+                        $casket = $booking['casket'] ?? 'Not specified';
+                        $flower_arrangement = $booking['flower_arrangement'] ?? 'Not specified';
+                        $additional_services = $booking['additional_services'] ?? 'None';
+                        $notes = $booking['notes'] ?? 'No additional notes';
+                        
+                        // Format price
+                        $price = number_format($selling_price, 2);
+                ?>
+                
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-4">
+                    <div class="bg-purple-600 bg-opacity-10 px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="<?php echo $status_class; ?> text-xs px-2 py-1 rounded-full"><?php echo $status_text; ?></span>
+                            <p class="text-sm text-gray-500">Booking ID: <?php echo $booking['booking_id']; ?></p>
+                        </div>
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                            <div class="flex-1">
+                                <h4 class="text-lg font-semibold text-gray-900 mb-2"><?php echo $service_name; ?></h4>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-gray-600">
+                                    <div>
+                                        <p><strong>Deceased:</strong> <?php echo $deceased_name; ?></p>
+                                        <p><strong>Branch:</strong> <?php echo $booking['branch_name']; ?></p>
+                                        <p><strong>Booking Date:</strong> <?php echo $booking_date; ?></p>
+                                        <p><strong>Burial Date:</strong> <?php echo $burial_date; ?></p>
+                                    </div>
+                                    <div>
+                                        <p><strong>Package Total:</strong> ₱<?php echo $price; ?></p>
+                                        <p><strong>Casket:</strong> <?php echo $casket; ?></p>
+                                        <p><strong>Flower Arrangement:</strong> <?php echo $flower_arrangement; ?></p>
+                                        <p><strong>Additional Services:</strong> <?php echo $additional_services; ?></p>
+                                    </div>
+                                </div>
+                                <?php if (!empty($notes) && $notes !== 'No additional notes'): ?>
+                                <div class="mt-3 p-3 bg-gray-50 rounded-lg">
+                                    <p class="text-sm text-gray-700"><strong>Notes:</strong> <?php echo htmlspecialchars($notes); ?></p>
+                                </div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="px-4 py-3 sm:px-6 sm:py-4">
+                        <div class="flex flex-wrap gap-2">
+                            <button class="view-custom-details bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition text-sm mr-2" data-booking="<?php echo $booking['booking_id']; ?>">
+                                <i class="fas fa-file-alt mr-1"></i> View Details
+                            </button>
+                            <?php if ($booking['status'] === 'Accepted' && empty($booking['deathcert_url'])): ?>
+                                <button class="upload-death-cert bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition text-sm mr-2" data-booking="<?php echo $booking['booking_id']; ?>">
+                                    <i class="fas fa-upload mr-1"></i> Upload Death Cert
+                                </button>
+                            <?php endif; ?>
+                            <?php if ($booking['status'] === 'Accepted'): ?>
+                                <button class="view-receipt bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition text-sm mr-2" data-booking="<?php echo $booking['booking_id']; ?>">
+                                    <i class="fas fa-receipt mr-1"></i> View Receipt
+                                </button>
+                            <?php endif; ?>
+                            <?php if ($booking['status'] === 'Pending' || $booking['status'] === 'Declined'): ?>
+                                <button class="modify-custom-booking bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition text-sm mr-2" data-booking="<?php echo $booking['booking_id']; ?>">
+                                    <i class="fas fa-edit mr-1"></i> Modify
+                                </button>
+                            <?php endif; ?>
+                            <?php if ($booking['status'] === 'Pending'): ?>
+                                <button class="cancel-custom-booking bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition text-sm" data-booking="<?php echo $booking['booking_id']; ?>">
+                                    <i class="fas fa-times mr-1"></i> Cancel
+                                </button>
+                            <?php elseif ($booking['status'] === 'Cancelled'): ?>
+                                <span class="text-gray-500 text-sm py-1 px-3">
+                                    <i class="fas fa-ban mr-1"></i> Cancelled
+                                </span>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+                <?php
+                    }
+                } else {
+                    echo '<p class="text-gray-500">You have no custom package bookings yet.</p>';
+                }
+                $stmt->close();
+                ?>
+            </div>
+            <div id="custom-pagination" class="mt-6 flex justify-center items-center space-x-2"></div>
         </div>
     </div>
     
@@ -2139,6 +2311,205 @@ $lifeplanStmt->close();
             </div>
         </div>
     </div>
+</div>
+
+<!-- View Custom Booking Details Modal -->
+<div id="viewCustomDetailsModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 p-4 hidden backdrop-blur-sm">
+  <!-- Modal Content -->
+  <div class="w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden max-h-[90vh]">
+    <div class="modal-scroll-container overflow-y-auto max-h-[90vh]">
+      <!-- Header with close button -->
+      <div class="bg-purple-600 p-6 flex justify-between items-center">
+        <div class="flex items-center">
+          <h2 class="text-2xl font-hedvig text-white">Custom Package Booking Details</h2>
+        </div>
+        <button class="close-modal text-white hover:text-purple-300 transition-colors duration-200">
+          <i class="fas fa-times text-2xl"></i>
+        </button>
+      </div>
+      
+      <!-- Booking Status Banner -->
+      <div id="custom-status-banner" class="px-6 py-3 bg-purple-50 border-b border-purple-100 flex items-center">
+        <div class="flex items-center">
+          <div class="h-3 w-3 rounded-full bg-purple-500 mr-2"></div>
+          <span class="font-medium text-purple-800">Status:</span>
+          <span id="custom-status" class="ml-2 text-purple-800 font-bold"></span>
+        </div>
+        <div class="ml-auto text-sm">
+          <span class="text-gray-500">Booking ID:</span>
+          <span id="custom-booking-id" class="text-purple-800 font-mono ml-1"></span>
+        </div>
+      </div>
+      
+      <!-- Modal Body -->
+      <div class="p-6 bg-cream">
+        <!-- Service Information Card -->
+        <div class="bg-white rounded-xl shadow-sm p-5 mb-6">
+          <div class="flex items-center mb-4">
+            <h4 class="font-semibold text-purple-800 text-lg">Custom Package Information</h4>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3">
+            <div class="flex">
+              <span class="text-gray-500 w-32">Package Type:</span> 
+              <span class="text-purple-800 font-medium">Custom Package</span>
+            </div>
+            <div class="flex">
+              <span class="text-gray-500 w-32">Branch:</span> 
+              <span id="custom-branch" class="text-purple-800 font-medium"></span>
+            </div>
+            <div class="flex">
+              <span class="text-gray-500 w-32">Booking Date:</span> 
+              <span id="custom-booking-date" class="text-purple-800 font-medium"></span>
+            </div>
+            <div class="flex">
+              <span class="text-gray-500 w-32">Package Total:</span> 
+              <span id="custom-package-total" class="text-purple-800 font-bold"></span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Deceased Information Card -->
+        <div class="bg-white rounded-xl shadow-sm p-5 mb-6">
+          <div class="flex items-center mb-4">
+            <h4 class="font-semibold text-purple-800 text-lg">Deceased Information</h4>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3">
+            <div class="flex">
+              <span class="text-gray-500 w-32">Full Name:</span> 
+              <span id="custom-deceased-name" class="text-purple-800 font-medium"></span>
+            </div>
+            <div class="flex">
+              <span class="text-gray-500 w-32">Burial Date:</span> 
+              <span id="custom-burial-date" class="text-purple-800 font-medium"></span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Custom Package Details Card -->
+        <div class="bg-white rounded-xl shadow-sm p-5 mb-6">
+          <div class="flex items-center mb-4">
+            <h4 class="font-semibold text-purple-800 text-lg">Package Details</h4>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3">
+            <div class="flex">
+              <span class="text-gray-500 w-32">Casket:</span> 
+              <span id="custom-casket" class="text-purple-800 font-medium"></span>
+            </div>
+            <div class="flex">
+              <span class="text-gray-500 w-32">Flower Arrangement:</span> 
+              <span id="custom-flower-arrangement" class="text-purple-800 font-medium"></span>
+            </div>
+            <div class="flex md:col-span-2">
+              <span class="text-gray-500 w-32">Additional Services:</span> 
+              <span id="custom-additional-services" class="text-purple-800 font-medium"></span>
+            </div>
+            <div class="flex md:col-span-2">
+              <span class="text-gray-500 w-32">Notes:</span> 
+              <span id="custom-notes" class="text-purple-800 font-medium"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modify Custom Booking Modal -->
+<div id="modifyCustomBookingModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 p-4 hidden backdrop-blur-sm">
+  <div class="w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden max-h-[90vh]">
+    <div class="modal-scroll-container overflow-y-auto max-h-[90vh]">
+      <!-- Header with close button -->
+      <div class="bg-purple-600 p-6 flex justify-between items-center">
+        <h2 class="text-2xl font-hedvig text-white">Modify Custom Package Booking</h2>
+        <button class="close-modal text-white hover:text-purple-300">
+          <i class="fas fa-times text-2xl"></i>
+        </button>
+      </div>
+      
+      <!-- Modal Body -->
+      <div class="p-6 bg-gray-50">
+        <form id="modifyCustomBookingForm">
+          <input type="hidden" id="modify-custom-booking-id" name="booking_id">
+          
+          <div class="space-y-5 mb-6">
+            <h4 class="font-semibold text-purple-800 text-lg">Deceased Information</h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+              <div>
+                <label class="block text-sm font-medium text-purple-800 mb-1 sm:mb-2">First Name*</label>
+                <input type="text" id="modify-custom-deceased-fname" name="deceased_fname" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm sm:text-base" required>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-purple-800 mb-1 sm:mb-2">Middle Name</label>
+                <input type="text" id="modify-custom-deceased-midname" name="deceased_midname" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm sm:text-base">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-purple-800 mb-1 sm:mb-2">Last Name*</label>
+                <input type="text" id="modify-custom-deceased-lname" name="deceased_lname" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm sm:text-base" required>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-purple-800 mb-1 sm:mb-2">Suffix</label>
+                <input type="text" id="modify-custom-deceased-suffix" name="deceased_suffix" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm sm:text-base">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-purple-800 mb-1 sm:mb-2">Date of Birth</label>
+                <input type="date" id="modify-custom-date-of-birth" name="deceased_dateOfBirth" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm sm:text-base">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-purple-800 mb-1 sm:mb-2">Date of Death</label>
+                <input type="date" id="modify-custom-date-of-death" name="deceased_dateOfDeath" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm sm:text-base">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-purple-800 mb-1 sm:mb-2">Date of Burial</label>
+                <input type="date" id="modify-custom-date-of-burial" name="deceased_dateOfBurial" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm sm:text-base">
+              </div>
+              <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-purple-800 mb-1 sm:mb-2">Address</label>
+                <textarea id="modify-custom-address" name="deceased_address" rows="2" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm sm:text-base"></textarea>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Custom Package Details -->
+          <div class="space-y-5 mb-6">
+            <h4 class="font-semibold text-purple-800 text-lg">Package Details</h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+              <div>
+                <label class="block text-sm font-medium text-purple-800 mb-1 sm:mb-2">Casket</label>
+                <input type="text" id="modify-custom-casket" name="casket" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm sm:text-base">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-purple-800 mb-1 sm:mb-2">Flower Arrangement</label>
+                <input type="text" id="modify-custom-flower-arrangement" name="flower_arrangement" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm sm:text-base">
+              </div>
+              <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-purple-800 mb-1 sm:mb-2">Additional Services</label>
+                <textarea id="modify-custom-additional-services" name="additional_services" rows="2" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm sm:text-base"></textarea>
+              </div>
+              <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-purple-800 mb-1 sm:mb-2">Notes</label>
+                <textarea id="modify-custom-notes" name="notes" rows="3" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm sm:text-base"></textarea>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-purple-800 mb-1 sm:mb-2">Package Total</label>
+                <input type="number" id="modify-custom-package-total" name="package_total" step="0.01" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm sm:text-base">
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      
+      <!-- Modal Footer -->
+      <div class="modal-sticky-footer px-6 py-4 flex flex-col sm:flex-row sm:justify-end gap-3 border-t border-gray-200 bg-white">
+        <button type="button" class="close-modal w-full sm:w-auto px-6 py-3 bg-white border border-purple-600 text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center">
+          Cancel
+        </button>
+        <button type="submit" form="modifyCustomBookingForm" id="modifyCustomBookingSubmit" class="w-full sm:w-auto px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg shadow-md transition-all duration-300 flex items-center justify-center">
+          <i class="fas fa-save mr-2"></i>
+          Save Changes
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div id="receipt-modal" class="fixed inset-0 z-50 hidden overflow-y-auto">
@@ -4633,6 +5004,38 @@ function populateReceipt(data) {
             }
         }
     });
+
+    document.getElementById('custom-bookings-list').addEventListener('click', function(e) {
+        const target = e.target.closest('button');
+        if (!target) return;
+
+        const bookingId = target.getAttribute('data-booking');
+        if (!bookingId) return;
+
+        if (target.classList.contains('view-custom-details')) {
+            fetchCustomBookingDetails(bookingId);
+        } else if (target.classList.contains('modify-custom-booking')) {
+            fetchCustomBookingForModification(bookingId);
+        } else if (target.classList.contains('cancel-custom-booking')) {
+            const cancelModal = document.getElementById('cancelBookingModal');
+            if (cancelModal) {
+                document.getElementById('cancel-booking-id').value = bookingId;
+                cancelModal.classList.remove('hidden');
+            } else {
+                console.error('Cancel Booking Modal not found');
+            }
+        } else if (target.classList.contains('upload-death-cert')) {
+            document.getElementById('death-cert-booking-id').value = bookingId;
+            const uploadModal = document.getElementById('uploadDeathCertModal');
+            if (uploadModal) {
+                uploadModal.classList.remove('hidden');
+            } else {
+                console.error('Upload Death Cert Modal not found');
+            }
+        } else if (target.classList.contains('view-receipt')) {
+            showDocument('Payment Proof', currentPaymentUrl);
+        }
+    });
 }
 
 function loadBookings(bookingType, page = 1) {
@@ -4705,7 +5108,15 @@ document.addEventListener('DOMContentLoaded', function() {
             const contentId = tab.dataset.tab + '-content';
             document.getElementById(contentId).style.display = 'block';
 
-            const bookingType = tab.getAttribute('data-tab') === 'traditional-booking' ? 'traditional' : 'lifeplan';
+            const tabType = tab.getAttribute('data-tab');
+            let bookingType;
+            if (tabType === 'traditional-booking') {
+                bookingType = 'traditional';
+            } else if (tabType === 'custom-booking') {
+                bookingType = 'custom';
+            } else {
+                bookingType = 'lifeplan';
+            }
             loadBookings(bookingType, 1);
         });
     });
@@ -4722,12 +5133,26 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('lifeplan-sort-filter')?.addEventListener('change', function() {
         loadBookings('lifeplan', 1);
     });
+    document.getElementById('custom-status-filter')?.addEventListener('change', function() {
+        loadBookings('custom', 1);
+    });
+    document.getElementById('custom-sort-filter')?.addEventListener('change', function() {
+        loadBookings('custom', 1);
+    });
 
     initializeBookingFunctions();
 
     const activeTab = document.querySelector('.service-tab.border-yellow-600');
     if (activeTab) {
-        const bookingType = activeTab.getAttribute('data-tab') === 'traditional-booking' ? 'traditional' : 'lifeplan';
+        const tabType = activeTab.getAttribute('data-tab');
+        let bookingType;
+        if (tabType === 'traditional-booking') {
+            bookingType = 'traditional';
+        } else if (tabType === 'custom-booking') {
+            bookingType = 'custom';
+        } else {
+            bookingType = 'lifeplan';
+        }
         loadBookings(bookingType, 1);
     }
 
@@ -4740,7 +5165,9 @@ document.addEventListener('DOMContentLoaded', function() {
         'modifyLifeplanModal',
         'cancelLifeplanModal',
         'viewDocumentModal',
-        'uploadDeathCertModal'
+        'uploadDeathCertModal',
+        'viewCustomDetailsModal',
+        'modifyCustomBookingModal'
     ];
 
     document.querySelectorAll('.close-modal, .close-lifeplan-modal, .close-document-modal').forEach(button => {
@@ -4784,6 +5211,11 @@ document.getElementById('modifyLifeplanForm').addEventListener('submit', functio
 document.getElementById('cancelLifeplanForm').addEventListener('submit', function(e) {
     e.preventDefault();
     submitLifeplanCancellation();
+});
+
+document.getElementById('modifyCustomBookingForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    submitCustomBookingModification();
 });
 
 let currentDeathCertUrl = '';
@@ -5223,6 +5655,109 @@ function submitLifeplanCancellation() {
         submitBtn.disabled = false;
         submitBtn.innerHTML = '<i class="fas fa-times mr-2"></i> Confirm Cancellation';
     });
+}
+
+function submitCustomBookingModification() {
+    const form = document.getElementById('modifyCustomBookingForm');
+    const formData = new FormData(form);
+    const submitBtn = document.querySelector('button[type="submit"][form="modifyCustomBookingForm"]');
+    
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...';
+    
+    fetch('profile/update_custom_booking.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showSuccess('Custom booking updated successfully!');
+            document.getElementById('modifyCustomBookingModal').classList.add('hidden');
+            
+            setTimeout(() => {
+                location.reload();
+            }, 1500);
+        } else {
+            showError(data.message || 'Failed to update custom booking');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showError('An error occurred while updating custom booking');
+    })
+    .finally(() => {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-save mr-2"></i> Save Changes';
+    });
+}
+
+// Custom Booking Functions
+function fetchCustomBookingDetails(bookingId) {
+    fetch(`profile/fetch_booking_details.php?booking_id=${bookingId}&type=custom`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const booking = data.booking;
+                
+                // Populate modal with custom booking details
+                document.getElementById('custom-booking-id').value = booking.booking_id;
+                document.getElementById('custom-deceased-name').textContent = booking.deceased_name;
+                document.getElementById('custom-branch').textContent = booking.branch_name;
+                document.getElementById('custom-booking-date').textContent = formatDate(booking.booking_date);
+                document.getElementById('custom-burial-date').textContent = booking.deceased_dateOfBurial ? formatDate(booking.deceased_dateOfBurial) : 'Not set';
+                document.getElementById('custom-package-total').textContent = `₱${parseFloat(booking.package_total).toLocaleString()}`;
+                document.getElementById('custom-casket').textContent = booking.casket || 'Not specified';
+                document.getElementById('custom-flower-arrangement').textContent = booking.flower_arrangement || 'Not specified';
+                document.getElementById('custom-additional-services').textContent = booking.additional_services || 'None';
+                document.getElementById('custom-notes').textContent = booking.notes || 'No additional notes';
+                document.getElementById('custom-status').textContent = booking.status;
+                
+                // Show the modal
+                document.getElementById('viewCustomDetailsModal').classList.remove('hidden');
+            } else {
+                showError(data.message || 'Failed to fetch custom booking details');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showError('An error occurred while fetching custom booking details');
+        });
+}
+
+function fetchCustomBookingForModification(bookingId) {
+    fetch(`profile/fetch_booking_for_modification.php?booking_id=${bookingId}&type=custom`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const booking = data.booking;
+                
+                // Populate modification form with custom booking details
+                document.getElementById('modify-custom-booking-id').value = booking.booking_id;
+                document.getElementById('modify-custom-deceased-fname').value = booking.deceased_fname;
+                document.getElementById('modify-custom-deceased-midname').value = booking.deceased_midname || '';
+                document.getElementById('modify-custom-deceased-lname').value = booking.deceased_lname;
+                document.getElementById('modify-custom-deceased-suffix').value = booking.deceased_suffix || '';
+                document.getElementById('modify-custom-date-of-birth').value = formatDateForInput(booking.deceased_dateOfBirth);
+                document.getElementById('modify-custom-date-of-death').value = formatDateForInput(booking.deceased_dateOfDeath);
+                document.getElementById('modify-custom-date-of-burial').value = booking.deceased_dateOfBurial ? formatDateForInput(booking.deceased_dateOfBurial) : '';
+                document.getElementById('modify-custom-address').value = booking.deceased_address;
+                document.getElementById('modify-custom-casket').value = booking.casket || '';
+                document.getElementById('modify-custom-flower-arrangement').value = booking.flower_arrangement || '';
+                document.getElementById('modify-custom-additional-services').value = booking.additional_services || '';
+                document.getElementById('modify-custom-notes').value = booking.notes || '';
+                document.getElementById('modify-custom-package-total').value = booking.package_total;
+                
+                // Show the modal
+                document.getElementById('modifyCustomBookingModal').classList.remove('hidden');
+            } else {
+                showError(data.message || 'Failed to fetch custom booking details for modification');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showError('An error occurred while fetching custom booking details for modification');
+        });
 }
 
 function showDocument(title, url) {
