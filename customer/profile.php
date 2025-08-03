@@ -3281,6 +3281,26 @@ function getSamplePaymentHistory(packageType) {
                             Valid ID
                         </h4>
                         
+                        <!-- ID Type Selection -->
+                        <div class="mb-6">
+                            <label for="id-type" class="block text-sm font-medium text-gray-700 mb-2">ID Type <span class="text-red-500">*</span></label>
+                            <select id="id-type" name="id-type" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-base shadow-sm transition-all duration-200">
+                                <option value="">Select ID Type</option>
+                                <option value="passport">Passport</option>
+                                <option value="drivers_license">Driver's License</option>
+                                <option value="national_id">National ID</option>
+                                <option value="sss_id">SSS ID</option>
+                                <option value="gsis_id">GSIS ID</option>
+                                <option value="voters_id">Voter's ID</option>
+                                <option value="postal_id">Postal ID</option>
+                                <option value="senior_citizen_id">Senior Citizen ID</option>
+                                <option value="umid">UMID</option>
+                                <option value="philhealth_id">PhilHealth ID</option>
+                                <option value="prc_id">PRC ID</option>
+                                <option value="other">Other Government ID</option>
+                            </select>
+                        </div>
+                        
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <!-- ID Upload -->
                             <div>
