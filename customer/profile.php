@@ -3334,8 +3334,10 @@ function getSamplePaymentHistory(packageType) {
                                     placeholder="Enter your ID number"
                                     required 
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-base shadow-sm transition-all duration-200"
-                                    pattern="[A-Za-z0-9\-]+"
-                                    title="ID number can contain letters, numbers, and hyphens only">
+                                    pattern="[0-9\-]+"
+                                    title="ID number can contain numbers and hyphens only"
+                                    oninput="validateIdNumber(this)"
+                                    onkeypress="return allowIdNumberInput(event)">
                             </div>
                         </div>
                         
@@ -5761,6 +5763,55 @@ function setupPhoneValidation() {
             document.querySelector('button[type="submit"]').disabled = false;
         }
     });
+}
+
+// ID Number validation functions
+function validateIdNumber(input) {
+    const value = input.value;
+    // Remove any characters that are not numbers or dashes
+    const cleanedValue = value.replace(/[^0-9\-]/g, '');
+    
+    // Update the input value with cleaned version
+    if (value !== cleanedValue) {
+        input.value = cleanedValue;
+    }
+    
+    // Validate the pattern
+    const isValid = /^[0-9\-]+$/.test(cleanedValue);
+    
+    // Update visual feedback
+    if (cleanedValue.length > 0) {
+        if (isValid) {
+            input.classList.remove('border-red-500');
+            input.classList.add('border-green-500');
+        } else {
+            input.classList.remove('border-green-500');
+            input.classList.add('border-red-500');
+        }
+    } else {
+        input.classList.remove('border-green-500', 'border-red-500');
+    }
+    
+    return isValid;
+}
+
+function allowIdNumberInput(event) {
+    // Allow: backspace, delete, tab, escape, enter, and navigation keys
+    if ([8, 9, 27, 13, 46].includes(event.keyCode) || 
+        (event.keyCode >= 35 && event.keyCode <= 40)) {
+        return true;
+    }
+    
+    // Allow numbers (0-9) and dash (-)
+    if ((event.keyCode >= 48 && event.keyCode <= 57) || // numbers
+        (event.keyCode >= 96 && event.keyCode <= 105) || // numpad numbers
+        event.keyCode === 189) { // dash key
+        return true;
+    }
+    
+    // Prevent all other characters
+    event.preventDefault();
+    return false;
 }
 
 // Update form validation to include availability check
