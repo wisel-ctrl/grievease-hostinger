@@ -367,21 +367,35 @@ $ratioChange = number_format($changes['ratio_change'] ?? 0, 1);
 </div>
 
 <!-- Hidden printable table (will only show when printing) -->
-<div id="printableTable" class="hidden bg-white p-5">
-  <h2 class="text-xl font-bold mb-4">Sales & Payment Trends Data</h2>
-  <table class="w-full border-collapse">
-    <thead>
-      <tr class="bg-gray-100">
-        <th class="border p-2 text-left">Month</th>
-        <th class="border p-2 text-right">Accrued Revenue (₱)</th>
-        <th class="border p-2 text-right">Cash Revenue (₱)</th>
-        <th class="border p-2 text-center">Type</th>
-      </tr>
-    </thead>
-    <tbody id="tableBody">
-      <!-- Table content will be filled by JavaScript -->
-    </tbody>
-  </table>
+<div id="printableTable" class="hidden bg-white p-5" style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
+    <!-- Header -->
+    <div style="text-align: center; margin-bottom: 20px; border-bottom: 2px solid #3A57E8; padding-bottom: 10px;">
+        <h1 style="color: #3A57E8; margin-bottom: 5px;">VJay Relova Funeral Services</h1>
+        <h3 style="color: #666; margin-top: 0; margin-bottom: 5px;">#6 J.P Rizal St. Brgy. Sta Clara Sur, (Pob) Pila, Laguna</h3>
+        <h2 style="color: #3A57E8; margin-bottom: 5px;">Sales & Payment Trends Report</h2>
+        <p style="color: #666; margin-top: 0;">Generated on: <span id="printDate"></span></p>
+    </div>
+    
+    <h2 class="text-xl font-bold mb-4">Sales & Payment Trends Data</h2>
+    <table class="w-full border-collapse">
+        <thead>
+            <tr class="bg-gray-100">
+                <th class="border p-2 text-left">Month</th>
+                <th class="border p-2 text-right">Accrued Revenue (₱)</th>
+                <th class="border p-2 text-right">Cash Revenue (₱)</th>
+                <th class="border p-2 text-center">Type</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+            <!-- Table content will be filled by JavaScript -->
+        </tbody>
+    </table>
+    
+    <!-- Footer -->
+    <div style="text-align: center; margin-top: 30px; border-top: 2px solid #3A57E8; padding-top: 10px; color: #666; font-size: 12px;">
+        <p>Contact: (0956) 814-3000 | (0961) 345-4283 | Email: GrievEase@gmail.com</p>
+        <p>© <?php echo date('Y'); ?> VJay Relova Funeral Services. All rights reserved.</p>
+    </div>
 </div>
 
 </div>
