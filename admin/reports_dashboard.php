@@ -905,6 +905,9 @@ function printDemandPrediction() {
                     table { page-break-inside:auto; }
                     tr { page-break-inside:avoid; page-break-after:auto; }
                     .footer { margin-top:30px; font-size:12px; color:#777; }
+                    .header { border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px; }
+                    .header-info { display: flex; justify-content: space-between; font-size: 12px; }
+                    .footer-info { text-align: center; margin-top: 20px; padding-top: 10px; border-top: 2px solid #333; font-size: 12px; }
                     @media print {
                         @page { size:auto; margin:10mm; }
                         body { -webkit-print-color-adjust:exact; }
@@ -914,7 +917,27 @@ function printDemandPrediction() {
                 </style>
             </head>
             <body>
-                <h1>Demand Prediction Report</h1>
+                <div class="header">
+                    <h1>VJay Relova Funeral Services</h1>
+                    <div class="header-info">
+                        <div>
+                            <strong>Address:</strong> #6 J.P Rizal St. Brgy. Sta Clara Sur, (Pob) Pila, Laguna
+                        </div>
+                        <div>
+                            <strong>Available 24/7</strong>
+                        </div>
+                    </div>
+                    <div class="header-info">
+                        <div>
+                            <strong>Phone:</strong> (0956) 814-3000 / (0961) 345-4283
+                        </div>
+                        <div>
+                            <strong>Email:</strong> GrievEase@gmail.com
+                        </div>
+                    </div>
+                </div>
+
+                <h2>Demand Prediction Report</h2>
 
                 <div class="metrics">
                     <div class="metric-box">
@@ -934,10 +957,15 @@ function printDemandPrediction() {
                     </div>
                 </div>
 
-                <h2>Demand Data</h2>
+                <h3>Demand Data</h3>
                 ${tableHTML}
 
                 <div class="footer">
+                    <div class="footer-info">
+                        <div>#6 J.P Rizal St. Brgy. Sta Clara Sur, (Pob) Pila, Laguna</div>
+                        <div>(0956) 814-3000 | (0961) 345-4283 | GrievEase@gmail.com</div>
+                        <div>VJay Relova Funeral Services - Available 24/7</div>
+                    </div>
                     <p>Report generated on ${new Date().toLocaleDateString()}</p>
                     <p>(F) indicates forecasted values</p>
                 </div>
