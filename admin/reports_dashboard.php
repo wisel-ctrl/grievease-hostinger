@@ -858,23 +858,26 @@ function printDemandPrediction() {
     const growthRate = document.getElementById('growthRateValue').textContent;
     const seasonalityImpact = document.getElementById('seasonalityImpactValue').textContent;
 
-    // Create table data from the heatmap data
+    // Create transposed table data from the heatmap data
     let tableHTML = `
         <table border="1" cellpadding="5" cellspacing="0" style="width:100%; border-collapse:collapse; margin-top:20px;">
             <thead>
                 <tr style="background-color:#f3f4f6;">
-                    <th>Product</th>`;
+                    <th>Month</th>`;
 
-    heatmapData.months.forEach(month => {
-        tableHTML += `<th>${month}</th>`;
+    // Add product names as column headers
+    heatmapData.series.forEach(product => {
+        tableHTML += `<th>${product.name}</th>`;
     });
 
     tableHTML += `</tr></thead><tbody>`;
 
-    heatmapData.series.forEach(product => {
-        tableHTML += `<tr><td style="font-weight:bold;">${product.name}</td>`;
+    // For each month, create a row with all product values
+    heatmapData.months.forEach((month, monthIndex) => {
+        tableHTML += `<tr><td style="font-weight:bold;">${month}</td>`;
 
-        product.data.forEach(item => {
+        heatmapData.series.forEach(product => {
+            const item = product.data[monthIndex];
             const value = item.y === 0 ? '-' : item.y;
             const forecastClass = item.forecast ? 'style="background-color:#f0f9ff; color:#0369a1;"' : '';
             tableHTML += `<td ${forecastClass}>${value}${item.forecast ? ' (F)' : ''}</td>`;
@@ -899,10 +902,14 @@ function printDemandPrediction() {
                     .metric-title { font-weight:bold; margin-bottom:5px; color:#555; }
                     .metric-value { font-size:18px; font-weight:bold; }
                     table th { background-color:#f3f4f6; text-align:left; }
+                    table { page-break-inside:auto; }
+                    tr { page-break-inside:avoid; page-break-after:auto; }
                     .footer { margin-top:30px; font-size:12px; color:#777; }
                     @media print {
                         @page { size:auto; margin:10mm; }
                         body { -webkit-print-color-adjust:exact; }
+                        table { width:100%; overflow-wrap:break-word; }
+                        th, td { padding:4px; font-size:12px; }
                     }
                 </style>
             </head>
