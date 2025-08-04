@@ -287,7 +287,7 @@ $ratioChange = number_format($changes['ratio_change'] ?? 0, 1);
 <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
   <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
     <h3 class="font-medium text-sidebar-text">Sales & Payment Trends</h3>
-    <button class="w-10 h-10 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center hover:bg-gray-200" title="Print/Export">
+    <button id="printButton" class="w-10 h-10 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center hover:bg-gray-200" title="Print/Export">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
         </svg>
@@ -364,6 +364,24 @@ $ratioChange = number_format($changes['ratio_change'] ?? 0, 1);
             <p>© <?php echo date('Y'); ?> VJay Relova Funeral Services. All rights reserved.</p>
         </div>
     </div>
+</div>
+
+<!-- Hidden printable table (will only show when printing) -->
+<div id="printableTable" class="hidden bg-white p-5">
+  <h2 class="text-xl font-bold mb-4">Sales & Payment Trends Data</h2>
+  <table class="w-full border-collapse">
+    <thead>
+      <tr class="bg-gray-100">
+        <th class="border p-2 text-left">Month</th>
+        <th class="border p-2 text-right">Accrued Revenue (₱)</th>
+        <th class="border p-2 text-right">Cash Revenue (₱)</th>
+        <th class="border p-2 text-center">Type</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody">
+      <!-- Table content will be filled by JavaScript -->
+    </tbody>
+  </table>
 </div>
 
 </div>
@@ -1339,7 +1357,6 @@ document.addEventListener('DOMContentLoaded', function() {
       return date.toLocaleDateString('default', { month: 'short', year: 'numeric' });
     });
     
-    // Rest of your chart rendering code remains the same...
     // Prepare datasets
     const datasets = [
       {
@@ -1503,9 +1520,61 @@ document.addEventListener('DOMContentLoaded', function() {
     // Wait for chart to render then add the line
     setTimeout(addVerticalLine, 500);
     
+    // Populate the printable table
+    const tableBody = document.getElementById('tableBody');
+    combinedData.forEach(item => {
+      const row = document.createElement('tr');
+      const date = new Date(item.month_start);
+      const monthYear = date.toLocaleDateString('default', { month: 'short', year: 'numeric' });
+      
+      row.innerHTML = `
+        <td class="border p-2">${monthYear}</td>
+        <td class="border p-2 text-right">${parseFloat(item.monthly_revenue).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+        <td class="border p-2 text-right">${parseFloat(item.monthly_amount_paid).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+        <td class="border p-2 text-center">${item.is_forecast ? 'Forecast' : 'Actual'}</td>
+      `;
+      tableBody.appendChild(row);
+    });
+    
   } else {
     document.querySelector("#salesSplineChart").innerHTML = '<div class="p-4 text-center text-gray-500">No sales data available</div>';
+    document.getElementById('tableBody').innerHTML = '<tr><td colspan="4" class="border p-2 text-center">No sales data available</td></tr>';
   }
+  
+  // Print button functionality
+  document.getElementById('printButton').addEventListener('click', function() {
+    // Show the printable table
+    const printableTable = document.getElementById('printableTable');
+    printableTable.classList.remove('hidden');
+    
+    // Print the window
+    window.print();
+    
+    // Hide the table again after printing (setTimeout ensures it happens after printing)
+    setTimeout(() => {
+      printableTable.classList.add('hidden');
+    }, 500);
+  });
+  
+  // Add print-specific styles
+  const style = document.createElement('style');
+  style.innerHTML = `
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printableTable, #printableTable * {
+        visibility: visible;
+      }
+      #printableTable {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+      }
+    }
+  `;
+  document.head.appendChild(style);
 });
 </script>
 <script>
