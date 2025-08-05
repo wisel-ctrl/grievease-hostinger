@@ -1598,7 +1598,71 @@ document.addEventListener('DOMContentLoaded', function() {
       
       // Calculate forecast data (using the same function as before)
       function calculateForecast(historicalData, monthsToForecast = 6) {
-          // ... (keep the same forecast calculation function as in your original code) ...
+        // Filter out months with zero sales to get meaningful data for forecasting
+        const nonZeroData = historicalData.filter(item => 
+          parseFloat(item.monthly_revenue) > 0 || parseFloat(item.monthly_amount_paid) > 0
+        );
+        
+        if (!nonZeroData || nonZeroData.length < 2) return [];
+        
+        // Get last few months of data for forecasting
+        const recentData = nonZeroData.slice(-6);
+        
+        // Calculate average monthly growth rate
+        let totalGrowthRateRevenue = 0;
+        let totalGrowthRatePayment = 0;
+        let countPairs = 0;
+        
+        for (let i = 1; i < recentData.length; i++) {
+          const prevRevenue = parseFloat(recentData[i-1].monthly_revenue);
+          const currRevenue = parseFloat(recentData[i].monthly_revenue);
+          const prevPayment = parseFloat(recentData[i-1].monthly_amount_paid);
+          const currPayment = parseFloat(recentData[i].monthly_amount_paid);
+          
+          if (prevRevenue > 0 && prevPayment > 0) {
+            totalGrowthRateRevenue += (currRevenue / prevRevenue - 1);
+            totalGrowthRatePayment += (currPayment / prevPayment - 1);
+            countPairs++;
+          }
+        }
+        
+        // Average monthly growth rate (with safeguards)
+        const avgGrowthRateRevenue = countPairs > 0 ? totalGrowthRateRevenue / countPairs : 0.05;
+        const avgGrowthRatePayment = countPairs > 0 ? totalGrowthRatePayment / countPairs : 0.05;
+        
+        // Cap growth rates between -15% and +25%
+        const cappedGrowthRateRevenue = Math.max(-0.15, Math.min(0.25, avgGrowthRateRevenue));
+        const cappedGrowthRatePayment = Math.max(-0.15, Math.min(0.25, avgGrowthRatePayment));
+        
+        // Get the current date and set it to the first of the next month
+        const currentDate = new Date();
+        const forecastStartDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
+        
+        // Get the last data point's values
+        const lastDataPoint = recentData[recentData.length - 1];
+        const lastRevenue = parseFloat(lastDataPoint.monthly_revenue);
+        const lastPayment = parseFloat(lastDataPoint.monthly_amount_paid);
+        
+        // Generate forecast data starting from next month
+        const forecastData = [];
+        
+        for (let i = 0; i < monthsToForecast; i++) {
+          const forecastDate = new Date(forecastStartDate);
+          forecastDate.setMonth(forecastDate.getMonth() + i);
+          
+          // Calculate forecast values (starting with last actual values)
+          const forecastRevenue = lastRevenue * Math.pow(1 + cappedGrowthRateRevenue, i + 1);
+          const forecastPayment = lastPayment * Math.pow(1 + cappedGrowthRatePayment, i + 1);
+          
+          forecastData.push({
+            month_start: forecastDate.toISOString().split('T')[0],
+            monthly_revenue: forecastRevenue.toFixed(2),
+            monthly_amount_paid: forecastPayment.toFixed(2),
+            is_forecast: true
+          });
+        }
+        
+        return forecastData;
       }
       
       const forecastData = calculateForecast(salesData, 6);
