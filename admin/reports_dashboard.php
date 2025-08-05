@@ -73,6 +73,23 @@ if ($branchFilter === 'paete') {
     $branchId = 2;
 }
 
+$branchInfo = [
+    'all' => [
+        'name' => 'All Branches',
+        'address' => 'Multiple Locations'
+    ],
+    'pila' => [
+        'name' => 'Pila Branch',
+        'address' => '#6 J.P Rizal St. Brgy. Sta Clara Sur, (Pob) Pila, Laguna'
+    ],
+    'paete' => [
+        'name' => 'Paete Branch',
+        'address' => 'J.P Rizal(corner), Quesada St. Bagumbayan, Paete, Laguna'
+    ]
+];
+
+$currentBranch = $branchInfo[$branchFilter];
+
 // Fetch data using our new functions
 $revenueData = getRevenueData($conn, $branchId);
 $casketData = getCasketData($conn, $branchId);
@@ -432,6 +449,23 @@ $ratioChange = number_format($changes['ratio_change'] ?? 0, 1);
             alert('No revenue data available to print');
             return;
         }
+
+        const branchName = document.querySelector('#branchDropdownButton span').textContent;
+        const branchAddress = branchName === 'All Branches' ? 
+            'Multiple Locations' : 
+            (branchName === 'Pila' ? 
+                '#6 J.P Rizal St. Brgy. Sta Clara Sur, (Pob) Pila, Laguna' : 
+                'J.P Rizal(corner), Quesada St. Bagumbayan, Paete, Laguna');
+        
+        // Update the header in the print content
+        const headerHTML = `
+            <div style="text-align: center; margin-bottom: 20px; border-bottom: 2px solid #3A57E8; padding-bottom: 10px;">
+                <h1 style="color: #3A57E8; margin-bottom: 5px;">VJay Relova Funeral Services</h1>
+                <h3 style="color: #666; margin-top: 0; margin-bottom: 5px;">${branchAddress}</h3>
+                <h2 style="color: #3A57E8; margin-bottom: 5px;">Revenue Report - ${branchName}</h2>
+                <p style="color: #666; margin-top: 0;">Generated on: <span id="printDate"></span></p>
+            </div>
+        `;
 
         const regressionResults = calculateLinearRegressionForecast(historicalRevenueData, 6);
         
@@ -888,6 +922,29 @@ function printDemandPrediction() {
     const topCasket = document.getElementById('topCasketValue').textContent;
     const growthRate = document.getElementById('growthRateValue').textContent;
     const seasonalityImpact = document.getElementById('seasonalityImpactValue').textContent;
+
+    const branchName = document.querySelector('#branchDropdownButton span').textContent;
+    const branchAddress = branchName === 'All Branches' ? 
+        'Multiple Locations' : 
+        (branchName === 'Pila' ? 
+            '#6 J.P Rizal St. Brgy. Sta Clara Sur, (Pob) Pila, Laguna' : 
+            'J.P Rizal(corner), Quesada St. Bagumbayan, Paete, Laguna');
+    
+    // Update the header in the print content
+    const headerHTML = `
+        <div class="header">
+            <h1>VJay Relova Funeral Services</h1>
+            <div class="header-info">
+                <div>
+                    <strong>Branch:</strong> ${branchName} - ${branchAddress}
+                </div>
+                <div>
+                    <strong>Available 24/7</strong>
+                </div>
+            </div>
+            <!-- Rest of your header... -->
+        </div>
+    `;
 
     // Create transposed table data from the heatmap data
     let tableHTML = `
@@ -1667,6 +1724,23 @@ document.addEventListener('DOMContentLoaded', function() {
       
       const forecastData = calculateForecast(salesData, 6);
       const combinedData = [...salesData, ...forecastData];
+
+      const branchName = document.querySelector('#branchDropdownButton span').textContent;
+      const branchAddress = branchName === 'All Branches' ? 
+          'Multiple Locations' : 
+          (branchName === 'Pila' ? 
+              '#6 J.P Rizal St. Brgy. Sta Clara Sur, (Pob) Pila, Laguna' : 
+              'J.P Rizal(corner), Quesada St. Bagumbayan, Paete, Laguna');
+      
+      // Update the header in the print content
+      const headerHTML = `
+          <div class="header">
+              <h1>VJay Relova Funeral Services</h1>
+              <p>${branchAddress}</p>
+              <h2>Sales & Payment Trends Report - ${branchName}</h2>
+              <p>Generated on: ${currentDate}</p>
+          </div>
+      `;
       
       // Create the HTML content for the new tab
       let tableContent = '';
