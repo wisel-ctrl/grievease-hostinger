@@ -224,6 +224,20 @@ $user_id = $_SESSION['user_id'];
   0% { transform: translateY(-50%) rotate(0deg); }
   100% { transform: translateY(-50%) rotate(360deg); }
 }
+
+.availability-indicator {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 0.75rem;
+        display: flex;
+        align-items: center;
+    }
+    .availability-indicator i {
+        margin-right: 4px;
+    }
+    
   </style>
 </head>
 <body class="flex bg-gray-50">
@@ -354,25 +368,37 @@ $user_id = $_SESSION['user_id'];
       <!-- Contact Information Section -->
       <div>
         <label for="customerEmail" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-          Email Address <span class="text-red-500">*</span>
+            Email Address <span class="text-red-500">*</span>
         </label>
         <div class="relative">
-          <input type="email" id="customerEmail" name="customerEmail" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="example@email.com" required
-                 oninput="validateEmail(this)">
+            <input type="email" id="customerEmail" name="customerEmail" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="example@email.com" required
+                   oninput="validateEmail(this); checkEmailAvailability(this.value)">
+            <span id="emailAvailability" class="availability-indicator hidden">
+                <i class="fas fa-check-circle text-green-500"></i> Available
+            </span>
+            <span id="emailUnavailable" class="availability-indicator hidden">
+                <i class="fas fa-times-circle text-red-500"></i> In use
+            </span>
         </div>
         <p id="emailError" class="text-red-500 text-xs mt-1 hidden">Please enter a valid email address</p>
-      </div>
+    </div>
       
       <div>
         <label for="customerPhone" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-          Phone Number <span class="text-red-500">*</span>
+            Phone Number <span class="text-red-500">*</span>
         </label>
         <div class="relative">
-          <input type="tel" id="customerPhone" name="customerPhone" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Phone Number" required
-                 oninput="validatePhoneNumber(this)" maxlength="11">
+            <input type="tel" id="customerPhone" name="customerPhone" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Phone Number" required
+                   oninput="validatePhoneNumber(this); checkPhoneAvailability(this.value)" maxlength="11">
+            <span id="phoneAvailability" class="availability-indicator hidden">
+                <i class="fas fa-check-circle text-green-500"></i> Available
+            </span>
+            <span id="phoneUnavailable" class="availability-indicator hidden">
+                <i class="fas fa-times-circle text-red-500"></i> In use
+            </span>
         </div>
         <p id="phoneError" class="text-red-500 text-xs mt-1 hidden">Please enter a valid Philippine phone number (09XXXXXXXXX)</p>
-      </div>
+    </div>
       
       <div>
         <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
@@ -462,25 +488,7 @@ function validateName(input, errorElementId) {
 }
 
 // Email validation
-function validateEmail() {
-  const emailInput = document.getElementById('customerEmail');
-  const emailError = document.getElementById('emailError');
-  const email = emailInput.value.trim();
-  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  if (email === '') {
-    emailError.textContent = 'Email is required';
-    emailError.classList.remove('hidden');
-    return false;
-  } else if (!emailPattern.test(email)) {
-    emailError.textContent = 'Please enter a valid email address';
-    emailError.classList.remove('hidden');
-    return false;
-  } else {
-    emailError.classList.add('hidden');
-    return true;
-  }
-}
 
 // Phone number validation
 function validatePhoneNumber(input) {
@@ -766,24 +774,19 @@ function validateBirthdate() {
   }
 }
 
-function validateEmail() {
-  const emailInput = document.getElementById('customerEmail');
-  const emailError = document.getElementById('emailError');
-  const email = emailInput.value.trim();
-  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-  if (email === '') {
-    emailError.textContent = 'Email is required';
-    emailError.classList.remove('hidden');
-    return false;
-  } else if (!emailPattern.test(email)) {
-    emailError.textContent = 'Please enter a valid email address';
-    emailError.classList.remove('hidden');
-    return false;
-  } else {
-    emailError.classList.add('hidden');
-    return true;
-  }
+function validateEmail(input) {
+    const emailError = document.getElementById('emailError');
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    
+    if (!emailPattern.test(input.value)) {
+        input.classList.add('border-red-500');
+        emailError.classList.remove('hidden');
+        return false;
+    } else {
+        input.classList.remove('border-red-500');
+        emailError.classList.add('hidden');
+        return true;
+    }
 }
 
 function validatePhoneNumber() {
@@ -1158,57 +1161,67 @@ function generatePassword() {
 
 // Confirmation before submitting form
 function confirmSubmitCustomerForm() {
-  // Validate all fields
-  const isValid = validateFirstName() && 
-                  validateMiddleName() && 
-                  validateLastName() && 
-                  validateBirthdate() && 
-                  validateEmail() && 
-                  validatePhoneNumber() && 
-                  validateBranchLocation();
+    const isValid = validateFirstName() &&
+                    validateMiddleName() &&
+                    validateLastName() &&
+                    validateBirthdate() &&
+                    validateEmail() &&
+                    validatePhoneNumber() &&
+                    validateBranchLocation();
 
-  if (isValid) {
-    // Show confirmation dialog
-    Swal.fire({
-      title: 'Confirm Account Creation',
-      html: `
-        <div style="text-align: left;">
-          <p>Are you sure you want to create this customer account?</p>
-          <div style="margin-top: 15px; background: #f8f9fa; padding: 10px; border-radius: 5px; border-left: 4px solid #CA8A04;">
-            <p><strong>Name:</strong> ${document.getElementById('firstName').value} ${document.getElementById('lastName').value}</p>
-            <p><strong>Email:</strong> ${document.getElementById('customerEmail').value}</p>
-            <p><strong>Phone:</strong> ${document.getElementById('customerPhone').value}</p>
-          </div>
-        </div>
-      `,
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonColor: '#CA8A04',
-      confirmButtonText: 'Yes, create account',
-      cancelButtonText: 'Cancel',
-      reverseButtons: true
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // Generate password if not already generated
-        if (document.getElementById('generatedPassword').value === '') {
-          generatePassword();
+    if (isValid) {
+        // Check if email or phone is unavailable
+        if (!document.getElementById('emailUnavailable').classList.contains('hidden') ||
+            !document.getElementById('phoneUnavailable').classList.contains('hidden')) {
+            Swal.fire({
+                title: 'Validation Error',
+                text: 'Please use a different email or phone number as the current ones are already in use.',
+                icon: 'error',
+                confirmButtonColor: '#d33'
+            });
+            return;
         }
-        
-        // First check if phone number is available
-        checkCustomerPhoneAvailability()
-          .then(() => {
-            // If phone is available, show OTP verification modal
-            showOTPModal();
-          })
-          .catch((error) => {
-            console.error("Phone validation error:", error);
-            // Error handling already done in checkPhoneAvailability function
-          });
-      }
-    });
-  }
-}
 
+        // Check if availability checks are still in progress
+        if (document.getElementById('emailAvailability').innerHTML.includes('fa-spinner') ||
+            document.getElementById('phoneAvailability').innerHTML.includes('fa-spinner')) {
+            Swal.fire({
+                title: 'Please Wait',
+                text: 'Availability checks are still in progress',
+                icon: 'warning',
+                confirmButtonColor: '#d33'
+            });
+            return;
+        }
+
+        Swal.fire({
+            title: 'Confirm Account Creation',
+            html: `
+                <div style="text-align: left;">
+                    <p>Are you sure you want to create this customer account?</p>
+                    <div style="margin-top: 15px; background: #f8f9fa; padding: 10px; border-radius: 5px; border-left: 4px solid #CA8A04;">
+                        <p><strong>Name:</strong> ${document.getElementById('firstName').value} ${document.getElementById('lastName').value}</p>
+                        <p><strong>Email:</strong> ${document.getElementById('customerEmail').value}</p>
+                        <p><strong>Phone:</strong> ${document.getElementById('customerPhone').value}</p>
+                    </div>
+                </div>
+            `,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#CA8A04',
+            confirmButtonText: 'Yes, create account',
+            cancelButtonText: 'Cancel',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                if (document.getElementById('generatedPassword').value === '') {
+                    generatePassword();
+                }
+                showOTPModal();
+            }
+        });
+    }
+}
 // Add this new function for actual submission after OTP verification
 function actuallySubmitForm() {
   const form = document.getElementById('addCustomerAccountForm');
@@ -1612,30 +1625,21 @@ function openEditCustomerAccountModal(userId) {
                 originalPhone = data.user.phone_number;
                 
                 // Create modal HTML with validation indicators
-                const modalHTML = `
+const modalHTML = `
 <div id="editCustomerModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto">
-    <!-- Modal Backdrop -->
     <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
-    
-    <!-- Modal Content -->
     <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] flex flex-col">
-        <!-- Close Button -->
         <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeEditCustomerModal()">
             <i class="fas fa-times"></i>
         </button>
-        
-        <!-- Modal Header -->
         <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
             <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
                 Edit Customer Account
             </h3>
         </div>
-        
-        <!-- Modal Body -->
         <div class="px-4 sm:px-6 py-4 sm:py-5 overflow-y-auto modal-scroll-container">
             <form id="editCustomerForm" class="space-y-3 sm:space-y-4">
                 <input type="hidden" name="user_id" value="${data.user.id}">
-                
                 <div>
                     <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">Customer ID</label>
                     <div class="relative">
@@ -1643,7 +1647,6 @@ function openEditCustomerAccountModal(userId) {
                                class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" readonly>
                     </div>
                 </div>
-                
                 <div>
                     <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                         First Name <span class="text-red-500">*</span>
@@ -1667,7 +1670,6 @@ function openEditCustomerAccountModal(userId) {
                         <div class="text-xs text-red-500 mt-1 hidden" id="firstNameError">Minimum 2 characters required</div>
                     </div>
                 </div>
-                
                 <div>
                     <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                         Last Name <span class="text-red-500">*</span>
@@ -1691,7 +1693,6 @@ function openEditCustomerAccountModal(userId) {
                         <div class="text-xs text-red-500 mt-1 hidden" id="lastNameError">Minimum 2 characters required</div>
                     </div>
                 </div>
-                
                 <div>
                     <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">Middle Name</label>
                     <div class="relative">
@@ -1707,7 +1708,6 @@ function openEditCustomerAccountModal(userId) {
                                         selection.getRangeAt(0).insertNode(document.createTextNode(text));">
                     </div>
                 </div>
-                
                 <div>
                     <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                         Email Address <span class="text-red-500">*</span>
@@ -1716,7 +1716,7 @@ function openEditCustomerAccountModal(userId) {
                         <input type="email" name="email" value="${data.user.email || ''}" 
                                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
                                required 
-                               oninput="this.value = this.value.replace(/\s/g, ''); checkEmailAvailability(this.value)"
+                               oninput="validateEmail(this); checkEmailAvailability(this.value, ${data.user.id})"
                                onkeydown="if (event.key === ' ') event.preventDefault();"
                                onpaste="const text = event.clipboardData.getData('text/plain').replace(/\s/g, '');
                                         event.preventDefault();
@@ -1724,18 +1724,15 @@ function openEditCustomerAccountModal(userId) {
                                         if (!selection.rangeCount) return;
                                         selection.deleteFromDocument();
                                         selection.getRangeAt(0).insertNode(document.createTextNode(text));">
-                        <div id="emailAvailability" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs hidden">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="ml-1">Available</span>
-                        </div>
-                        <div id="emailUnavailable" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs hidden">
-                            <i class="fas fa-times-circle text-red-500"></i>
-                            <span class="ml-1">In use</span>
-                        </div>
+                        <span id="emailAvailability" class="availability-indicator hidden">
+                            <i class="fas fa-check-circle text-green-500"></i> Available
+                        </span>
+                        <span id="emailUnavailable" class="availability-indicator hidden">
+                            <i class="fas fa-times-circle text-red-500"></i> In use
+                        </span>
                         <div class="text-xs text-red-500 mt-1 hidden" id="emailError">Valid email with @ symbol required</div>
                     </div>
                 </div>
-                
                 <div>
                     <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                         Phone Number <span class="text-red-500">*</span>
@@ -1747,14 +1744,7 @@ function openEditCustomerAccountModal(userId) {
                                pattern="09[0-9]{9}" 
                                maxlength="11"
                                required 
-                               oninput="this.value = this.value.replace(/[^0-9]/g, ''); 
-                                        if(this.value.length > 0 && !this.value.startsWith('09')) {
-                                            this.value = '09' + this.value.substring(2);
-                                        }
-                                        if(this.value.length > 11) {
-                                            this.value = this.value.substring(0, 11);
-                                        }
-                                        checkPhoneAvailability(this.value)"
+                               oninput="validatePhoneNumber(this); checkPhoneAvailability(this.value, ${data.user.id})"
                                onpaste="const text = event.clipboardData.getData('text/plain').replace(/[^0-9]/g, '');
                                         event.preventDefault();
                                         let pastedValue = text.substring(0, 11);
@@ -1765,18 +1755,16 @@ function openEditCustomerAccountModal(userId) {
                                         if (!selection.rangeCount) return;
                                         selection.deleteFromDocument();
                                         selection.getRangeAt(0).insertNode(document.createTextNode(pastedValue));">
-                        <div id="phoneAvailability" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs hidden">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="ml-1">Available</span>
-                        </div>
-                        <div id="phoneUnavailable" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs hidden">
-                            <i class="fas fa-times-circle text-red-500"></i>
-                            <span class="ml-1">In use</span>
-                        </div>
+                        <span id="phoneAvailability" class="availability-indicator hidden">
+                            <i class="fas fa-check-circle text-green-500"></i> Available
+                        </span>
+                        <span id="phoneUnavailable" class="availability-indicator hidden">
+                            <i class="fas fa-times-circle text-red-500"></i> In use
+                        </span>
                         <div class="text-xs text-red-500 mt-1 hidden" id="phoneError">Valid Philippine number starting with 09 (11 digits)</div>
                     </div>
                 </div>
-                
+
                 <div>
                     <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                         Branch Location <span class="text-red-500">*</span>
@@ -1794,8 +1782,6 @@ function openEditCustomerAccountModal(userId) {
                 </div>
             </form>
         </div>
-        
-        <!-- Modal Footer -->
         <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
             <button type="button" class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeEditCustomerModal()">
                 Cancel
@@ -1805,7 +1791,8 @@ function openEditCustomerAccountModal(userId) {
             </button>
         </div>
     </div>
-</div>`;
+</div>
+`;
                 // Add modal to DOM
                 document.body.insertAdjacentHTML('beforeend', modalHTML);
 
@@ -1844,7 +1831,7 @@ function openEditCustomerAccountModal(userId) {
 }
 
 // Check if email is available
-function checkEmailAvailability(email) {
+function checkEmailAvailability(email, userId = 0) {
     const emailAvailability = document.getElementById('emailAvailability');
     const emailUnavailable = document.getElementById('emailUnavailable');
     
@@ -1852,39 +1839,45 @@ function checkEmailAvailability(email) {
     emailAvailability.classList.add('hidden');
     emailUnavailable.classList.add('hidden');
 
-    // If email is empty or unchanged, return early
-    if (!email || email === originalEmail) {
+    // If email is empty, return early
+    if (!email) {
         return;
     }
 
     // Validate email format
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailPattern.test(email)) {
+        document.getElementById('emailError').classList.remove('hidden');
         return;
+    } else {
+        document.getElementById('emailError').classList.add('hidden');
     }
 
     // Show loading state
     emailAvailability.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
     emailAvailability.classList.remove('hidden');
 
-    fetch(`accountManagement/check_email.php?email=${encodeURIComponent(email)}&current_user=${currentUserId}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })
+    fetch(`accountManagement/check_email.php?email=${encodeURIComponent(email)}&current_user=${userId}`)
+        .then(response => response.json())
         .then(data => {
-            console.log('Availability response:', data);
-            
             if (data.available) {
                 emailAvailability.innerHTML = '<i class="fas fa-check-circle text-green-500"></i> Available';
                 emailAvailability.classList.remove('hidden');
                 emailUnavailable.classList.add('hidden');
             } else {
                 emailAvailability.classList.add('hidden');
-                emailUnavailable.innerHTML = `<i class="fas fa-times-circle text-red-500"></i> ${data.message || 'In use'}`;
+                emailUnavailable.innerHTML = '<i class="fas fa-times-circle text-red-500"></i> In use';
                 emailUnavailable.classList.remove('hidden');
+                Swal.fire({
+                    title: 'Email In Use',
+                    text: 'This email address is already registered.',
+                    icon: 'error',
+                    confirmButtonColor: '#d33',
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000
+                });
             }
         })
         .catch(error => {
@@ -1897,52 +1890,75 @@ function checkEmailAvailability(email) {
 }
 
 // Check if phone number is available
-function checkPhoneAvailability(phone) {
-    if (phone === originalPhone) {
-        // If phone hasn't changed, hide both indicators
-        document.getElementById('phoneAvailability').classList.add('hidden');
-        document.getElementById('phoneUnavailable').classList.add('hidden');
+function checkPhoneAvailability(phone, userId = 0) {
+    const phoneAvailability = document.getElementById('phoneAvailability');
+    const phoneUnavailable = document.getElementById('phoneUnavailable');
+    
+    // Hide both indicators initially
+    phoneAvailability.classList.add('hidden');
+    phoneUnavailable.classList.add('hidden');
+
+    // If phone is empty, return early
+    if (!phone) {
         return;
     }
 
-    // Simple phone validation first
+    // Validate phone format
     const phonePattern = /^09\d{9}$/;
     const cleanedPhone = phone.replace(/[^0-9]/g, '');
     if (!phonePattern.test(cleanedPhone)) {
-        document.getElementById('phoneAvailability').classList.add('hidden');
-        document.getElementById('phoneUnavailable').classList.add('hidden');
+        document.getElementById('phoneError').classList.remove('hidden');
         return;
+    } else {
+        document.getElementById('phoneError').classList.add('hidden');
     }
 
-    fetch(`accountManagement/check_phone.php?phone=${encodeURIComponent(phone)}&current_user=${currentUserId}`)
+    // Show loading state
+    phoneAvailability.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
+    phoneAvailability.classList.remove('hidden');
+
+    fetch(`accountManagement/check_phone.php?phone=${encodeURIComponent(cleanedPhone)}&current_user=${userId}`)
         .then(response => response.json())
         .then(data => {
             if (data.available) {
-                document.getElementById('phoneAvailability').classList.remove('hidden');
-                document.getElementById('phoneUnavailable').classList.add('hidden');
+                phoneAvailability.innerHTML = '<i class="fas fa-check-circle text-green-500"></i> Available';
+                phoneAvailability.classList.remove('hidden');
+                phoneUnavailable.classList.add('hidden');
             } else {
-                document.getElementById('phoneAvailability').classList.add('hidden');
-                document.getElementById('phoneUnavailable').classList.remove('hidden');
+                phoneAvailability.classList.add('hidden');
+                phoneUnavailable.innerHTML = '<i class="fas fa-times-circle text-red-500"></i> In use';
+                phoneUnavailable.classList.remove('hidden');
+                Swal.fire({
+                    title: 'Phone Number In Use',
+                    text: 'This phone number is already registered.',
+                    icon: 'error',
+                    confirmButtonColor: '#d33',
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000
+                });
             }
         })
         .catch(error => {
             console.error('Error checking phone availability:', error);
+            phoneAvailability.classList.add('hidden');
+            phoneUnavailable.innerHTML = '<i class="fas fa-exclamation-triangle text-yellow-500"></i> Error checking';
+            phoneUnavailable.classList.remove('hidden');
+            setTimeout(() => phoneUnavailable.classList.add('hidden'), 3000);
         });
 }
-
 function validateAndSaveCustomerChanges() {
     const form = document.getElementById('editCustomerForm');
     if (!form) return;
 
-    // Get form data
     const formData = new FormData(form);
     const newEmail = formData.get('email');
     const newPhone = formData.get('phone_number');
 
-    // Validate required fields
     const requiredFields = form.querySelectorAll('[required]');
     let isValid = true;
-    
+
     requiredFields.forEach(field => {
         if (!field.value.trim()) {
             field.classList.add('border-red-500');
@@ -1962,9 +1978,7 @@ function validateAndSaveCustomerChanges() {
         return;
     }
 
-    // Check if email is available (if changed)
     if (newEmail !== originalEmail) {
-        // Check if the unavailable indicator is visible
         if (!document.getElementById('emailUnavailable').classList.contains('hidden')) {
             Swal.fire({
                 title: 'Email In Use',
@@ -1974,10 +1988,10 @@ function validateAndSaveCustomerChanges() {
             });
             return;
         }
-        
-        // Also check if we haven't finished checking availability
-        if (document.getElementById('emailAvailability').classList.contains('hidden') && 
-            document.getElementById('emailUnavailable').classList.contains('hidden')) {
+
+        if (document.getElementById('emailAvailability').innerHTML.includes('fa-spinner') ||
+            (document.getElementById('emailAvailability').classList.contains('hidden') &&
+             document.getElementById('emailUnavailable').classList.contains('hidden'))) {
             Swal.fire({
                 title: 'Please Wait',
                 text: 'Email availability check is still in progress',
@@ -1988,9 +2002,7 @@ function validateAndSaveCustomerChanges() {
         }
     }
 
-    // Check if phone is available (if changed)
     if (newPhone !== originalPhone) {
-        // Check if the unavailable indicator is visible
         if (!document.getElementById('phoneUnavailable').classList.contains('hidden')) {
             Swal.fire({
                 title: 'Phone In Use',
@@ -2000,10 +2012,10 @@ function validateAndSaveCustomerChanges() {
             });
             return;
         }
-        
-        // Also check if we haven't finished checking availability
-        if (document.getElementById('phoneAvailability').classList.contains('hidden') && 
-            document.getElementById('phoneUnavailable').classList.contains('hidden')) {
+
+        if (document.getElementById('phoneAvailability').innerHTML.includes('fa-spinner') ||
+            (document.getElementById('phoneAvailability').classList.contains('hidden') &&
+             document.getElementById('phoneUnavailable').classList.contains('hidden'))) {
             Swal.fire({
                 title: 'Please Wait',
                 text: 'Phone availability check is still in progress',
@@ -2014,14 +2026,13 @@ function validateAndSaveCustomerChanges() {
         }
     }
 
-    // If email was changed, show OTP verification
     if (emailChanged) {
         showEditOTPModal(newEmail);
     } else {
-        // Otherwise, save changes directly
         saveCustomerChanges();
     }
 }
+
 // Show OTP modal for email verification during edit
 function showEditOTPModal(email) {
     // Set the email in the OTP modal
