@@ -357,7 +357,7 @@ $user_id = $_SESSION['user_id'];
         </label>
         <div class="relative">
           <select id="branchLocation" name="branchLocation" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required
-                  onchange="validateBranch(this)">
+        onchange="validateBranchLocation(this)">
             <option value="">Select Branch</option>
             <!-- Branch options will be populated by AJAX -->
           </select>
@@ -675,103 +675,103 @@ document.getElementById("customerPhone").addEventListener("input", function (e) 
 // Real-time validation functions
 // Updated name validation functions
 function validateFirstName() {
-  const firstNameInput = document.getElementById('firstName');
-  const firstNameError = document.getElementById('firstNameError');
-  const firstName = firstNameInput.value.trim();
-  const nameRegex = /^[A-Za-z]+$/;
+    const firstNameInput = document.getElementById('firstName');
+    const firstNameError = document.getElementById('firstNameError');
+    const firstName = firstNameInput.value.trim();
+    const nameRegex = /^[A-Za-z]+$/;
 
-  if (firstName === '') {
-    firstNameError.textContent = 'First name is required';
-    firstNameError.classList.remove('hidden');
-    return false;
-  } else if (!nameRegex.test(firstName)) {
-    firstNameError.textContent = 'First name must contain only letters (A-Z, a-z)';
-    firstNameError.classList.remove('hidden');
-    return false;
-  } else if (firstName.length === 1) {
-    firstNameError.textContent = 'First name must not contain single characters only';
-    firstNameError.classList.remove('hidden');
-    return false;
-  } else {
-    firstNameError.classList.add('hidden');
-    return true;
-  }
+    if (firstName === '') {
+        firstNameError.textContent = 'First name is required';
+        firstNameError.classList.remove('hidden');
+        return false;
+    } else if (!nameRegex.test(firstName)) {
+        firstNameError.textContent = 'First name must contain only letters (A-Z, a-z)';
+        firstNameError.classList.remove('hidden');
+        return false;
+    } else if (firstName.length === 1) {
+        firstNameError.textContent = 'First name must not contain single characters only';
+        firstNameError.classList.remove('hidden');
+        return false;
+    } else {
+        firstNameError.classList.add('hidden');
+        return true;
+    }
 }
 
 function validateLastName() {
-  const lastNameInput = document.getElementById('lastName');
-  const lastNameError = document.getElementById('lastNameError');
-  const lastName = lastNameInput.value.trim();
-  const nameRegex = /^[A-Za-z]+$/;
+    const lastNameInput = document.getElementById('lastName');
+    const lastNameError = document.getElementById('lastNameError');
+    const lastName = lastNameInput.value.trim();
+    const nameRegex = /^[A-Za-z]+$/;
 
-  if (lastName === '') {
-    lastNameError.textContent = 'Last name is required';
-    lastNameError.classList.remove('hidden');
-    return false;
-  } else if (!nameRegex.test(lastName)) {
-    lastNameError.textContent = 'Last name must not contain single characters only';
-    lastNameError.classList.remove('hidden');
-    return false;
-  } else if (lastName.length === 1) {
-    lastNameError.textContent = 'Last name must be at least 2 letters';
-    lastNameError.classList.remove('hidden');
-    return false;
-  } else {
-    lastNameError.classList.add('hidden');
-    return true;
-  }
+    if (lastName === '') {
+        lastNameError.textContent = 'Last name is required';
+        lastNameError.classList.remove('hidden');
+        return false;
+    } else if (!nameRegex.test(lastName)) {
+        lastNameError.textContent = 'Last name must contain only letters (A-Z, a-z)';
+        lastNameError.classList.remove('hidden');
+        return false;
+    } else if (lastName.length === 1) {
+        lastNameError.textContent = 'Last name must be at least 2 letters';
+        lastNameError.classList.remove('hidden');
+        return false;
+    } else {
+        lastNameError.classList.add('hidden');
+        return true;
+    }
 }
 
 function validateMiddleName() {
-  const middleNameInput = document.getElementById('middleName');
-  const middleNameError = document.getElementById('middleNameError');
-  const middleName = middleNameInput.value.trim();
-  const nameRegex = /^[A-Za-z]*$/;
+    const middleNameInput = document.getElementById('middleName');
+    const middleNameError = document.getElementById('middleNameError');
+    const middleName = middleNameInput.value.trim();
+    const nameRegex = /^[A-Za-z]*$/;
 
-  if (middleName !== '') {
-    if (!nameRegex.test(middleName)) {
-      middleNameError.textContent = 'Middle name must not contain single characters only';
-      middleNameError.classList.remove('hidden');
-      return false;
-    } else if (middleName.length === 1) {
-      middleNameError.textContent = 'Middle name must be at least 2 letters or empty';
-      middleNameError.classList.remove('hidden');
-      return false;
+    if (middleName !== '') {
+        if (!nameRegex.test(middleName)) {
+            middleNameError.textContent = 'Middle name must contain only letters (A-Z, a-z)';
+            middleNameError.classList.remove('hidden');
+            return false;
+        } else if (middleName.length === 1) {
+            middleNameError.textContent = 'Middle name must be at least 2 letters or empty';
+            middleNameError.classList.remove('hidden');
+            return false;
+        }
     }
-  }
-  
-  middleNameError.classList.add('hidden');
-  return true;
+    
+    middleNameError.classList.add('hidden');
+    return true;
 }
 
 function validateBirthdate() {
-  const birthdateInput = document.getElementById('birthdate');
-  const birthdateError = document.getElementById('birthdateError');
-  const birthdate = birthdateInput.value;
+    const birthdateInput = document.getElementById('birthdate');
+    const birthdateError = document.getElementById('birthdateError');
+    const birthdate = birthdateInput.value;
 
-  if (birthdate === '') {
-    birthdateError.textContent = 'Birthdate is required';
-    birthdateError.classList.remove('hidden');
-    return false;
-  } 
+    if (birthdate === '') {
+        birthdateError.textContent = 'Birthdate is required';
+        birthdateError.classList.remove('hidden');
+        return false;
+    } 
 
-  const today = new Date();
-  const birthdateObj = new Date(birthdate);
-  let age = today.getFullYear() - birthdateObj.getFullYear();
-  const monthDiff = today.getMonth() - birthdateObj.getMonth();
-  
-  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthdateObj.getDate())) {
-    age--;
-  }
-  
-  if (age < 18) {
-    birthdateError.textContent = 'You must be at least 18 years old';
-    birthdateError.classList.remove('hidden');
-    return false;
-  } else {
-    birthdateError.classList.add('hidden');
-    return true;
-  }
+    const today = new Date();
+    const birthdateObj = new Date(birthdate);
+    let age = today.getFullYear() - birthdateObj.getFullYear();
+    const monthDiff = today.getMonth() - birthdateObj.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthdateObj.getDate())) {
+        age--;
+    }
+    
+    if (age < 18) {
+        birthdateError.textContent = 'You must be at least 18 years old';
+        birthdateError.classList.remove('hidden');
+        return false;
+    } else {
+        birthdateError.classList.add('hidden');
+        return true;
+    }
 }
 
 function validateEmail(input) {
@@ -789,374 +789,424 @@ function validateEmail(input) {
     }
 }
 
-function validatePhoneNumber() {
-  const phoneInput = document.getElementById('customerPhone');
-  const phoneError = document.getElementById('phoneError');
-  const phone = phoneInput.value.trim();
-  const phonePattern = /^09\d{9}$/;
+function validatePhoneNumber(input) {
+    const phoneError = document.getElementById('phoneError');
+    const phone = input.value.trim();
+    const phonePattern = /^09\d{9}$/;
 
-  // Remove any non-digit characters
-  const cleanedPhone = phone.replace(/[^0-9]/g, '');
+    // Remove any non-digit characters
+    const cleanedPhone = phone.replace(/[^0-9]/g, '');
 
-  if (phone === '') {
-    phoneError.textContent = 'Phone number is required';
-    phoneError.classList.remove('hidden');
-    return false;
-  } else if (!phonePattern.test(cleanedPhone)) {
-    phoneError.textContent = 'Please enter a valid 11-digit mobile number (e.g., 09123456789)';
-    phoneError.classList.remove('hidden');
-    return false;
-  } else {
-    phoneError.classList.add('hidden');
-    return true;
-  }
+    if (phone === '') {
+        phoneError.textContent = 'Phone number is required';
+        phoneError.classList.remove('hidden');
+        return false;
+    } else if (!phonePattern.test(cleanedPhone)) {
+        phoneError.textContent = 'Please enter a valid 11-digit mobile number (e.g., 09123456789)';
+        phoneError.classList.remove('hidden');
+        return false;
+    } else {
+        phoneError.classList.add('hidden');
+        return true;
+    }
 }
 
-function validateBranchLocation() {
-  const branchSelect = document.getElementById('branchLocation');
-  const branchError = document.getElementById('branchError');
+function validateBranchLocation(select) {
+    const branchError = document.getElementById('branchError');
 
-  if (branchSelect.value === '') {
-    branchError.classList.remove('hidden');
-    return false;
-  } else {
-    branchError.classList.add('hidden');
-    return true;
-  }
+    if (select.value === '') {
+        branchError.classList.remove('hidden');
+        return false;
+    } else {
+        branchError.classList.add('hidden');
+        return true;
+    }
 }
 
 // Modal functions
 function openAddCustomerAccountModal() {
-  const modal = document.getElementById('addCustomerAccountModal');
-  modal.classList.remove('hidden');
-  modal.classList.add('flex');
-  document.body.classList.add('overflow-hidden');
+    const modal = document.getElementById('addCustomerAccountModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    document.body.classList.add('overflow-hidden');
 }
 
 function closeAddCustomerAccountModal() {
-  const modal = document.getElementById('addCustomerAccountModal');
-  modal.classList.add('hidden');
-  modal.classList.remove('flex');
-  document.body.classList.remove('overflow-hidden');
-  
-  // Reset form and error messages
-  document.getElementById('addCustomerAccountForm').reset();
-  document.querySelectorAll('.text-red-500.text-xs').forEach(element => {
-    element.classList.add('hidden');
-  });
+    const modal = document.getElementById('addCustomerAccountModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    document.body.classList.remove('overflow-hidden');
+    
+    // Reset form and error messages
+    document.getElementById('addCustomerAccountForm').reset();
+    document.querySelectorAll('.text-red-500.text-xs').forEach(element => {
+        element.classList.add('hidden');
+    });
 }
 
 // Toggle password visibility
 function togglePassword() {
-  const passwordInput = document.getElementById('generatedPassword');
-  const eyeIcon = document.getElementById('eyeIcon');
-  
-  if (passwordInput.type === 'password') {
-    passwordInput.type = 'text';
-    eyeIcon.innerHTML = `
-      <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.5s2.947 5.455 8.02 5.455S20.02 8.5 20.02 8.5s-2.947-5.455-8.02-5.455S3.98 8.5 3.98 8.5z" />
-      <path stroke-linecap="round" stroke-linejoin="round" d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
-      <line x1="3" y1="3" x2="21" y2="21" stroke="currentColor" stroke-width="1.5" />
-    `;
-  } else {
-    passwordInput.type = 'password';
-    eyeIcon.innerHTML = `
-      <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 12s2.947-5.455 8.02-5.455S20.02 12 20.02 12s-2.947 5.455-8.02 5.455S3.98 12 3.98 12z" />
-      <path stroke-linecap="round" stroke-linejoin="round" d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
-    `;
-  }
+    const passwordInput = document.getElementById('generatedPassword');
+    const eyeIcon = document.getElementById('eyeIcon');
+    
+    if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        eyeIcon.innerHTML = `
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.5s2.947 5.455 8.02 5.455S20.02 8.5 20.02 8.5s-2.947-5.455-8.02-5.455S3.98 8.5 3.98 8.5z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
+            <line x1="3" y1="3" x2="21" y2="21" stroke="currentColor" stroke-width="1.5" />
+        `;
+    } else {
+        passwordInput.type = 'password';
+        eyeIcon.innerHTML = `
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 12s2.947-5.455 8.02-5.455S20.02 12 20.02 12s-2.947 5.455-8.02 5.455S3.98 12 3.98 12z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
+        `;
+    }
 }
-
 
 // Show OTP modal and send OTP
 function showOTPModal() {
-  // Set the email in the OTP modal
-  const email = document.getElementById('customerEmail').value;
-  document.getElementById('otpEmail').textContent = email;
-  
-  // Send OTP to email
-  const formData = new FormData();
-  formData.append('email', email);
-  
-  const xhr = new XMLHttpRequest();
-  xhr.open('POST', '../admin/addCustomer/send_otp.php', true);
-  
-  xhr.onload = function() {
-    if (this.status === 200) {
-      const response = JSON.parse(this.responseText);
-      if (response.success) {
-        // Show OTP modal
-        const modal = document.getElementById('otpVerificationModal');
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-        
-        // Focus on first OTP input
-        const otpInputs = document.querySelectorAll('.otp-input');
-        if (otpInputs.length > 0) {
-          otpInputs[0].focus();
+    // Set the email in the OTP modal
+    const email = document.getElementById('customerEmail').value;
+    document.getElementById('otpEmail').textContent = email;
+    
+    // Send OTP to email
+    const formData = new FormData();
+    formData.append('email', email);
+    
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', '../admin/addCustomer/send_otp.php', true);
+    
+    xhr.onload = function() {
+        Swal.close(); // Close the loading dialog
+        if (this.status === 200) {
+            try {
+                const response = JSON.parse(this.responseText);
+                if (response.success) {
+                    // Show OTP modal
+                    const modal = document.getElementById('otpVerificationModal');
+                    modal.classList.remove('hidden');
+                    modal.classList.add('flex');
+                    
+                    // Make sure the verify button is set for creation flow
+                    const verifyBtn = document.getElementById('verifyOtpBtn');
+                    verifyBtn.setAttribute('onclick', 'verifyOTP()');
+                    
+                    // Focus on first OTP input
+                    const otpInputs = document.querySelectorAll('.otp-input');
+                    if (otpInputs.length > 0) {
+                        otpInputs[0].focus();
+                    }
+                } else {
+                    Swal.fire({
+                        title: 'Error Occurred',
+                        text: response.message || 'Failed to send OTP',
+                        icon: 'error',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#d33'
+                    });
+                }
+            } catch (e) {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Invalid server response',
+                    icon: 'error'
+                });
+            }
+        } else {
+            Swal.fire({
+                title: 'Error',
+                text: 'Failed to connect to server',
+                icon: 'error'
+            });
         }
-      } else {
+    };
+    
+    xhr.onerror = function() {
+        Swal.close();
         Swal.fire({
-          title: 'Error Occurred',
-          text: response.message || 'Something went wrong', // Fallback if message is empty
-          icon: 'error',
-          confirmButtonText: 'OK',
-          confirmButtonColor: '#d33',
-          backdrop: `
-            rgba(210,0,0,0.4)
-            url("/images/nyan-cat.gif")
-            center top
-            no-repeat
-          `
+            title: 'Connection Error',
+            text: 'Failed to connect to server',
+            icon: 'error'
         });
-      }
-    }
-  };
-  
-  xhr.send(formData);
+    };
+    
+    xhr.send(formData);
 }
 
 // Close OTP modal
 function closeOtpModal() {
-  const modal = document.getElementById('otpVerificationModal');
-  modal.classList.add('hidden');
-  modal.classList.remove('flex');
-  
-  // Clear OTP inputs
-  const otpInputs = document.querySelectorAll('.otp-input');
-  otpInputs.forEach(input => {
-    input.value = '';
-  });
-  
-  // Hide error message
-  document.getElementById('otpError').classList.add('hidden');
+    const modal = document.getElementById('otpVerificationModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    
+    // Clear OTP inputs
+    const otpInputs = document.querySelectorAll('.otp-input');
+    otpInputs.forEach(input => {
+        input.value = '';
+    });
+    
+    // Hide error message
+    document.getElementById('otpError').classList.add('hidden');
 }
 
 // Resend OTP
 function resendOTP() {
-
-  const email = document.getElementById('customerEmail').value;
-  const formData = new FormData();
-  formData.append('email', email);
-  
-  const xhr = new XMLHttpRequest();
-  xhr.open('POST', '../admin/addCustomer/send_otp.php', true);
-  
-  xhr.onload = function() {
-    if (this.status === 200) {
-      try {
-        const response = JSON.parse(this.responseText);
-        if (response.success) {
-          Swal.fire({
-            title: 'OTP Sent!',
-            text: 'A new OTP has been sent to your email address.',
-            icon: 'success',
-            toast: true,
-            position: 'top-end', 
-            showConfirmButton: false,
-            timer: 5000,
-            timerProgressBar: true,
-            background: '#f8f9fa',
-            iconColor: '#28a745',
-            width: '400px',
-            padding: '1em',
-            customClass: {
-              container: 'custom-swal-container',
-              popup: 'custom-swal-popup'
+    const email = document.getElementById('customerEmail').value;
+    const formData = new FormData();
+    formData.append('email', email);
+    
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', '../admin/addCustomer/send_otp.php', true);
+    
+    xhr.onload = function() {
+        if (this.status === 200) {
+            try {
+                const response = JSON.parse(this.responseText);
+                if (response.success) {
+                    Swal.fire({
+                        title: 'OTP Sent!',
+                        text: 'A new OTP has been sent to your email address.',
+                        icon: 'success',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 5000,
+                        timerProgressBar: true,
+                        background: '#f8f9fa',
+                        iconColor: '#28a745',
+                        width: '400px',
+                        padding: '1em',
+                        customClass: {
+                            container: 'custom-swal-container',
+                            popup: 'custom-swal-popup'
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Failed',
+                        text: response.message || 'Failed to send OTP',
+                        icon: 'error',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 4000,
+                        timerProgressBar: true,
+                        background: '#f8f9fa',
+                        iconColor: '#dc3545',
+                        width: '400px',
+                        padding: '1em',
+                        customClass: {
+                            container: 'custom-swal-container',
+                            popup: 'custom-swal-popup-error'
+                        }
+                    });
+                }
+            } catch (e) {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Invalid server response',
+                    icon: 'error'
+                });
             }
-          });
-        } else {
-          Swal.fire({
-            title: 'Failed',
-            text: response.message || 'Failed to send OTP',
-            icon: 'error',
-            toast: true,
-            position: 'top-end', // top-right corner
-            showConfirmButton: false,
-            timer: 4000, // Longer display for errors
-            timerProgressBar: true,
-            background: '#f8f9fa',
-            iconColor: '#dc3545',
-            width: '400px',
-            padding: '1em',
-            customClass: {
-              container: 'custom-swal-container',
-              popup: 'custom-swal-popup-error' // Special class for errors
-            }
-          });
         }
-      } catch (e) {
+    };
+    
+    xhr.onerror = function() {
         Swal.fire({
-          title: 'Error',
-          text: 'Invalid server response',
-          icon: 'error'
+            title: 'Connection Error',
+            text: 'Failed to connect to server',
+            icon: 'error'
         });
-      }
-    }
-  };
-  
-  xhr.onerror = function() {
-    Swal.fire({
-      title: 'Connection Error',
-      text: 'Failed to connect to server',
-      icon: 'error'
-    });
-  };
-  
-  xhr.send(formData);
+    };
+    
+    xhr.send(formData);
 }
 
 // Verify OTP and submit form
 function verifyOTP() {
-  // Collect OTP from inputs
-  const otpInputs = document.querySelectorAll('.otp-input');
-  let otpValue = '';
-  
-  otpInputs.forEach(input => {
-    otpValue += input.value;
-  });
-  
-  // Check if OTP is complete
-  if (otpValue.length !== 6) {
-    document.getElementById('otpError').textContent = 'Please enter all 6 digits';
-    document.getElementById('otpError').classList.remove('hidden');
-    return;
-  }
-  
-  // Verify OTP
-  const formData = new FormData();
-  formData.append('otp', otpValue);
-  
-  const xhr = new XMLHttpRequest();
-  xhr.open('POST', '../admin/addCustomer/verify_otp.php', true);
-  
-  xhr.onload = function() {
-    if (this.status === 200) {
-      const response = JSON.parse(this.responseText);
-      if (response.success) {
-        // OTP verified, proceed with form submission
-        actuallySubmitForm();
-      } else {
-        document.getElementById('otpError').textContent = response.message;
+    // Collect OTP from inputs
+    const otpInputs = document.querySelectorAll('.otp-input');
+    let otpValue = '';
+    
+    otpInputs.forEach(input => {
+        otpValue += input.value;
+    });
+    
+    // Check if OTP is complete
+    if (otpValue.length !== 6) {
+        document.getElementById('otpError').textContent = 'Please enter all 6 digits';
         document.getElementById('otpError').classList.remove('hidden');
-      }
+        return;
     }
-  };
-  
-  xhr.send(formData);
+    
+    // Show loading state
+    Swal.fire({
+        title: 'Verifying...',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+    
+    // Verify OTP
+    const formData = new FormData();
+    formData.append('otp', otpValue);
+    
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', '../admin/addCustomer/verify_otp.php', true);
+    
+    xhr.onload = function() {
+        Swal.close();
+        if (this.status === 200) {
+            try {
+                const response = JSON.parse(this.responseText);
+                if (response.success) {
+                    // OTP verified, proceed with form submission
+                    actuallySubmitForm();
+                } else {
+                    document.getElementById('otpError').textContent = response.message;
+                    document.getElementById('otpError').classList.remove('hidden');
+                }
+            } catch (e) {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Invalid server response',
+                    icon: 'error'
+                });
+            }
+        } else {
+            Swal.fire({
+                title: 'Error',
+                text: 'Failed to connect to server',
+                icon: 'error'
+            });
+        }
+    };
+    
+    xhr.onerror = function() {
+        Swal.close();
+        Swal.fire({
+            title: 'Connection Error',
+            text: 'Failed to connect to server',
+            icon: 'error'
+        });
+    };
+    
+    xhr.send(formData);
 }
 
 // Handle OTP input functionality
 document.addEventListener('DOMContentLoaded', function() {
-    
     generatePassword();
   
-  // Regenerate password when these fields change
-  document.getElementById('firstName').addEventListener('input', generatePassword);
-  document.getElementById('lastName').addEventListener('input', generatePassword);
-  document.getElementById('birthdate').addEventListener('change', generatePassword);
+    // Regenerate password when these fields change
+    document.getElementById('firstName').addEventListener('input', generatePassword);
+    document.getElementById('lastName').addEventListener('input', generatePassword);
+    document.getElementById('birthdate').addEventListener('change', generatePassword);
     
-  const otpInputs = document.querySelectorAll('.otp-input');
+    const otpInputs = document.querySelectorAll('.otp-input');
   
-  otpInputs.forEach((input, index) => {
-    // Auto-focus next input
-    input.addEventListener('input', function() {
-      if (input.value.length === 1) {
-        if (index < otpInputs.length - 1) {
-          otpInputs[index + 1].focus();
-        }
-      }
+    otpInputs.forEach((input, index) => {
+        // Auto-focus next input
+        input.addEventListener('input', function() {
+            if (input.value.length === 1) {
+                if (index < otpInputs.length - 1) {
+                    otpInputs[index + 1].focus();
+                }
+            }
+        });
+        
+        // Handle backspace
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Backspace' && input.value === '' && index > 0) {
+                otpInputs[index - 1].focus();
+            }
+        });
+        
+        // Allow only numbers
+        input.addEventListener('input', function() {
+            input.value = input.value.replace(/[^0-9]/g, '');
+        });
     });
-    
-    // Handle backspace
-    input.addEventListener('keydown', function(e) {
-      if (e.key === 'Backspace' && input.value === '' && index > 0) {
-        otpInputs[index - 1].focus();
-      }
-    });
-    
-    // Allow only numbers
-    input.addEventListener('input', function() {
-      input.value = input.value.replace(/[^0-9]/g, '');
-    });
-  });
 });
 
 // Add this function to check phone number availability before submission
 function checkCustomerPhoneAvailability() {
-  const phoneInput = document.getElementById('customerPhone');
-  const phoneError = document.getElementById('phoneError');
-  const phone = phoneInput.value.trim();
-  
-  // Only proceed if the phone number passed basic validation
-  if (!validatePhoneNumber()) {
-    return Promise.reject('Phone number is invalid');
-  }
-  
-  return new Promise((resolve, reject) => {
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', '../admin/addCustomer/check_phone.php', true);
-    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    const phoneInput = document.getElementById('customerPhone');
+    const phoneError = document.getElementById('phoneError');
+    const phone = phoneInput.value.trim();
     
-    xhr.onload = function() {
-      if (this.status === 200) {
-        try {
-          const response = JSON.parse(this.responseText);
-          if (response.available) {
-            phoneError.classList.add('hidden');
-            resolve(true);
-          } else {
-            phoneError.textContent = 'Phone number already in use';
+    // Only proceed if the phone number passed basic validation
+    if (!validatePhoneNumber(phoneInput)) {
+        return Promise.reject('Phone number is invalid');
+    }
+    
+    return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '../admin/addCustomer/check_phone.php', true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        
+        xhr.onload = function() {
+            if (this.status === 200) {
+                try {
+                    const response = JSON.parse(this.responseText);
+                    if (response.available) {
+                        phoneError.classList.add('hidden');
+                        resolve(true);
+                    } else {
+                        phoneError.textContent = 'Phone number already in use';
+                        phoneError.classList.remove('hidden');
+                        reject('Phone number already in use');
+                    }
+                } catch (e) {
+                    console.error("Error parsing response:", e);
+                    phoneError.textContent = 'Error checking phone number';
+                    phoneError.classList.remove('hidden');
+                    reject('Error checking phone number');
+                }
+            } else {
+                phoneError.textContent = 'Error checking phone number';
+                phoneError.classList.remove('hidden');
+                reject('Error checking phone number');
+            }
+        };
+        
+        xhr.onerror = function() {
+            phoneError.textContent = 'Network error occurred';
             phoneError.classList.remove('hidden');
-            reject('Phone number already in use');
-          }
-        } catch (e) {
-          console.error("Error parsing response:", e);
-          phoneError.textContent = 'Error checking phone number';
-          phoneError.classList.remove('hidden');
-          reject('Error checking phone number');
-        }
-      } else {
-        phoneError.textContent = 'Error checking phone number';
-        phoneError.classList.remove('hidden');
-        reject('Error checking phone number');
-      }
-    };
-    
-    xhr.onerror = function() {
-      phoneError.textContent = 'Network error occurred';
-      phoneError.classList.remove('hidden');
-      reject('Network error occurred');
-    };
-    
-    xhr.send('phoneNumber=' + encodeURIComponent(phone));
-  });
+            reject('Network error occurred');
+        };
+        
+        xhr.send('phoneNumber=' + encodeURIComponent(phone));
+    });
 }
 
 function generatePassword() {
-  const firstName = document.getElementById('firstName').value.trim();
-  const lastName = document.getElementById('lastName').value.trim();
-  const birthdate = document.getElementById('birthdate').value;
-  
-  if (firstName !== '' && lastName !== '' && birthdate !== '') {
-    // Format: First letter of first name (uppercase) + First letter of last name (lowercase) + birthdate (YYYYMMDD)
-    const password = firstName.charAt(0).toUpperCase() + 
-                     lastName.charAt(0).toLowerCase() + 
-                     birthdate.replace(/-/g, '');
-    document.getElementById('generatedPassword').value = password;
-  } else {
-    // If fields are empty, generate a random password as fallback
-    const length = 12;
-    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    let password = "";
+    const firstName = document.getElementById('firstName').value.trim();
+    const lastName = document.getElementById('lastName').value.trim();
+    const birthdate = document.getElementById('birthdate').value;
     
-    for (let i = 0; i < length; i++) {
-      const randomIndex = Math.floor(Math.random() * charset.length);
-      password += charset[randomIndex];
+    if (firstName !== '' && lastName !== '' && birthdate !== '') {
+        // Format: First letter of first name (uppercase) + First letter of last name (lowercase) + birthdate (YYYYMMDD)
+        const password = firstName.charAt(0).toUpperCase() + 
+                         lastName.charAt(0).toLowerCase() + 
+                         birthdate.replace(/-/g, '');
+        document.getElementById('generatedPassword').value = password;
+    } else {
+        // If fields are empty, generate a random password as fallback
+        const length = 12;
+        const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        let password = "";
+        
+        for (let i = 0; i < length; i++) {
+            const randomIndex = Math.floor(Math.random() * charset.length);
+            password += charset[randomIndex];
+        }
+        
+        document.getElementById('generatedPassword').value = password;
     }
-    
-    document.getElementById('generatedPassword').value = password;
-  }
 }
 
 // Confirmation before submitting form
@@ -1165,9 +1215,9 @@ function confirmSubmitCustomerForm() {
                     validateMiddleName() &&
                     validateLastName() &&
                     validateBirthdate() &&
-                    validateEmail() &&
-                    validatePhoneNumber() &&
-                    validateBranchLocation();
+                    validateEmail(document.getElementById('customerEmail')) &&
+                    validatePhoneNumber(document.getElementById('customerPhone')) &&
+                    validateBranchLocation(document.getElementById('branchLocation'));
 
     if (isValid) {
         // Check if email or phone is unavailable
@@ -1217,116 +1267,131 @@ function confirmSubmitCustomerForm() {
                 if (document.getElementById('generatedPassword').value === '') {
                     generatePassword();
                 }
+                
+                // Show loading state before sending OTP
+                Swal.fire({
+                    title: 'Sending OTP...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+                
+                // Call showOTPModal after confirmation
                 showOTPModal();
             }
         });
     }
 }
+
 // Add this new function for actual submission after OTP verification
 function actuallySubmitForm() {
-  const form = document.getElementById('addCustomerAccountForm');
-  const formData = new FormData(form);
-  
-  const xhr = new XMLHttpRequest();
-  xhr.open('POST', '../admin/addCustomer/add_customer.php', true);
-  
-  xhr.onload = function() {
-    if (this.status === 200) {
-      const response = JSON.parse(this.responseText);
-      if (response.success) {
-          closeOtpModal(); // Close OTP modal
-          
-          Swal.fire({
-              title: 'Success!',
-              text: 'Customer account created successfully!',
-              icon: 'success',
-              confirmButtonColor: '#28a745',
-              showCancelButton: false,
-              confirmButtonText: 'OK',
-              allowOutsideClick: false,
-              willClose: () => {
-                  // Reload the page after account creation
-                  window.location.reload();
-              }
-          });
-      } else {
-          Swal.fire({
-              title: 'Error!',
-              html: `<div style="color: #721c24; background-color: #f8d7da; padding: 10px; border-radius: 5px; border-left: 4px solid #f5c6cb;">
-                        ${response.message || 'Failed to create account'}
-                    </div>`,
-              icon: 'error',
-              confirmButtonColor: '#dc3545',
-              confirmButtonText: 'Try Again',
-              allowOutsideClick: false
-          });
-      }
-    }
-  };
-  
-  xhr.send(formData);
+    const form = document.getElementById('addCustomerAccountForm');
+    const formData = new FormData(form);
+    
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', '../admin/addCustomer/add_customer.php', true);
+    
+    xhr.onload = function() {
+        if (this.status === 200) {
+            const response = JSON.parse(this.responseText);
+            if (response.success) {
+                closeOtpModal(); // Close OTP modal
+                
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Customer account created successfully!',
+                    icon: 'success',
+                    confirmButtonColor: '#28a745',
+                    showCancelButton: false,
+                    confirmButtonText: 'OK',
+                    allowOutsideClick: false,
+                    willClose: () => {
+                        // Reload the page after account creation
+                        window.location.reload();
+                    }
+                });
+            } else {
+                Swal.fire({
+                    title: 'Error!',
+                    html: `<div style="color: #721c24; background-color: #f8d7da; padding: 10px; border-radius: 5px; border-left: 4px solid #f5c6cb;">
+                              ${response.message || 'Failed to create account'}
+                          </div>`,
+                    icon: 'error',
+                    confirmButtonColor: '#dc3545',
+                    confirmButtonText: 'Try Again',
+                    allowOutsideClick: false
+                });
+            }
+        }
+    };
+    
+    xhr.send(formData);
 }
 
 // Function to load branches
 function loadBranches() {
-  const branchSelect = document.getElementById('branchLocation');
-  
-  fetch('../admin/addCustomer/get_branches.php')
-    .then(response => response.json())
-    .then(data => {
-      // Clear existing options except the first one
-      branchSelect.innerHTML = '<option value="">Select Branch</option>';
-      
-      // Add new options
-      data.forEach(branch => {
-        const option = document.createElement('option');
-        option.value = branch.branch_id;
-        option.textContent = branch.branch_name;
-        branchSelect.appendChild(option);
-      });
-    })
-    .catch(error => {
-      console.error('Error loading branches:', error);
-    });
+    const branchSelect = document.getElementById('branchLocation');
+    
+    fetch('../admin/addCustomer/get_branches.php')
+        .then(response => response.json())
+        .then(data => {
+            // Clear existing options except the first one
+            branchSelect.innerHTML = '<option value="">Select Branch</option>';
+            
+            // Add new options
+            data.forEach(branch => {
+                const option = document.createElement('option');
+                option.value = branch.branch_id;
+                option.textContent = branch.branch_name;
+                branchSelect.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Error loading branches:', error);
+        });
 }
 
 // Add event listeners for real-time validation
 document.addEventListener('DOMContentLoaded', function() {
-  // First Name validation
-  document.getElementById('firstName').addEventListener('input', validateFirstName);
-  
-  // Middle Name validation
-  document.getElementById('middleName').addEventListener('input', validateMiddleName);
-  
-  // Last Name validation
-  document.getElementById('lastName').addEventListener('input', validateLastName);
-  
-  // Birthdate validation
-  document.getElementById('birthdate').addEventListener('change', validateBirthdate);
-  
-  // Email validation
-  document.getElementById('customerEmail').addEventListener('input', validateEmail);
-  
-  // Phone Number validation
-  document.getElementById('customerPhone').addEventListener('input', validatePhoneNumber);
-  
-  // Branch Location validation
-  document.getElementById('branchLocation').addEventListener('change', validateBranchLocation);
-  
-  loadBranches();
+    // First Name validation
+    document.getElementById('firstName').addEventListener('input', validateFirstName);
+    
+    // Middle Name validation
+    document.getElementById('middleName').addEventListener('input', validateMiddleName);
+    
+    // Last Name validation
+    document.getElementById('lastName').addEventListener('input', validateLastName);
+    
+    // Birthdate validation
+    document.getElementById('birthdate').addEventListener('change', validateBirthdate);
+    
+    // Email validation
+    document.getElementById('customerEmail').addEventListener('input', function() {
+        validateEmail(this);
+        checkEmailAvailability(this.value);
+    });
+    
+    // Phone Number validation
+    document.getElementById('customerPhone').addEventListener('input', function() {
+        validatePhoneNumber(this);
+        checkPhoneAvailability(this.value);
+    });
+    
+    // Branch Location validation
+    document.getElementById('branchLocation').addEventListener('change', function() {
+        validateBranchLocation(this);
+    });
+    
+    loadBranches();
 
-  // Close modal on 'Escape' key press
-  window.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape') {
-      closeAddCustomerAccountModal();
-    }
-  });
+    // Close modal on 'Escape' key press
+    window.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeAddCustomerAccountModal();
+        }
+    });
 });
-
-
-
-
-
 </script>
   
   <script>
