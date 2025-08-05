@@ -1205,7 +1205,7 @@ var options = {
     }
   },
   title: {
-    text: 'Casket Demand Forecast',
+    text: 'Casket Demand Forecast - ' + branchName,
     align: 'left',
     style: {
       fontSize: '16px',
@@ -1471,6 +1471,10 @@ document.addEventListener('DOMContentLoaded', function() {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
+          title: {
+              display: true,
+              text: 'Sales & Payment Trends - ' + branchName
+          },
           legend: {
             position: 'top',
             align: 'end'
