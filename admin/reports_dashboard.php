@@ -366,32 +366,32 @@ $ratioChange = number_format($changes['ratio_change'] ?? 0, 1);
     </div>
 </div>
 
-<div id="printableTable" class="hidden bg-white p-5" style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
+<div id="printableTable" class="hidden bg-white p-5" style="font-family: Arial, sans-serif; width: 100%;">
     <!-- Header -->
     <div style="text-align: center; margin-bottom: 20px; border-bottom: 2px solid #3A57E8; padding-bottom: 10px;">
-        <h1 style="color: #3A57E8; margin-bottom: 5px;">VJay Relova Funeral Services</h1>
-        <h3 style="color: #666; margin-top: 0; margin-bottom: 5px;">#6 J.P Rizal St. Brgy. Sta Clara Sur, (Pob) Pila, Laguna</h3>
-        <h2 style="color: #3A57E8; margin-bottom: 5px;">Sales & Payment Trends Report</h2>
-        <p style="color: #666; margin-top: 0;">Generated on: <span id="printDate"></span></p>
+        <h1 style="color: #3A57E8; margin-bottom: 5px; font-size: 24px;">VJay Relova Funeral Services</h1>
+        <h3 style="color: #666; margin-top: 0; margin-bottom: 5px; font-size: 14px;">#6 J.P Rizal St. Brgy. Sta Clara Sur, (Pob) Pila, Laguna</h3>
+        <h2 style="color: #3A57E8; margin-bottom: 5px; font-size: 18px;">Sales & Payment Trends Report</h2>
+        <p style="color: #666; margin-top: 0; font-size: 12px;">Generated on: <span id="printDate"></span></p>
     </div>
     
-    <h2 class="text-xl font-bold mb-4">Sales & Payment Trends Data</h2>
-    <table class="w-full border-collapse">
+    <h2 style="font-size: 16px; font-weight: bold; margin-bottom: 10px;">Sales & Payment Trends Data</h2>
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
         <thead>
-            <tr class="bg-gray-100">
-                <th class="border p-2 text-left">Month</th>
-                <th class="border p-2 text-right">Accrued Revenue (₱)</th>
-                <th class="border p-2 text-right">Cash Revenue (₱)</th>
-                <th class="border p-2 text-center">Type</th>
+            <tr style="background-color: #f3f4f6;">
+                <th style="border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 12px;">Month</th>
+                <th style="border: 1px solid #ddd; padding: 8px; text-align: right; font-size: 12px;">Accrued Revenue (₱)</th>
+                <th style="border: 1px solid #ddd; padding: 8px; text-align: right; font-size: 12px;">Cash Revenue (₱)</th>
+                <th style="border: 1px solid #ddd; padding: 8px; text-align: center; font-size: 12px;">Type</th>
             </tr>
         </thead>
-        <tbody id="tableBody">
+        <tbody id="tableBody" style="font-size: 12px;">
             <!-- Table content will be filled by JavaScript -->
         </tbody>
     </table>
     
     <!-- Footer -->
-    <div style="text-align: center; margin-top: 30px; border-top: 2px solid #3A57E8; padding-top: 10px; color: #666; font-size: 12px;">
+    <div style="text-align: center; margin-top: 20px; border-top: 2px solid #3A57E8; padding-top: 10px; color: #666; font-size: 10px;">
         <p>Contact: (0956) 814-3000 | (0961) 345-4283 | Email: GrievEase@gmail.com</p>
         <p>© <?php echo date('Y'); ?> VJay Relova Funeral Services. All rights reserved.</p>
     </div>
@@ -1554,40 +1554,71 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('tableBody').innerHTML = '<tr><td colspan="4" class="border p-2 text-center">No sales data available</td></tr>';
   }
   
-  // Print button functionality
-  document.getElementById('printButton').addEventListener('click', function() {
-    // Show the printable table
-    const printableTable = document.getElementById('printableTable');
-    printableTable.classList.remove('hidden');
-    
-    // Print the window
-    window.print();
-    
-    // Hide the table again after printing (setTimeout ensures it happens after printing)
-    setTimeout(() => {
-      printableTable.classList.add('hidden');
-    }, 500);
-  });
-  
   // Add print-specific styles
-  const style = document.createElement('style');
-  style.innerHTML = `
-    @media print {
-      body * {
-        visibility: hidden;
+  const printStyle = document.createElement('style');
+  printStyle.innerHTML = `
+      @media print {
+          body * {
+              visibility: hidden;
+              margin: 0;
+              padding: 0;
+          }
+          #printableTable, #printableTable * {
+              visibility: visible;
+          }
+          #printableTable {
+              position: absolute;
+              left: 0;
+              top: 0;
+              width: 100%;
+              padding: 10px;
+              box-sizing: border-box;
+          }
+          #printableTable table {
+              page-break-inside: avoid;
+          }
+          @page {
+              size: auto;
+              margin: 10mm;
+          }
       }
-      #printableTable, #printableTable * {
-        visibility: visible;
-      }
-      #printableTable {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-      }
-    }
   `;
-  document.head.appendChild(style);
+  document.head.appendChild(printStyle);
+
+  // Modify your existing JavaScript to ensure proper printing
+  document.getElementById('printButton').addEventListener('click', function() {
+      // Set the current date
+      document.getElementById('printDate').textContent = new Date().toLocaleDateString();
+      
+      // Show the printable table
+      const printableTable = document.getElementById('printableTable');
+      printableTable.classList.remove('hidden');
+      
+      // Adjust the table content if needed to fit one page
+      const tableBody = document.getElementById('tableBody');
+      const rows = tableBody.querySelectorAll('tr');
+      if (rows.length > 20) { // If too many rows, reduce font size
+          tableBody.style.fontSize = '10px';
+          const allCells = printableTable.querySelectorAll('td, th');
+          allCells.forEach(cell => {
+              cell.style.padding = '4px';
+          });
+      }
+      
+      // Print the window
+      window.print();
+      
+      // Hide the table again after printing
+      setTimeout(() => {
+          printableTable.classList.add('hidden');
+          // Reset any style changes
+          tableBody.style.fontSize = '';
+          const allCells = printableTable.querySelectorAll('td, th');
+          allCells.forEach(cell => {
+              cell.style.padding = '8px';
+          });
+      }, 500);
+  });
 });
 </script>
 <script>
