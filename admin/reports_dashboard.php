@@ -367,23 +367,60 @@ $ratioChange = number_format($changes['ratio_change'] ?? 0, 1);
 </div>
 
 <!-- Hidden printable table (will only show when printing) -->
-<div id="printableTable" class="hidden bg-white p-5" style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
+<div id="printableTable" class="hidden bg-white p-5" style="font-family: Arial, sans-serif; width: 100%;">
     <!-- Header -->
     <div style="text-align: center; margin-bottom: 20px; border-bottom: 2px solid #3A57E8; padding-bottom: 10px;">
-        <h1 style="color: #3A57E8; margin-bottom: 5px;">VJay Relova Funeral Services</h1>
-        <h3 style="color: #666; margin-top: 0; margin-bottom: 5px;">#6 J.P Rizal St. Brgy. Sta Clara Sur, (Pob) Pila, Laguna</h3>
-        <h2 style="color: #3A57E8; margin-bottom: 5px;">Sales & Payment Trends Report</h2>
-        <p style="color: #666; margin-top: 0;">Generated on: <span id="printDate"></span></p>
+        <h1 style="color: #3A57E8; margin-bottom: 5px; font-size: 24px;">VJay Relova Funeral Services</h1>
+        <h3 style="color: #666; margin-top: 0; margin-bottom: 5px; font-size: 16px;">#6 J.P Rizal St. Brgy. Sta Clara Sur, (Pob) Pila, Laguna</h3>
+        <h2 style="color: #3A57E8; margin-bottom: 5px; font-size: 20px;">Sales & Payment Trends Report</h2>
+        <p style="color: #666; margin-top: 0; font-size: 14px;">Generated on: <span id="printDate"></span></p>
     </div>
     
-    <h2 class="text-xl font-bold mb-4">Sales & Payment Trends Data</h2>
-    <table class="w-full border-collapse">
+    <!-- Summary Metrics -->
+    <div style="display: flex; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap;">
+        <div style="width: 30%; min-width: 200px; background: #f8f9fa; padding: 10px; border-radius: 5px; margin-bottom: 10px;">
+            <div style="font-size: 14px; color: #666; margin-bottom: 5px;">Average Price</div>
+            <div style="font-size: 18px; font-weight: bold; color: #333;">
+                ₱<?php echo $avgPrice; ?> 
+                <span style="font-size: 14px; <?php echo ($priceChange >= 0) ? 'color: #28a745;' : 'color: #dc3545;'; ?>">
+                    <?php echo ($priceChange >= 0) ? '+' : ''; ?><?php echo $priceChange; ?>%
+                </span>
+            </div>
+        </div>
+        <div style="width: 30%; min-width: 200px; background: #f8f9fa; padding: 10px; border-radius: 5px; margin-bottom: 10px;">
+            <div style="font-size: 14px; color: #666; margin-bottom: 5px;">Average Payment</div>
+            <div style="font-size: 18px; font-weight: bold; color: #333;">
+                ₱<?php echo $avgPayment; ?> 
+                <span style="font-size: 14px; <?php echo ($paymentChange >= 0) ? 'color: #28a745;' : 'color: #dc3545;'; ?>">
+                    <?php echo ($paymentChange >= 0) ? '+' : ''; ?><?php echo $paymentChange; ?>%
+                </span>
+            </div>
+        </div>
+        <div style="width: 30%; min-width: 200px; background: #f8f9fa; padding: 10px; border-radius: 5px; margin-bottom: 10px;">
+            <div style="font-size: 14px; color: #666; margin-bottom: 5px;">Payment Ratio</div>
+            <div style="font-size: 18px; font-weight: bold; color: #333;">
+                <?php echo $paymentRatio; ?>% 
+                <span style="font-size: 14px; <?php echo ($ratioChange >= 0) ? 'color: #28a745;' : 'color: #dc3545;'; ?>">
+                    <?php echo ($ratioChange >= 0) ? '+' : ''; ?><?php echo $ratioChange; ?>%
+                </span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Chart Image -->
+    <div style="text-align: center; margin-bottom: 20px;">
+        <canvas id="chartCanvasForPrint" style="max-width: 100%; height: auto;"></canvas>
+    </div>
+    
+    <!-- Data Table -->
+    <h2 style="font-size: 18px; font-weight: bold; margin-bottom: 10px;">Sales & Payment Trends Data</h2>
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
         <thead>
-            <tr class="bg-gray-100">
-                <th class="border p-2 text-left">Month</th>
-                <th class="border p-2 text-right">Accrued Revenue (₱)</th>
-                <th class="border p-2 text-right">Cash Revenue (₱)</th>
-                <th class="border p-2 text-center">Type</th>
+            <tr style="background-color: #f8f9fa;">
+                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Month</th>
+                <th style="border: 1px solid #ddd; padding: 8px; text-align: right;">Accrued Revenue (₱)</th>
+                <th style="border: 1px solid #ddd; padding: 8px; text-align: right;">Cash Revenue (₱)</th>
+                <th style="border: 1px solid #ddd; padding: 8px; text-align: center;">Type</th>
             </tr>
         </thead>
         <tbody id="tableBody">
@@ -1495,7 +1532,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Render the chart
     const ctx = document.getElementById('salesSplineChart').getContext('2d');
-    new Chart(ctx, config);
+    const chart = new Chart(ctx, config);
     
     // Add vertical line at the end of historical data
     const addVerticalLine = () => {
@@ -1542,33 +1579,67 @@ document.addEventListener('DOMContentLoaded', function() {
       const monthYear = date.toLocaleDateString('default', { month: 'short', year: 'numeric' });
       
       row.innerHTML = `
-        <td class="border p-2">${monthYear}</td>
-        <td class="border p-2 text-right">${parseFloat(item.monthly_revenue).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-        <td class="border p-2 text-right">${parseFloat(item.monthly_amount_paid).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-        <td class="border p-2 text-center">${item.is_forecast ? 'Forecast' : 'Actual'}</td>
+        <td style="border: 1px solid #ddd; padding: 8px;">${monthYear}</td>
+        <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">${parseFloat(item.monthly_revenue).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+        <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">${parseFloat(item.monthly_amount_paid).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+        <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${item.is_forecast ? 'Forecast' : 'Actual'}</td>
       `;
       tableBody.appendChild(row);
     });
     
+    // Print button functionality
+    document.getElementById('printButton').addEventListener('click', function() {
+      // Set the current date
+      document.getElementById('printDate').textContent = new Date().toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+      
+      // Create a copy of the chart for printing
+      const printCanvas = document.createElement('canvas');
+      printCanvas.id = 'chartCanvasForPrint';
+      printCanvas.width = 800;
+      printCanvas.height = 400;
+      
+      const printCtx = printCanvas.getContext('2d');
+      const printConfig = JSON.parse(JSON.stringify(config));
+      
+      // Adjust chart size for printing
+      printConfig.options.responsive = false;
+      printConfig.options.maintainAspectRatio = false;
+      
+      // Create the chart for printing
+      const printChart = new Chart(printCtx, printConfig);
+      
+      // Replace the canvas in the printable table
+      const printChartContainer = document.querySelector('#printableTable canvas');
+      if (printChartContainer) {
+        printChartContainer.replaceWith(printCanvas);
+      } else {
+        document.querySelector('#printableTable div:nth-child(3)').appendChild(printCanvas);
+      }
+      
+      // Show the printable table
+      const printableTable = document.getElementById('printableTable');
+      printableTable.classList.remove('hidden');
+      
+      // Print the window
+      window.print();
+      
+      // Hide the table again after printing (setTimeout ensures it happens after printing)
+      setTimeout(() => {
+        printableTable.classList.add('hidden');
+        printChart.destroy(); // Clean up the print chart
+      }, 500);
+    });
+    
   } else {
     document.querySelector("#salesSplineChart").innerHTML = '<div class="p-4 text-center text-gray-500">No sales data available</div>';
-    document.getElementById('tableBody').innerHTML = '<tr><td colspan="4" class="border p-2 text-center">No sales data available</td></tr>';
+    document.getElementById('tableBody').innerHTML = '<tr><td colspan="4" style="border: 1px solid #ddd; padding: 8px; text-align: center;">No sales data available</td></tr>';
   }
-  
-  // Print button functionality
-  document.getElementById('printButton').addEventListener('click', function() {
-    // Show the printable table
-    const printableTable = document.getElementById('printableTable');
-    printableTable.classList.remove('hidden');
-    
-    // Print the window
-    window.print();
-    
-    // Hide the table again after printing (setTimeout ensures it happens after printing)
-    setTimeout(() => {
-      printableTable.classList.add('hidden');
-    }, 500);
-  });
   
   // Add print-specific styles
   const style = document.createElement('style');
@@ -1585,6 +1656,16 @@ document.addEventListener('DOMContentLoaded', function() {
         left: 0;
         top: 0;
         width: 100%;
+        padding: 20px;
+        background: white;
+      }
+      #printableTable canvas {
+        max-width: 100% !important;
+        height: auto !important;
+      }
+      @page {
+        size: auto;
+        margin: 10mm;
       }
     }
   `;
