@@ -48,58 +48,72 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $validated_id = 'no'; // Default to no unless we have a valid ID upload
         $upload_at = null; // Initialize upload_at
         
-        // Handle file upload if present
+        // Handle file upload and ID details if present
         if (isset($_FILES['id-upload']) && $_FILES['id-upload']['error'] === UPLOAD_ERR_OK) {
             $file = $_FILES['id-upload'];
-            
+            $id_type = trim($_POST['idType'] ?? '');
+            $id_number = trim($_POST['idNumber'] ?? '');
+        
+            // Validate ID Type and ID Number
+            if (empty($id_type) || empty($id_number)) {
+                throw new Exception('ID Type and ID Number are required when uploading an ID.');
+            }
+        
+            // Validate ID Number format (numbers and dashes, 5-20 characters)
+            if (!preg_match('/^[0-9\-]{5,20}$/', $id_number)) {
+                throw new Exception('ID Number must be 5-20 characters and contain only numbers and dashes.');
+            }
+        
             // Validate file type
             $allowed_types = ['image/jpeg', 'image/png'];
             $file_info = finfo_open(FILEINFO_MIME_TYPE);
             $mime_type = finfo_file($file_info, $file['tmp_name']);
             finfo_close($file_info);
-            
+        
             if (!in_array($mime_type, $allowed_types)) {
                 throw new Exception('Invalid file type. Only JPG and PNG images are allowed.');
             }
-            
+        
             // Validate file size (5MB max)
             if ($file['size'] > 5 * 1024 * 1024) {
                 throw new Exception('File size exceeds 5MB limit.');
             }
-            
+        
             // Create uploads directory if it doesn't exist
             $upload_dir = '../../admin/uploads/valid_ids/';
             if (!file_exists($upload_dir)) {
                 mkdir($upload_dir, 0777, true);
             }
-            
+        
             // Generate unique filename
             $file_ext = pathinfo($file['name'], PATHINFO_EXTENSION);
             $filename = 'id_' . $user_id . '_' . time() . '.' . $file_ext;
             $destination = $upload_dir . $filename;
-            
+        
             // Move the uploaded file
             if (!move_uploaded_file($file['tmp_name'], $destination)) {
                 throw new Exception('Failed to save uploaded file.');
             }
-            
-            // Insert or update user's ID image path in valid_id_tb table
+        
+            // Insert or update user's ID details in valid_id_tb table
             $upload_at = date('Y-m-d H:i:s');
-    
-            $query = "INSERT INTO valid_id_tb (id, image_path, upload_at, is_validated, decline_reason, decline_at) 
-                      VALUES (?, ?, ?, 'no', NULL, NULL) 
+        
+            $query = "INSERT INTO valid_id_tb (id, image_path, id_type, id_number, upload_at, is_validated, decline_reason, decline_at) 
+                      VALUES (?, ?, ?, ?, ?, 'no', NULL, NULL) 
                       ON DUPLICATE KEY UPDATE 
                           image_path = VALUES(image_path),
+                          id_type = VALUES(id_type),
+                          id_number = VALUES(id_number),
                           upload_at = VALUES(upload_at),
                           is_validated = 'no',
                           decline_reason = NULL,
                           decline_at = NULL";
-            
+        
             $stmt = $conn->prepare($query);
-            $stmt->bind_param("iss", $user_id, $destination, $upload_at);
+            $stmt->bind_param("issss", $user_id, $destination, $id_type, $id_number, $upload_at);
             $stmt->execute();
             $stmt->close();
-            
+        
             $validated_id = 'no';
             $id_uploaded = true; // Set flag to indicate ID was uploaded
         }

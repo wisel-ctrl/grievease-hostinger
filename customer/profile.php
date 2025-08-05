@@ -3292,7 +3292,17 @@ function getSamplePaymentHistory(packageType) {
                         </div>
                     </div>
                     
-                    <?php if ($id_status !== 'valid'): ?>
+                    <?php 
+$status_query = "SELECT is_validated, decline_reason FROM valid_id_tb WHERE id = ?";
+$status_stmt = $conn->prepare($status_query);
+$status_stmt->bind_param("i", $user_id);
+$status_stmt->execute();
+$status_result = $status_stmt->get_result();
+$status_row = $status_result->fetch_assoc();
+$status_stmt->close();
+
+// If no record exists, show upload form
+if (!$status_row): ?>
                     <!-- Document Uploads Section -->
                     <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
                         <h4 class="font-semibold text-gray-800 mb-4 flex items-center text-lg border-b pb-3">
@@ -3307,9 +3317,9 @@ function getSamplePaymentHistory(packageType) {
                         <div class="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <!-- ID Type Selection -->
                             <div>
-                                <label for="id-type" class="block text-sm font-medium text-gray-700 mb-2">ID Type <span class="text-red-500">*</span></label>
-                                <select id="id-type" name="id-type" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-base shadow-sm transition-all duration-200">
-                                    <option value="">Select ID Type</option>
+                                <label for="idType" class="block text-sm font-medium text-gray-700 mb-1">ID Type*</label>
+                                <select id="idType" name="idType" required class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent">
+                                    <option value="" disabled selected>Select ID Type</option>
                                     <option value="passport">Passport</option>
                                     <option value="drivers_license">Driver's License</option>
                                     <option value="national_id">National ID</option>
@@ -3323,23 +3333,15 @@ function getSamplePaymentHistory(packageType) {
                                     <option value="prc_id">PRC ID</option>
                                     <option value="other">Other Government ID</option>
                                 </select>
+                                <p id="idType-error" class="mt-1 text-sm text-red-600 hidden"></p>
                             </div>
+                        
                             
                             <!-- ID Number Input -->
                             <div>
-                                <label for="id-number" class="block text-sm font-medium text-gray-700 mb-2">ID Number <span class="text-red-500">*</span></label>
-                                <input type="text" 
-                                    id="id-number" 
-                                    name="id-number" 
-                                    placeholder="Enter your ID number"
-                                    required 
-                                    maxlength="20"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-base shadow-sm transition-all duration-200"
-                                    pattern="[0-9\-]+"
-                                    title="ID number must be 5-20 characters long and contain only numbers and hyphens"
-                                    oninput="validateIdNumber(this)"
-                                    onkeypress="return allowIdNumberInput(event)">
-                                <p class="text-xs text-gray-500 mt-1">Must be 5-20 characters long</p>
+                                <label for="idNumber" class="block text-sm font-medium text-gray-700 mb-1">ID Number*</label>
+                                <input type="text" id="idNumber" name="idNumber" placeholder="Enter ID Number" required class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent" onkeypress="return allowIdNumberInput(event)" oninput="validateIdNumber(this)">
+                                <p id="idNumber-error" class="mt-1 text-sm text-red-600 hidden"></p>
                             </div>
                         </div>
                         
@@ -6043,6 +6045,21 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// ID Type validation
+document.getElementById('idType').addEventListener('change', function() {
+    const value = this.value.trim();
+    if (!value) {
+        showError('idType', 'ID Type is required');
+    } else {
+        clearError('idType');
+    }
+});
+
+// ID Number real-time validation (already included in your code, ensure it’s active)
+document.getElementById('idNumber').addEventListener('input', function() {
+    validateIdNumber(this);
+});
+
 // Form validation function
 function validateForm() {
     let isValid = true;
@@ -6136,8 +6153,36 @@ function validateForm() {
         clearError('zip');
     }
     
+    // ID Type validation
+    const idType = document.getElementById('idType').value.trim();
+    if (!idType) {
+        isValid = false;
+        showError('idType', 'ID Type is required');
+    } else {
+        clearError('idType');
+    }
+
+    // ID Number validation
+    const idNumber = document.getElementById('idNumber').value.trim();
+    if (!idNumber) {
+        isValid = false;
+        showError('idNumber', 'ID Number is required');
+    } else if (!validateIdNumber(document.getElementById('idNumber'))) {
+        isValid = false;
+        showError('idNumber', 'ID Number must be 5-20 characters and contain only numbers and dashes');
+    } else {
+        clearError('idNumber');
+    }
+    
     return isValid;
 }
+
+// Ensure error elements are created for new fields
+document.addEventListener('DOMContentLoaded', function() {
+    // Existing code...
+    createErrorElement('idType');
+    createErrorElement('idNumber');
+});
 
 // Helper function to show error messages
 function showError(fieldId, message) {
