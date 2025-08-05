@@ -1840,8 +1840,8 @@ document.addEventListener('DOMContentLoaded', function() {
                   <!-- Header -->
                   <div class="header">
                       <h1>VJay Relova Funeral Services</h1>
-                      <p>#6 J.P Rizal St. Brgy. Sta Clara Sur, (Pob) Pila, Laguna</p>
-                      <h2>Sales & Payment Trends Report</h2>
+                      <p>${branchAddress}</p>
+                      <h2>Sales & Payment Trends Report - ${branchName}</h2>
                       <p>Generated on: ${currentDate}</p>
                   </div>
                   
