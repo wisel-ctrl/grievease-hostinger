@@ -423,8 +423,16 @@ $ratioChange = number_format($changes['ratio_change'] ?? 0, 1);
     // Pass PHP data to JavaScript
   const historicalRevenueData = <?php echo json_encode($revenueData); ?>;
   const urlParams = new URLSearchParams(window.location.search);
-  const branchName = urlParams.get('branch') || 'all';
+  const branchParam = urlParams.get('branch') || 'all';
 
+  const branchMapping = {
+    all: 'All Branches',
+    pila: 'Pila Branch',
+    paete: 'Paete Branch'
+  };
+
+  const branchName = branchMapping[branchParam.toLowerCase()] || 'Unknown Branch';
+  
   function createManilaDate(dateString) {
       const date = new Date(dateString);
       // Manila is UTC+8, so we need to adjust the time accordingly
