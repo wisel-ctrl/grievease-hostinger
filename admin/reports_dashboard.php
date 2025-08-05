@@ -422,6 +422,7 @@ $ratioChange = number_format($changes['ratio_change'] ?? 0, 1);
 <script>
     // Pass PHP data to JavaScript
   const historicalRevenueData = <?php echo json_encode($revenueData); ?>;
+  const branchName = document.querySelector('#branchDropdownButton span').textContent;
 
   function createManilaDate(dateString) {
       const date = new Date(dateString);
@@ -718,7 +719,7 @@ document.addEventListener('DOMContentLoaded', function() {
               }
           },
           title: {
-              text: 'Revenue Forecast',
+              text: 'Revenue Forecast - ' + branchName,
               align: 'left',
               style: {
                   fontSize: "16px",
