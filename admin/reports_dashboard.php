@@ -1587,61 +1587,167 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Modify your existing JavaScript to ensure proper printing
   document.getElementById('printButton').addEventListener('click', function() {
-      // Set current date
-      document.getElementById('printDate').textContent = new Date().toLocaleDateString();
+      // Create a new window
+      const printWindow = window.open('', '_blank');
       
-      // Show printable area
-      const printableTable = document.getElementById('printableTable');
-      printableTable.classList.remove('hidden');
+      // Get the current date for the report
+      const currentDate = new Date().toLocaleDateString();
       
-      // Calculate optimal font size based on row count
-      const rowCount = document.getElementById('tableBody').rows.length;
-      const baseSize = rowCount > 15 ? 8 : 9; // Smaller font if many rows
-      printableTable.querySelector('table').style.fontSize = baseSize + 'px';
+      // Get the sales data
+      const salesData = <?php echo json_encode($salesData); ?>;
       
-      // Print with proper scaling
-      const printStyles = `
-          @media print {
-              body, html {
-                  margin: 0 !important;
-                  padding: 0 !important;
-              }
-              body * {
-                  visibility: hidden;
-              }
-              #printableTable, #printableTable * {
-                  visibility: visible;
-              }
-              #printableTable {
-                  position: absolute;
-                  left: 5mm;
-                  top: 5mm;
-                  right: 5mm;
-                  width: auto;
-                  padding: 0;
-                  margin: 0;
-                  font-size: ${baseSize}px;
-              }
-              @page {
-                  size: auto;
-                  margin: 5mm 5mm 5mm 5mm;
-              }
-          }
+      // Calculate forecast data (using the same function as before)
+      function calculateForecast(historicalData, monthsToForecast = 6) {
+          // ... (keep the same forecast calculation function as in your original code) ...
+      }
+      
+      const forecastData = calculateForecast(salesData, 6);
+      const combinedData = [...salesData, ...forecastData];
+      
+      // Create the HTML content for the new tab
+      let tableContent = '';
+      combinedData.forEach(item => {
+          const date = new Date(item.month_start);
+          const monthYear = date.toLocaleDateString('default', { month: 'short', year: 'numeric' });
+          
+          tableContent += `
+              <tr>
+                  <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">${monthYear}</td>
+                  <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">₱${parseFloat(item.monthly_revenue).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                  <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">₱${parseFloat(item.monthly_amount_paid).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                  <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${item.is_forecast ? 'Forecast' : 'Actual'}</td>
+              </tr>
+          `;
+      });
+      
+      // Create the full HTML document for the new tab
+      const htmlContent = `
+          <!DOCTYPE html>
+          <html>
+          <head>
+              <title>Sales & Payment Trends Report</title>
+              <style>
+                  body {
+                      font-family: Arial, sans-serif;
+                      margin: 0;
+                      padding: 20px;
+                  }
+                  .report-container {
+                      max-width: 1000px;
+                      margin: 0 auto;
+                      padding: 20px;
+                  }
+                  .header {
+                      text-align: center;
+                      margin-bottom: 20px;
+                      border-bottom: 2px solid #3A57E8;
+                      padding-bottom: 15px;
+                  }
+                  .header h1 {
+                      color: #3A57E8;
+                      margin: 0;
+                      font-size: 24px;
+                      line-height: 1.2;
+                  }
+                  .header p {
+                      color: #666;
+                      margin: 5px 0;
+                      font-size: 14px;
+                  }
+                  .header h2 {
+                      color: #3A57E8;
+                      margin: 5px 0;
+                      font-size: 20px;
+                  }
+                  table {
+                      width: 100%;
+                      border-collapse: collapse;
+                      font-size: 14px;
+                      margin-bottom: 20px;
+                  }
+                  th {
+                      background-color: #f3f4f6;
+                      font-weight: bold;
+                  }
+                  th, td {
+                      border: 1px solid #ddd;
+                      padding: 10px;
+                      text-align: left;
+                  }
+                  .footer {
+                      text-align: center;
+                      margin-top: 20px;
+                      border-top: 2px solid #3A57E8;
+                      padding-top: 15px;
+                      color: #666;
+                      font-size: 12px;
+                  }
+                  @media print {
+                      body {
+                          padding: 0;
+                      }
+                      .report-container {
+                          padding: 10px;
+                      }
+                      @page {
+                          size: auto;
+                          margin: 10mm;
+                      }
+                  }
+              </style>
+          </head>
+          <body>
+              <div class="report-container">
+                  <!-- Header -->
+                  <div class="header">
+                      <h1>VJay Relova Funeral Services</h1>
+                      <p>#6 J.P Rizal St. Brgy. Sta Clara Sur, (Pob) Pila, Laguna</p>
+                      <h2>Sales & Payment Trends Report</h2>
+                      <p>Generated on: ${currentDate}</p>
+                  </div>
+                  
+                  <!-- Table -->
+                  <table>
+                      <thead>
+                          <tr>
+                              <th style="text-align: left;">Month</th>
+                              <th style="text-align: right;">Accrued Revenue (₱)</th>
+                              <th style="text-align: right;">Cash Revenue (₱)</th>
+                              <th style="text-align: center;">Type</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          ${tableContent}
+                      </tbody>
+                  </table>
+                  
+                  <!-- Footer -->
+                  <div class="footer">
+                      <p style="margin: 5px 0;">Contact: (0956) 814-3000 | (0961) 345-4283 | Email: GrievEase@gmail.com</p>
+                      <p style="margin: 5px 0;">© ${new Date().getFullYear()} VJay Relova Funeral Services. All rights reserved.</p>
+                  </div>
+              </div>
+              
+              <script>
+                  // Automatically trigger print dialog when the page loads
+                  window.onload = function() {
+                      setTimeout(function() {
+                          window.print();
+                          // Close the window after printing (with a delay to allow print dialog to show)
+                          setTimeout(function() {
+                              window.close();
+                          }, 500);
+                      }, 200);
+                  };
+              <\/script>
+          </body>
+          </html>
       `;
       
-      const styleEl = document.createElement('style');
-      styleEl.innerHTML = printStyles;
-      document.head.appendChild(styleEl);
-      
-      setTimeout(() => {
-          window.print();
-          
-          // Clean up
-          setTimeout(() => {
-              printableTable.classList.add('hidden');
-              styleEl.remove();
-          }, 100);
-      }, 50);
+      // Write the content to the new window
+      printWindow.document.open();
+      printWindow.document.write(htmlContent);
+      printWindow.document.close();
   });
 });
 </script>
