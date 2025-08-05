@@ -942,21 +942,6 @@ function printDemandPrediction() {
             '#6 J.P Rizal St. Brgy. Sta Clara Sur, (Pob) Pila, Laguna' : 
             'J.P Rizal(corner), Quesada St. Bagumbayan, Paete, Laguna');
     
-    // Update the header in the print content
-    const headerHTML = `
-        <div class="header">
-            <h1>VJay Relova Funeral Services</h1>
-            <div class="header-info">
-                <div>
-                    <strong>Branch:</strong> ${branchName} - ${branchAddress}
-                </div>
-                <div>
-                    <strong>Available 24/7</strong>
-                </div>
-            </div>
-            <!-- Rest of your header... -->
-        </div>
-    `;
 
     // Create transposed table data from the heatmap data
     let tableHTML = `
@@ -1021,7 +1006,7 @@ function printDemandPrediction() {
                     <h1>VJay Relova Funeral Services</h1>
                     <div class="header-info">
                         <div>
-                            <strong>Address:</strong> #6 J.P Rizal St. Brgy. Sta Clara Sur, (Pob) Pila, Laguna
+                            <strong>Branch:</strong> ${branchName} - ${branchAddress}
                         </div>
                         <div>
                             <strong>Available 24/7</strong>
