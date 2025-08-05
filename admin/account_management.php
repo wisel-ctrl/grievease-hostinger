@@ -1240,13 +1240,7 @@ function showOTPModal() {
           text: response.message || 'Something went wrong', // Fallback if message is empty
           icon: 'error',
           confirmButtonText: 'OK',
-          confirmButtonColor: '#d33',
-          backdrop: `
-            rgba(210,0,0,0.4)
-            url("/images/nyan-cat.gif")
-            center top
-            no-repeat
-          `
+          confirmButtonColor: '#d33'
         });
       }
     }
@@ -2423,6 +2417,8 @@ function setupRealTimeValidation() {
     const emailField = document.getElementById('editEmail');
     const phoneField = document.getElementById('editPhone');
     const userId = document.querySelector('input[name="user_id"]').value;
+    const emailExistsError = document.getElementById('emailExistsError');
+    const phoneExistsError = document.getElementById('phoneExistsError');
 
     // Email validation with visual feedback
     if (emailField) {
@@ -2439,6 +2435,7 @@ function setupRealTimeValidation() {
             // Clear previous feedback
             emailFeedback.innerHTML = '';
             emailField.classList.remove('border-green-500', 'border-red-500');
+            emailExistsError.classList.add('hidden');
             
             if (email.length === 0) return;
             
@@ -2458,6 +2455,8 @@ function setupRealTimeValidation() {
                         } else {
                             emailField.classList.add('border-red-500');
                             emailFeedback.innerHTML = '<i class="fas fa-times text-red-500"></i>';
+                            emailExistsError.textContent = 'Email already in use';
+                            emailExistsError.classList.remove('hidden');
                             showTooltip(emailFeedback, 'Email already in use');
                         }
                     })
@@ -2481,6 +2480,7 @@ function setupRealTimeValidation() {
             // Clear previous feedback
             phoneFeedback.innerHTML = '';
             phoneField.classList.remove('border-green-500', 'border-red-500');
+            phoneExistsError.classList.add('hidden');
             
             if (phone.length === 0) return;
             
@@ -2500,6 +2500,8 @@ function setupRealTimeValidation() {
                         } else {
                             phoneField.classList.add('border-red-500');
                             phoneFeedback.innerHTML = '<i class="fas fa-times text-red-500"></i>';
+                            phoneExistsError.textContent = 'Phone number already in use';
+                            phoneExistsError.classList.remove('hidden');
                             showTooltip(phoneFeedback, 'Phone number already in use');
                         }
                     })
@@ -2508,7 +2510,6 @@ function setupRealTimeValidation() {
         });
     }
 }
-
 // Add this function to your script
 function setupEditEmailValidation(emailFieldId, errorElementId, userId, userType) {
     const emailField = document.getElementById(emailFieldId);
@@ -2732,7 +2733,7 @@ function setupEmployeeRealTimeValidation(userId) {
         });
     }
 
-    // Phone Validation
+    // Enhanced Phone Validation
     const phoneField = document.getElementById('editEmpPhone');
     if (phoneField) {
         const phoneContainer = phoneField.parentElement;
@@ -2741,7 +2742,15 @@ function setupEmployeeRealTimeValidation(userId) {
         phoneContainer.appendChild(phoneFeedback);
 
         let phoneTimeout;
+        
+        // Add input formatting (from setupPhoneValidation)
         phoneField.addEventListener('input', function() {
+            // Format phone number
+            this.value = this.value.replace(/\D/g, '');
+            if (this.value.length > 11) this.value = this.value.substring(0, 11);
+            if (this.value.length === 1 && this.value === '9') this.value = '09';
+            
+            // Rest of your validation logic
             clearTimeout(phoneTimeout);
             const phone = this.value.trim();
             
@@ -2784,9 +2793,15 @@ function setupEmployeeRealTimeValidation(userId) {
                     })
                     .catch(error => {
                         console.error('Error checking phone:', error);
-                        // Don't show error to user for failed validation checks
                     });
             }, 500);
+        });
+
+        // Add keydown restrictions (from setupPhoneValidation)
+        phoneField.addEventListener('keydown', function(e) {
+            if (!/[0-9]|Backspace|Delete|ArrowLeft|ArrowRight/.test(e.key)) {
+                e.preventDefault();
+            }
         });
     }
 }
@@ -2909,7 +2924,7 @@ function validateAndSaveCustomerChanges() {
     const currentData = Object.fromEntries(formData.entries());
     
     // Check if no changes were made
-     let hasChanges = false;
+    let hasChanges = false;
     if (currentData.first_name !== originalFirstName || 
         currentData.last_name !== originalLastName || 
         currentData.middle_name !== originalMiddleName || 
@@ -2927,35 +2942,37 @@ function validateAndSaveCustomerChanges() {
         });
         return;
     }
+
+    // Get all error elements
+    const emailExistsError = document.getElementById('emailExistsError');
+    const phoneExistsError = document.getElementById('phoneExistsError');
+    
+    // First check if there are any existing email/phone errors
+    if (emailExistsError && !emailExistsError.classList.contains('hidden')) {
+        Swal.fire({
+            title: 'Email Already Exists',
+            text: emailExistsError.textContent,
+            icon: 'error'
+        });
+        return;
+    }
+    
+    if (phoneExistsError && !phoneExistsError.classList.contains('hidden')) {
+        Swal.fire({
+            title: 'Phone Already Exists',
+            text: phoneExistsError.textContent,
+            icon: 'error'
+        });
+        return;
+    }
+
     // Validate all fields before submission
     const firstName = document.getElementById('editFirstName');
     const lastName = document.getElementById('editLastName');
     const email = document.getElementById('editEmail');
     const phone = document.getElementById('editPhone');
-     const emailError = document.getElementById('emailExistsError');
-    const phoneError = document.getElementById('phoneExistsError');
     
     let isValid = true;
-    
-    // If email already exists for another user, block the save
-    if (!emailExistsError.classList.contains('hidden')) {
-        Swal.fire({
-            title: 'Email Already Exists',
-            text: 'This email is already registered to another account. Please use a different email.',
-            icon: 'error'
-        });
-        return;
-    }
-    
-    // If phone already exists for another user, block the save
-    if (!phoneExistsError.classList.contains('hidden')) {
-        Swal.fire({
-            title: 'Phone Already Exists',
-            text: 'This phone number is already registered to another account. Please use a different number.',
-            icon: 'error'
-        });
-        return;
-    }
     
     // Validate required fields
     if (!firstName.value || firstName.value.length < 2) {
@@ -2978,8 +2995,6 @@ function validateAndSaveCustomerChanges() {
         document.getElementById('emailError').textContent = 'Please enter a valid email address';
         document.getElementById('emailError').classList.remove('hidden');
         isValid = false;
-    } else if (document.getElementById('emailExistsError') && !document.getElementById('emailExistsError').classList.contains('hidden')) {
-        isValid = false;
     } else {
         document.getElementById('emailError').classList.add('hidden');
     }
@@ -2987,8 +3002,6 @@ function validateAndSaveCustomerChanges() {
     if (!phone.value || !phone.value.startsWith('09') || phone.value.length !== 11) {
         document.getElementById('phoneError').textContent = 'Philippine number must start with 09 and be 11 digits';
         document.getElementById('phoneError').classList.remove('hidden');
-        isValid = false;
-    } else if (document.getElementById('phoneExistsError') && !document.getElementById('phoneExistsError').classList.contains('hidden')) {
         isValid = false;
     } else {
         document.getElementById('phoneError').classList.add('hidden');
@@ -2998,13 +3011,35 @@ function validateAndSaveCustomerChanges() {
         // Check if email has changed and needs verification
         const currentEmail = email.value.trim();
         if (currentEmail !== originalEmail) {
-            showOtpVerificationModal('customer');
+            // Perform one final check for email existence before showing OTP modal
+            fetch(`../employee/accountManagement/check_email.php?email=${encodeURIComponent(currentEmail)}&current_user=${document.querySelector('input[name="user_id"]').value}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.available) {
+                        showOtpVerificationModal('customer');
+                    } else {
+                        document.getElementById('emailExistsError').textContent = 'Email already in use';
+                        document.getElementById('emailExistsError').classList.remove('hidden');
+                        Swal.fire({
+                            title: 'Email Already Exists',
+                            text: 'The email address is already in use by another account',
+                            icon: 'error'
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'An error occurred while validating the email address',
+                        icon: 'error'
+                    });
+                });
         } else {
             saveCustomerChanges();
         }
     }
 }
-
 function closeEditCustomerModal() {
     const modal = document.getElementById('editCustomerModal');
     if (modal) {
@@ -3245,11 +3280,9 @@ function openEditEmployeeAccountModal(userId) {
                 
                 document.body.appendChild(modal);
                 
-                setupPhoneValidation('editEmpPhone');
+                setupEmployeeRealTimeValidation(userId);
                 
-                setupEditFieldValidation('email', 'editEmpEmail', 'empEmailExistsError', userId, 2);
-                setupEditFieldValidation('phone', 'editEmpPhone', 'empPhoneExistsError', userId, 2);
-                
+
                 // Add event listener for Escape key
                 document.addEventListener('keydown', function(e) {
                     if (e.key === 'Escape') {
@@ -3289,12 +3322,17 @@ function setupEmployeeRealTimeValidation(userId) {
             // Clear previous feedback
             emailFeedback.innerHTML = '';
             emailField.classList.remove('border-green-500', 'border-red-500');
+            document.getElementById('empEmailError').classList.add('hidden');
+            document.getElementById('empEmailExistsError').classList.add('hidden');
             
             if (email.length === 0) return;
             
+            // Basic format validation
             if (!email.includes('@')) {
                 emailField.classList.add('border-red-500');
                 emailFeedback.innerHTML = '<i class="fas fa-times text-red-500"></i>';
+                document.getElementById('empEmailError').textContent = 'Please enter a valid email address';
+                document.getElementById('empEmailError').classList.remove('hidden');
                 return;
             }
 
@@ -3308,6 +3346,8 @@ function setupEmployeeRealTimeValidation(userId) {
                         } else {
                             emailField.classList.add('border-red-500');
                             emailFeedback.innerHTML = '<i class="fas fa-times text-red-500"></i>';
+                            document.getElementById('empEmailExistsError').textContent = data.message || 'Email already registered to another account';
+                            document.getElementById('empEmailExistsError').classList.remove('hidden');
                             showTooltip(emailFeedback, 'Email already in use');
                         }
                     })
@@ -3331,12 +3371,17 @@ function setupEmployeeRealTimeValidation(userId) {
             // Clear previous feedback
             phoneFeedback.innerHTML = '';
             phoneField.classList.remove('border-green-500', 'border-red-500');
+            document.getElementById('empPhoneError').classList.add('hidden');
+            document.getElementById('empPhoneExistsError').classList.add('hidden');
             
             if (phone.length === 0) return;
             
+            // Basic format validation
             if (!phone.startsWith('09') || phone.length !== 11) {
                 phoneField.classList.add('border-red-500');
                 phoneFeedback.innerHTML = '<i class="fas fa-times text-red-500"></i>';
+                document.getElementById('empPhoneError').textContent = 'Philippine number must start with 09 and be 11 digits';
+                document.getElementById('empPhoneError').classList.remove('hidden');
                 return;
             }
 
@@ -3350,15 +3395,30 @@ function setupEmployeeRealTimeValidation(userId) {
                         } else {
                             phoneField.classList.add('border-red-500');
                             phoneFeedback.innerHTML = '<i class="fas fa-times text-red-500"></i>';
+                            document.getElementById('empPhoneExistsError').textContent = data.message || 'Phone number already exists';
+                            document.getElementById('empPhoneExistsError').classList.remove('hidden');
                             showTooltip(phoneFeedback, 'Phone number already in use');
                         }
                     })
                     .catch(error => console.error('Error:', error));
             }, 500);
         });
+
+        // Add input formatting
+        phoneField.addEventListener('input', function() {
+            this.value = this.value.replace(/\D/g, '');
+            if (this.value.length > 11) this.value = this.value.substring(0, 11);
+            if (this.value.length === 1 && this.value === '9') this.value = '09';
+        });
+
+        // Add keydown restrictions
+        phoneField.addEventListener('keydown', function(e) {
+            if (!/[0-9]|Backspace|Delete|ArrowLeft|ArrowRight/.test(e.key)) {
+                e.preventDefault();
+            }
+        });
     }
 }
-
 function setupEditEmployeeValidations() {
     // Name validation
     const nameFields = ['editEmpFirstName', 'editEmpMiddleName', 'editEmpLastName'];
@@ -3505,7 +3565,6 @@ function validateAndSaveEmployeeChanges() {
         isValid = false;
         Swal.fire({
             title: 'Email Already Exists',
-            text: emailExistsError.textContent,
             icon: 'error'
         });
     }
@@ -3514,7 +3573,6 @@ function validateAndSaveEmployeeChanges() {
         isValid = false;
         Swal.fire({
             title: 'Phone Already Exists',
-            text: phoneExistsError.textContent,
             icon: 'error'
         });
     }
