@@ -366,7 +366,6 @@ $ratioChange = number_format($changes['ratio_change'] ?? 0, 1);
     </div>
 </div>
 
-<!-- Hidden printable table (will only show when printing) -->
 <div id="printableTable" class="hidden bg-white p-5" style="font-family: Arial, sans-serif; width: 100%;">
     <!-- Header -->
     <div style="text-align: center; margin-bottom: 20px; border-bottom: 2px solid #3A57E8; padding-bottom: 10px;">
@@ -405,11 +404,6 @@ $ratioChange = number_format($changes['ratio_change'] ?? 0, 1);
                 </span>
             </div>
         </div>
-    </div>
-    
-    <!-- Chart Image -->
-    <div style="text-align: center; margin-bottom: 20px;">
-        <canvas id="chartCanvasForPrint" style="max-width: 100%; height: auto;"></canvas>
     </div>
     
     <!-- Data Table -->
@@ -1408,169 +1402,6 @@ document.addEventListener('DOMContentLoaded', function() {
       return date.toLocaleDateString('default', { month: 'short', year: 'numeric' });
     });
     
-    // Prepare datasets
-    const datasets = [
-      {
-        label: 'Accrued revenue',
-        data: combinedData.map(item => parseFloat(item.monthly_revenue) || 0),
-        borderColor: '#3B82F6', // Blue
-        backgroundColor: 'rgba(59, 130, 246, 0.1)',
-        borderWidth: 3,
-        tension: 0.3,
-        pointRadius: 5,
-        pointHoverRadius: 7,
-        borderDash: combinedData.map(item => item.is_forecast ? [5, 5] : [0, 0]),
-        segment: {
-          borderDash: ctx => ctx.p1.raw.is_forecast ? [5, 5] : undefined
-        }
-      },
-      {
-        label: 'Cash revenue',
-        data: combinedData.map(item => parseFloat(item.monthly_amount_paid) || 0),
-        borderColor: '#10B981', // Green
-        backgroundColor: 'rgba(16, 185, 129, 0.1)',
-        borderWidth: 3,
-        tension: 0.3,
-        pointRadius: 5,
-        pointHoverRadius: 7,
-        borderDash: combinedData.map(item => item.is_forecast ? [5, 5] : [0, 0]),
-        segment: {
-          borderDash: ctx => ctx.p1.raw.is_forecast ? [5, 5] : undefined
-        }
-      }
-    ];
-    
-    // Create Chart.js config
-    const config = {
-      type: 'line',
-      data: {
-        labels: labels,
-        datasets: datasets
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: 'top',
-            align: 'end'
-          },
-          tooltip: {
-            mode: 'index',
-            intersect: false,
-            callbacks: {
-              label: function(context) {
-                let label = context.dataset.label || '';
-                if (label) {
-                  label += ': ';
-                }
-                if (context.parsed.y !== null) {
-                  label += '₱' + context.parsed.y.toLocaleString('en-US', {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                  });
-                }
-                
-                // Add forecast indicator if this is a forecast point
-                const dataIndex = context.dataIndex;
-                if (dataIndex >= salesData.length) {
-                  label += ' (forecast)';
-                }
-                
-                return label;
-              }
-            }
-          }
-        },
-        scales: {
-          x: {
-            title: {
-              display: true,
-              text: 'Month',
-              color: '#64748b',
-              font: {
-                size: 14,
-                weight: 'bold'
-              }
-            },
-            grid: {
-              color: '#f1f1f1',
-              drawOnChartArea: true
-            }
-          },
-          y: {
-            beginAtZero: true,
-            title: {
-              display: true,
-              text: 'Amount (₱)',
-              color: '#64748b',
-              font: {
-                size: 14,
-                weight: 'bold'
-              }
-            },
-            grid: {
-              color: '#f1f1f1',
-              drawOnChartArea: true
-            },
-            ticks: {
-              callback: function(value) {
-                return '₱' + value.toLocaleString('en-US', {
-                  minimumFractionDigits: 0,
-                  maximumFractionDigits: 0
-                });
-              }
-            }
-          }
-        },
-        interaction: {
-          intersect: false,
-          mode: 'index'
-        }
-      }
-    };
-    
-    // Render the chart
-    const ctx = document.getElementById('salesSplineChart').getContext('2d');
-    const chart = new Chart(ctx, config);
-    
-    // Add vertical line at the end of historical data
-    const addVerticalLine = () => {
-      const chartCanvas = document.getElementById('salesSplineChart');
-      const chartInstance = Chart.getChart(chartCanvas);
-      
-      if (chartInstance) {
-        const xAxis = chartInstance.scales.x;
-        const yAxis = chartInstance.scales.y;
-        
-        // Get the x-coordinate of the last historical data point
-        const lastHistoricalIndex = salesData.length - 1;
-        const xPos = xAxis.getPixelForValue(labels[lastHistoricalIndex]);
-        
-        // Draw the line
-        chartInstance.ctx.save();
-        chartInstance.ctx.beginPath();
-        chartInstance.ctx.moveTo(xPos, yAxis.top);
-        chartInstance.ctx.lineTo(xPos, yAxis.bottom);
-        chartInstance.ctx.lineWidth = 1;
-        chartInstance.ctx.strokeStyle = '#775DD0';
-        chartInstance.ctx.stroke();
-        chartInstance.ctx.restore();
-        
-        // Add label
-        chartInstance.ctx.save();
-        chartInstance.ctx.fillStyle = '#775DD0';
-        chartInstance.ctx.fillRect(xPos - 30, yAxis.bottom - 20, 60, 20);
-        chartInstance.ctx.fillStyle = '#fff';
-        chartInstance.ctx.textAlign = 'center';
-        chartInstance.ctx.fillText('Current', xPos, yAxis.bottom - 5);
-        chartInstance.ctx.restore();
-      }
-    };
-    
-    // Wait for chart to render then add the line
-    setTimeout(addVerticalLine, 500);
-    
     // Populate the printable table
     const tableBody = document.getElementById('tableBody');
     combinedData.forEach(item => {
@@ -1598,30 +1429,6 @@ document.addEventListener('DOMContentLoaded', function() {
         minute: '2-digit'
       });
       
-      // Create a copy of the chart for printing
-      const printCanvas = document.createElement('canvas');
-      printCanvas.id = 'chartCanvasForPrint';
-      printCanvas.width = 800;
-      printCanvas.height = 400;
-      
-      const printCtx = printCanvas.getContext('2d');
-      const printConfig = JSON.parse(JSON.stringify(config));
-      
-      // Adjust chart size for printing
-      printConfig.options.responsive = false;
-      printConfig.options.maintainAspectRatio = false;
-      
-      // Create the chart for printing
-      const printChart = new Chart(printCtx, printConfig);
-      
-      // Replace the canvas in the printable table
-      const printChartContainer = document.querySelector('#printableTable canvas');
-      if (printChartContainer) {
-        printChartContainer.replaceWith(printCanvas);
-      } else {
-        document.querySelector('#printableTable div:nth-child(3)').appendChild(printCanvas);
-      }
-      
       // Show the printable table
       const printableTable = document.getElementById('printableTable');
       printableTable.classList.remove('hidden');
@@ -1632,12 +1439,10 @@ document.addEventListener('DOMContentLoaded', function() {
       // Hide the table again after printing (setTimeout ensures it happens after printing)
       setTimeout(() => {
         printableTable.classList.add('hidden');
-        printChart.destroy(); // Clean up the print chart
       }, 500);
     });
     
   } else {
-    document.querySelector("#salesSplineChart").innerHTML = '<div class="p-4 text-center text-gray-500">No sales data available</div>';
     document.getElementById('tableBody').innerHTML = '<tr><td colspan="4" style="border: 1px solid #ddd; padding: 8px; text-align: center;">No sales data available</td></tr>';
   }
   
@@ -1658,10 +1463,6 @@ document.addEventListener('DOMContentLoaded', function() {
         width: 100%;
         padding: 20px;
         background: white;
-      }
-      #printableTable canvas {
-        max-width: 100% !important;
-        height: auto !important;
       }
       @page {
         size: auto;
