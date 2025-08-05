@@ -343,7 +343,7 @@ $ratioChange = number_format($changes['ratio_change'] ?? 0, 1);
 <div id="printContent" style="display:none;">
     <div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
         <!-- Header -->
-        <div style="text-align: center; margin-bottom: 20px; border-bottom: 2px solid #3A57E8; padding-bottom: 10px;">
+        <div id="revenueHeader" style="text-align: center; margin-bottom: 20px; border-bottom: 2px solid #3A57E8; padding-bottom: 10px;">
             <h1 style="color: #3A57E8; margin-bottom: 5px;">VJay Relova Funeral Services</h1>
             <h3 style="color: #666; margin-top: 0; margin-bottom: 5px;">#6 J.P Rizal St. Brgy. Sta Clara Sur, (Pob) Pila, Laguna</h3>
             <h2 style="color: #3A57E8; margin-bottom: 5px;">Revenue Report</h2>
@@ -432,7 +432,7 @@ $ratioChange = number_format($changes['ratio_change'] ?? 0, 1);
   };
 
   const branchName = branchMapping[branchParam.toLowerCase()] || 'Unknown Branch';
-  
+
   function createManilaDate(dateString) {
       const date = new Date(dateString);
       // Manila is UTC+8, so we need to adjust the time accordingly
@@ -476,6 +476,8 @@ $ratioChange = number_format($changes['ratio_change'] ?? 0, 1);
                 <p style="color: #666; margin-top: 0;">Generated on: <span id="printDate"></span></p>
             </div>
         `;
+
+        document.getElementById('revenueHeader').outerHTML = headerHTML;
 
         const regressionResults = calculateLinearRegressionForecast(historicalRevenueData, 6);
         
