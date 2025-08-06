@@ -1257,12 +1257,22 @@ function loadExpenses(page) {
         });
 }
 
+function formatCurrency(amount) {
+    amount = parseFloat(amount);
+    if (isNaN(amount)) return '₱ 0.00';
+    return '₱ ' + amount.toLocaleString('en-PH', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+}
+
+
 function updateAnalyticsCards(data) {
     // Update total expenses card
-    document.querySelector('.total-expenses-value').textContent = '₱' + parseFloat(data.total_expenses || 0).toFixed(2);
+    document.querySelector('.total-expenses-value').textContent = formatCurrency(data.total_expenses || 0);
     
     // Update monthly expenses card
-    document.querySelector('.monthly-expenses-value').textContent = '₱' + parseFloat(data.monthly_expenses || 0).toFixed(2);
+    document.querySelector('.monthly-expenses-value').textContent = formatCurrency(data.monthly_expenses || 0);
     
     // Update pending payments card
     document.querySelector('.pending-payments-value').textContent = data.pending_payments || 0;
