@@ -152,8 +152,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && isset($_
 
 // Rest of your existing code for fetching data...
 $stmt = $conn->prepare("
-    SELECT v.id as validation_id, v.image_path, v.is_validated, v.id,
-           u.first_name, u.last_name, u.email, u.phone_number, u.branch_loc,
+    SELECT v.id as validation_id, v.image_path, v.is_validated, v.id, v.id_type, v.id_number,
+           u.first_name, u.last_name, u.branch_loc,
            b.branch_name
     FROM valid_id_tb v
     JOIN users u ON v.id = u.id
@@ -358,12 +358,12 @@ $denied = $result->fetch_assoc()['count'];
                             </th>
                             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
                                 <div class="flex items-center gap-1.5">
-                                    <i class="fas fa-envelope text-sidebar-accent"></i> Email
+                                    <i class="fas fa-id-card text-sidebar-accent"></i> ID Type
                                 </div>
                             </th>
                             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
                                 <div class="flex items-center gap-1.5">
-                                    <i class="fas fa-phone text-sidebar-accent"></i> Phone
+                                    <i class="fas fa-id-card-alt text-sidebar-accent"></i> ID Number
                                 </div>
                             </th>
                             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
@@ -392,9 +392,9 @@ $denied = $result->fetch_assoc()['count'];
                                             <?php echo htmlspecialchars($id_request['first_name'] . ' ' . $id_request['last_name']); ?>
                                         </div>
                                     </td>
-                                    <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($id_request['email']); ?></td>
-                                    <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($id_request['phone_number']); ?></td>
-                                    <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($id_request['branch_name'] ? $id_request['branch_name'] : 'No branch assigned'); ?></td>
+                                    <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars(ucfirst($id_request['id_type'])); ?></td>
+                                    <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($id_request['id_number']); ?></td>
+                                    <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($id_request['branch_name'] ? ucfirst($id_request['branch_name']) : 'No branch assigned'); ?></td>
                                     <td class="px-4 py-3.5 text-sm">
                                         <!-- Direct ID image display in the table -->
                                         <div class="relative group">
@@ -805,13 +805,13 @@ document.addEventListener('DOMContentLoaded', function() {
         
         rows.forEach(row => {
             const nameCell = row.cells[0]?.textContent?.toLowerCase() || '';
-            const emailCell = row.cells[1]?.textContent?.toLowerCase() || '';
-            const phoneCell = row.cells[2]?.textContent?.toLowerCase() || '';
+            const idTypeCell = row.cells[1]?.textContent?.toLowerCase() || '';
+            const idNumberCell = row.cells[2]?.textContent?.toLowerCase() || '';
             const branchCell = row.cells[3]?.textContent?.toLowerCase() || '';
             
             const matchesSearch = nameCell.includes(searchValue) || 
-                                emailCell.includes(searchValue) || 
-                                phoneCell.includes(searchValue) || 
+                                idTypeCell.includes(searchValue) || 
+                                idNumberCell.includes(searchValue) || 
                                 branchCell.includes(searchValue);
             
             row.style.display = matchesSearch ? '' : 'none';
@@ -819,5 +819,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+
 </body>
 </html>
