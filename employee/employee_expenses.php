@@ -159,6 +159,11 @@ $pending_stmt->bind_param("s", $branch);
 $pending_stmt->execute();
 $pending_result = $pending_stmt->get_result();
 $pending_payments = $pending_result->fetch_assoc()['pending'];
+
+function formatCurrency($amount) {
+    return '₱ ' . number_format((float)$amount, 2, '.', ',');
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -406,7 +411,7 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
         [
             'title' => 'Total Expenses',
             'value_class' => 'total-expenses-value',
-            'value' => number_format($total_expenses, 2),
+            'value' => formatCurrency($total_expenses),
             'change' => '8% from last month',
             'change_class' => 'text-green-600',
             'change_icon' => 'fa-arrow-up',
@@ -419,7 +424,7 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
         [
             'title' => 'This Month',
             'value_class' => 'monthly-expenses-value',
-            'value' => number_format($monthly_expenses, 2),
+            'value' => formatCurrency($monthly_expenses),
             'change' => '12% from last month',
             'change_class' => 'text-green-600',
             'change_icon' => 'fa-arrow-up',
@@ -677,7 +682,7 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
                                         <?php echo htmlspecialchars($expense['category']); ?>
                                     </span>
                                 </td>
-                                <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱<?php echo number_format($expense['price'], 2); ?></td>
+                                <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱<?php echo formatCurrency($expense['price']); ?></td>
                                 <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo date('Y-m-d', strtotime($expense['date'])); ?></td>
                                 <td class="px-4 py-3.5 text-sm">
                                     <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium <?php echo $statusClass; ?>">
