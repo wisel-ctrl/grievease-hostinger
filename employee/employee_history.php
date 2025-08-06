@@ -2373,22 +2373,48 @@ function savePayment() {
 
   // Validate required fields
   if (!customerID || !branchID) {
-    alert('Missing required information. Please try again.');
+    Swal.fire({
+      icon: 'error',
+      title: 'Missing Information',
+      text: 'Missing required information. Please try again.'
+    });
     return;
   }
 
   if (!paymentAmount || isNaN(paymentAmount) || paymentAmount <= 0) {
-    alert('Please enter a valid payment amount');
+    Swal.fire({
+      icon: 'error',
+      title: 'Invalid Amount',
+      text: 'Please enter a valid payment amount greater than 0'
+    });
+    return;
+  }
+
+  // Validate that payment amount doesn't exceed current balance
+  if (paymentAmount > currentBalance) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Payment Exceeds Balance',
+      text: `Payment amount (₱${paymentAmount.toFixed(2)}) cannot be greater than current balance (₱${currentBalance.toFixed(2)})`
+    });
     return;
   }
 
   if (!paymentMethod) {
-    alert('Please select a payment method');
+    Swal.fire({
+      icon: 'error',
+      title: 'Payment Method Required',
+      text: 'Please select a payment method'
+    });
     return;
   }
 
   if (!paymentDate) {
-    alert('Please select a payment date');
+    Swal.fire({
+      icon: 'error',
+      title: 'Date Required',
+      text: 'Please select a payment date'
+    });
     return;
   }
 
@@ -2430,17 +2456,27 @@ function savePayment() {
   })
   .then(data => {
     if (data.success) {
-      alert(`Payment recorded successfully! Total paid: ₱${data.new_amount_paid.toFixed(2)}`);
-      closeRecordPaymentModal();
-      // Refresh the page to show updated values
-      location.reload();
+      Swal.fire({
+        icon: 'success',
+        title: 'Payment Recorded!',
+        html: `Payment recorded successfully!<br>Total paid: <b>₱${data.new_amount_paid.toFixed(2)}</b>`,
+        confirmButtonText: 'OK'
+      }).then(() => {
+        closeRecordPaymentModal();
+        // Refresh the page to show updated values
+        location.reload();
+      });
     } else {
       throw new Error(data.message || 'Failed to record payment');
     }
   })
   .catch(error => {
     console.error('Error:', error);
-    alert('Error: ' + error.message);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: error.message
+    });
   })
   .finally(() => {
     // Restore button state
