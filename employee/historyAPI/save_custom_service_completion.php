@@ -32,7 +32,7 @@ try {
     $conn->begin_transaction();
 
     // Get service price and casket_id
-    $getPriceStmt = $conn->prepare("SELECT discounted_price, casket_id FROM customsales_tb WHERE customsales_id = ?");
+    $getPriceStmt = $conn->prepare("SELECT discounted_price, casket_id, sale_date, deceased_address, branch_id, amount_paid FROM customsales_tb WHERE customsales_id = ?");
     if ($getPriceStmt === false) {
         throw new Exception('Failed to prepare price query: ' . $conn->error);
     }
@@ -50,6 +50,10 @@ try {
     $serviceData = $priceResult->fetch_assoc();
     $discountedPrice = $serviceData['discounted_price'];
     $casket_id = $serviceData['casket_id'];
+    $sale_date = $serviceData['sale_date'];
+    $deceased_address = $serviceData['deceased_address'];
+    $branch_id = $serviceData['branch_id'];
+    $current_amount_paid = $serviceData['amount_paid'];
     
     // Update inventory quantity if casket exists
     if (!empty($casket_id)) {
@@ -131,28 +135,8 @@ try {
         throw new Exception('Failed to update service status: ' . $updateStmt->error);
     }
 
-    // Get additional sales data needed for analytics
-    $getSalesDataStmt = $conn->prepare("
-        SELECT sale_date, deceased_address, branch_id, amount_paid 
-        FROM customsales_tb 
-        WHERE customsales_id = ?
-    ");
-    if ($getSalesDataStmt === false) {
-        throw new Exception('Failed to prepare sales data query: ' . $conn->error);
-    }
-    
-    $getSalesDataStmt->bind_param("i", $data['customsales_id']);
-    if (!$getSalesDataStmt->execute()) {
-        throw new Exception('Failed to get sales data: ' . $getSalesDataStmt->error);
-    }
-    
-    $salesDataResult = $getSalesDataStmt->get_result();
-    if ($salesDataResult->num_rows === 0) {
-        throw new Exception('Sales data not found');
-    }
-    
-    $salesData = $salesDataResult->fetch_assoc();
-    $amount_paid = !empty($data['balance_settled']) ? $discountedPrice : $salesData['amount_paid'];
+    // Calculate amount paid
+    $amount_paid = !empty($data['balance_settled']) ? $discountedPrice : $current_amount_paid;
     
     // Insert into analytics_tb
     $insertAnalyticsStmt = $conn->prepare("
@@ -172,12 +156,12 @@ try {
     }
     
     $insertAnalyticsStmt->bind_param(
-        "sdisids",
-        $salesData['sale_date'],
+        "sdisiid",
+        $sale_date,
         $discountedPrice,
         $casket_id,
-        $salesData['deceased_address'],
-        $salesData['branch_id'],
+        $deceased_address,
+        $branch_id,
         $data['customsales_id'],
         $amount_paid
     );
@@ -220,9 +204,6 @@ try {
     }
     if (isset($insertAnalyticsStmt) && $insertAnalyticsStmt instanceof mysqli_stmt) {
         $insertAnalyticsStmt->close();
-    }
-    if (isset($getSalesDataStmt) && $getSalesDataStmt instanceof mysqli_stmt) {
-        $getSalesDataStmt->close();
     }
     if (isset($conn) && $conn instanceof mysqli) {
         $conn->close();
