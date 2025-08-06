@@ -32,11 +32,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $street_address = trim($_POST['street_address'] ?? '');
     $zip = trim($_POST['zip'] ?? '');
     
+    // ID fields
+    $id_type = trim($_POST['idType'] ?? '');
+    $id_number = trim($_POST['idNumber'] ?? '');
+    
     // Basic validation
     if (empty($first_name) || empty($last_name) || empty($email) || empty($phone)) {
         header('Content-Type: application/json');
         echo json_encode(['success' => false, 'message' => 'Required fields are missing']);
         exit();
+    }
+    
+    // Validate ID fields if ID is being uploaded
+    if (isset($_FILES['id-upload']) && $_FILES['id-upload']['error'] === UPLOAD_ERR_OK) {
+        if (empty($id_type) || empty($id_number)) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'message' => 'ID Type and ID Number are required']);
+            exit();
+        }
     }
     
     // Start transaction for consistent updates
@@ -83,20 +96,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 throw new Exception('Failed to save uploaded file.');
             }
             
-            // Insert or update user's ID image path in valid_id_tb table
+            // Insert or update user's ID information in valid_id_tb table
             $upload_at = date('Y-m-d H:i:s');
     
-            $query = "INSERT INTO valid_id_tb (id, image_path, upload_at, is_validated, decline_reason, decline_at) 
-                      VALUES (?, ?, ?, 'no', NULL, NULL) 
+            $query = "INSERT INTO valid_id_tb (id, image_path, id_type, id_number, upload_at, is_validated, decline_reason, decline_at) 
+                      VALUES (?, ?, ?, ?, ?, 'no', NULL, NULL) 
                       ON DUPLICATE KEY UPDATE 
                           image_path = VALUES(image_path),
+                          id_type = VALUES(id_type),
+                          id_number = VALUES(id_number),
                           upload_at = VALUES(upload_at),
                           is_validated = 'no',
                           decline_reason = NULL,
                           decline_at = NULL";
             
             $stmt = $conn->prepare($query);
-            $stmt->bind_param("iss", $user_id, $destination, $upload_at);
+            $stmt->bind_param("issss", $user_id, $destination, $id_type, $id_number, $upload_at);
             $stmt->execute();
             $stmt->close();
             
@@ -230,7 +245,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'user_id' => $user_id,
                 'first_name' => $first_name,
                 'last_name' => $last_name,
-                'upload_time' => $upload_at
+                'upload_time' => $upload_at,
+                'id_type' => $id_type,
+                'id_number' => $id_number
             ];
             
             // Send SMS notification to admin about new ID upload

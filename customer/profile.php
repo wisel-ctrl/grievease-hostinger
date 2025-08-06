@@ -3306,9 +3306,9 @@ function getSamplePaymentHistory(packageType) {
                         <!-- ID Type and Number Selection -->
                         <div class="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <!-- ID Type Selection -->
-                            <div>
-                                <label for="id-type" class="block text-sm font-medium text-gray-700 mb-2">ID Type <span class="text-red-500">*</span></label>
-                                <select id="id-type" name="id-type" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-base shadow-sm transition-all duration-200">
+                            <div class="mt-4">
+                                <label for="id-type" class="block text-sm font-medium text-gray-700 mb-1">ID Type*</label>
+                                <select id="id-type" name="idType" required class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent">
                                     <option value="">Select ID Type</option>
                                     <option value="passport">Passport</option>
                                     <option value="drivers_license">Driver's License</option>
@@ -3324,22 +3324,9 @@ function getSamplePaymentHistory(packageType) {
                                     <option value="other">Other Government ID</option>
                                 </select>
                             </div>
-                            
-                            <!-- ID Number Input -->
-                            <div>
-                                <label for="id-number" class="block text-sm font-medium text-gray-700 mb-2">ID Number <span class="text-red-500">*</span></label>
-                                <input type="text" 
-                                    id="id-number" 
-                                    name="id-number" 
-                                    placeholder="Enter your ID number"
-                                    required 
-                                    maxlength="20"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-base shadow-sm transition-all duration-200"
-                                    pattern="[0-9\-]+"
-                                    title="ID number must be 5-20 characters long and contain only numbers and hyphens"
-                                    oninput="validateIdNumber(this)"
-                                    onkeypress="return allowIdNumberInput(event)">
-                                <p class="text-xs text-gray-500 mt-1">Must be 5-20 characters long</p>
+                            <div class="mt-4">
+                                <label for="id-number" class="block text-sm font-medium text-gray-700 mb-1">ID Number*</label>
+                                <input type="text" id="id-number" name="idNumber" placeholder="Enter ID Number" required class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent">
                             </div>
                         </div>
                         
@@ -6173,15 +6160,179 @@ function createErrorElement(fieldId) {
     return errorElement;
 }
 
-// Define the modal functions
+// Store initial form values for comparison
+let initialFormValues = {};
+
+// Function to capture initial form values
+function captureInitialFormValues() {
+    const form = document.getElementById('profile-form');
+    if (!form) return;
+    
+    const inputs = form.querySelectorAll('input:not([type="file"]), select, textarea');
+    initialFormValues = {};
+    inputs.forEach(input => {
+        initialFormValues[input.id] = input.value.trim();
+    });
+}
+
+// Function to check if form has changes
+function hasFormChanged() {
+    const form = document.getElementById('profile-form');
+    if (!form) return false;
+    
+    const inputs = form.querySelectorAll('input:not([type="file"]), select, textarea');
+    for (let input of inputs) {
+        if (initialFormValues[input.id] !== input.value.trim()) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// Function to update submit button state
+function updateSubmitButtonState() {
+    const submitButton = document.querySelector('#profile-form button[type="submit"]');
+    if (!submitButton) return;
+    
+    const hasChanged = hasFormChanged();
+    submitButton.disabled = !hasChanged;
+    
+    // Strict styling enforcement
+    if (hasChanged) {
+        submitButton.classList.remove('opacity-50', 'cursor-not-allowed', 'bg-gray-300');
+        submitButton.classList.add('bg-yellow-600', 'hover:bg-darkgold');
+        submitButton.removeAttribute('aria-disabled');
+    } else {
+        submitButton.classList.add('opacity-50', 'cursor-not-allowed', 'bg-gray-300');
+        submitButton.classList.remove('bg-yellow-600', 'hover:bg-darkgold');
+        submitButton.setAttribute('aria-disabled', 'true');
+    }
+}
+
+// Enhanced form submission handler
+function handleFormSubmission(e) {
+    e.preventDefault();
+    if (!hasFormChanged()) {
+        Swal.fire({
+            title: 'No Changes',
+            text: 'No changes were made to your profile.',
+            icon: 'info',
+            confirmButtonColor: '#d4a933'
+        });
+        return;
+    }
+    
+    if (validateForm()) {
+        Swal.fire({
+            title: 'Save Changes?',
+            text: 'Are you sure you want to update your profile information?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#d4a933',
+            cancelButtonColor: '#718096',
+            confirmButtonText: 'Yes, save changes',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                submitProfileForm();
+            }
+        });
+    } else {
+        Swal.fire({
+            title: 'Validation Error',
+            text: 'Please correct the errors in the form before submitting.',
+            icon: 'error',
+            confirmButtonColor: '#d4a933'
+        });
+    }
+}
+
+// Function to wait for address fields to be populated
+function waitForAddressFields() {
+    return new Promise((resolve) => {
+        const checkFields = () => {
+            const addressFields = ['region', 'province', 'city', 'barangay'];
+            const allFieldsPopulated = addressFields.every(id => {
+                const select = document.getElementById(id);
+                return select && select.value.trim() !== '';
+            });
+            
+            if (allFieldsPopulated) {
+                resolve();
+            } else {
+                setTimeout(checkFields, 100);
+            }
+        };
+        checkFields();
+    });
+}
+
+// Update DOMContentLoaded with strict initialization
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('profile-form');
+    if (!form) {
+        console.error('Profile form not found');
+        return;
+    }
+    
+    // Capture initial values when modal opens, after address fields are populated
+    const editProfileBtn = document.getElementById('edit-profile-btn');
+    if (editProfileBtn) {
+        editProfileBtn.addEventListener('click', async function() {
+            // Wait for address fields to be populated
+            await waitForAddressFields();
+            
+            // Capture initial values and update button state
+            captureInitialFormValues();
+            updateSubmitButtonState();
+        });
+    }
+    
+    // Add input listeners with debounced updates
+    const inputs = form.querySelectorAll('input:not([type="file"]), select, textarea');
+    let updateTimeout;
+    inputs.forEach(input => {
+        input.addEventListener('input', function() {
+            clearTimeout(updateTimeout);
+            updateTimeout = setTimeout(updateSubmitButtonState, 200);
+        });
+        input.addEventListener('change', function() {
+            clearTimeout(updateTimeout);
+            updateTimeout = setTimeout(updateSubmitButtonState, 200);
+        });
+    });
+    
+    // Override form submission
+    form.removeEventListener('submit', handleFormSubmission);
+    form.addEventListener('submit', handleFormSubmission);
+    
+    // Override submit button click
+    const submitButton = form.querySelector('button[type="submit"]');
+    if (submitButton) {
+        submitButton.removeEventListener('click', handleFormSubmission);
+        submitButton.addEventListener('click', handleFormSubmission);
+    }
+    
+    // Ensure initial button state after page load
+    setTimeout(async () => {
+        await waitForAddressFields();
+        captureInitialFormValues();
+        updateSubmitButtonState();
+    }, 500);
+});
+
+// Ensure button state is updated when modal is closed and reopened
 function closeEditProfileModal() {
     const modal = document.getElementById('edit-profile-modal');
     modal.classList.add('opacity-0', 'scale-95');
     modal.classList.remove('opacity-100', 'scale-100');
     
-    // After animation completes, hide the modal
-    setTimeout(() => {
+    setTimeout(async () => {
         modal.classList.add('hidden');
+        // Reset form values and button state after address fields are populated
+        await waitForAddressFields();
+        captureInitialFormValues();
+        updateSubmitButtonState();
     }, 300);
 }
 
@@ -7102,6 +7253,8 @@ function closeImageModal() {
     modal.classList.add('hidden');
     document.getElementById('zoomed-image').src = '';
 }
+
+
 
 </script>
 </body> 
