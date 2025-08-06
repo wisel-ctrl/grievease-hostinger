@@ -11,6 +11,7 @@ $updateStmt = null;
 $getServiceStmt = null;
 $getCasketStmt = null;
 $updateInventoryStmt = null;
+$insertAnalyticsStmt = null;
 
 try {
     // Input validation
@@ -130,6 +131,61 @@ try {
         throw new Exception('Failed to update service status: ' . $updateStmt->error);
     }
 
+    // Get additional sales data needed for analytics
+    $getSalesDataStmt = $conn->prepare("
+        SELECT sale_date, deceased_address, branch_id, amount_paid 
+        FROM customsales_tb 
+        WHERE customsales_id = ?
+    ");
+    if ($getSalesDataStmt === false) {
+        throw new Exception('Failed to prepare sales data query: ' . $conn->error);
+    }
+    
+    $getSalesDataStmt->bind_param("i", $data['customsales_id']);
+    if (!$getSalesDataStmt->execute()) {
+        throw new Exception('Failed to get sales data: ' . $getSalesDataStmt->error);
+    }
+    
+    $salesDataResult = $getSalesDataStmt->get_result();
+    if ($salesDataResult->num_rows === 0) {
+        throw new Exception('Sales data not found');
+    }
+    
+    $salesData = $salesDataResult->fetch_assoc();
+    $amount_paid = !empty($data['balance_settled']) ? $discountedPrice : $salesData['amount_paid'];
+    
+    // Insert into analytics_tb
+    $insertAnalyticsStmt = $conn->prepare("
+        INSERT INTO analytics_tb (
+            sale_date,
+            discounted_price,
+            casket_id,
+            address,
+            branch_id,
+            sales_id,
+            amount_paid,
+            sales_type
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, 'custom')
+    ");
+    if ($insertAnalyticsStmt === false) {
+        throw new Exception('Failed to prepare analytics insert: ' . $conn->error);
+    }
+    
+    $insertAnalyticsStmt->bind_param(
+        "sdisids",
+        $salesData['sale_date'],
+        $discountedPrice,
+        $casket_id,
+        $salesData['deceased_address'],
+        $salesData['branch_id'],
+        $data['customsales_id'],
+        $amount_paid
+    );
+    
+    if (!$insertAnalyticsStmt->execute()) {
+        throw new Exception('Failed to insert analytics data: ' . $insertAnalyticsStmt->error);
+    }
+
     $conn->commit();
     $response['success'] = true;
     $response['message'] = "Service completed successfully" . 
@@ -161,6 +217,12 @@ try {
     }
     if (isset($updateInventoryStmt) && $updateInventoryStmt instanceof mysqli_stmt) {
         $updateInventoryStmt->close();
+    }
+    if (isset($insertAnalyticsStmt) && $insertAnalyticsStmt instanceof mysqli_stmt) {
+        $insertAnalyticsStmt->close();
+    }
+    if (isset($getSalesDataStmt) && $getSalesDataStmt instanceof mysqli_stmt) {
+        $getSalesDataStmt->close();
     }
     if (isset($conn) && $conn instanceof mysqli) {
         $conn->close();
