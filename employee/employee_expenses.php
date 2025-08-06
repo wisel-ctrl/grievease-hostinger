@@ -1302,7 +1302,7 @@ function updateExpensesTable(expenses) {
                         ${escapeHtml(expense.category)}
                     </span>
                 </td>
-                <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱${parseFloat(expense.price).toFixed(2)}</td>
+                <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">${formatCurrency(expense.price)}</td>
                 <td class="px-4 py-3.5 text-sm text-sidebar-text">${expense.date}</td>
                 <td class="px-4 py-3.5 text-sm">
                     <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${statusClass}">
