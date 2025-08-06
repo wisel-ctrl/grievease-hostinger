@@ -32,7 +32,7 @@ try {
     $conn->begin_transaction();
 
     // Get service price and casket_id
-    $getPriceStmt = $conn->prepare("SELECT discounted_price, casket_id, sale_date, deceased_address, branch_id, amount_paid FROM customsales_tb WHERE customsales_id = ?");
+    $getPriceStmt = $conn->prepare("SELECT discounted_price, casket_id, get_timestamp, deceased_address, branch_id, amount_paid FROM customsales_tb WHERE customsales_id = ?");
     if ($getPriceStmt === false) {
         throw new Exception('Failed to prepare price query: ' . $conn->error);
     }
@@ -50,7 +50,7 @@ try {
     $serviceData = $priceResult->fetch_assoc();
     $discountedPrice = $serviceData['discounted_price'];
     $casket_id = $serviceData['casket_id'];
-    $sale_date = $serviceData['sale_date'];
+    $sale_date = date('Y-m-d', strtotime($serviceData['get_timestamp']));
     $deceased_address = $serviceData['deceased_address'];
     $branch_id = $serviceData['branch_id'];
     $current_amount_paid = $serviceData['amount_paid'];
