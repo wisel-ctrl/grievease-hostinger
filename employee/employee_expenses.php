@@ -1292,6 +1292,8 @@ function updateExpensesTable(expenses) {
             ? "bg-green-100 text-green-600 border border-green-200" 
             : "bg-orange-100 text-orange-500 border border-orange-200";
         const statusIcon = expense.status === 'paid' ? "fa-check-circle" : "fa-clock";
+        const displayStatus = expense.status.charAt(0).toUpperCase() + expense.status.slice(1);
+
         
         html += `
             <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
@@ -1306,7 +1308,7 @@ function updateExpensesTable(expenses) {
                 <td class="px-4 py-3.5 text-sm text-sidebar-text">${expense.date}</td>
                 <td class="px-4 py-3.5 text-sm">
                     <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${statusClass}">
-                        <i class="fas ${statusIcon} mr-1"></i> ${escapeHtml(expense.status)}
+                        <i class="fas ${statusIcon} mr-1"></i> ${displayStatus}
                     </span>
                 </td>
                 <td class="px-4 py-3.5 text-sm">
