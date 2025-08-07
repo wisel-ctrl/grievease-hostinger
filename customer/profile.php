@@ -2468,19 +2468,19 @@ function viewReceipt(packageType, id) {
             <div class="my-4">
                 <div class="flex justify-between py-1">
                     <span>Service Price:</span>
-                    <span>₱${parseFloat(receiptData.discounted_price).toFixed(2)}</span>
+                    <span>${formatCurrency(receiptData.discounted_price)}</span>
                 </div>
                 <div class="flex justify-between py-1">
                     <span>Previous Balance:</span>
-                    <span>₱${parseFloat(receiptData.Before_Balance || receiptData.before_balance || receiptData.current_balance).toFixed(2)}</span>
+                    <span>${formatCurrency(receiptData.Before_Balance || receiptData.before_balance || receiptData.current_balance)}</span>
                 </div>
                 <div class="flex justify-between py-1">
                     <span>Amount Paid:</span>
-                    <span class="font-semibold">₱${parseFloat(receiptData.Payment_Amount || receiptData.payment_amount || receiptData.installment_amount).toFixed(2)}</span>
+                    <span class="font-semibold">${formatCurrency(receiptData.Payment_Amount || receiptData.payment_amount || receiptData.installment_amount)}</span>
                 </div>
                 <div class="flex justify-between py-1 border-t border-gray-300 mt-2">
                     <span class="font-semibold">New Balance:</span>
-                    <span class="font-semibold">₱${parseFloat(receiptData.After_Payment_Balance || receiptData.after_payment_balance || receiptData.new_balance).toFixed(2)}</span>
+                    <span class="font-semibold">${formatCurrency(receiptData.After_Payment_Balance || receiptData.after_payment_balance || receiptData.new_balance)}</span>
                 </div>
                 <div class="flex justify-between py-1">
                     <span>Payment Method:</span>
