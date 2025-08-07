@@ -1288,10 +1288,10 @@ function updateExpensesTable(expenses) {
     
     let html = '';
     expenses.forEach(expense => {
-        const statusClass = expense.status === 'Paid' 
+        const statusClass = expense.status === 'paid' 
             ? "bg-green-100 text-green-600 border border-green-200" 
             : "bg-orange-100 text-orange-500 border border-orange-200";
-        const statusIcon = expense.status === 'Paid' ? "fa-check-circle" : "fa-clock";
+        const statusIcon = expense.status === 'paid' ? "fa-check-circle" : "fa-clock";
         
         html += `
             <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
