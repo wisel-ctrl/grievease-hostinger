@@ -664,10 +664,10 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
                     <?php if (count($expenses) > 0): ?>
                         <?php foreach ($expenses as $expense): ?>
                             <?php
-                            $statusClass = $expense['status'] === 'Paid' 
+                            $statusClass = $expense['status'] === 'paid' 
                                 ? "bg-green-100 text-green-600 border border-green-200" 
                                 : "bg-orange-100 text-orange-500 border border-orange-200";
-                            $statusIcon = $expense['status'] === 'Paid' ? "fa-check-circle" : "fa-clock";
+                            $statusIcon = $expense['status'] === 'paid' ? "fa-check-circle" : "fa-clock";
                             ?>
                             <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
                                 <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">#<?php echo htmlspecialchars($expense['expense_ID']); ?></td>
