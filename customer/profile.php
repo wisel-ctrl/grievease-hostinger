@@ -2378,8 +2378,8 @@ function openPaymentHistoryModal(packageType, Id) {
             row.innerHTML = `
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${formattedDate}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${payment.Notes || ''}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">₱${parseFloat(payment.Payment_Amount).toFixed(2)}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">₱${parseFloat(payment.After_Payment_Balance).toFixed(2)}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">${formatCurrency(payment.Payment_Amount)}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatCurrency(payment.After_Payment_Balance)}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-center">
                     <button 
                         class="text-yellow-600 hover:text-yellow-800" 
@@ -7254,7 +7254,14 @@ function closeImageModal() {
     document.getElementById('zoomed-image').src = '';
 }
 
-
+function formatCurrency(amount) {
+    amount = parseFloat(amount);
+    if (isNaN(amount)) return '₱ 0.00';
+    return '₱ ' + amount.toLocaleString('en-PH', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+}
 
 </script>
 </body> 
