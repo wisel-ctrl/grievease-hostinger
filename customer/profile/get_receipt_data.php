@@ -23,24 +23,30 @@ try {
         case 'traditional-funeral':
             $query = "
                 SELECT 
-                    i.installment_ID, 
-                    b.branch_name, 
-                    i.Client_Name, 
-                    s.discounted_price,
-                    i.Before_Balance, 
-                    i.After_Payment_Balance, 
-                    i.Payment_Amount, 
-                    i.Payment_Timestamp, 
-                    i.Method_of_Payment,
-                    sv.service_name
-                FROM 
-                    installment_tb AS i
-                JOIN 
-                    branch_tb AS b ON i.Branch_id = b.branch_id
-                LEFT JOIN 
-                    sales_tb AS s ON i.sales_id = s.sales_id
-                LEFT JOIN 
-                    services_tb AS sv ON s.service_id = sv.service_id
+                i.installment_ID, 
+                b.branch_name, 
+                i.Client_Name, 
+                s.discounted_price,
+                i.Before_Balance, 
+                i.After_Payment_Balance, 
+                i.Payment_Amount, 
+                i.Payment_Timestamp, 
+                i.Method_of_Payment,
+                sv.service_name,
+                CONCAT_WS(' ',
+                    COALESCE(s.fname_deceased, ''),
+                    COALESCE(s.mname_deceased, ''),
+                    COALESCE(s.lname_deceased, ''),
+                    COALESCE(s.suffix_deceased, '')
+                ) AS deceased_name
+            FROM 
+                installment_tb AS i
+            JOIN 
+                branch_tb AS b ON i.Branch_id = b.branch_id
+            LEFT JOIN 
+                sales_tb AS s ON i.sales_id = s.sales_id
+            LEFT JOIN 
+                services_tb AS sv ON s.service_id = sv.service_id
                 WHERE 
                     i.installment_ID = ?
             ";
@@ -60,7 +66,13 @@ try {
                     ci.after_payment_balance, 
                     ci.payment_timestamp, 
                     ci.method_of_payment,
-                    'Custom Package' as service_name
+                    'Custom Package' as service_name,
+                    CONCAT_WS(' ',
+                        COALESCE(cs.fname_deceased, ''),
+                        COALESCE(cs.mname_deceased, ''),
+                        COALESCE(cs.lname_deceased, ''),
+                        COALESCE(cs.suffix_deceased, '')
+                    ) AS deceased_name
                 FROM 
                     custom_installment_tb as ci 
                 JOIN 
@@ -92,7 +104,13 @@ try {
                         IFNULL(CONCAT(UPPER(LEFT(u.middle_name, 1)), LOWER(SUBSTRING(u.middle_name, 2)), ' '), ''),
                         UPPER(LEFT(u.last_name, 1)), LOWER(SUBSTRING(u.last_name, 2)), ' ',
                         COALESCE(u.suffix, '')
-                    ) AS planholder_name
+                    ) AS planholder_name,
+                     CONCAT_WS(' ',
+                        COALESCE(lp.benefeciary_fname, ''),
+                        COALESCE(lp.benefeciary_mname, ''),
+                        COALESCE(lp.benefeciary_lname, ''),
+                        COALESCE(lp.benefeciary_suffix, '')
+                    ) AS beneficiary_name
                 FROM 
                     lifeplan_logs_tb AS l
                 JOIN 

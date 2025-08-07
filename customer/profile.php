@@ -2437,6 +2437,19 @@ function viewReceipt(packageType, id) {
             minute: '2-digit'
         });
 
+        let nameField = '';
+        if (receiptData.deceased_name) {
+            nameField = `<div class="flex justify-between">
+                <span class="font-semibold">Deceased Name:</span>
+                <span>${receiptData.deceased_name}</span>
+            </div>`;
+        } else if (receiptData.beneficiary_name) {
+            nameField = `<div class="flex justify-between">
+                <span class="font-semibold">Beneficiary Name:</span>
+                <span>${receiptData.beneficiary_name}</span>
+            </div>`;
+        }
+
         // Populate the receipt modal
         const receiptModal = document.getElementById('receipt-modal');
         const receiptContent = document.getElementById('receipt-content');
@@ -2459,6 +2472,7 @@ function viewReceipt(packageType, id) {
                     <span class="font-semibold">Service:</span>
                     <span>${receiptData.service_name}</span>
                 </div>
+                ${nameField}
                 <div class="flex justify-between">
                     <span class="font-semibold">Package Type:</span>
                     <span>${packageType.replace('-', ' ').toUpperCase()}</span>
