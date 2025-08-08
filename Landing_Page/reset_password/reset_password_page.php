@@ -62,7 +62,7 @@ $user = $result->fetch_assoc();
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
     <script src="../../tailwind.js"></script>
 </head>
-<body class="font-hedvig text-navy antialiased bg-gray-800">
+<body class="font-hedvig text-navy antialiased bg-black">
     <!-- Remove the semi-transparent overlay and background image divs -->
     
     <header class="w-full max-w-7xl mx-auto px-4 py-5">
