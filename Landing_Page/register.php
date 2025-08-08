@@ -209,7 +209,7 @@
                 
                 <div class="text-center mt-4">
                     <p class="text-xs text-white font-medium">
-                        Already have an account? <a href="login.php" class="text-yellow-600 hover:underline">Sign in</a>
+                        Already have an account? <a href="login.php" class="text-yellow-600 hover:underline">Login</a>
                     </p>
                 </div>
             </div>
