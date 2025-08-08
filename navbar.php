@@ -60,10 +60,10 @@
                 About
                 <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></span>
             </a>
-            <a href="memorial.php" class="text-white hover:text-gray-300 transition relative group">
+            <!-- <a href="memorial.php" class="text-white hover:text-gray-300 transition relative group">
                 Memorials
                 <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></span>
-            </a>
+            </a> -->
             <a href="services.php" class="text-white hover:text-gray-300 transition relative group">
                 Services & Packages
                 <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></span>
@@ -118,13 +118,13 @@
                 </div>
                 <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></span>
             </a>
-            <a href="memorial.php" class="block text-white py-3 px-4 hover:bg-gray-800 rounded-lg transition-colors duration-300 relative group">
+            <!-- <a href="memorial.php" class="block text-white py-3 px-4 hover:bg-gray-800 rounded-lg transition-colors duration-300 relative group">
                 <div class="flex justify-between items-center">
                     <span>Memorials</span>
                     <i class="fas fa-monument text-yellow-600 opacity-0 group-hover:opacity-100 transition-opacity"></i>
                 </div>
                 <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></span>
-            </a>
+            </a> -->
             <a href="services.php" class="block text-white py-3 px-4 hover:bg-gray-800 rounded-lg transition-colors duration-300 relative group">
                 <div class="flex justify-between items-center">
                     <span>Services & Packages</span>
