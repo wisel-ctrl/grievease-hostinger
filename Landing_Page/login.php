@@ -128,7 +128,7 @@ header("Pragma: no-cache");
         
         <div class="text-center mt-4">
             <p class="text-xs font-medium text-white">
-                Need an Account? <a href="register.php" class="text-yellow-600 hover:underline">Get Started</a>
+                Need an Account? <a href="register.php" class="text-yellow-600 hover:underline">Create an Account</a>
             </p>
         </div>
     </div>
