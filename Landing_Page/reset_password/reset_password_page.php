@@ -62,83 +62,89 @@ $user = $result->fetch_assoc();
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
     <script src="../../tailwind.js"></script>
 </head>
-<body class="font-hedvig text-navy antialiased bg-gray-100 min-h-screen flex items-center justify-center">
-    <div class="w-full max-w-md mx-auto px-4">
-        <div class="bg-white rounded-xl shadow-lg p-8">
-            <!-- Header with Logo -->
-            <div class="text-center mb-6">
-                <div class="flex items-center justify-center mb-4">
-                    <img src="../Landing_images/logo.png" alt="GrievEase Logo" class="h-12 w-auto">
-                    <span class="text-yellow-600 text-2xl ml-3">
-                        <a href="../../index.php" class="text-yellow-600 text-3xl">GrievEase</a>
-                    </span>
-                </div>
-                <h2 class="text-2xl font-hedvig font-bold text-navy">Reset Your Password</h2>
-            </div>
-            
-            <form id="resetPasswordForm" class="space-y-4">
-                <!-- Hidden input for token -->
-                <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
-                
-                <!-- New Password -->
-                <div>
-                    <label for="new_password" class="block text-sm font-medium text-gray-700 mb-2">New Password</label>
-                    <div class="relative">
-                        <input 
-                            type="password" 
-                            id="new_password" 
-                            name="new_password" 
-                            required 
-                            class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-yellow-600 focus:border-yellow-600 outline-none transition-all duration-200 pr-8"
-                            placeholder="Enter new password"
-                        >
-                        <span 
-                            class="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer text-yellow-600 hover:text-navy transition text-sm" 
-                            id="toggleNewPassword"
-                        >
-                            <i class="fas fa-eye"></i>
-                        </span>
-                    </div>
-                    <p id="password-strength" class="text-xs mt-1 text-yellow-600">Password strength: Weak</p>
-                </div>
-                
-                <!-- Confirm New Password -->
-                <div>
-                    <label for="confirm_password" class="block text-sm font-medium text-gray-700 mb-2">Confirm New Password</label>
-                    <div class="relative">
-                        <input 
-                            type="password" 
-                            id="confirm_password" 
-                            name="confirm_password" 
-                            required 
-                            class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-yellow-600 focus:border-yellow-600 outline-none transition-all duration-200 pr-8"
-                            placeholder="Confirm new password"
-                        >
-                        <span 
-                            class="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer text-yellow-600 hover:text-navy transition text-sm" 
-                            id="toggleConfirmPassword"
-                        >
-                            <i class="fas fa-eye"></i>
-                        </span>
-                    </div>
-                </div>
+<body class="font-hedvig text-navy antialiased bg-gray-800">
+    <!-- Remove the semi-transparent overlay and background image divs -->
+    
+    <header class="w-full max-w-7xl mx-auto px-4 py-5">
+        <div class="flex items-center">
+            <img src="../Landing_images/logo.png" alt="GrievEase Logo" class="h-12 w-auto">
+            <span class="text-yellow-600 text-2xl ml-3">
+                <a href="../../index.php" class="text-yellow-600 text-3xl">GrievEase</a>
+            </span>
+        </div>
+    </header>
 
-                <!-- Submit Button -->
-                <button 
-                    type="submit" 
-                    class="w-full bg-gradient-to-r from-yellow-600 to-yellow-700 text-white py-3 px-4 rounded-lg text-sm font-medium shadow-lg hover:shadow-xl transition-all duration-300 mt-6 flex items-center justify-center"
-                >
-                    Reset Password
-                </button>
-            </form>
-            
-            <div class="text-center mt-6">
-                <p class="text-sm font-medium text-gray-600">
-                    Remember your password? <a href="../login.php" class="text-yellow-600 hover:underline">Back to Login</a>
-                </p>
+    <main class="flex items-center justify-center px-4 min-h-[calc(100vh-96px)]">
+        <div class="w-full max-w-md mx-auto">
+            <div class="bg-black bg-opacity-25 backdrop-blur-md rounded-xl p-6 shadow-card">
+                <div class="text-center mb-4">
+                    <h2 class="text-xl font-hedvig text-white">Reset Your Password</h2>
+                </div>
+                
+                <form id="resetPasswordForm" class="space-y-3">
+                    <!-- Hidden input for token -->
+                    <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
+                    
+                    <!-- New Password -->
+                    <div>
+                        <label for="new_password" class="block text-xs font-medium text-white mb-1">New Password</label>
+                        <div class="relative">
+                            <input 
+                                type="password" 
+                                id="new_password" 
+                                name="new_password" 
+                                required 
+                                class="w-full px-3 py-2 bg-white border border-input-border rounded-lg focus:ring-1 focus:ring-yellow-600 focus:border-yellow-600 outline-none transition-all duration-200 pr-8"
+                                placeholder="Enter new password"
+                            >
+                            <span 
+                                class="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer text-yellow-600 hover:text-navy transition text-sm" 
+                                id="toggleNewPassword"
+                            >
+                                <i class="fas fa-eye"></i>
+                            </span>
+                        </div>
+                        <p id="password-strength" class="text-xs mt-1 text-yellow-600">Password strength: Weak</p>
+                    </div>
+                    
+                    <!-- Confirm New Password -->
+                    <div>
+                        <label for="confirm_password" class="block text-xs font-medium text-white mb-1">Confirm New Password</label>
+                        <div class="relative">
+                            <input 
+                                type="password" 
+                                id="confirm_password" 
+                                name="confirm_password" 
+                                required 
+                                class="w-full px-3 py-2 bg-white border border-input-border rounded-lg focus:ring-1 focus:ring-yellow-600 focus:border-yellow-600 outline-none transition-all duration-200 pr-8"
+                                placeholder="Confirm new password"
+                            >
+                            <span 
+                                class="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer text-yellow-600 hover:text-navy transition text-sm" 
+                                id="toggleConfirmPassword"
+                            >
+                                <i class="fas fa-eye"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button 
+                        type="submit" 
+                        class="w-full bg-gradient-to-r from-yellow-600 to-darkgold text-white py-2 px-4 rounded-lg text-sm font-medium shadow-lg hover:shadow-xl transition-all duration-300 mt-4 flex items-center justify-center"
+                    >
+                        Reset Password
+                    </button>
+                </form>
+                
+                <div class="text-center mt-4">
+                    <p class="text-xs font-medium text-white">
+                        Remember your password? <a href="../login.php" class="text-yellow-600 hover:underline">Back to Login</a>
+                    </p>
+                </div>
             </div>
         </div>
-    </div>
+    </main>
 
     <!-- Loading Animation Overlay -->
     <div id="page-loader" class="fixed inset-0 bg-black bg-opacity-80 z-[999] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-500">
