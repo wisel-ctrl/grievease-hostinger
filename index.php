@@ -370,7 +370,7 @@
     </div>
     
     <!-- Additional Features -->
-
+    </div>
 
          <!-- Testimonials Section -->
          <div class="mb-16 mt-8 mr-8 ml-8 bg-navy/5 py-12 px-6 rounded-xl" data-aos="fade-up">
