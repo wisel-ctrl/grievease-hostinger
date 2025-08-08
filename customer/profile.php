@@ -1298,6 +1298,8 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="flex flex-wrap border-b border-gray-200">
             <button class="service-tab px-4 py-2 text-navy font-medium border-b-2 border-yellow-600" data-tab="traditional-booking">
                 Traditional Funeral
+            </button><button class="service-tab px-4 py-2 text-navy font-medium border-b-2 border-yellow-600" data-tab="custom-booking">
+                Custom Package
             </button>
             <button class="service-tab px-4 py-2 text-gray-500 font-medium mx-2" data-tab="lifeplan-booking">
                 Life Plan
