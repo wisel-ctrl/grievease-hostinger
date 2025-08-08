@@ -76,7 +76,7 @@ $user = $result->fetch_assoc();
 
     <main class="flex items-center justify-center px-4 min-h-[calc(100vh-96px)]">
         <div class="w-full max-w-md mx-auto">
-            <div class="bg-black bg-opacity-25 backdrop-blur-md rounded-xl p-6 shadow-card">
+            <div class="bg-white bg-opacity-25 backdrop-blur-md rounded-xl p-6 shadow-card">
                 <div class="text-center mb-4">
                     <h2 class="text-xl font-hedvig text-white">Reset Your Password</h2>
                 </div>
