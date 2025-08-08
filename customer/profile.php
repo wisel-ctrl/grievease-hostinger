@@ -3447,7 +3447,7 @@ function getSamplePaymentHistory(packageType) {
 <div id="change-password-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 hidden">
   <!-- Modal Content -->
   <div class="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden max-h-[90vh]">
-    <div class="modal-scroll-container overflow-y-auto max-h-[90vh]">
+    <div class=" overflow-y-auto max-h-[90vh]">
       <!-- Header with close button -->
       <div class="bg-navy p-6 flex justify-between items-center">
         <h2 class="text-2xl font-hedvig text-white">Change Password</h2>
@@ -3457,7 +3457,7 @@ function getSamplePaymentHistory(packageType) {
       </div>
       
       <!-- Modal Body -->
-      <div class="p-6 bg-cream">
+      <div class="p-6 bg-cream modal-scroll-container">
         <p class="text-gray-600 text-base mb-4">Enter your current password and choose a new strong password.</p>
         
         <form class="space-y-4 sm:space-y-6" id="password-form" method="POST" action="profile/update_password.php">
