@@ -1150,7 +1150,7 @@ require_once '../db_connect.php'; // Database connection
                             <input type="checkbox" id="termsCheckbox" name="terms_accepted" required 
                                 class="h-5 w-5 text-yellow-600 rounded focus:ring-yellow-500 mt-1">
                             <label for="termsCheckbox" class="ml-3 text-sm">
-                                <span class="block text-navy mb-1">I have read and agree to the <a href="#" class="text-yellow-600 hover:underline" id="viewPrivacyPolicy">Privacy Policy</a> and <a href="#" class="text-yellow-600 hover:underline" id="viewTermsOfService">Terms of Service</a>. <a href="lifeplancontract.php" target="_blank" rel="noopener noreferrer" class="text-yellow-600 hover:underline">LifePlan Contract</a> <span class="text-red-500">*</span></span>
+                                <span class="block text-navy mb-1">I have read and agree to the <a href="#" class="text-yellow-600 hover:underline" id="viewPrivacyPolicy">Privacy Policy</a> and <a href="#" class="text-yellow-600 hover:underline" id="viewTermsOfService">Terms of Service</a>. <a href="lifeplancontract.php" target="_blank" rel="noopener noreferrer">LifePlan Contract</a> <span class="text-red-500">*</span></span>
                                 <span class="block text-gray-500 text-xs">By checking this box, you consent to our data collection practices as described in our Privacy Policy.</span>
                             </label>
                         </div>
@@ -2893,15 +2893,6 @@ document.addEventListener('DOMContentLoaded', function() {
             if (event.key === 'Escape' && !qrCodeModal.classList.contains('hidden')) {
                 qrCodeModal.classList.add('hidden');
             }
-        });
-    }
-    
-    // Ensure lifeplan contract link opens in new tab
-    const lifeplanContractLink = document.querySelector('a[href="lifeplancontract.php"]');
-    if (lifeplanContractLink) {
-        lifeplanContractLink.addEventListener('click', function(e) {
-            e.preventDefault();
-            window.open(this.href, '_blank', 'noopener,noreferrer');
         });
     }
 });
