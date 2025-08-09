@@ -337,6 +337,17 @@ input[name*="LastName"] {
             transform: translateY(-8px);
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
+        
+        /* Sorting active indicator */
+        .sorting-active {
+            border-color: #d97706 !important;
+            background-color: #fef3c7 !important;
+        }
+        
+        /* Smooth transitions for package cards */
+        .package-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+        }
         /* Add this to your existing CSS */
 @media (min-width: 768px) {
     #lifeplanModal .form-section {
@@ -730,11 +741,11 @@ function capitalizeWords(str) {
         <!-- Price Sort -->
         <select 
             id="priceSort" 
-            class="w-full md:w-2/5 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600"
+            class="w-full md:w-2/5 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 transition-all duration-200"
         >
-            <option value="">Sort by Price</option>
-            <option value="asc">Low to High</option>
-            <option value="desc">High to Low</option>
+            <option value="">Default Order</option>
+            <option value="asc">Price: Low to High</option>
+            <option value="desc">Price: High to Low</option>
         </select>
 
         <!-- Reset Filters Button -->
@@ -2392,6 +2403,9 @@ document.addEventListener('DOMContentLoaded', function() {
         features: Array.from(card.querySelectorAll('ul li')).map(li => li.textContent.trim())
     }));
 
+    // Initialize sorting and filtering
+    initializeSortingAndFiltering();
+
     // Rest of your existing DOMContentLoaded code...
 });
 
@@ -3505,22 +3519,48 @@ function renderPackages(filteredPackages) {
     });
 }
 
-// Update the filter function to handle the validation
+// Initialize sorting and filtering functionality
+function initializeSortingAndFiltering() {
+    // Event Listeners
+    document.getElementById('searchInput').addEventListener('input', filterAndSortPackages);
+    document.getElementById('priceSort').addEventListener('change', function() {
+        // Add a small delay to show the change is being processed
+        setTimeout(() => {
+            filterAndSortPackages();
+        }, 100);
+    });
+    document.getElementById('resetFilters').addEventListener('click', resetFilters);
+    document.getElementById('reset-filters-no-results')?.addEventListener('click', resetFilters);
+}
+
+// Enhanced filter and sort function
 function filterAndSortPackages() {
     const searchInput = document.getElementById('searchInput');
-    const searchTerm = searchInput.value.toLowerCase();
+    const searchTerm = searchInput.value.toLowerCase().trim();
     
     // Don't proceed if the input is invalid
     if (searchInput.classList.contains('invalid')) {
         return;
     }
     
-    const priceSort = document.getElementById('priceSort').value;
+    const priceSort = document.getElementById('priceSort');
+    const priceSortValue = priceSort.value;
     const packagesContainer = document.getElementById('packages-container');
     const noResults = document.getElementById('no-results');
     
-    let visibleCount = 0;
-    document.querySelectorAll('.package-card').forEach(card => {
+    // Add/remove visual feedback for sorting
+    if (priceSortValue) {
+        priceSort.classList.add('sorting-active');
+    } else {
+        priceSort.classList.remove('sorting-active');
+    }
+    
+    // Get all package cards
+    const allCards = Array.from(document.querySelectorAll('.package-card'));
+    let visibleCards = [];
+    
+    // Filter packages based on search term
+    allCards.forEach(card => {
         const packageName = card.dataset.name.toLowerCase();
         const packageDescription = card.querySelector('p').textContent.toLowerCase();
         const featureTexts = Array.from(card.querySelectorAll('ul li')).map(li => li.textContent.toLowerCase());
@@ -3532,51 +3572,85 @@ function filterAndSortPackages() {
         
         if (matchesSearch) {
             card.classList.remove('hidden');
-            visibleCount++;
+            visibleCards.push(card);
         } else {
             card.classList.add('hidden');
         }
     });
     
-    if (visibleCount === 0) {
+    // Show/hide no results message
+    if (visibleCards.length === 0) {
         noResults.classList.remove('hidden');
+        return;
     } else {
         noResults.classList.add('hidden');
     }
     
-    if (priceSort) {
-        const cards = Array.from(packagesContainer.querySelectorAll('.package-card:not(.hidden)'));
-        cards.sort((a, b) => {
+    // Sort visible cards if sorting is selected
+    if (priceSortValue) {
+        visibleCards.sort((a, b) => {
             const priceA = parseFloat(a.dataset.price);
             const priceB = parseFloat(b.dataset.price);
-            return priceSort === 'asc' ? priceA - priceB : priceB - priceA;
+            return priceSortValue === 'asc' ? priceA - priceB : priceB - priceA;
         });
         
-        cards.forEach(card => {
+        // Re-append sorted cards to maintain order
+        visibleCards.forEach(card => {
             packagesContainer.appendChild(card);
         });
+    } else {
+        // If no sorting selected, restore original order
+        restoreOriginalOrder();
     }
 }
 
+// Function to restore original package order
+function restoreOriginalOrder() {
+    const packagesContainer = document.getElementById('packages-container');
+    const visibleCards = Array.from(packagesContainer.querySelectorAll('.package-card:not(.hidden)'));
+    
+    // Create a map of original positions
+    const originalPositions = new Map();
+    originalPackages.forEach((pkg, index) => {
+        originalPositions.set(pkg.name, index);
+    });
+    
+    // Sort visible cards by their original position
+    visibleCards.sort((a, b) => {
+        const posA = originalPositions.get(a.dataset.name) || 0;
+        const posB = originalPositions.get(b.dataset.name) || 0;
+        return posA - posB;
+    });
+    
+    // Re-append in original order
+    visibleCards.forEach(card => {
+        packagesContainer.appendChild(card);
+    });
+}
+
+// Enhanced reset function
 function resetFilters() {
     // Reset search input
-    document.getElementById('searchInput').value = '';
+    const searchInput = document.getElementById('searchInput');
+    searchInput.value = '';
+    searchInput.classList.remove('invalid');
     
-    // Reset price sort dropdown to default
-    document.getElementById('priceSort').value = '';
+    // Reset price sort dropdown to default and remove visual feedback
+    const priceSort = document.getElementById('priceSort');
+    priceSort.value = '';
+    priceSort.classList.remove('sorting-active');
     
-    // Re-render the original packages
-    renderPackages(originalPackages);
+    // Show all packages
+    document.querySelectorAll('.package-card').forEach(card => {
+        card.classList.remove('hidden');
+    });
+    
+    // Restore original order
+    restoreOriginalOrder();
     
     // Hide the "no results" message
     document.getElementById('no-results').classList.add('hidden');
 }
-
-// Event Listeners
-document.getElementById('searchInput').addEventListener('input', filterAndSortPackages);
-document.getElementById('priceSort').addEventListener('change', filterAndSortPackages);
-document.getElementById('resetFilters').addEventListener('click', resetFilters);
-document.getElementById('reset-filters-no-results')?.addEventListener('click', resetFilters);
 
 // Date validation for traditional booking form
 document.addEventListener('DOMContentLoaded', function() {
@@ -3877,8 +3951,11 @@ document.getElementById('searchInput').addEventListener('input', function(e) {
     // First validate the input
     validateSearchInput(this);
     
-    // Then filter and sort packages
-    filterAndSortPackages();
+    // Then filter and sort packages with a small delay for better performance
+    clearTimeout(this.searchTimeout);
+    this.searchTimeout = setTimeout(() => {
+        filterAndSortPackages();
+    }, 300);
 });
 
 // Prevent paste of invalid content
