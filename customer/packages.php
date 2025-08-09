@@ -103,10 +103,22 @@ error_log("User branch_loc: " . $branch_id . ", show_branch_modal: " . ($show_br
 
 if ($branch_id && $branch_id !== 'unknown' && $branch_id !== '') {
     $query = "SELECT s.service_id, s.service_name, s.description, s.selling_price, s.image_url, 
-                     i.item_name AS casket_name, s.flower_design, s.inclusions
+                     i.item_name AS casket_name, s.flower_design, s.inclusions,
+                     COALESCE(booking_count.total_bookings, 0) as popularity_count
               FROM services_tb s
               LEFT JOIN inventory_tb i ON s.casket_id = i.inventory_id
-              WHERE s.status = 'active' AND s.branch_id = ?";
+              LEFT JOIN (
+                  SELECT service_id, 
+                         COUNT(*) as total_bookings
+                  FROM (
+                      SELECT service_id FROM booking_tb WHERE status IN ('Accepted', 'Pending')
+                      UNION ALL
+                      SELECT service_id FROM lifeplan_booking_tb WHERE booking_status IN ('accepted', 'pending')
+                  ) all_bookings
+                  GROUP BY service_id
+              ) booking_count ON s.service_id = booking_count.service_id
+              WHERE s.status = 'active' AND s.branch_id = ?
+              ORDER BY popularity_count DESC, s.service_name ASC";
 
     $stmt = $conn->prepare($query);
     $stmt->bind_param("i", $branch_id);
@@ -140,7 +152,8 @@ if ($branch_id && $branch_id !== 'unknown' && $branch_id !== '') {
                 'price' => $row['selling_price'],
                 'image' => getImageUrl($row['image_url']), // Use the helper function for image URLs
                 'features' => $inclusions, // Now $inclusions is defined for each package
-                'service' => 'traditional' // Assuming all are traditional for now
+                'service' => 'traditional', // Assuming all are traditional for now
+                'popularity' => (int)$row['popularity_count'] // Add popularity count
             ];
         }
         $result->free();
@@ -347,6 +360,18 @@ input[name*="LastName"] {
         /* Smooth transitions for package cards */
         .package-card {
             transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+        }
+        
+        /* Popularity badge styling */
+        .popularity-badge {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            box-shadow: 0 2px 4px rgba(220, 38, 38, 0.3);
+            animation: pulse-glow 2s infinite;
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 2px 4px rgba(220, 38, 38, 0.3); }
+            50% { box-shadow: 0 2px 8px rgba(220, 38, 38, 0.5); }
         }
         /* Add this to your existing CSS */
 @media (min-width: 768px) {
@@ -744,6 +769,7 @@ function capitalizeWords(str) {
             class="w-full md:w-2/5 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 transition-all duration-200"
         >
             <option value="">Default Order</option>
+            <option value="popular">Most Chosen</option>
             <option value="asc">Price: Low to High</option>
             <option value="desc">Price: High to Low</option>
         </select>
@@ -767,7 +793,8 @@ function capitalizeWords(str) {
                          data-price="<?= $pkg['price'] ?>"
                          data-service="<?= $pkg['service'] ?>"
                          data-name="<?= htmlspecialchars($pkg['name']) ?>"
-                         data-image="<?= htmlspecialchars($pkg['image']) ?>">
+                         data-image="<?= htmlspecialchars($pkg['image']) ?>"
+                         data-popularity="<?= $pkg['popularity'] ?>">
                         <div class="flex flex-col h-full">
                             <!-- Image section -->
                             <div class="h-48 bg-cover bg-center relative" style="background-image: url('<?= htmlspecialchars($pkg['image']) ?>')">
@@ -775,6 +802,12 @@ function capitalizeWords(str) {
                                 <div class="absolute top-4 right-4 w-12 h-12 rounded-full bg-yellow-600/90 flex items-center justify-center text-white">
                                     <i class="fas fa-<?= $icon ?> text-xl"></i>
                                 </div>
+                                <?php if ($pkg['popularity'] > 0): ?>
+                                <div class="absolute top-4 left-4 popularity-badge text-white px-2 py-1 rounded-full text-xs font-medium flex items-center">
+                                    <i class="fas fa-heart mr-1"></i>
+                                    <?= $pkg['popularity'] ?> chosen
+                                </div>
+                                <?php endif; ?>
                             </div>
                             
                             <!-- Content section with consistent sizing -->
@@ -2400,7 +2433,8 @@ document.addEventListener('DOMContentLoaded', function() {
         image: card.dataset.image,
         icon: card.querySelector('.fa-')?.className.match(/fa-(.+?)( |$)/)[1] || 'box',
         description: card.querySelector('p').textContent,
-        features: Array.from(card.querySelectorAll('ul li')).map(li => li.textContent.trim())
+        features: Array.from(card.querySelectorAll('ul li')).map(li => li.textContent.trim()),
+        popularity: parseInt(card.dataset.popularity) || 0
     }));
 
     // Initialize sorting and filtering
@@ -3481,6 +3515,7 @@ function renderPackages(filteredPackages) {
         packageCard.setAttribute('data-service', pkg.service);
         packageCard.setAttribute('data-name', pkg.name);
         packageCard.setAttribute('data-image', pkg.image);
+        packageCard.setAttribute('data-popularity', pkg.popularity || 0);
         
         packageCard.innerHTML = `
             <div class="flex flex-col h-full">
@@ -3489,6 +3524,12 @@ function renderPackages(filteredPackages) {
                     <div class="absolute top-4 right-4 w-12 h-12 rounded-full bg-yellow-600/90 flex items-center justify-center text-white">
                         <i class="fas fa-${pkg.icon} text-xl"></i>
                     </div>
+                    ${pkg.popularity > 0 ? `
+                    <div class="absolute top-4 left-4 popularity-badge text-white px-2 py-1 rounded-full text-xs font-medium flex items-center">
+                        <i class="fas fa-heart mr-1"></i>
+                        ${pkg.popularity} chosen
+                    </div>
+                    ` : ''}
                 </div>
                 
                 <div class="p-6 flex flex-col flex-grow">
@@ -3589,9 +3630,17 @@ function filterAndSortPackages() {
     // Sort visible cards if sorting is selected
     if (priceSortValue) {
         visibleCards.sort((a, b) => {
-            const priceA = parseFloat(a.dataset.price);
-            const priceB = parseFloat(b.dataset.price);
-            return priceSortValue === 'asc' ? priceA - priceB : priceB - priceA;
+            if (priceSortValue === 'popular') {
+                // Sort by popularity (descending - most popular first)
+                const popularityA = parseInt(a.dataset.popularity) || 0;
+                const popularityB = parseInt(b.dataset.popularity) || 0;
+                return popularityB - popularityA;
+            } else {
+                // Sort by price
+                const priceA = parseFloat(a.dataset.price);
+                const priceB = parseFloat(b.dataset.price);
+                return priceSortValue === 'asc' ? priceA - priceB : priceB - priceA;
+            }
         });
         
         // Re-append sorted cards to maintain order
