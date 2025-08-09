@@ -399,17 +399,6 @@ input[name*="LastName"] {
         aspect-ratio: 3/2; /* Maintain landscape aspect ratio */
     }
 }
-
-/* Add to your existing styles */
-#lifeplanSubmitBtn:disabled {
-    background-color: #9ca3af !important;
-    cursor: not-allowed;
-    opacity: 0.7;
-}
-
-#lifeplanSubmitBtn:disabled:hover {
-    background-color: #9ca3af !important;
-}
     </style>
 </head>
 <body class="bg-cream overflow-x-hidden w-full max-w-full m-0 p-0 font-hedvig">
@@ -2124,9 +2113,9 @@ function removeGcash() {
 
                 <!-- Add this simple continue button at the bottom of the details section -->
     <div class="mt-6 border-t border-gray-200 pt-4 md:hidden">
-        <button type="submit" id="lifeplanSubmitBtn" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300" disabled>
-    Confirm Lifeplan Booking
-</button>
+        <button id="continueToLifeplanFormBtn" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300">
+            Continue to Booking
+        </button>
     </div>
 
                 
@@ -4167,31 +4156,6 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('lifeplanQrCodeModal').classList.add('hidden');
     });
 });
-
-// Get the checkbox and submit button elements
-const termsCheckbox = document.getElementById('termsCheckbox');
-const lifeplanSubmitBtn = document.getElementById('lifeplanSubmitBtn');
-
-// Add event listener to checkbox
-if (termsCheckbox && lifeplanSubmitBtn) {
-    // Initially disable the button
-    lifeplanSubmitBtn.disabled = true;
-    
-    // Add change event listener to checkbox
-    termsCheckbox.addEventListener('change', function() {
-        // Enable/disable button based on checkbox state
-        lifeplanSubmitBtn.disabled = !this.checked;
-        
-        // Change button style based on state
-        if (this.checked) {
-            lifeplanSubmitBtn.classList.remove('bg-gray-400');
-            lifeplanSubmitBtn.classList.add('bg-yellow-600', 'hover:bg-yellow-700');
-        } else {
-            lifeplanSubmitBtn.classList.remove('bg-yellow-600', 'hover:bg-yellow-700');
-            lifeplanSubmitBtn.classList.add('bg-gray-400');
-        }
-    });
-}
 </script>
 
 </body>
