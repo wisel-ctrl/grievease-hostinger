@@ -1174,18 +1174,15 @@ function capitalizeWords(str) {
                         <!-- Address (Improved UI with dropdowns in specified layout) -->
                         <div class="flex flex-wrap -mx-2 mb-3">
                             <div class="w-full sm:w-1/2 px-2 mb-3 sm:mb-0">
-                                <label for="traditionalDeceasedRegion" class="block text-sm font-medium text-navy mb-1">Region <span class="text-red-500">*</label>
-                                <select id="traditionalDeceasedRegion" name="deceasedRegion" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                <label for="traditionalDeceasedRegion" class="block text-sm font-medium text-navy mb-1">Region <span class="text-red-500">*</span></label>
+                                <select id="traditionalDeceasedRegion" name="deceasedRegion" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" required>
                                     <option value="">Select Region</option>
-                                    <option value="NCR">National Capital Region (NCR)</option>
-                                    <option value="CAR">Cordillera Administrative Region (CAR)</option>
-                                    <option value="Region I">Ilocos Region (Region I)</option>
-                                    <!-- Add more regions as needed -->
+                                    <!-- Regions will be populated by JavaScript -->
                                 </select>
                             </div>
                             <div class="w-full sm:w-1/2 px-2">
-                                <label for="traditionalDeceasedProvince" class="block text-sm font-medium text-navy mb-1">Province <span class="text-red-500">*</label>
-                                <select id="traditionalDeceasedProvince" name="deceasedProvince" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                <label for="traditionalDeceasedProvince" class="block text-sm font-medium text-navy mb-1">Province <span class="text-red-500">*</span></label>
+                                <select id="traditionalDeceasedProvince" name="deceasedProvince" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" disabled required>
                                     <option value="">Select Province</option>
                                     <!-- Provinces will be populated by JavaScript based on selected region -->
                                 </select>
@@ -1194,24 +1191,24 @@ function capitalizeWords(str) {
                         
                         <div class="flex flex-wrap -mx-2 mb-3">
                             <div class="w-full sm:w-1/2 px-2 mb-3 sm:mb-0">
-                                <label for="traditionalDeceasedCity" class="block text-sm font-medium text-navy mb-1">City/Municipality <span class="text-red-500">*</label>
-                                <select id="traditionalDeceasedCity" name="deceasedCity" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                <label for="traditionalDeceasedCity" class="block text-sm font-medium text-navy mb-1">City/Municipality <span class="text-red-500">*</span></label>
+                                <select id="traditionalDeceasedCity" name="deceasedCity" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" disabled required>
                                     <option value="">Select City/Municipality</option>
                                     <!-- Cities will be populated by JavaScript based on selected province -->
                                 </select>
                             </div>
                             <div class="w-full sm:w-1/2 px-2">
-                                <label for="traditionalDeceasedBarangay" class="block text-sm font-medium text-navy mb-1">Barangay <span class="text-red-500">*</label>
-                                <select id="traditionalDeceasedBarangay" name="deceasedBarangay" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                <label for="traditionalDeceasedBarangay" class="block text-sm font-medium text-navy mb-1">Barangay <span class="text-red-500">*</span></label>
+                                <select id="traditionalDeceasedBarangay" name="deceasedBarangay" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" disabled required>
                                     <option value="">Select Barangay</option>
                                     <!-- Barangays will be populated by JavaScript based on selected city -->
                                 </select>
                             </div>
                         </div>
                         
-                        <div class="mb-3">
-                            <label for="traditionalDeceasedStreet" class="block text-sm font-medium text-navy mb-1">Street/Block/House Number <span class="text-red-500">*</label>
-                            <input type="text" id="traditionalDeceasedStreet" name="deceasedStreet" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" placeholder="Enter detailed street address">
+                        <div class="mt-4">
+                            <label for="traditionalDeceasedAddress" class="block text-sm font-medium text-navy mb-2">Street/Block/House Number <span class="text-red-500">*</span></label>
+                            <input type="text" id="traditionalDeceasedAddress" name="deceasedAddress" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" placeholder="e.g. 123 Main Street">
                         </div>
                         
                         <input type="hidden" id="deceasedAddress" name="deceasedAddress">
@@ -2210,18 +2207,15 @@ function removeGcash() {
                         <!-- Address (Improved UI with dropdowns in specified layout) -->
                         <div class="flex flex-wrap -mx-2 mb-3">
                             <div class="w-full sm:w-1/2 px-2 mb-3 sm:mb-0">
-                                <label for="lifeplanHolderRegion" class="block text-sm font-medium text-navy mb-1">Region <span class="text-red-500">*</label>
-                                <select id="lifeplanHolderRegion" name="holderRegion" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                <label for="lifeplanHolderRegion" class="block text-sm font-medium text-navy mb-1">Region <span class="text-red-500">*</span></label>
+                                <select id="lifeplanHolderRegion" name="holderRegion" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" required>
                                     <option value="">Select Region</option>
-                                    <option value="NCR">National Capital Region (NCR)</option>
-                                    <option value="CAR">Cordillera Administrative Region (CAR)</option>
-                                    <option value="Region I">Ilocos Region (Region I)</option>
-                                    <!-- Add more regions as needed -->
+                                    <!-- Regions will be populated by JavaScript -->
                                 </select>
                             </div>
                             <div class="w-full sm:w-1/2 px-2">
-                                <label for="lifeplanHolderProvince" class="block text-sm font-medium text-navy mb-1">Province <span class="text-red-500">*</label>
-                                <select id="lifeplanHolderProvince" name="holderProvince" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                <label for="lifeplanHolderProvince" class="block text-sm font-medium text-navy mb-1">Province <span class="text-red-500">*</span></label>
+                                <select id="lifeplanHolderProvince" name="holderProvince" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" disabled required>
                                     <option value="">Select Province</option>
                                     <!-- Provinces will be populated by JavaScript based on selected region -->
                                 </select>
@@ -2230,24 +2224,24 @@ function removeGcash() {
                         
                         <div class="flex flex-wrap -mx-2 mb-3">
                             <div class="w-full sm:w-1/2 px-2 mb-3 sm:mb-0">
-                                <label for="lifeplanHolderCity" class="block text-sm font-medium text-navy mb-1">City/Municipality <span class="text-red-500">*</label>
-                                <select id="lifeplanHolderCity" name="holderCity" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                <label for="lifeplanHolderCity" class="block text-sm font-medium text-navy mb-1">City/Municipality <span class="text-red-500">*</span></label>
+                                <select id="lifeplanHolderCity" name="holderCity" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" disabled required>
                                     <option value="">Select City/Municipality</option>
                                     <!-- Cities will be populated by JavaScript based on selected province -->
                                 </select>
                             </div>
                             <div class="w-full sm:w-1/2 px-2">
-                                <label for="lifeplanHolderBarangay" class="block text-sm font-medium text-navy mb-1">Barangay <span class="text-red-500">*</label>
-                                <select id="lifeplanHolderBarangay" name="holderBarangay" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                <label for="lifeplanHolderBarangay" class="block text-sm font-medium text-navy mb-1">Barangay <span class="text-red-500">*</span></label>
+                                <select id="lifeplanHolderBarangay" name="holderBarangay" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" disabled required>
                                     <option value="">Select Barangay</option>
                                     <!-- Barangays will be populated by JavaScript based on selected city -->
                                 </select>
                             </div>
                         </div>
                         
-                        <div class="mb-3">
-                            <label for="lifeplanHolderStreet" class="block text-sm font-medium text-navy mb-1">Street/Block/House Number <span class="text-red-500">*</label>
-                            <input type="text" id="lifeplanHolderStreet" name="holderStreet" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" placeholder="Enter detailed street address">
+                        <div class="mt-4">
+                            <label for="lifeplanHolderStreet" class="block text-sm font-medium text-navy mb-2">Street/Block/House Number <span class="text-red-500">*</span></label>
+                            <input type="text" id="lifeplanHolderStreet" name="holderStreet" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" placeholder="e.g. 123 Main Street">
                         </div>
                     </div>
 
@@ -2374,6 +2368,131 @@ function removeGcash() {
                         <div class="flex justify-between font-bold mt-2 pt-2 border-t border-gray-300">
                             <span class="text-navy">Monthly Payment</span>
                             <span id="lifeplanMonthlyPayment" class="text-yellow-600">₱0</span>
+                        </div>
+                    </div>
+
+                    <!-- Privacy Policy and Terms Consent -->
+                    <div class="mt-4 mb-4 border border-gray-200 rounded-lg p-4 bg-gray-50 terms-checkbox-container">
+                        <div class="flex items-start">
+                            <input type="checkbox" id="termsCheckbox" name="terms_accepted" required 
+                                class="h-5 w-5 text-yellow-600 rounded focus:ring-yellow-500 mt-1">
+                            <label for="termsCheckbox" class="ml-3 text-sm">
+                                <span class="block text-navy mb-1">I have read and agree to the <a href="#" class="text-yellow-600 hover:underline" id="viewPrivacyPolicy">Privacy Policy</a>, <a href="#" class="text-yellow-600 hover:underline" id="viewTermsOfService">Terms of Service</a>, and <a href="lifeplancontract.php" target="_blank" rel="noopener noreferrer" class="text-yellow-600 hover:underline">LifePlan Contract</a>. <a href="lifeplancontract_pdf.php" target="_blank" rel="noopener noreferrer" class="text-yellow-600 hover:underline">(Download PDF Version)</a> <span class="text-red-500">*</span></span>
+                                <span class="block text-gray-500 text-xs">By checking this box, you acknowledge that you have read and understood all terms and conditions, and consent to our data collection practices as described in our Privacy Policy.</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Privacy Policy Modal -->
+                    <div id="privacyPolicyModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+                        <div class="bg-white rounded-lg p-6 max-w-lg w-full mx-4 max-h-[80vh] overflow-y-auto">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg font-hedvig text-navy">Privacy Policy</h3>
+                                <button id="closePrivacyModal" class="text-gray-500 hover:text-navy">
+                                    <i class="fas fa-times text-xl"></i>
+                                </button>
+                            </div>
+                            <div class="text-sm text-gray-700 space-y-4">
+                                <p>At GrievEase, we understand that privacy is of utmost importance, especially during times of grief and loss. This Privacy Policy outlines how we collect, use, protect, and share information gathered through our website and services. We are committed to ensuring the privacy and security of all personal information entrusted to us.</p>
+                                <p>Last Updated: March 22, 2025</p>
+
+                                <h4 class="font-medium text-navy">Information We Collect</h4>
+                                <p>We collect only what is necessary to provide our services with dignity and respect.</p>
+                                <h5 class="font-medium">Personal Information</h5>
+                                <p>We may collect the following personal information when you use our website, contact us, or arrange for our services:</p>
+                                <ul class="list-disc ml-5 space-y-1">
+                                    <li>Full name and contact information (email, phone number, address)</li>
+                                    <li>Information about the deceased required for documentation</li>
+                                    <li>Payment information for service arrangements</li>
+                                </ul>
+
+                                <h4 class="font-medium text-navy">How We Use Your Information</h4>
+                                <p>We use the information we collect for the following purposes:</p>
+                                <ul class="list-disc ml-5 space-y-1">
+                                    <li><strong>Providing Services:</strong> To arrange and conduct funeral services according to your wishes and requirements.</li>
+                                    <li><strong>Communication:</strong> To respond to your inquiries, provide information, and offer support throughout the process.</li>
+                                    <li><strong>Legal Requirements:</strong> To complete necessary documentation and comply with legal obligations related to funeral services.</li>
+                                </ul>
+
+                                <h4 class="font-medium text-navy">Information Sharing</h4>
+                                <p>We treat your information with the same respect and dignity as we treat your loved ones.</p>
+                                <p>GrievEase is committed to maintaining your privacy. We do not sell, rent, or trade your personal information to third parties for marketing purposes. We may share information in the following limited circumstances:</p>
+                                <ul class="list-disc ml-5 space-y-1">
+                                    <li><strong>Service Partners:</strong> With trusted partners who assist us in providing funeral services when necessary to fulfill your service requests.</li>
+                                    <li><strong>Legal Requirements:</strong> When required by law, such as to comply with a subpoena, court order, or similar legal procedure.</li>
+                                    <li><strong>Protection:</strong> When we believe in good faith that disclosure is necessary to protect our rights, protect your safety or the safety of others, or investigate fraud.</li>
+                                </ul>
+
+                                <h4 class="font-medium text-navy">Security Measures</h4>
+                                <p>We implement comprehensive security measures to protect your personal information:</p>
+                                <ul class="list-disc ml-5 space-y-1">
+                                    <li>Encryption of sensitive data during transmission and storage</li>
+                                    <li>Regular security assessments and updates</li>
+                                    <li>Limited access to personal information on a need-to-know basis</li>
+                                    <li>Secure disposal of information when no longer needed</li>
+                                </ul>
+
+                                <h4 class="font-medium text-navy">Your Rights</h4>
+                                <p>You have the right to:</p>
+                                <ul class="list-disc ml-5 space-y-1">
+                                    <li>Access and review your personal information</li>
+                                    <li>Request corrections to inaccurate information</li>
+                                    <li>Request deletion of your information (subject to legal requirements)</li>
+                                    <li>Opt-out of certain communications</li>
+                                </ul>
+
+                                <h4 class="font-medium text-navy">Contact Us</h4>
+                                <p>If you have any questions about this Privacy Policy or our data practices, please contact us at:</p>
+                                <p>Email: privacy@grievease.com<br>
+                                Phone: +63 912 345 6789<br>
+                                Address: 123 Funeral Services Ave, Metro Manila, Philippines</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Terms of Service Modal -->
+                    <div id="termsOfServiceModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+                        <div class="bg-white rounded-lg p-6 max-w-lg w-full mx-4 max-h-[80vh] overflow-y-auto">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg font-hedvig text-navy">Terms of Service</h3>
+                                <button id="closeTermsModal" class="text-gray-500 hover:text-navy">
+                                    <i class="fas fa-times text-xl"></i>
+                                </button>
+                            </div>
+                            <div class="text-sm text-gray-700 space-y-4">
+                                <p>Welcome to GrievEase. These Terms of Service govern your use of our website and services. By using our services, you agree to these terms.</p>
+                                <p>Last Updated: March 22, 2025</p>
+
+                                <h4 class="font-medium text-navy">Service Description</h4>
+                                <p>GrievEase provides funeral and memorial services, including traditional funeral arrangements, cremation services, and life plan packages.</p>
+
+                                <h4 class="font-medium text-navy">Booking and Payment</h4>
+                                <ul class="list-disc ml-5 space-y-1">
+                                    <li>All bookings are subject to availability and confirmation</li>
+                                    <li>Payment terms vary by service type and will be clearly communicated</li>
+                                    <li>Life plan packages require monthly payments over 5 years</li>
+                                    <li>Traditional services require 30% downpayment with balance due before service</li>
+                                </ul>
+
+                                <h4 class="font-medium text-navy">Cancellation Policy</h4>
+                                <p>Cancellations must be made in writing and are subject to the following terms:</p>
+                                <ul class="list-disc ml-5 space-y-1">
+                                    <li>Life plan packages: 30-day notice required for cancellation</li>
+                                    <li>Traditional services: 48-hour notice required for full refund</li>
+                                    <li>Administrative fees may apply</li>
+                                </ul>
+
+                                <h4 class="font-medium text-navy">Limitation of Liability</h4>
+                                <p>GrievEase strives to provide the highest quality services, but we cannot guarantee that our services will be uninterrupted or error-free. Our liability is limited to the amount paid for the specific service.</p>
+
+                                <h4 class="font-medium text-navy">Governing Law</h4>
+                                <p>These terms are governed by the laws of the Philippines. Any disputes will be resolved in the courts of Metro Manila.</p>
+
+                                <h4 class="font-medium text-navy">Contact Information</h4>
+                                <p>For questions about these terms, please contact us at:</p>
+                                <p>Email: legal@grievease.com<br>
+                                Phone: +63 912 345 6789</p>
+                            </div>
                         </div>
                     </div>
 
