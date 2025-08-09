@@ -103,9 +103,22 @@ error_log("User branch_loc: " . $branch_id . ", show_branch_modal: " . ($show_br
 
 if ($branch_id && $branch_id !== 'unknown' && $branch_id !== '') {
     $query = "SELECT s.service_id, s.service_name, s.description, s.selling_price, s.image_url, 
-                     i.item_name AS casket_name, s.flower_design, s.inclusions
+                     i.item_name AS casket_name, s.flower_design, s.inclusions,
+                     COALESCE(traditional_bookings.count, 0) + COALESCE(lifeplan_bookings.count, 0) as total_bookings
               FROM services_tb s
               LEFT JOIN inventory_tb i ON s.casket_id = i.inventory_id
+              LEFT JOIN (
+                  SELECT service_id, COUNT(*) as count 
+                  FROM booking_tb 
+                  WHERE service_id IS NOT NULL 
+                  GROUP BY service_id
+              ) traditional_bookings ON s.service_id = traditional_bookings.service_id
+              LEFT JOIN (
+                  SELECT service_id, COUNT(*) as count 
+                  FROM lifeplan_booking_tb 
+                  WHERE service_id IS NOT NULL 
+                  GROUP BY service_id
+              ) lifeplan_bookings ON s.service_id = lifeplan_bookings.service_id
               WHERE s.status = 'active' AND s.branch_id = ?";
 
     $stmt = $conn->prepare($query);
@@ -140,7 +153,8 @@ if ($branch_id && $branch_id !== 'unknown' && $branch_id !== '') {
                 'price' => $row['selling_price'],
                 'image' => getImageUrl($row['image_url']), // Use the helper function for image URLs
                 'features' => $inclusions, // Now $inclusions is defined for each package
-                'service' => 'traditional' // Assuming all are traditional for now
+                'service' => 'traditional', // Assuming all are traditional for now
+                'booking_count' => $row['total_bookings'] // Add booking count
             ];
         }
         $result->free();
@@ -342,6 +356,32 @@ input[name*="LastName"] {
         .sorting-active {
             border-color: #d97706 !important;
             background-color: #fef3c7 !important;
+        }
+        
+        /* Popular sorting active indicator */
+        .popular-sorting-active {
+            border-color: #f59e0b !important;
+            background: linear-gradient(135deg, #fef3c7, #fde68a) !important;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1) !important;
+        }
+        
+        /* Popular package indicator */
+        .popular-package {
+            position: relative;
+        }
+        
+        .popular-package::before {
+            content: "🔥 Popular";
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            z-index: 10;
         }
         
         /* Smooth transitions for package cards */
@@ -723,6 +763,15 @@ function capitalizeWords(str) {
         <h2 class="text-5xl font-hedvig text-navy mb-4">Our Packages</h2>
         <p class="text-dark text-lg max-w-3xl mx-auto">Compassionate and personalized funeral services to honor your loved one's memory with dignity.</p>
         <div class="w-20 h-1 bg-yellow-600 mx-auto mt-6"></div>
+        <?php 
+        $total_bookings = array_sum(array_column($packages, 'booking_count'));
+        if ($total_bookings > 0): 
+        ?>
+        <div class="mt-4 text-sm text-gray-600">
+            <i class="fas fa-chart-line mr-1"></i>
+            <span>Based on <?= $total_bookings ?> customer selections</span>
+        </div>
+        <?php endif; ?>
     </div>
 
     <!-- Search and Filter Section -->
@@ -746,6 +795,7 @@ function capitalizeWords(str) {
             <option value="">Default Order</option>
             <option value="asc">Price: Low to High</option>
             <option value="desc">Price: High to Low</option>
+            <option value="popular">Most Chosen</option>
         </select>
 
         <!-- Reset Filters Button -->
@@ -763,11 +813,12 @@ function capitalizeWords(str) {
                     // Determine icon for this package
                     $icon = getIconForPackage($pkg['price']);
                     ?>
-                    <div class="package-card bg-white rounded-[20px] shadow-lg overflow-hidden"
+                    <div class="package-card bg-white rounded-[20px] shadow-lg overflow-hidden <?= $pkg['booking_count'] >= 3 ? 'popular-package' : '' ?>"
                          data-price="<?= $pkg['price'] ?>"
                          data-service="<?= $pkg['service'] ?>"
                          data-name="<?= htmlspecialchars($pkg['name']) ?>"
-                         data-image="<?= htmlspecialchars($pkg['image']) ?>">
+                         data-image="<?= htmlspecialchars($pkg['image']) ?>"
+                         data-bookings="<?= $pkg['booking_count'] ?>">
                         <div class="flex flex-col h-full">
                             <!-- Image section -->
                             <div class="h-48 bg-cover bg-center relative" style="background-image: url('<?= htmlspecialchars($pkg['image']) ?>')">
@@ -785,9 +836,17 @@ function capitalizeWords(str) {
                                 <!-- Description -->
                                 <p class="text-dark mb-4 line-clamp-3 h-[72px] overflow-hidden"><?= htmlspecialchars($pkg['description']) ?></p>
                                 
-                                <!-- Price -->
-                                <div class="text-3xl font-hedvig text-yellow-600 mb-4 h-12 flex items-center">
-                                    ₱<?= number_format($pkg['price']) ?>
+                                <!-- Price and Popularity -->
+                                <div class="flex justify-between items-center mb-4">
+                                    <div class="text-3xl font-hedvig text-yellow-600">
+                                        ₱<?= number_format($pkg['price']) ?>
+                                    </div>
+                                    <?php if ($pkg['booking_count'] > 0): ?>
+                                    <div class="flex items-center text-sm text-gray-600 bg-gray-100 px-2 py-1 rounded-full">
+                                        <i class="fas fa-users mr-1 text-yellow-600"></i>
+                                        <span><?= $pkg['booking_count'] ?> chosen</span>
+                                    </div>
+                                    <?php endif; ?>
                                 </div>
                                 
                                 <!-- Features list -->
@@ -3524,6 +3583,17 @@ function initializeSortingAndFiltering() {
     // Event Listeners
     document.getElementById('searchInput').addEventListener('input', filterAndSortPackages);
     document.getElementById('priceSort').addEventListener('change', function() {
+        // Show explanation for "Most Chosen" option
+        if (this.value === 'popular') {
+            Swal.fire({
+                title: 'Most Chosen Packages',
+                text: 'Packages are sorted by the number of times they have been selected by customers. The most popular packages appear first.',
+                icon: 'info',
+                confirmButtonColor: '#d97706',
+                confirmButtonText: 'Got it!'
+            });
+        }
+        
         // Add a small delay to show the change is being processed
         setTimeout(() => {
             filterAndSortPackages();
@@ -3551,8 +3621,15 @@ function filterAndSortPackages() {
     // Add/remove visual feedback for sorting
     if (priceSortValue) {
         priceSort.classList.add('sorting-active');
+        // Add special styling for popular sorting
+        if (priceSortValue === 'popular') {
+            priceSort.classList.add('popular-sorting-active');
+        } else {
+            priceSort.classList.remove('popular-sorting-active');
+        }
     } else {
         priceSort.classList.remove('sorting-active');
+        priceSort.classList.remove('popular-sorting-active');
     }
     
     // Get all package cards
@@ -3591,7 +3668,15 @@ function filterAndSortPackages() {
         visibleCards.sort((a, b) => {
             const priceA = parseFloat(a.dataset.price);
             const priceB = parseFloat(b.dataset.price);
-            return priceSortValue === 'asc' ? priceA - priceB : priceB - priceA;
+                            if (priceSortValue === 'popular') {
+                    // Sort by booking count (most chosen first)
+                    const bookingsA = parseInt(a.dataset.bookings) || 0;
+                    const bookingsB = parseInt(b.dataset.bookings) || 0;
+                    return bookingsB - bookingsA; // Descending order (most popular first)
+                } else {
+                    // Sort by price
+                    return priceSortValue === 'asc' ? priceA - priceB : priceB - priceA;
+                }
         });
         
         // Re-append sorted cards to maintain order
