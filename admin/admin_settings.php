@@ -6,49 +6,7 @@
     <title>Admin Settings</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        'playfair': ['"Playfair Display"', 'serif'],
-                        'alexbrush': ['"Alex Brush"', 'cursive'],
-                        'inter': ['Inter', 'sans-serif'],
-                        'cinzel': ['Cinzel', 'serif'],
-                        'hedvig': ['Hedvig Letters Serif', 'serif']
-                    },
-                    colors: {
-                        'yellow': {
-                            600: '#CA8A04',
-                        },
-                        'navy': '#F0F4F8',
-                        'cream': '#F9F6F0',
-                        'dark': '#4A5568',
-                        'gold': '#D69E2E',
-                        'darkgold': '#B7791F',
-                        'primary': '#F8FAFC',
-                        'primary-foreground': '#334155',
-                        'secondary': '#F1F5F9',
-                        'secondary-foreground': '#334155',
-                        'border': '#E4E9F0',
-                        'input-border': '#D3D8E1',
-                        'error': '#E53E3E',
-                        'success': '#38A169',
-                        'sidebar-bg': '#FFFFFF',
-                        'sidebar-hover': '#F1F5F9',
-                        'sidebar-text': '#334155',
-                        'sidebar-accent': '#CA8A04',
-                        'sidebar-border': '#E2E8F0',
-                    },
-                    boxShadow: {
-                        'input': '0 1px 2px rgba(0, 0, 0, 0.05)',
-                        'card': '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-                        'sidebar': '0 0 15px rgba(0, 0, 0, 0.05)'
-                    }
-                }
-            }
-        }
-    </script>
+    <script src="tailwind.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Alex+Brush&family=Inter:wght@300;400;500;600;700&family=Cinzel:wght@400;500;600&family=Hedvig+Letters+Serif:opsz@12..24&display=swap" rel="stylesheet">
 </head>
 <body class="flex bg-navy font-inter">
