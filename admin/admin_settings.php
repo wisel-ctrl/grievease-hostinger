@@ -7,21 +7,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="tailwind.js"></script>
-
-    <style>
-        /* Add custom CSS for sidebar transition */
-        .sidebar-collapsed + .main-content {
-            margin-left: 0;
-            width: 100%;
-        }
-        @media (min-width: 1024px) {
-            .sidebar-collapsed + .main-content {
-                margin-left: 5rem;
-                width: calc(100% - 5rem);
-            }
-        }
-    </style>
-
 </head>
 <body class="flex bg-gray-50">
 
@@ -683,8 +668,6 @@
     </div>
     
     <script>
-        
-
         // Profile picture preview
         document.getElementById('profile_picture').addEventListener('change', function(e) {
             const file = e.target.files[0];
