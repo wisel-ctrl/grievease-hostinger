@@ -339,10 +339,10 @@
                                    accept="image/*">
                         </div>
                         <button type="submit" 
-                                class="w-full bg-sidebar-accent hover:bg-darkgold text-white py-3 px-6 rounded-xl transition-all duration-300 font-medium shadow-input hover:shadow-card transform hover:-translate-y-0.5">
-                            <i class="fas fa-upload mr-2"></i>
-                            Update Picture
-                        </button>
+        class="w-full bg-sidebar-accent hover:bg-darkgold text-white py-2 px-4 rounded-xl transition-all duration-300 font-medium shadow-input hover:shadow-card">
+    <i class="fas fa-upload mr-2"></i>
+    Update Picture
+</button>
                     </form>
                     <p class="text-gray-500 text-sm mt-4 text-center font-inter">JPG, PNG or GIF. Max size 2MB</p>
                 </div>
@@ -414,10 +414,10 @@
                     </div>
                     <div class="mt-8">
                         <button type="submit" 
-                                class="bg-sidebar-accent hover:bg-darkgold text-white py-3 px-8 rounded-xl transition-all duration-300 font-medium shadow-input hover:shadow-card transform hover:-translate-y-0.5">
-                            <i class="fas fa-save mr-2"></i>
-                            Save Changes
-                        </button>
+        class="bg-sidebar-accent hover:bg-darkgold text-white py-2 px-4 rounded-xl transition-all duration-300 font-medium shadow-input hover:shadow-card">
+    <i class="fas fa-save mr-2"></i>
+    Save Changes
+</button>
                     </div>
                 </form>
             </div>
@@ -464,10 +464,10 @@
                     </div>
                     <div class="mt-8">
                         <button type="submit" 
-                                class="bg-sidebar-accent hover:bg-darkgold text-white py-3 px-8 rounded-xl transition-all duration-300 font-medium shadow-input hover:shadow-card transform hover:-translate-y-0.5">
-                            <i class="fas fa-key mr-2"></i>
-                            Update Password
-                        </button>
+        class="bg-sidebar-accent hover:bg-darkgold text-white py-2 px-4 rounded-xl transition-all duration-300 font-medium shadow-input hover:shadow-card">
+    <i class="fas fa-key mr-2"></i>
+    Update Password
+</button>
                     </div>
                 </form>
             </div>
@@ -479,11 +479,11 @@
                         <i class="fas fa-qrcode text-sidebar-accent mr-3 text-xl"></i>
                         <h2 class="text-xl font-semibold text-sidebar-text">GCash QR Codes Management</h2>
                     </div>
-                    <button id="open-gcash-modal" 
-                            class="bg-sidebar-accent hover:bg-darkgold text-white py-2 px-6 rounded-xl transition-all duration-300 font-medium shadow-input hover:shadow-card">
-                        <i class="fas fa-plus-circle mr-2"></i>
-                        Add GCash QR Code
-                    </button>
+                   <button id="open-gcash-modal" 
+        class="bg-sidebar-accent hover:bg-darkgold text-white py-2 px-4 rounded-xl transition-all duration-300 font-medium shadow-input hover:shadow-card">
+    <i class="fas fa-plus-circle mr-2"></i>
+    Add GCash QR Code
+</button>
                 </div>
                 
                 <!-- Tab Filter -->
@@ -552,10 +552,10 @@
                         
                         <?php if (count($gcash_qr_codes) > $display_limit): ?>
                             <div class="mt-6 text-center">
-                                <button id="show-all-qr" class="bg-sidebar-accent hover:bg-darkgold text-white py-2 px-6 rounded-xl transition-all duration-300 font-medium shadow-input hover:shadow-card">
-                                    <i class="fas fa-eye mr-2"></i>
-                                    Show All QR Codes
-                                </button>
+                                <button id="show-all-qr" class="bg-sidebar-accent hover:bg-darkgold text-white py-1.5 px-3 rounded-xl transition-all duration-300 shadow-input hover:shadow-card">
+    <i class="fas fa-eye mr-2"></i>
+    Show All QR Codes
+</button>
                             </div>
                             
                             <!-- Hidden QR Codes (will be shown when "Show All" is clicked) -->
@@ -590,10 +590,10 @@
                                                 <input type="hidden" name="qr_id" value="<?php echo $qr['id']; ?>">
                                                 <input type="hidden" name="action" value="<?php echo $qr['is_available'] ? 'disable' : 'enable'; ?>">
                                                 <button type="submit" name="toggle_availability"
-                                                        class="w-full py-2 px-4 rounded-xl transition-all duration-300 font-medium shadow-input <?php echo $qr['is_available'] ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-green-500 hover:bg-green-600 text-white'; ?>">
-                                                    <i class="fas <?php echo $qr['is_available'] ? 'fa-times-circle' : 'fa-check-circle'; ?> mr-2"></i>
-                                                    <?php echo $qr['is_available'] ? 'Mark as Unavailable' : 'Mark as Available'; ?>
-                                                </button>
+        class="w-full py-1.5 px-3 rounded-xl transition-all duration-300 font-medium shadow-input text-sm <?php echo $qr['is_available'] ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-green-500 hover:bg-green-600 text-white'; ?>">
+    <i class="fas <?php echo $qr['is_available'] ? 'fa-times-circle' : 'fa-check-circle'; ?> mr-2"></i>
+    <?php echo $qr['is_available'] ? 'Mark as Unavailable' : 'Mark as Available'; ?>
+</button>
                                             </form>
                                         </div>
                                     </div>
@@ -648,9 +648,9 @@
                                 
                                 <div class="mt-6 flex justify-end space-x-3">
                                     <button type="button" id="cancel-gcash-modal"
-                                            class="px-4 py-2 border border-sidebar-border rounded-xl text-sidebar-text hover:bg-gray-50 transition-all duration-300">
-                                        Cancel
-                                    </button>
+        class="px-3 py-1.5 border border-sidebar-border rounded-xl text-sidebar-text hover:bg-gray-50 transition-all duration-300">
+    Cancel
+</button>
                                     <button type="submit" name="add_gcash_qr"
                                             class="bg-sidebar-accent hover:bg-darkgold text-white py-2 px-6 rounded-xl transition-all duration-300 font-medium shadow-input hover:shadow-card">
                                         <i class="fas fa-plus-circle mr-2"></i>
