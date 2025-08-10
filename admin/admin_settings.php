@@ -279,7 +279,7 @@
     
     <?php include 'admin_sidebar.php'; ?>
     
-    <div id="main-content" class="p-4 sm:p-6 bg-gray-50 min-h-screen transition-all duration-300 ml-0 lg:ml-64 w-full lg:w-[calc(100%-16rem)] main-content">
+    <div id="main-content" class="p-4 sm:p-6 bg-gray-50 min-h-screen transition-all duration-300 ml-64 w-[calc(100%-16rem)] main-content">
         <!-- Mobile Hamburger Menu -->
         <button id="mobile-hamburger" class="lg:hidden p-3 bg-sidebar-bg rounded-xl shadow-card text-sidebar-text hover:text-sidebar-accent hover:bg-sidebar-hover transition-all duration-300 mb-4 sm:mb-6">
             <i class="fas fa-bars text-lg"></i>
