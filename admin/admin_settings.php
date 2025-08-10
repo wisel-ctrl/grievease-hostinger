@@ -1,16 +1,16 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GrievEase - Admin Settings</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Admin Settings</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="tailwind.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Alex+Brush&family=Inter:wght@300;400;500;600;700&family=Cinzel:wght@400;500;600&family=Hedvig+Letters+Serif:opsz@12..24&display=swap" rel="stylesheet">
 </head>
 <body class="flex bg-gray-50">
+
     <?php
     session_start();
     
@@ -280,163 +280,141 @@
     
     <?php include 'admin_sidebar.php'; ?>
     
-    <!-- Main Content -->
-    <div id="main-content" class="p-6 bg-gray-50 min-h-screen transition-all duration-300 ml-64 w-[calc(100%-16rem)] main-content">
-        <!-- Page Header with Actions -->
-        <div class="flex justify-between items-center mb-6 bg-white p-4 rounded-lg shadow">
-            <h1 class="text-2xl font-bold text-gray-800">Admin Settings</h1>
-            <div class="flex gap-2">
-                <button id="refresh-settings" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-md flex items-center gap-2">
-                    <i class="fas fa-sync-alt"></i> Refresh
-                </button>
-                <div class="relative">
-                    <button id="settings-menu-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-md flex items-center gap-2">
-                        <i class="fas fa-cog"></i> Options
-                    </button>
-                    <div id="settings-menu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
-                        <div class="py-1">
-                            <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="focusSection('profile')">Profile Settings</button>
-                            <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="focusSection('personal')">Personal Details</button>
-                            <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="focusSection('password')">Change Password</button>
-                            <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="focusSection('gcash')">GCash Management</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <div id="main-content" class="p-8 bg-navy min-h-screen transition-all duration-300 ml-64 w-[calc(100%-16rem)] main-content">
+        <!-- Mobile Hamburger Menu -->
+        <button id="mobile-hamburger" class="lg:hidden p-3 bg-sidebar-bg rounded-xl shadow-card text-sidebar-text hover:text-sidebar-accent hover:bg-sidebar-hover transition-all duration-300 mb-6">
+            <i class="fas fa-bars text-lg"></i>
+        </button>
+        
+        <!-- Page Header -->
+        <div class="mb-10">
+            <h1 class="text-2xl font-bold text-sidebar-text">Admin Settings</h1>
+            <p class="text-sm text-gray-500">Manage your personal information and account settings</p>
         </div>
         
         <!-- Alert Messages -->
         <?php if ($success_message): ?>
-            <div class="bg-green-50 border-l-4 border-green-500 text-green-800 px-6 py-4 rounded-lg relative mb-6 shadow-sm" role="alert">
+            <div class="bg-green-50 border-l-4 border-success text-green-800 px-6 py-4 rounded-lg relative mb-6 shadow-input" role="alert">
                 <div class="flex items-center">
-                    <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                    <i class="fas fa-check-circle text-success mr-3"></i>
                     <span class="font-medium"><?php echo $success_message; ?></span>
                 </div>
             </div>
         <?php endif; ?>
         
         <?php if ($error_message): ?>
-            <div class="bg-red-50 border-l-4 border-red-500 text-red-800 px-6 py-4 rounded-lg relative mb-6 shadow-sm" role="alert">
+            <div class="bg-red-50 border-l-4 border-error text-red-800 px-6 py-4 rounded-lg relative mb-6 shadow-input" role="alert">
                 <div class="flex items-center">
-                    <i class="fas fa-exclamation-circle text-red-500 mr-3"></i>
+                    <i class="fas fa-exclamation-circle text-error mr-3"></i>
                     <span class="font-medium"><?php echo $error_message; ?></span>
                 </div>
             </div>
         <?php endif; ?>
         
-        <!-- Settings Content -->
-        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Profile Picture Section -->
-            <div id="profile-section" class="border-b border-gray-200 bg-gray-50 p-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-lg font-semibold text-gray-800 flex items-center">
-                        <i class="fas fa-camera text-yellow-600 mr-3"></i>
-                        Profile Picture
-                    </h2>
+            <div class="bg-sidebar-bg rounded-2xl shadow-card p-8 col-span-1 border border-border">
+                <div class="flex items-center mb-6">
+                    <i class="fas fa-camera text-sidebar-accent mr-3 text-xl"></i>
+                    <h2 class="text-2xl font-semibold text-primary-foreground">Profile Picture</h2>
                 </div>
-                <div class="flex flex-col lg:flex-row items-center lg:items-start gap-6">
-                    <div class="flex flex-col items-center">
-                        <?php if (!empty($admin['profile_picture'])): ?>
-                            <img id="profile-preview" 
-                                 src="../<?php echo $admin['profile_picture']; ?>" 
-                                 alt="Profile" class="w-32 h-32 rounded-full object-cover border-4 border-gray-200 shadow-md transition-all duration-300">
-                        <?php else: ?>
-                            <div id="profile-preview" class="w-32 h-32 rounded-full bg-yellow-600 flex items-center justify-center border-4 border-gray-200 shadow-md transition-all duration-300">
-                                <span class="text-white text-xl font-bold">
-                                    <?php echo strtoupper(substr($admin['first_name'], 0, 1) . substr($admin['last_name'], 0, 1)); ?>
-                                </span>
-                            </div>
-                        <?php endif; ?>
-                        <p class="text-gray-500 text-sm mt-2 text-center">JPG, PNG or GIF. Max size 2MB</p>
-                    </div>
-                    <div class="flex-1 w-full">
-                        <form method="post" enctype="multipart/form-data" class="space-y-4">
-                            <div>
-                                <label class="block text-gray-700 font-medium mb-2" for="profile_picture">Upload New Picture</label>
-                                <input type="file" id="profile_picture" name="profile_picture" 
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-600 focus:border-yellow-600 transition-colors file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100"
-                                       accept="image/*">
-                            </div>
-                            <button type="submit" 
-                                    class="bg-yellow-600 hover:bg-yellow-700 text-white py-2 px-6 rounded-md transition-colors font-medium flex items-center gap-2">
-                                <i class="fas fa-upload"></i>
-                                Update Picture
-                            </button>
-                        </form>
-                    </div>
+                <div class="flex flex-col items-center">
+                    <?php if (!empty($admin['profile_picture'])): ?>
+                        <img id="profile-preview" 
+                             src="../<?php echo $admin['profile_picture']; ?>" 
+                             alt="Profile" class="w-40 h-40 rounded-full object-cover border-4 border-border shadow-card transition-all duration-300 group-hover:shadow-lg">
+                    <?php else: ?>
+                        <div id="profile-preview" class="w-40 h-40 rounded-full bg-sidebar-accent flex items-center justify-center border-4 border-border shadow-card transition-all duration-300 group-hover:shadow-lg">
+                            <span class="text-white text-2xl font-bold">
+                                <?php echo strtoupper(substr($admin['first_name'], 0, 1) . substr($admin['last_name'], 0, 1)); ?>
+                            </span>
+                        </div>
+                    <?php endif; ?>
+                    <form method="post" enctype="multipart/form-data" class="w-full">
+                        <div class="mb-6">
+                            <label class="block text-primary-foreground font-medium mb-3 font-inter" for="profile_picture">Upload New Picture</label>
+                            <input type="file" id="profile_picture" name="profile_picture" 
+                                   class="w-full px-4 py-3 border border-input-border rounded-xl focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-primary file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-secondary file:text-secondary-foreground hover:file:bg-sidebar-hover"
+                                   accept="image/*">
+                        </div>
+                        <button type="submit" 
+                                class="w-full bg-sidebar-accent hover:bg-darkgold text-white py-3 px-6 rounded-xl transition-all duration-300 font-medium shadow-input hover:shadow-card transform hover:-translate-y-0.5">
+                            <i class="fas fa-upload mr-2"></i>
+                            Update Picture
+                        </button>
+                    </form>
+                    <p class="text-dark text-sm mt-4 text-center font-inter">JPG, PNG or GIF. Max size 2MB</p>
                 </div>
             </div>
             
             <!-- Personal Details Section -->
-            <div id="personal-section" class="border-b border-gray-200 p-6">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-lg font-semibold text-gray-800 flex items-center">
-                        <i class="fas fa-user-edit text-yellow-600 mr-3"></i>
-                        Personal Details
-                    </h2>
+            <div class="bg-sidebar-bg rounded-2xl shadow-card p-8 col-span-2 border border-border">
+                <div class="flex items-center mb-6">
+                    <i class="fas fa-user-edit text-sidebar-accent mr-3 text-xl"></i>
+                    <h2 class="text-2xl font-semibold text-primary-foreground">Personal Details</h2>
                 </div>
                 <form method="post" id="personal-details-form">
                     <input type="hidden" name="update_personal" value="1">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="space-y-2">
-                            <label for="first_name" class="block text-gray-700 font-medium">First Name</label>
+                            <label for="first_name" class="block text-primary-foreground font-medium font-inter">First Name</label>
                             <input type="text" id="first_name" name="first_name" required
                                    pattern="[a-zA-Z\s'-]+"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-600 focus:border-yellow-600 transition-colors"
+                                   class="w-full px-4 py-3 border border-input-border rounded-xl focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-primary"
                                    value="<?php echo htmlspecialchars($admin['first_name']); ?>">
-                            <p id="first_name_error" class="text-red-500 text-sm hidden"></p>
+                            <p id="first_name_error" class="text-error text-sm hidden"></p>
                         </div>
                         <div class="space-y-2">
-                            <label for="last_name" class="block text-gray-700 font-medium">Last Name</label>
+                            <label for="last_name" class="block text-primary-foreground font-medium font-inter">Last Name</label>
                             <input type="text" id="last_name" name="last_name" required
                                    pattern="[a-zA-Z\s'-]+"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-600 focus:border-yellow-600 transition-colors"
+                                   class="w-full px-4 py-3 border border-input-border rounded-xl focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-primary"
                                    value="<?php echo htmlspecialchars($admin['last_name']); ?>">
-                            <p id="last_name_error" class="text-red-500 text-sm hidden"></p>
+                            <p id="last_name_error" class="text-error text-sm hidden"></p>
                         </div>
                         <div class="space-y-2">
-                            <label for="middle_name" class="block text-gray-700 font-medium">Middle Name</label>
+                            <label for="middle_name" class="block text-primary-foreground font-medium font-inter">Middle Name</label>
                             <input type="text" id="middle_name" name="middle_name"
                                    pattern="[a-zA-Z\s'-]*"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-600 focus:border-yellow-600 transition-colors"
+                                   class="w-full px-4 py-3 border border-input-border rounded-xl focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-primary"
                                    value="<?php echo htmlspecialchars($admin['middle_name']); ?>">
-                            <p id="middle_name_error" class="text-red-500 text-sm hidden"></p>
+                            <p id="middle_name_error" class="text-error text-sm hidden"></p>
                         </div>
                         <div class="space-y-2">
-                            <label for="suffix" class="block text-gray-700 font-medium">Suffix</label>
+                            <label for="suffix" class="block text-primary-foreground font-medium font-inter">Suffix</label>
                             <input type="text" id="suffix" name="suffix"
                                    pattern="[a-zA-Z\s'-]*"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-600 focus:border-yellow-600 transition-colors"
+                                   class="w-full px-4 py-3 border border-input-border rounded-xl focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-primary"
                                    value="<?php echo htmlspecialchars($admin['suffix']); ?>">
-                            <p id="suffix_error" class="text-red-500 text-sm hidden"></p>
+                            <p id="suffix_error" class="text-error text-sm hidden"></p>
                         </div>
                         <div class="space-y-2">
-                            <label for="birthdate" class="block text-gray-700 font-medium">Birthdate</label>
+                            <label for="birthdate" class="block text-primary-foreground font-medium font-inter">Birthdate</label>
                             <input type="date" id="birthdate" name="birthdate" required
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-600 focus:border-yellow-600 transition-colors"
+                                   class="w-full px-4 py-3 border border-input-border rounded-xl focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-primary"
                                    value="<?php echo htmlspecialchars($admin['birthdate']); ?>">
-                            <p id="birthdate_error" class="text-red-500 text-sm hidden"></p>
+                            <p id="birthdate_error" class="text-error text-sm hidden"></p>
                         </div>
                         <div class="space-y-2">
-                            <label for="phone_number" class="block text-gray-700 font-medium">Phone Number</label>
+                            <label for="phone_number" class="block text-primary-foreground font-medium font-inter">Phone Number</label>
                             <input type="tel" id="phone_number" name="phone_number" required
                                    pattern="(\+63[0-9]{10}|[0-9]{11})"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-600 focus:border-yellow-600 transition-colors"
+                                   class="w-full px-4 py-3 border border-input-border rounded-xl focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-primary"
                                    value="<?php echo htmlspecialchars($admin['phone_number']); ?>">
-                            <p id="phone_number_error" class="text-red-500 text-sm hidden"></p>
+                            <p id="phone_number_error" class="text-error text-sm hidden"></p>
                         </div>
                         <div class="md:col-span-2 space-y-2">
-                            <label for="email" class="block text-gray-700 font-medium">Email</label>
+                            <label for="email" class="block text-primary-foreground font-medium font-inter">Email</label>
                             <input type="email" id="email" name="email" required
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-600 focus:border-yellow-600 transition-colors"
+                                   class="w-full px-4 py-3 border border-input-border rounded-xl focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-primary"
                                    value="<?php echo htmlspecialchars($admin['email']); ?>">
-                            <p id="email_error" class="text-red-500 text-sm hidden"></p>
+                            <p id="email_error" class="text-error text-sm hidden"></p>
                         </div>
                     </div>
-                    <div class="mt-6">
+                    <div class="mt-8">
                         <button type="submit" 
-                                class="bg-yellow-600 hover:bg-yellow-700 text-white py-2 px-6 rounded-md transition-colors font-medium flex items-center gap-2">
-                            <i class="fas fa-save"></i>
+                                class="bg-sidebar-accent hover:bg-darkgold text-white py-3 px-8 rounded-xl transition-all duration-300 font-medium shadow-input hover:shadow-card transform hover:-translate-y-0.5">
+                            <i class="fas fa-save mr-2"></i>
                             Save Changes
                         </button>
                     </div>
@@ -444,253 +422,244 @@
             </div>
             
             <!-- Change Password Section -->
-            <div id="password-section" class="border-b border-gray-200 p-6">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-lg font-semibold text-gray-800 flex items-center">
-                        <i class="fas fa-lock text-yellow-600 mr-3"></i>
-                        Change Password
-                    </h2>
+            <div class="bg-sidebar-bg rounded-2xl shadow-card p-8 col-span-1 lg:col-span-3 border border-border">
+                <div class="flex items-center mb-6">
+                    <i class="fas fa-lock text-sidebar-accent mr-3 text-xl"></i>
+                    <h2 class="text-2xl font-semibold text-primary-foreground">Change Password</h2>
                 </div>
                 <form method="post" id="password-form">
                     <input type="hidden" name="update_password" value="1">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <div class="space-y-2">
-                            <label for="current_password" class="block text-gray-700 font-medium">Current Password</label>
+                            <label for="current_password" class="block text-primary-foreground font-medium font-inter">Current Password</label>
                             <div class="relative">
                                 <input type="password" id="current_password" name="current_password" required
-                                       class="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-600 focus:border-yellow-600 transition-colors">
-                                <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-yellow-600 transition-colors" onclick="togglePassword('current_password')">
+                                       class="w-full px-4 py-3 pr-12 border border-input-border rounded-xl focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-primary">
+                                <button type="button" class="absolute inset-y-0 right-0 pr-4 flex items-center text-dark hover:text-sidebar-accent transition-colors duration-300" onclick="togglePassword('current_password')">
                                     <i class="fas fa-eye" id="current_password_icon"></i>
                                 </button>
                             </div>
                         </div>
                         <div class="space-y-2">
-                            <label for="new_password" class="block text-gray-700 font-medium">New Password</label>
+                            <label for="new_password" class="block text-primary-foreground font-medium font-inter">New Password</label>
                             <div class="relative">
                                 <input type="password" id="new_password" name="new_password" required minlength="6"
-                                       class="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-600 focus:border-yellow-600 transition-colors">
-                                <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-yellow-600 transition-colors" onclick="togglePassword('new_password')">
+                                       class="w-full px-4 py-3 pr-12 border border-input-border rounded-xl focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-primary">
+                                <button type="button" class="absolute inset-y-0 right-0 pr-4 flex items-center text-dark hover:text-sidebar-accent transition-colors duration-300" onclick="togglePassword('new_password')">
                                     <i class="fas fa-eye" id="new_password_icon"></i>
                                 </button>
                             </div>
                         </div>
                         <div class="space-y-2">
-                            <label for="confirm_password" class="block text-gray-700 font-medium">Confirm Password</label>
+                            <label for="confirm_password" class="block text-primary-foreground font-medium font-inter">Confirm Password</label>
                             <div class="relative">
                                 <input type="password" id="confirm_password" name="confirm_password" required minlength="6"
-                                       class="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-600 focus:border-yellow-600 transition-colors">
-                                <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-yellow-600 transition-colors" onclick="togglePassword('confirm_password')">
+                                       class="w-full px-4 py-3 pr-12 border border-input-border rounded-xl focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-primary">
+                                <button type="button" class="absolute inset-y-0 right-0 pr-4 flex items-center text-dark hover:text-sidebar-accent transition-colors duration-300" onclick="togglePassword('confirm_password')">
                                     <i class="fas fa-eye" id="confirm_password_icon"></i>
                                 </button>
                             </div>
                         </div>
                     </div>
-                    <div class="mt-6">
+                    <div class="mt-8">
                         <button type="submit" 
-                                class="bg-yellow-600 hover:bg-yellow-700 text-white py-2 px-6 rounded-md transition-colors font-medium flex items-center gap-2">
-                            <i class="fas fa-key"></i>
+                                class="bg-sidebar-accent hover:bg-darkgold text-white py-3 px-8 rounded-xl transition-all duration-300 font-medium shadow-input hover:shadow-card transform hover:-translate-y-0.5">
+                            <i class="fas fa-key mr-2"></i>
                             Update Password
                         </button>
                     </div>
                 </form>
             </div>
             
+            
             <!-- GCash QR Codes Section -->
-            <div id="gcash-section" class="p-6">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-lg font-semibold text-gray-800 flex items-center">
-                        <i class="fas fa-qrcode text-yellow-600 mr-3"></i>
-                        GCash QR Codes Management
-                    </h2>
-                    <button id="open-gcash-modal" 
-                            class="bg-yellow-600 hover:bg-yellow-700 text-white py-2 px-4 rounded-md transition-colors font-medium flex items-center gap-2">
-                        <i class="fas fa-plus-circle"></i>
-                        Add GCash QR Code
-                    </button>
-                </div>
-                
-                <!-- Tab Filter -->
-                <div class="flex border-b border-gray-200 mb-6">
-                    <button class="tab-filter px-4 py-2 font-medium text-gray-800 border-b-2 border-yellow-600" data-filter="all">
-                        All QR Codes
-                    </button>
-                    <button class="tab-filter px-4 py-2 font-medium text-gray-500 hover:text-gray-800" data-filter="available">
-                        Available
-                    </button>
-                    <button class="tab-filter px-4 py-2 font-medium text-gray-500 hover:text-gray-800" data-filter="unavailable">
-                        Unavailable
-                    </button>
-                </div>
-                
-                <!-- QR Codes Content -->
-                <div>
-                    <?php if (empty($gcash_qr_codes)): ?>
-                        <div class="bg-gray-50 p-6 rounded-lg text-center">
-                            <div class="bg-gray-100 rounded-full p-4 mb-4 w-16 h-16 mx-auto flex items-center justify-center">
-                                <i class="fas fa-qrcode text-2xl text-gray-400"></i>
+<div class="bg-sidebar-bg rounded-2xl shadow-card p-8 col-span-1 lg:col-span-3 border border-border">
+    <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center">
+            <i class="fas fa-qrcode text-sidebar-accent mr-3 text-xl"></i>
+            <h2 class="text-2xl font-semibold text-primary-foreground">GCash QR Codes Management</h2>
+        </div>
+        <button id="open-gcash-modal" 
+                class="bg-sidebar-accent hover:bg-darkgold text-white py-2 px-6 rounded-xl transition-all duration-300 font-medium shadow-input hover:shadow-card">
+            <i class="fas fa-plus-circle mr-2"></i>
+            Add GCash QR Code
+        </button>
+    </div>
+    
+    <!-- Tab Filter -->
+    <div class="flex border-b border-border mb-6">
+        <button class="tab-filter px-4 py-2 font-medium text-primary-foreground border-b-2 border-sidebar-accent" data-filter="all">
+            All QR Codes
+        </button>
+        <button class="tab-filter px-4 py-2 font-medium text-dark hover:text-primary-foreground" data-filter="available">
+            Available
+        </button>
+        <button class="tab-filter px-4 py-2 font-medium text-dark hover:text-primary-foreground" data-filter="unavailable">
+            Unavailable
+        </button>
+    </div>
+    
+    <!-- Existing QR Codes List -->
+    <div>
+        <?php if (empty($gcash_qr_codes)): ?>
+            <div class="bg-secondary p-6 rounded-xl text-center">
+                <p class="text-dark">No GCash QR Codes found.</p>
+            </div>
+        <?php else: ?>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="gcash-qr-container">
+                <?php 
+                // Display only first 3 QR codes initially
+                $display_limit = 3;
+                $display_count = 0;
+                foreach ($gcash_qr_codes as $qr): 
+                    if ($display_count < $display_limit): 
+                        $display_count++;
+                ?>
+                    <div class="gcash-qr-item bg-<?php echo $qr['is_available'] ? 'secondary' : 'red-50'; ?> p-6 rounded-xl shadow-input border border-<?php echo $qr['is_available'] ? 'border' : 'error'; ?>" 
+                         data-available="<?php echo $qr['is_available'] ? '1' : '0'; ?>">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h4 class="font-semibold text-primary-foreground"><?php echo htmlspecialchars($qr['qr_number']); ?></h4>
+                                <p class="text-sm text-dark">
+                                    <?php echo $qr['is_available'] ? 'Available' : 'Not Available'; ?>
+                                </p>
                             </div>
-                            <h3 class="text-lg font-medium mb-1 text-gray-700">No GCash QR Codes</h3>
-                            <p class="text-gray-500">Add your first GCash QR Code to get started</p>
-                        </div>
-                    <?php else: ?>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="gcash-qr-container">
-                            <?php 
-                            // Display only first 3 QR codes initially
-                            $display_limit = 3;
-                            $display_count = 0;
-                            foreach ($gcash_qr_codes as $qr): 
-                                if ($display_count < $display_limit): 
-                                    $display_count++;
-                            ?>
-                                <div class="gcash-qr-item bg-<?php echo $qr['is_available'] ? 'white' : 'red-50'; ?> p-4 rounded-lg shadow-sm border border-<?php echo $qr['is_available'] ? 'gray-200' : 'red-200'; ?> hover:shadow-md transition-shadow" 
-                                     data-available="<?php echo $qr['is_available'] ? '1' : '0'; ?>">
-                                    <div class="flex justify-between items-start mb-4">
-                                        <div>
-                                            <h4 class="font-semibold text-gray-800"><?php echo htmlspecialchars($qr['qr_number']); ?></h4>
-                                            <p class="text-sm text-gray-600">
-                                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium <?php echo $qr['is_available'] ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'; ?>">
-                                                    <i class="fas <?php echo $qr['is_available'] ? 'fa-check-circle' : 'fa-times-circle'; ?> mr-1"></i>
-                                                    <?php echo $qr['is_available'] ? 'Available' : 'Not Available'; ?>
-                                                </span>
-                                            </p>
-                                        </div>
-                                        <span class="text-xs text-gray-500">
-                                            <?php echo date('M d, Y h:i A', strtotime($qr['updated_at'])); ?>
-                                        </span>
-                                    </div>
-                                    
-                                    <div class="mb-4 flex justify-center">
-                                        <img src="../<?php echo htmlspecialchars($qr['qr_image']); ?>" 
-                                             alt="GCash QR Code" 
-                                             class="h-32 w-32 object-contain border border-gray-200 rounded-md">
-                                    </div>
-                                    
-                                    <div class="flex space-x-2">
-                                        <form method="post" class="flex-1">
-                                            <input type="hidden" name="qr_id" value="<?php echo $qr['id']; ?>">
-                                            <input type="hidden" name="action" value="<?php echo $qr['is_available'] ? 'disable' : 'enable'; ?>">
-                                            <button type="submit" name="toggle_availability"
-                                                    class="w-full py-2 px-3 rounded-md transition-colors font-medium text-sm <?php echo $qr['is_available'] ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-green-500 hover:bg-green-600 text-white'; ?>">
-                                                <i class="fas <?php echo $qr['is_available'] ? 'fa-times-circle' : 'fa-check-circle'; ?> mr-1"></i>
-                                                <?php echo $qr['is_available'] ? 'Mark as Unavailable' : 'Mark as Available'; ?>
-                                            </button>
-                                        </form>
-                                    </div>
-                                </div>
-                            <?php endif; endforeach; ?>
+                            <span class="text-xs text-dark">
+                                <?php echo date('M d, Y h:i A', strtotime($qr['updated_at'])); ?>
+                            </span>
                         </div>
                         
-                        <?php if (count($gcash_qr_codes) > $display_limit): ?>
-                            <div class="mt-6 text-center">
-                                <button id="show-all-qr" class="bg-yellow-600 hover:bg-yellow-700 text-white py-2 px-4 rounded-md transition-colors font-medium flex items-center gap-2 mx-auto">
-                                    <i class="fas fa-eye"></i>
-                                    Show All QR Codes
+                        <div class="mb-4 flex justify-center">
+                            <img src="../<?php echo htmlspecialchars($qr['qr_image']); ?>" 
+                                 alt="GCash QR Code" 
+                                 class="h-40 w-40 object-contain border border-border rounded-lg">
+                        </div>
+                        
+                        <div class="flex space-x-2">
+                            <form method="post" class="flex-1">
+                                <input type="hidden" name="qr_id" value="<?php echo $qr['id']; ?>">
+                                <input type="hidden" name="action" value="<?php echo $qr['is_available'] ? 'disable' : 'enable'; ?>">
+                                <button type="submit" name="toggle_availability"
+                                        class="w-full py-2 px-4 rounded-xl transition-all duration-300 font-medium shadow-input <?php echo $qr['is_available'] ? 'bg-error hover:bg-red-700 text-white' : 'bg-success hover:bg-green-700 text-white'; ?>">
+                                    <i class="fas <?php echo $qr['is_available'] ? 'fa-times-circle' : 'fa-check-circle'; ?> mr-2"></i>
+                                    <?php echo $qr['is_available'] ? 'Mark as Unavailable' : 'Mark as Available'; ?>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                <?php endif; endforeach; ?>
+            </div>
+            
+            <?php if (count($gcash_qr_codes) > $display_limit): ?>
+                <div class="mt-6 text-center">
+                    <button id="show-all-qr" class="bg-sidebar-accent hover:bg-darkgold text-white py-2 px-6 rounded-xl transition-all duration-300 font-medium shadow-input hover:shadow-card">
+                        <i class="fas fa-eye mr-2"></i>
+                        Show All QR Codes
+                    </button>
+                </div>
+                
+                <!-- Hidden QR Codes (will be shown when "Show All" is clicked) -->
+                <div id="hidden-qr-codes" class="hidden">
+                    <?php 
+                    $display_count = 0;
+                    foreach ($gcash_qr_codes as $qr): 
+                        if ($display_count >= $display_limit): 
+                    ?>
+                        <div class="gcash-qr-item bg-<?php echo $qr['is_available'] ? 'secondary' : 'red-50'; ?> p-6 rounded-xl shadow-input border border-<?php echo $qr['is_available'] ? 'border' : 'error'; ?>" 
+                             data-available="<?php echo $qr['is_available'] ? '1' : '0'; ?>">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <h4 class="font-semibold text-primary-foreground"><?php echo htmlspecialchars($qr['qr_number']); ?></h4>
+                                    <p class="text-sm text-dark">
+                                        <?php echo $qr['is_available'] ? 'Available' : 'Not Available'; ?>
+                                    </p>
+                                </div>
+                                <span class="text-xs text-dark">
+                                    <?php echo date('M d, Y h:i A', strtotime($qr['updated_at'])); ?>
+                                </span>
+                            </div>
+                            
+                            <div class="mb-4 flex justify-center">
+                                <img src="../<?php echo htmlspecialchars($qr['qr_image']); ?>" 
+                                     alt="GCash QR Code" 
+                                     class="h-40 w-40 object-contain border border-border rounded-lg">
+                            </div>
+                            
+                            <div class="flex space-x-2">
+                                <form method="post" class="flex-1">
+                                    <input type="hidden" name="qr_id" value="<?php echo $qr['id']; ?>">
+                                    <input type="hidden" name="action" value="<?php echo $qr['is_available'] ? 'disable' : 'enable'; ?>">
+                                    <button type="submit" name="toggle_availability"
+                                            class="w-full py-2 px-4 rounded-xl transition-all duration-300 font-medium shadow-input <?php echo $qr['is_available'] ? 'bg-error hover:bg-red-700 text-white' : 'bg-success hover:bg-green-700 text-white'; ?>">
+                                        <i class="fas <?php echo $qr['is_available'] ? 'fa-times-circle' : 'fa-check-circle'; ?> mr-2"></i>
+                                        <?php echo $qr['is_available'] ? 'Mark as Unavailable' : 'Mark as Available'; ?>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    <?php 
+                        endif;
+                        $display_count++;
+                    endforeach; 
+                    ?>
+                </div>
+            <?php endif; ?>
+        <?php endif; ?>
+    </div>
+</div>
+            
+            <!-- Add GCash QR Modal -->
+            <div id="gcash-modal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+                <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                    <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                        <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+                    </div>
+                    
+                    <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+                    
+                    <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                        <div class="bg-sidebar-bg px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-xl font-semibold text-primary-foreground">Add New GCash QR Code</h3>
+                                <button id="close-gcash-modal" class="text-dark hover:text-sidebar-accent">
+                                    <i class="fas fa-times"></i>
                                 </button>
                             </div>
                             
-                            <!-- Hidden QR Codes (will be shown when "Show All" is clicked) -->
-                            <div id="hidden-qr-codes" class="hidden">
-                                <?php 
-                                $display_count = 0;
-                                foreach ($gcash_qr_codes as $qr): 
-                                    if ($display_count >= $display_limit): 
-                                ?>
-                                    <div class="gcash-qr-item bg-<?php echo $qr['is_available'] ? 'white' : 'red-50'; ?> p-4 rounded-lg shadow-sm border border-<?php echo $qr['is_available'] ? 'gray-200' : 'red-200'; ?> hover:shadow-md transition-shadow" 
-                                         data-available="<?php echo $qr['is_available'] ? '1' : '0'; ?>">
-                                        <div class="flex justify-between items-start mb-4">
-                                            <div>
-                                                <h4 class="font-semibold text-gray-800"><?php echo htmlspecialchars($qr['qr_number']); ?></h4>
-                                                <p class="text-sm text-gray-600">
-                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium <?php echo $qr['is_available'] ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'; ?>">
-                                                        <i class="fas <?php echo $qr['is_available'] ? 'fa-check-circle' : 'fa-times-circle'; ?> mr-1"></i>
-                                                        <?php echo $qr['is_available'] ? 'Available' : 'Not Available'; ?>
-                                                    </span>
-                                                </p>
-                                            </div>
-                                            <span class="text-xs text-gray-500">
-                                                <?php echo date('M d, Y h:i A', strtotime($qr['updated_at'])); ?>
-                                            </span>
-                                        </div>
-                                        
-                                        <div class="mb-4 flex justify-center">
-                                            <img src="../<?php echo htmlspecialchars($qr['qr_image']); ?>" 
-                                                 alt="GCash QR Code" 
-                                                 class="h-32 w-32 object-contain border border-gray-200 rounded-md">
-                                        </div>
-                                        
-                                        <div class="flex space-x-2">
-                                            <form method="post" class="flex-1">
-                                                <input type="hidden" name="qr_id" value="<?php echo $qr['id']; ?>">
-                                                <input type="hidden" name="action" value="<?php echo $qr['is_available'] ? 'disable' : 'enable'; ?>">
-                                                <button type="submit" name="toggle_availability"
-                                                        class="w-full py-2 px-3 rounded-md transition-colors font-medium text-sm <?php echo $qr['is_available'] ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-green-500 hover:bg-green-600 text-white'; ?>">
-                                                    <i class="fas <?php echo $qr['is_available'] ? 'fa-times-circle' : 'fa-check-circle'; ?> mr-1"></i>
-                                                    <?php echo $qr['is_available'] ? 'Mark as Unavailable' : 'Mark as Available'; ?>
-                                                </button>
-                                            </form>
-                                        </div>
+                            <form method="post" enctype="multipart/form-data" id="gcash-form">
+                                <div class="space-y-4">
+                                    <div>
+                                        <label for="modal_qr_number" class="block text-primary-foreground font-medium font-inter">GCash Number</label>
+                                        <input type="text" id="modal_qr_number" name="qr_number" required
+                                               pattern="[0-9]{11}"
+                                               class="w-full px-4 py-3 border border-input-border rounded-xl focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-primary"
+                                               placeholder="11-digit GCash number">
+                                        <p id="modal_qr_number_error" class="text-error text-sm hidden"></p>
                                     </div>
-                                <?php 
-                                    endif;
-                                    $display_count++;
-                                endforeach; 
-                                ?>
-                            </div>
-                        <?php endif; ?>
-                    <?php endif; ?>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Add GCash QR Modal -->
-    <div id="gcash-modal" class="fixed inset-0 z-50 hidden overflow-y-auto">
-        <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm transition-opacity" aria-hidden="true"></div>
-            
-            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-            
-            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-xl font-semibold text-gray-800">Add New GCash QR Code</h3>
-                        <button id="close-gcash-modal" class="text-gray-400 hover:text-yellow-600 transition-colors">
-                            <i class="fas fa-times"></i>
-                        </button>
+                                    
+                                    <div>
+                                        <label for="modal_qr_image" class="block text-primary-foreground font-medium font-inter">QR Code Image</label>
+                                        <input type="file" id="modal_qr_image" name="qr_image" required
+                                               class="w-full px-4 py-3 border border-input-border rounded-xl focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-primary file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-sidebar-bg file:text-secondary-foreground hover:file:bg-sidebar-hover"
+                                               accept="image/*">
+                                        <p id="modal_qr_image_error" class="text-error text-sm hidden"></p>
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-6 flex justify-end space-x-3">
+                                    <button type="button" id="cancel-gcash-modal"
+                                            class="px-4 py-2 border border-input-border rounded-xl text-primary-foreground hover:bg-secondary transition-all duration-300">
+                                        Cancel
+                                    </button>
+                                    <button type="submit" name="add_gcash_qr"
+                                            class="bg-sidebar-accent hover:bg-darkgold text-white py-2 px-6 rounded-xl transition-all duration-300 font-medium shadow-input hover:shadow-card">
+                                        <i class="fas fa-plus-circle mr-2"></i>
+                                        Add QR Code
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
-                    
-                    <form method="post" enctype="multipart/form-data" id="gcash-form">
-                        <div class="space-y-4">
-                            <div>
-                                <label for="modal_qr_number" class="block text-gray-700 font-medium mb-2">GCash Number</label>
-                                <input type="text" id="modal_qr_number" name="qr_number" required
-                                       pattern="[0-9]{11}"
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-600 focus:border-yellow-600 transition-colors"
-                                       placeholder="11-digit GCash number">
-                                <p id="modal_qr_number_error" class="text-red-500 text-sm hidden"></p>
-                            </div>
-                            
-                            <div>
-                                <label for="modal_qr_image" class="block text-gray-700 font-medium mb-2">QR Code Image</label>
-                                <input type="file" id="modal_qr_image" name="qr_image" required
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-600 focus:border-yellow-600 transition-colors file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100"
-                                       accept="image/*">
-                                <p id="modal_qr_image_error" class="text-red-500 text-sm hidden"></p>
-                            </div>
-                        </div>
-                        
-                        <div class="mt-6 flex justify-end space-x-3">
-                            <button type="button" id="cancel-gcash-modal"
-                                    class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors">
-                                Cancel
-                            </button>
-                            <button type="submit" name="add_gcash_qr"
-                                    class="bg-yellow-600 hover:bg-yellow-700 text-white py-2 px-4 rounded-md transition-colors font-medium flex items-center gap-2">
-                                <i class="fas fa-plus-circle"></i>
-                                Add QR Code
-                            </button>
-                        </div>
-                    </form>
                 </div>
             </div>
         </div>
