@@ -11,6 +11,8 @@
 </head>
 <body class="flex bg-gray-50">
 
+<?php include 'admin_sidebar.php';?>
+
     <?php
     session_start();
     
