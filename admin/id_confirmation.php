@@ -213,7 +213,7 @@ $denied = $result->fetch_assoc()['count'];
                     </div>
                 </div>
                 <div class="flex items-end">
-                    <span class="text-2xl md:text-3xl font-bold font-cinzel text-gray-800"><?php echo number_format($total_pending); ?></span>
+                    <span class="text-2xl md:text-3xl font-bold text-gray-800"><?php echo number_format($total_pending); ?></span>
                 </div>
             </div>
             <div class="px-6 py-3 bg-white border-t border-gray-100">
@@ -233,7 +233,7 @@ $denied = $result->fetch_assoc()['count'];
                     </div>
                 </div>
                 <div class="flex items-end">
-                    <span class="text-2xl md:text-3xl font-bold font-cinzel text-gray-800"><?php echo number_format($approved); ?></span>
+                    <span class="text-2xl md:text-3xl font-bold text-gray-800"><?php echo number_format($approved); ?></span>
                 </div>
             </div>
             <div class="px-6 py-3 bg-white border-t border-gray-100">
@@ -253,7 +253,7 @@ $denied = $result->fetch_assoc()['count'];
                     </div>
                 </div>
                 <div class="flex items-end">
-                    <span class="text-2xl md:text-3xl font-bold font-cinzel text-gray-800"><?php echo number_format($denied); ?></span>
+                    <span class="text-2xl md:text-3xl font-bold text-gray-800"><?php echo number_format($denied); ?></span>
                 </div>
             </div>
             <div class="px-6 py-3 bg-white border-t border-gray-100">
@@ -273,7 +273,7 @@ $denied = $result->fetch_assoc()['count'];
                     </div>
                 </div>
                 <div class="flex items-end">
-                    <span class="text-2xl md:text-3xl font-bold font-cinzel text-gray-800"><?php echo number_format($total_pending + $approved + $denied); ?></span>
+                    <span class="text-2xl md:text-3xl font-bold text-gray-800"><?php echo number_format($total_pending + $approved + $denied); ?></span>
                 </div>
             </div>
             <div class="px-6 py-3 bg-white border-t border-gray-100">
