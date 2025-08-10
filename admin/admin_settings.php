@@ -280,143 +280,143 @@
     
     <?php include 'admin_sidebar.php'; ?>
     
-    <div id="main-content" class="p-6 bg-gray-50 min-h-screen transition-all duration-300 ml-64 w-[calc(100%-16rem)] main-content">
+    <div id="main-content" class="p-4 bg-gray-50 min-h-screen transition-all duration-300 ml-64 w-[calc(100%-14.4rem)] main-content">
         <!-- Mobile Hamburger Menu -->
-        <button id="mobile-hamburger" class="lg:hidden p-3 bg-sidebar-bg rounded-xl shadow-card text-sidebar-text hover:text-sidebar-accent hover:bg-sidebar-hover transition-all duration-300 mb-6">
-            <i class="fas fa-bars text-lg"></i>
+        <button id="mobile-hamburger" class="lg:hidden p-2.5 bg-sidebar-bg rounded-lg shadow-card text-sidebar-text hover:text-sidebar-accent hover:bg-sidebar-hover transition-all duration-300 mb-4">
+            <i class="fas fa-bars text-base"></i>
         </button>
         
         <!-- Page Header -->
-        <div class="flex justify-between items-center mb-6 bg-white p-5 rounded-lg shadow-sidebar">
+        <div class="flex justify-between items-center mb-4 bg-white p-4 rounded-lg shadow-sidebar">
             <div>
-                <h1 class="text-2xl font-bold text-sidebar-text">Admin Settings</h1>
-                <p class="text-sm text-gray-500">Manage your personal information and account settings</p>
+                <h1 class="text-xl font-bold text-sidebar-text">Admin Settings</h1>
+                <p class="text-xs text-gray-500">Manage your personal information and account settings</p>
             </div>
         </div>
         
         <!-- Alert Messages -->
         <?php if ($success_message): ?>
-            <div class="bg-green-50 border-l-4 border-success text-green-800 px-6 py-4 rounded-lg relative mb-6 shadow-input" role="alert">
+            <div class="bg-green-50 border-l-4 border-success text-green-800 px-4 py-3 rounded-lg relative mb-4 shadow-input" role="alert">
                 <div class="flex items-center">
-                    <i class="fas fa-check-circle text-success mr-3"></i>
+                    <i class="fas fa-check-circle text-success mr-2"></i>
                     <span class="font-medium"><?php echo $success_message; ?></span>
                 </div>
             </div>
         <?php endif; ?>
         
         <?php if ($error_message): ?>
-            <div class="bg-red-50 border-l-4 border-error text-red-800 px-6 py-4 rounded-lg relative mb-6 shadow-input" role="alert">
+            <div class="bg-red-50 border-l-4 border-error text-red-800 px-4 py-3 rounded-lg relative mb-4 shadow-input" role="alert">
                 <div class="flex items-center">
-                    <i class="fas fa-exclamation-circle text-error mr-3"></i>
+                    <i class="fas fa-exclamation-circle text-error mr-2"></i>
                     <span class="font-medium"><?php echo $error_message; ?></span>
                 </div>
             </div>
         <?php endif; ?>
         
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <!-- Profile Picture Section -->
-            <div class="bg-white rounded-xl shadow-sidebar border border-sidebar-border p-6 col-span-1">
-                <div class="flex items-center mb-6">
-                    <i class="fas fa-camera text-sidebar-accent mr-3 text-xl"></i>
-                    <h2 class="text-xl font-semibold text-sidebar-text">Profile Picture</h2>
+            <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border p-4 col-span-1">
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-camera text-sidebar-accent mr-2 text-lg"></i>
+                    <h2 class="text-lg font-semibold text-sidebar-text">Profile Picture</h2>
                 </div>
                 <div class="flex flex-col items-center">
                     <?php if (!empty($admin['profile_picture'])): ?>
                         <img id="profile-preview" 
                              src="../<?php echo $admin['profile_picture']; ?>" 
-                             alt="Profile" class="w-40 h-40 rounded-full object-cover border-4 border-sidebar-border shadow-card transition-all duration-300 group-hover:shadow-lg">
+                             alt="Profile" class="w-36 h-36 rounded-full object-cover border-4 border-sidebar-border shadow-card transition-all duration-300 group-hover:shadow-lg">
                     <?php else: ?>
-                        <div id="profile-preview" class="w-40 h-40 rounded-full bg-sidebar-accent flex items-center justify-center border-4 border-sidebar-border shadow-card transition-all duration-300 group-hover:shadow-lg">
-                            <span class="text-white text-2xl font-bold">
+                        <div id="profile-preview" class="w-36 h-36 rounded-full bg-sidebar-accent flex items-center justify-center border-4 border-sidebar-border shadow-card transition-all duration-300 group-hover:shadow-lg">
+                            <span class="text-white text-xl font-bold">
                                 <?php echo strtoupper(substr($admin['first_name'], 0, 1) . substr($admin['last_name'], 0, 1)); ?>
                             </span>
                         </div>
                     <?php endif; ?>
                     <form method="post" enctype="multipart/form-data" class="w-full">
-                        <div class="mb-6">
-                            <label class="block text-sidebar-text font-medium mb-3 font-inter" for="profile_picture">Upload New Picture</label>
+                        <div class="mb-4">
+                            <label class="block text-sidebar-text font-medium mb-2 font-inter" for="profile_picture">Upload New Picture</label>
                             <input type="file" id="profile_picture" name="profile_picture" 
-                                   class="w-full px-4 py-3 border border-sidebar-border rounded-xl focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-sidebar-bg file:text-sidebar-text hover:file:bg-sidebar-hover"
+                                   class="w-full px-3 py-2 border border-sidebar-border rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-white file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:bg-sidebar-bg file:text-sidebar-text hover:file:bg-sidebar-hover"
                                    accept="image/*">
                         </div>
                         <button type="submit" 
-                                class="w-full bg-sidebar-accent hover:bg-darkgold text-white py-3 px-6 rounded-xl transition-all duration-300 font-medium shadow-input hover:shadow-card transform hover:-translate-y-0.5">
-                            <i class="fas fa-upload mr-2"></i>
+                                class="w-full bg-sidebar-accent hover:bg-darkgold text-white py-2 px-4 rounded-lg transition-all duration-300 font-medium shadow-input hover:shadow-card transform hover:-translate-y-0.5">
+                            <i class="fas fa-upload mr-1"></i>
                             Update Picture
                         </button>
                     </form>
-                    <p class="text-gray-500 text-sm mt-4 text-center font-inter">JPG, PNG or GIF. Max size 2MB</p>
+                    <p class="text-gray-500 text-xs mt-3 text-center font-inter">JPG, PNG or GIF. Max size 2MB</p>
                 </div>
             </div>
             
             <!-- Personal Details Section -->
-            <div class="bg-white rounded-xl shadow-sidebar border border-sidebar-border p-6 col-span-2">
-                <div class="flex items-center mb-6">
-                    <i class="fas fa-user-edit text-sidebar-accent mr-3 text-xl"></i>
-                    <h2 class="text-xl font-semibold text-sidebar-text">Personal Details</h2>
+            <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border p-4 col-span-2">
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-user-edit text-sidebar-accent mr-2 text-lg"></i>
+                    <h2 class="text-lg font-semibold text-sidebar-text">Personal Details</h2>
                 </div>
                 <form method="post" id="personal-details-form">
                     <input type="hidden" name="update_personal" value="1">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="space-y-2">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-1">
                             <label for="first_name" class="block text-sidebar-text font-medium font-inter">First Name</label>
                             <input type="text" id="first_name" name="first_name" required
                                    pattern="[a-zA-Z\s'-]+"
-                                   class="w-full px-4 py-3 border border-sidebar-border rounded-xl focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-white"
+                                   class="w-full px-3 py-2 border border-sidebar-border rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-white"
                                    value="<?php echo htmlspecialchars($admin['first_name']); ?>">
-                            <p id="first_name_error" class="text-red-500 text-sm hidden"></p>
+                            <p id="first_name_error" class="text-red-500 text-xs hidden"></p>
                         </div>
-                        <div class="space-y-2">
+                        <div class="space-y-1">
                             <label for="last_name" class="block text-sidebar-text font-medium font-inter">Last Name</label>
                             <input type="text" id="last_name" name="last_name" required
                                    pattern="[a-zA-Z\s'-]+"
-                                   class="w-full px-4 py-3 border border-sidebar-border rounded-xl focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-white"
+                                   class="w-full px-3 py-2 border border-sidebar-border rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-white"
                                    value="<?php echo htmlspecialchars($admin['last_name']); ?>">
-                            <p id="last_name_error" class="text-red-500 text-sm hidden"></p>
+                            <p id="last_name_error" class="text-red-500 text-xs hidden"></p>
                         </div>
-                        <div class="space-y-2">
+                        <div class="space-y-1">
                             <label for="middle_name" class="block text-sidebar-text font-medium font-inter">Middle Name</label>
                             <input type="text" id="middle_name" name="middle_name"
                                    pattern="[a-zA-Z\s'-]*"
-                                   class="w-full px-4 py-3 border border-sidebar-border rounded-xl focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-white"
+                                   class="w-full px-3 py-2 border border-sidebar-border rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-white"
                                    value="<?php echo htmlspecialchars($admin['middle_name']); ?>">
-                            <p id="middle_name_error" class="text-red-500 text-sm hidden"></p>
+                            <p id="middle_name_error" class="text-red-500 text-xs hidden"></p>
                         </div>
-                        <div class="space-y-2">
+                        <div class="space-y-1">
                             <label for="suffix" class="block text-sidebar-text font-medium font-inter">Suffix</label>
                             <input type="text" id="suffix" name="suffix"
                                    pattern="[a-zA-Z\s'-]*"
-                                   class="w-full px-4 py-3 border border-sidebar-border rounded-xl focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-white"
+                                   class="w-full px-3 py-2 border border-sidebar-border rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-white"
                                    value="<?php echo htmlspecialchars($admin['suffix']); ?>">
-                            <p id="suffix_error" class="text-red-500 text-sm hidden"></p>
+                            <p id="suffix_error" class="text-red-500 text-xs hidden"></p>
                         </div>
-                        <div class="space-y-2">
+                        <div class="space-y-1">
                             <label for="birthdate" class="block text-sidebar-text font-medium font-inter">Birthdate</label>
                             <input type="date" id="birthdate" name="birthdate" required
-                                   class="w-full px-4 py-3 border border-sidebar-border rounded-xl focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-white"
+                                   class="w-full px-3 py-2 border border-sidebar-border rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-white"
                                    value="<?php echo htmlspecialchars($admin['birthdate']); ?>">
-                            <p id="birthdate_error" class="text-red-500 text-sm hidden"></p>
+                            <p id="birthdate_error" class="text-red-500 text-xs hidden"></p>
                         </div>
-                        <div class="space-y-2">
+                        <div class="space-y-1">
                             <label for="phone_number" class="block text-sidebar-text font-medium font-inter">Phone Number</label>
                             <input type="tel" id="phone_number" name="phone_number" required
                                    pattern="(\+63[0-9]{10}|[0-9]{11})"
-                                   class="w-full px-4 py-3 border border-sidebar-border rounded-xl focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-white"
+                                   class="w-full px-3 py-2 border border-sidebar-border rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-white"
                                    value="<?php echo htmlspecialchars($admin['phone_number']); ?>">
-                            <p id="phone_number_error" class="text-red-500 text-sm hidden"></p>
+                            <p id="phone_number_error" class="text-red-500 text-xs hidden"></p>
                         </div>
-                        <div class="md:col-span-2 space-y-2">
+                        <div class="md:col-span-2 space-y-1">
                             <label for="email" class="block text-sidebar-text font-medium font-inter">Email</label>
                             <input type="email" id="email" name="email" required
-                                   class="w-full px-4 py-3 border border-sidebar-border rounded-xl focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-white"
+                                   class="w-full px-3 py-2 border border-sidebar-border rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-white"
                                    value="<?php echo htmlspecialchars($admin['email']); ?>">
-                            <p id="email_error" class="text-red-500 text-sm hidden"></p>
+                            <p id="email_error" class="text-red-500 text-xs hidden"></p>
                         </div>
                     </div>
-                    <div class="mt-8">
+                    <div class="mt-6">
                         <button type="submit" 
-                                class="bg-sidebar-accent hover:bg-darkgold text-white py-3 px-8 rounded-xl transition-all duration-300 font-medium shadow-input hover:shadow-card transform hover:-translate-y-0.5">
-                            <i class="fas fa-save mr-2"></i>
+                                class="bg-sidebar-accent hover:bg-darkgold text-white py-2 px-6 rounded-lg transition-all duration-300 font-medium shadow-input hover:shadow-card transform hover:-translate-y-0.5">
+                            <i class="fas fa-save mr-1"></i>
                             Save Changes
                         </button>
                     </div>
@@ -424,49 +424,49 @@
             </div>
             
             <!-- Change Password Section -->
-            <div class="bg-white rounded-xl shadow-sidebar border border-sidebar-border p-6 col-span-1 lg:col-span-3">
-                <div class="flex items-center mb-6">
-                    <i class="fas fa-lock text-sidebar-accent mr-3 text-xl"></i>
-                    <h2 class="text-xl font-semibold text-sidebar-text">Change Password</h2>
+            <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border p-4 col-span-1 lg:col-span-3">
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-lock text-sidebar-accent mr-2 text-lg"></i>
+                    <h2 class="text-lg font-semibold text-sidebar-text">Change Password</h2>
                 </div>
                 <form method="post" id="password-form">
                     <input type="hidden" name="update_password" value="1">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <div class="space-y-2">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div class="space-y-1">
                             <label for="current_password" class="block text-sidebar-text font-medium font-inter">Current Password</label>
                             <div class="relative">
                                 <input type="password" id="current_password" name="current_password" required
-                                       class="w-full px-4 py-3 pr-12 border border-sidebar-border rounded-xl focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-white">
-                                <button type="button" class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-500 hover:text-sidebar-accent transition-colors duration-300" onclick="togglePassword('current_password')">
+                                       class="w-full px-3 py-2 pr-10 border border-sidebar-border rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-white">
+                                <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-sidebar-accent transition-colors duration-300" onclick="togglePassword('current_password')">
                                     <i class="fas fa-eye" id="current_password_icon"></i>
                                 </button>
                             </div>
                         </div>
-                        <div class="space-y-2">
+                        <div class="space-y-1">
                             <label for="new_password" class="block text-sidebar-text font-medium font-inter">New Password</label>
                             <div class="relative">
                                 <input type="password" id="new_password" name="new_password" required minlength="6"
-                                       class="w-full px-4 py-3 pr-12 border border-sidebar-border rounded-xl focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-white">
-                                <button type="button" class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-500 hover:text-sidebar-accent transition-colors duration-300" onclick="togglePassword('new_password')">
+                                       class="w-full px-3 py-2 pr-10 border border-sidebar-border rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-white">
+                                <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-sidebar-accent transition-colors duration-300" onclick="togglePassword('new_password')">
                                     <i class="fas fa-eye" id="new_password_icon"></i>
                                 </button>
                             </div>
                         </div>
-                        <div class="space-y-2">
+                        <div class="space-y-1">
                             <label for="confirm_password" class="block text-sidebar-text font-medium font-inter">Confirm Password</label>
                             <div class="relative">
                                 <input type="password" id="confirm_password" name="confirm_password" required minlength="6"
-                                       class="w-full px-4 py-3 pr-12 border border-sidebar-border rounded-xl focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-white">
-                                <button type="button" class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-500 hover:text-sidebar-accent transition-colors duration-300" onclick="togglePassword('confirm_password')">
+                                       class="w-full px-3 py-2 pr-10 border border-sidebar-border rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-white">
+                                <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-sidebar-accent transition-colors duration-300" onclick="togglePassword('confirm_password')">
                                     <i class="fas fa-eye" id="confirm_password_icon"></i>
                                 </button>
                             </div>
                         </div>
                     </div>
-                    <div class="mt-8">
+                    <div class="mt-6">
                         <button type="submit" 
-                                class="bg-sidebar-accent hover:bg-darkgold text-white py-3 px-8 rounded-xl transition-all duration-300 font-medium shadow-input hover:shadow-card transform hover:-translate-y-0.5">
-                            <i class="fas fa-key mr-2"></i>
+                                class="bg-sidebar-accent hover:bg-darkgold text-white py-2 px-6 rounded-lg transition-all duration-300 font-medium shadow-input hover:shadow-card transform hover:-translate-y-0.5">
+                            <i class="fas fa-key mr-1"></i>
                             Update Password
                         </button>
                     </div>
@@ -474,28 +474,28 @@
             </div>
             
             <!-- GCash QR Codes Section -->
-            <div class="bg-white rounded-xl shadow-sidebar border border-sidebar-border p-6 col-span-1 lg:col-span-3">
-                <div class="flex items-center justify-between mb-6">
+            <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border p-4 col-span-1 lg:col-span-3">
+                <div class="flex items-center justify-between mb-4">
                     <div class="flex items-center">
-                        <i class="fas fa-qrcode text-sidebar-accent mr-3 text-xl"></i>
-                        <h2 class="text-xl font-semibold text-sidebar-text">GCash QR Codes Management</h2>
+                        <i class="fas fa-qrcode text-sidebar-accent mr-2 text-lg"></i>
+                        <h2 class="text-lg font-semibold text-sidebar-text">GCash QR Codes Management</h2>
                     </div>
                     <button id="open-gcash-modal" 
-                            class="bg-sidebar-accent hover:bg-darkgold text-white py-2 px-6 rounded-xl transition-all duration-300 font-medium shadow-input hover:shadow-card">
-                        <i class="fas fa-plus-circle mr-2"></i>
+                            class="bg-sidebar-accent hover:bg-darkgold text-white py-1.5 px-4 rounded-lg transition-all duration-300 font-medium shadow-input hover:shadow-card">
+                        <i class="fas fa-plus-circle mr-1"></i>
                         Add GCash QR Code
                     </button>
                 </div>
                 
                 <!-- Tab Filter -->
-                <div class="flex border-b border-sidebar-border mb-6">
-                    <button class="tab-filter px-4 py-2 font-medium text-sidebar-text border-b-2 border-sidebar-accent" data-filter="all">
+                <div class="flex border-b border-sidebar-border mb-4">
+                    <button class="tab-filter px-3 py-1.5 font-medium text-sidebar-text border-b-2 border-sidebar-accent" data-filter="all">
                         All QR Codes
                     </button>
-                    <button class="tab-filter px-4 py-2 font-medium text-gray-500 hover:text-sidebar-text" data-filter="available">
+                    <button class="tab-filter px-3 py-1.5 font-medium text-gray-500 hover:text-sidebar-text" data-filter="available">
                         Available
                     </button>
-                    <button class="tab-filter px-4 py-2 font-medium text-gray-500 hover:text-sidebar-text" data-filter="unavailable">
+                    <button class="tab-filter px-3 py-1.5 font-medium text-gray-500 hover:text-sidebar-text" data-filter="unavailable">
                         Unavailable
                     </button>
                 </div>
@@ -503,11 +503,11 @@
                 <!-- Existing QR Codes List -->
                 <div>
                     <?php if (empty($gcash_qr_codes)): ?>
-                        <div class="bg-gray-50 p-6 rounded-xl text-center">
+                        <div class="bg-gray-50 p-4 rounded-lg text-center">
                             <p class="text-gray-500">No GCash QR Codes found.</p>
                         </div>
                     <?php else: ?>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="gcash-qr-container">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="gcash-qr-container">
                             <?php 
                             // Display only first 3 QR codes initially
                             $display_limit = 3;
@@ -516,12 +516,12 @@
                                 if ($display_count < $display_limit): 
                                     $display_count++;
                             ?>
-                                <div class="gcash-qr-item bg-<?php echo $qr['is_available'] ? 'gray-50' : 'red-50'; ?> p-6 rounded-xl shadow-input border border-<?php echo $qr['is_available'] ? 'sidebar-border' : 'red-200'; ?>" 
+                                <div class="gcash-qr-item bg-<?php echo $qr['is_available'] ? 'gray-50' : 'red-50'; ?> p-4 rounded-lg shadow-input border border-<?php echo $qr['is_available'] ? 'sidebar-border' : 'red-200'; ?>" 
                                      data-available="<?php echo $qr['is_available'] ? '1' : '0'; ?>">
-                                    <div class="flex justify-between items-start mb-4">
+                                    <div class="flex justify-between items-start mb-3">
                                         <div>
                                             <h4 class="font-semibold text-sidebar-text"><?php echo htmlspecialchars($qr['qr_number']); ?></h4>
-                                            <p class="text-sm text-gray-500">
+                                            <p class="text-xs text-gray-500">
                                                 <?php echo $qr['is_available'] ? 'Available' : 'Not Available'; ?>
                                             </p>
                                         </div>
@@ -530,19 +530,19 @@
                                         </span>
                                     </div>
                                     
-                                    <div class="mb-4 flex justify-center">
+                                    <div class="mb-3 flex justify-center">
                                         <img src="../<?php echo htmlspecialchars($qr['qr_image']); ?>" 
                                              alt="GCash QR Code" 
-                                             class="h-40 w-40 object-contain border border-sidebar-border rounded-lg">
+                                             class="h-36 w-36 object-contain border border-sidebar-border rounded-md">
                                     </div>
                                     
-                                    <div class="flex space-x-2">
+                                    <div class="flex space-x-1.5">
                                         <form method="post" class="flex-1">
                                             <input type="hidden" name="qr_id" value="<?php echo $qr['id']; ?>">
                                             <input type="hidden" name="action" value="<?php echo $qr['is_available'] ? 'disable' : 'enable'; ?>">
                                             <button type="submit" name="toggle_availability"
-                                                    class="w-full py-2 px-4 rounded-xl transition-all duration-300 font-medium shadow-input <?php echo $qr['is_available'] ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-green-500 hover:bg-green-600 text-white'; ?>">
-                                                <i class="fas <?php echo $qr['is_available'] ? 'fa-times-circle' : 'fa-check-circle'; ?> mr-2"></i>
+                                                    class="w-full py-1.5 px-3 rounded-lg transition-all duration-300 font-medium shadow-input <?php echo $qr['is_available'] ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-green-500 hover:bg-green-600 text-white'; ?>">
+                                                <i class="fas <?php echo $qr['is_available'] ? 'fa-times-circle' : 'fa-check-circle'; ?> mr-1"></i>
                                                 <?php echo $qr['is_available'] ? 'Mark as Unavailable' : 'Mark as Available'; ?>
                                             </button>
                                         </form>
@@ -552,9 +552,9 @@
                         </div>
                         
                         <?php if (count($gcash_qr_codes) > $display_limit): ?>
-                            <div class="mt-6 text-center">
-                                <button id="show-all-qr" class="bg-sidebar-accent hover:bg-darkgold text-white py-2 px-6 rounded-xl transition-all duration-300 font-medium shadow-input hover:shadow-card">
-                                    <i class="fas fa-eye mr-2"></i>
+                            <div class="mt-4 text-center">
+                                <button id="show-all-qr" class="bg-sidebar-accent hover:bg-darkgold text-white py-1.5 px-4 rounded-lg transition-all duration-300 font-medium shadow-input hover:shadow-card">
+                                    <i class="fas fa-eye mr-1"></i>
                                     Show All QR Codes
                                 </button>
                             </div>
@@ -566,12 +566,12 @@
                                 foreach ($gcash_qr_codes as $qr): 
                                     if ($display_count >= $display_limit): 
                                 ?>
-                                    <div class="gcash-qr-item bg-<?php echo $qr['is_available'] ? 'gray-50' : 'red-50'; ?> p-6 rounded-xl shadow-input border border-<?php echo $qr['is_available'] ? 'sidebar-border' : 'red-200'; ?>" 
+                                    <div class="gcash-qr-item bg-<?php echo $qr['is_available'] ? 'gray-50' : 'red-50'; ?> p-4 rounded-lg shadow-input border border-<?php echo $qr['is_available'] ? 'sidebar-border' : 'red-200'; ?>" 
                                          data-available="<?php echo $qr['is_available'] ? '1' : '0'; ?>">
-                                        <div class="flex justify-between items-start mb-4">
+                                        <div class="flex justify-between items-start mb-3">
                                             <div>
                                                 <h4 class="font-semibold text-sidebar-text"><?php echo htmlspecialchars($qr['qr_number']); ?></h4>
-                                                <p class="text-sm text-gray-500">
+                                                <p class="text-xs text-gray-500">
                                                     <?php echo $qr['is_available'] ? 'Available' : 'Not Available'; ?>
                                                 </p>
                                             </div>
@@ -580,19 +580,19 @@
                                             </span>
                                         </div>
                                         
-                                        <div class="mb-4 flex justify-center">
+                                        <div class="mb-3 flex justify-center">
                                             <img src="../<?php echo htmlspecialchars($qr['qr_image']); ?>" 
                                                  alt="GCash QR Code" 
-                                                 class="h-40 w-40 object-contain border border-sidebar-border rounded-lg">
+                                                 class="h-36 w-36 object-contain border border-sidebar-border rounded-md">
                                         </div>
                                         
-                                        <div class="flex space-x-2">
+                                        <div class="flex space-x-1.5">
                                             <form method="post" class="flex-1">
                                                 <input type="hidden" name="qr_id" value="<?php echo $qr['id']; ?>">
                                                 <input type="hidden" name="action" value="<?php echo $qr['is_available'] ? 'disable' : 'enable'; ?>">
                                                 <button type="submit" name="toggle_availability"
-                                                        class="w-full py-2 px-4 rounded-xl transition-all duration-300 font-medium shadow-input <?php echo $qr['is_available'] ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-green-500 hover:bg-green-600 text-white'; ?>">
-                                                    <i class="fas <?php echo $qr['is_available'] ? 'fa-times-circle' : 'fa-check-circle'; ?> mr-2"></i>
+                                                        class="w-full py-1.5 px-3 rounded-lg transition-all duration-300 font-medium shadow-input <?php echo $qr['is_available'] ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-green-500 hover:bg-green-600 text-white'; ?>">
+                                                    <i class="fas <?php echo $qr['is_available'] ? 'fa-times-circle' : 'fa-check-circle'; ?> mr-1"></i>
                                                     <?php echo $qr['is_available'] ? 'Mark as Unavailable' : 'Mark as Available'; ?>
                                                 </button>
                                             </form>
