@@ -288,7 +288,7 @@
         
         <!-- Page Header -->
         <div class="mb-10">
-            <h1 class="font-bold text-primary-foreground mb-2">Admin Settings</h1>
+            <h1 class="text-2xl font-bold text-sidebar-text mb-2">Admin Settings</h1>
             <p class="text-dark">Manage your personal information and account settings</p>
         </div>
         
