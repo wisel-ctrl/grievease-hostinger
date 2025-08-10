@@ -172,7 +172,7 @@ $totalPages = ceil($totalBeneficiaries / $recordsPerPage);
                 </div>
             </div>
             <div class="flex items-end">
-                <span class="text-2xl md:text-3xl font-bold font-cinzel text-gray-800"><?php echo number_format($stats['total_plans']); ?></span>
+                <span class="text-2xl md:text-3xl font-bold text-gray-800"><?php echo number_format($stats['total_plans']); ?></span>
             </div>
         </div>
         <div class="px-6 py-3 bg-white border-t border-gray-100">
@@ -192,7 +192,7 @@ $totalPages = ceil($totalBeneficiaries / $recordsPerPage);
                 </div>
             </div>
             <div class="flex items-end">
-                <span class="text-2xl md:text-3xl font-bold font-cinzel text-gray-800"><?php echo number_format($stats['active_plans']); ?></span>
+                <span class="text-2xl md:text-3xl font-bold text-gray-800"><?php echo number_format($stats['active_plans']); ?></span>
             </div>
         </div>
         <div class="px-6 py-3 bg-white border-t border-gray-100">
@@ -212,7 +212,7 @@ $totalPages = ceil($totalBeneficiaries / $recordsPerPage);
                 </div>
             </div>
             <div class="flex items-end">
-                <span class="text-2xl md:text-3xl font-bold font-cinzel text-gray-800"><?php echo number_format($stats['pending_payments']); ?></span>
+                <span class="text-2xl md:text-3xl font-bold text-gray-800"><?php echo number_format($stats['pending_payments']); ?></span>
             </div>
         </div>
         <div class="px-6 py-3 bg-white border-t border-gray-100">
@@ -232,7 +232,7 @@ $totalPages = ceil($totalBeneficiaries / $recordsPerPage);
                 </div>
             </div>
             <div class="flex items-end">
-                <span class="text-2xl md:text-3xl font-bold font-cinzel text-gray-800">₱<?php echo number_format($stats['total_revenue'], 2); ?></span>
+                <span class="text-2xl md:text-3xl font-bold text-gray-800">₱<?php echo number_format($stats['total_revenue'], 2); ?></span>
             </div>
         </div>
         <div class="px-6 py-3 bg-white border-t border-gray-100">
