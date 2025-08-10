@@ -206,7 +206,7 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
                 </div>
             </div>
             <div class="flex items-end">
-                <span class="text-2xl md:text-3xl font-bold font-cinzel text-gray-800"><?php echo number_format($traditional_total); ?></span>
+                <span class="text-2xl md:text-3xl font-bold text-gray-800"><?php echo number_format($traditional_total); ?></span>
             </div>
         </div>
         <div class="px-6 py-3 bg-white border-t border-gray-100">
@@ -226,7 +226,7 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
                 </div>
             </div>
             <div class="flex items-end">
-                <span class="text-2xl md:text-3xl font-bold font-cinzel text-gray-800"><?php echo number_format($custom_total); ?></span>
+                <span class="text-2xl md:text-3xl font-bold text-gray-800"><?php echo number_format($custom_total); ?></span>
             </div>
         </div>
         <div class="px-6 py-3 bg-white border-t border-gray-100">
@@ -246,7 +246,7 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
                 </div>
             </div>
             <div class="flex items-end">
-                <span class="text-2xl md:text-3xl font-bold font-cinzel text-gray-800"><?php echo number_format($lifeplan_total); ?></span>
+                <span class="text-2xl md:text-3xl font-bold text-gray-800"><?php echo number_format($lifeplan_total); ?></span>
             </div>
         </div>
         <div class="px-6 py-3 bg-white border-t border-gray-100">
