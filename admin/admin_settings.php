@@ -314,37 +314,37 @@
         
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
             <!-- Profile Picture Section -->
-            <div class="bg-white rounded-xl shadow-sidebar border border-sidebar-border p-4 sm:p-6 col-span-1 lg:col-span-1">
-                <div class="flex items-center mb-4 sm:mb-6">
-                    <i class="fas fa-camera text-sidebar-accent mr-3 text-lg sm:text-xl"></i>
-                    <h2 class="text-lg sm:text-xl font-semibold text-sidebar-text">Profile Picture</h2>
+            <div class="bg-sidebar-bg rounded-2xl shadow-card p-8 col-span-1 border border-border">
+                <div class="flex items-center mb-6">
+                    <i class="fas fa-camera text-sidebar-accent mr-3 text-xl"></i>
+                    <h2 class="text-2xl font-semibold text-primary-foreground font-playfair">Profile Picture</h2>
                 </div>
                 <div class="flex flex-col items-center">
                     <?php if (!empty($admin['profile_picture'])): ?>
                         <img id="profile-preview" 
                              src="../<?php echo $admin['profile_picture']; ?>" 
-                             alt="Profile" class="w-32 h-32 sm:w-40 sm:h-40 rounded-full object-cover border-4 border-sidebar-border shadow-card transition-all duration-300 group-hover:shadow-lg">
+                             alt="Profile" class="w-40 h-40 rounded-full object-cover border-4 border-border shadow-card transition-all duration-300 group-hover:shadow-lg">
                     <?php else: ?>
-                        <div id="profile-preview" class="w-32 h-32 sm:w-40 sm:h-40 rounded-full bg-sidebar-accent flex items-center justify-center border-4 border-sidebar-border shadow-card transition-all duration-300 group-hover:shadow-lg">
-                            <span class="text-white text-xl sm:text-2xl font-bold">
+                        <div id="profile-preview" class="w-40 h-40 rounded-full bg-sidebar-accent flex items-center justify-center border-4 border-border shadow-card transition-all duration-300 group-hover:shadow-lg">
+                            <span class="text-white text-2xl font-bold font-inter">
                                 <?php echo strtoupper(substr($admin['first_name'], 0, 1) . substr($admin['last_name'], 0, 1)); ?>
                             </span>
                         </div>
                     <?php endif; ?>
                     <form method="post" enctype="multipart/form-data" class="w-full">
-                        <div class="mb-4 sm:mb-6">
-                            <label class="block text-sidebar-text font-medium mb-2 sm:mb-3 font-inter text-sm sm:text-base" for="profile_picture">Upload New Picture</label>
+                        <div class="mb-6">
+                            <label class="block text-primary-foreground font-medium mb-3 font-inter" for="profile_picture">Upload New Picture</label>
                             <input type="file" id="profile_picture" name="profile_picture" 
-                                   class="w-full px-3 py-2 sm:px-4 sm:py-3 border border-sidebar-border rounded-xl focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-white file:mr-3 sm:file:mr-4 file:py-1 sm:file:py-2 file:px-3 sm:file:px-4 file:rounded-lg file:border-0 file:bg-sidebar-bg file:text-sidebar-text hover:file:bg-sidebar-hover text-sm sm:text-base"
+                                   class="w-full px-4 py-3 border border-input-border rounded-xl focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-primary file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-secondary file:text-secondary-foreground hover:file:bg-sidebar-hover"
                                    accept="image/*">
                         </div>
                         <button type="submit" 
-                                class="w-full bg-sidebar-accent hover:bg-darkgold text-white py-2 sm:py-3 px-4 rounded-xl transition-all duration-300 font-medium shadow-input hover:shadow-card text-sm sm:text-base">
+                                class="w-full bg-sidebar-accent hover:bg-darkgold text-white py-3 px-6 rounded-xl transition-all duration-300 font-medium shadow-input hover:shadow-card transform hover:-translate-y-0.5">
                             <i class="fas fa-upload mr-2"></i>
                             Update Picture
                         </button>
                     </form>
-                    <p class="text-gray-500 text-xs sm:text-sm mt-3 sm:mt-4 text-center font-inter">JPG, PNG or GIF. Max size 2MB</p>
+                    <p class="text-dark text-sm mt-4 text-center font-inter">JPG, PNG or GIF. Max size 2MB</p>
                 </div>
             </div>
             
