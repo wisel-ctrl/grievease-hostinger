@@ -9,15 +9,7 @@
     <script src="tailwind.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Alex+Brush&family=Inter:wght@300;400;500;600;700&family=Cinzel:wght@400;500;600&family=Hedvig+Letters+Serif:opsz@12..24&display=swap" rel="stylesheet">
 </head>
-
-<body class="flex bg-gray-50 min-h-screen">
-    <?php include 'admin_sidebar.php'; ?>
-    
-    <div id="main-content" class="flex-1 p-6 bg-gray-50 min-h-screen transition-all duration-300 lg:ml-64 w-full lg:w-[calc(100%-16rem)]">
-        <!-- Mobile Hamburger Menu -->
-        <button id="mobile-hamburger" class="lg:hidden p-3 bg-sidebar-bg rounded-xl shadow-card text-sidebar-text hover:text-sidebar-accent hover:bg-sidebar-hover transition-all duration-300 mb-6">
-            <i class="fas fa-bars text-lg"></i>
-        </button>
+<body class="flex bg-gray-50">
 
     <?php
     session_start();
@@ -285,6 +277,14 @@
     $gcash_qr_result = $conn->query($gcash_qr_query);
     $gcash_qr_codes = $gcash_qr_result->fetch_all(MYSQLI_ASSOC);
     ?>
+    
+    
+    
+    <div id="main-content" class="p-6 bg-gray-50 min-h-screen transition-all duration-300 ml-64 w-[calc(100%-16rem)] main-content">
+        <!-- Mobile Hamburger Menu -->
+        <button id="mobile-hamburger" class="lg:hidden p-3 bg-sidebar-bg rounded-xl shadow-card text-sidebar-text hover:text-sidebar-accent hover:bg-sidebar-hover transition-all duration-300 mb-6">
+            <i class="fas fa-bars text-lg"></i>
+        </button>
         
         <!-- Page Header -->
         <div class="flex justify-between items-center mb-6 bg-white p-5 rounded-lg shadow-sidebar">
