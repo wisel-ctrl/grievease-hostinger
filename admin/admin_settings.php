@@ -7,6 +7,21 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="tailwind.js"></script>
+
+    <style>
+        /* Add custom CSS for sidebar transition */
+        .sidebar-collapsed + .main-content {
+            margin-left: 0;
+            width: 100%;
+        }
+        @media (min-width: 1024px) {
+            .sidebar-collapsed + .main-content {
+                margin-left: 5rem;
+                width: calc(100% - 5rem);
+            }
+        }
+    </style>
+
 </head>
 <body class="flex bg-gray-50">
 
@@ -668,6 +683,47 @@
     </div>
     
     <script>
+        // Add this to your existing JavaScript
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('main-content');
+            
+            sidebar.classList.toggle('sidebar-collapsed');
+            mainContent.classList.toggle('lg:ml-64');
+            mainContent.classList.toggle('lg:w-[calc(100%-16rem)]');
+            
+            // Store sidebar state in localStorage
+            const isCollapsed = sidebar.classList.contains('sidebar-collapsed');
+            localStorage.setItem('sidebarCollapsed', isCollapsed);
+        }
+        
+        // Check for saved sidebar state on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+            if (isCollapsed) {
+                const sidebar = document.getElementById('sidebar');
+                const mainContent = document.getElementById('main-content');
+                
+                sidebar.classList.add('sidebar-collapsed');
+                mainContent.classList.remove('lg:ml-64');
+                mainContent.classList.remove('lg:w-[calc(100%-16rem)]');
+            }
+        });
+        
+        // Update your mobile hamburger menu click handler
+        document.getElementById('mobile-hamburger').addEventListener('click', function() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('-translate-x-full');
+            
+            // For mobile, we want to overlay the sidebar, not push content
+            if (window.innerWidth < 1024) {
+                return;
+            }
+            
+            // For desktop, toggle the collapsed state
+            toggleSidebar();
+        });
+
         // Profile picture preview
         document.getElementById('profile_picture').addEventListener('change', function(e) {
             const file = e.target.files[0];
