@@ -11,8 +11,6 @@
 </head>
 <body class="flex bg-gray-50">
 
-<?php include 'admin_sidebar.php';?>
-
     <?php
     session_start();
     
@@ -280,7 +278,7 @@
     $gcash_qr_codes = $gcash_qr_result->fetch_all(MYSQLI_ASSOC);
     ?>
     
-    
+    <?php include 'admin_sidebar.php'; ?>
     
     <div id="main-content" class="p-6 bg-gray-50 min-h-screen transition-all duration-300 ml-64 w-[calc(100%-16rem)] main-content">
         <!-- Mobile Hamburger Menu -->
