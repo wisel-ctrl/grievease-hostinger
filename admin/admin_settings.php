@@ -288,8 +288,8 @@
         
         <!-- Page Header -->
         <div class="mb-10">
-            <h1 class="text-4xl font-bold text-primary-foreground mb-2 font-playfair">Admin Settings</h1>
-            <p class="text-dark text-lg font-inter">Manage your personal information and account settings</p>
+            <h1 class="font-bold text-primary-foreground mb-2">Admin Settings</h1>
+            <p class="text-dark">Manage your personal information and account settings</p>
         </div>
         
         <!-- Alert Messages -->
@@ -316,7 +316,7 @@
             <div class="bg-sidebar-bg rounded-2xl shadow-card p-8 col-span-1 border border-border">
                 <div class="flex items-center mb-6">
                     <i class="fas fa-camera text-sidebar-accent mr-3 text-xl"></i>
-                    <h2 class="text-2xl font-semibold text-primary-foreground font-playfair">Profile Picture</h2>
+                    <h2 class="text-2xl font-semibold text-primary-foreground">Profile Picture</h2>
                 </div>
                 <div class="flex flex-col items-center">
                     <?php if (!empty($admin['profile_picture'])): ?>
@@ -325,7 +325,7 @@
                              alt="Profile" class="w-40 h-40 rounded-full object-cover border-4 border-border shadow-card transition-all duration-300 group-hover:shadow-lg">
                     <?php else: ?>
                         <div id="profile-preview" class="w-40 h-40 rounded-full bg-sidebar-accent flex items-center justify-center border-4 border-border shadow-card transition-all duration-300 group-hover:shadow-lg">
-                            <span class="text-white text-2xl font-bold font-inter">
+                            <span class="text-white text-2xl font-bold">
                                 <?php echo strtoupper(substr($admin['first_name'], 0, 1) . substr($admin['last_name'], 0, 1)); ?>
                             </span>
                         </div>
@@ -351,7 +351,7 @@
             <div class="bg-sidebar-bg rounded-2xl shadow-card p-8 col-span-2 border border-border">
                 <div class="flex items-center mb-6">
                     <i class="fas fa-user-edit text-sidebar-accent mr-3 text-xl"></i>
-                    <h2 class="text-2xl font-semibold text-primary-foreground font-playfair">Personal Details</h2>
+                    <h2 class="text-2xl font-semibold text-primary-foreground">Personal Details</h2>
                 </div>
                 <form method="post" id="personal-details-form">
                     <input type="hidden" name="update_personal" value="1">
@@ -425,7 +425,7 @@
             <div class="bg-sidebar-bg rounded-2xl shadow-card p-8 col-span-1 lg:col-span-3 border border-border">
                 <div class="flex items-center mb-6">
                     <i class="fas fa-lock text-sidebar-accent mr-3 text-xl"></i>
-                    <h2 class="text-2xl font-semibold text-primary-foreground font-playfair">Change Password</h2>
+                    <h2 class="text-2xl font-semibold text-primary-foreground">Change Password</h2>
                 </div>
                 <form method="post" id="password-form">
                     <input type="hidden" name="update_password" value="1">
@@ -477,7 +477,7 @@
     <div class="flex items-center justify-between mb-6">
         <div class="flex items-center">
             <i class="fas fa-qrcode text-sidebar-accent mr-3 text-xl"></i>
-            <h2 class="text-2xl font-semibold text-primary-foreground font-playfair">GCash QR Codes Management</h2>
+            <h2 class="text-2xl font-semibold text-primary-foreground">GCash QR Codes Management</h2>
         </div>
         <button id="open-gcash-modal" 
                 class="bg-sidebar-accent hover:bg-darkgold text-white py-2 px-6 rounded-xl transition-all duration-300 font-medium shadow-input hover:shadow-card">
@@ -620,7 +620,7 @@
                     <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
                         <div class="bg-sidebar-bg px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                             <div class="flex justify-between items-center mb-4">
-                                <h3 class="text-xl font-semibold text-primary-foreground font-playfair">Add New GCash QR Code</h3>
+                                <h3 class="text-xl font-semibold text-primary-foreground">Add New GCash QR Code</h3>
                                 <button id="close-gcash-modal" class="text-dark hover:text-sidebar-accent">
                                     <i class="fas fa-times"></i>
                                 </button>
