@@ -14,6 +14,7 @@
     session_start();
     
     include 'faviconLogo.php'; 
+    include 'admin_sidebar.php';
     
     // Check for admin user type (user_type = 1)
     if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] != 1) {
