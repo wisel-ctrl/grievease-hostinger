@@ -1072,6 +1072,225 @@
                 activeTab.click();
             }
         });
+
+        // Enhanced validation functions
+function validateName(fieldId, required = false) {
+    const input = document.getElementById(fieldId);
+    const value = input.value.trim();
+    const errorElement = document.getElementById(`${fieldId}_error`);
+    
+    if (required && !value) {
+        errorElement.textContent = 'This field is required';
+        errorElement.classList.remove('hidden');
+        return false;
+    }
+    
+    if (value && !/^[a-zA-Z\s'-]+$/.test(value)) {
+        errorElement.textContent = 'Can only contain letters, spaces, hyphens, or apostrophes';
+        errorElement.classList.remove('hidden');
+        return false;
+    }
+    
+    errorElement.textContent = '';
+    errorElement.classList.add('hidden');
+    return true;
+}
+
+function validateBirthdate() {
+    const input = document.getElementById('birthdate');
+    const value = input.value;
+    const errorElement = document.getElementById('birthdate_error');
+    
+    if (!value) {
+        errorElement.textContent = 'Birthdate is required';
+        errorElement.classList.remove('hidden');
+        return false;
+    }
+    
+    const birthDate = new Date(value);
+    const currentDate = new Date();
+    const minAgeDate = new Date();
+    minAgeDate.setFullYear(currentDate.getFullYear() - 13); // At least 13 years old
+    
+    if (birthDate > minAgeDate) {
+        errorElement.textContent = 'You must be at least 13 years old';
+        errorElement.classList.remove('hidden');
+        return false;
+    }
+    
+    errorElement.textContent = '';
+    errorElement.classList.add('hidden');
+    return true;
+}
+
+function validatePhoneNumber() {
+    const input = document.getElementById('phone_number');
+    const value = input.value.trim();
+    const errorElement = document.getElementById('phone_number_error');
+    
+    if (!value) {
+        errorElement.textContent = 'Phone number is required';
+        errorElement.classList.remove('hidden');
+        return false;
+    }
+    
+    if (!/^(\+63[0-9]{10}|[0-9]{11})$/.test(value)) {
+        errorElement.textContent = 'Phone number must be 11 digits, or 13 characters starting with +63';
+        errorElement.classList.remove('hidden');
+        return false;
+    }
+    
+    errorElement.textContent = '';
+    errorElement.classList.add('hidden');
+    return true;
+}
+
+function validateEmail() {
+    const input = document.getElementById('email');
+    const value = input.value.trim();
+    const errorElement = document.getElementById('email_error');
+    
+    if (!value) {
+        errorElement.textContent = 'Email is required';
+        errorElement.classList.remove('hidden');
+        return false;
+    }
+    
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+        errorElement.textContent = 'Please enter a valid email address';
+        errorElement.classList.remove('hidden');
+        return false;
+    }
+    
+    errorElement.textContent = '';
+    errorElement.classList.add('hidden');
+    return true;
+}
+
+function validatePasswordFields() {
+    const currentPass = document.getElementById('current_password').value;
+    const newPass = document.getElementById('new_password').value;
+    const confirmPass = document.getElementById('confirm_password').value;
+    let isValid = true;
+    
+    if (!currentPass) {
+        // No error shown for current password as it's handled server-side
+        isValid = false;
+    }
+    
+    if (newPass.length < 6) {
+        // Error will show on form submission
+        isValid = false;
+    }
+    
+    if (newPass !== confirmPass) {
+        // Error will show on form submission
+        isValid = false;
+    }
+    
+    return isValid;
+}
+
+// Add event listeners for real-time validation
+document.getElementById('first_name').addEventListener('blur', () => validateName('first_name', true));
+document.getElementById('last_name').addEventListener('blur', () => validateName('last_name', true));
+document.getElementById('middle_name').addEventListener('blur', () => validateName('middle_name'));
+document.getElementById('suffix').addEventListener('blur', () => validateName('suffix'));
+document.getElementById('birthdate').addEventListener('change', validateBirthdate);
+document.getElementById('phone_number').addEventListener('blur', validatePhoneNumber);
+document.getElementById('email').addEventListener('blur', validateEmail);
+
+// Password fields validation on form submit
+document.getElementById('password-form').addEventListener('submit', function(e) {
+    const currentPass = document.getElementById('current_password').value;
+    const newPass = document.getElementById('new_password').value;
+    const confirmPass = document.getElementById('confirm_password').value;
+    
+    if (!currentPass) {
+        e.preventDefault();
+        alert('Current password is required');
+        return;
+    }
+    
+    if (newPass.length < 6) {
+        e.preventDefault();
+        alert('New password must be at least 6 characters');
+        return;
+    }
+    
+    if (newPass !== confirmPass) {
+        e.preventDefault();
+        alert('New passwords do not match');
+        return;
+    }
+});
+
+// Enhanced personal details form validation
+document.getElementById('personal-details-form').addEventListener('submit', function(e) {
+    let isValid = true;
+    
+    if (!validateName('first_name', true)) isValid = false;
+    if (!validateName('last_name', true)) isValid = false;
+    if (!validateName('middle_name')) isValid = false;
+    if (!validateName('suffix')) isValid = false;
+    if (!validateBirthdate()) isValid = false;
+    if (!validatePhoneNumber()) isValid = false;
+    if (!validateEmail()) isValid = false;
+    
+    if (!isValid) {
+        e.preventDefault();
+        // Scroll to first error
+        const firstError = document.querySelector('.text-red-500:not(.hidden)');
+        if (firstError) {
+            firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+});
+
+// GCash QR Modal validation
+document.getElementById('gcash-form').addEventListener('submit', function(e) {
+    const qrNumber = document.getElementById('modal_qr_number').value.trim();
+    const qrImage = document.getElementById('modal_qr_image').value;
+    let isValid = true;
+    
+    if (!/^[0-9]{11}$/.test(qrNumber)) {
+        document.getElementById('modal_qr_number_error').textContent = 'GCash number must be 11 digits';
+        document.getElementById('modal_qr_number_error').classList.remove('hidden');
+        isValid = false;
+    } else {
+        document.getElementById('modal_qr_number_error').classList.add('hidden');
+    }
+    
+    if (!qrImage) {
+        document.getElementById('modal_qr_image_error').textContent = 'QR Code image is required';
+        document.getElementById('modal_qr_image_error').classList.remove('hidden');
+        isValid = false;
+    } else {
+        document.getElementById('modal_qr_image_error').classList.add('hidden');
+    }
+    
+    if (!isValid) {
+        e.preventDefault();
+    }
+});
+
+// Profile picture validation
+document.querySelector('form[enctype="multipart/form-data"]').addEventListener('submit', function(e) {
+    const fileInput = document.getElementById('profile_picture');
+    if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        if (file.size > 2 * 1024 * 1024) { // 2MB
+            e.preventDefault();
+            alert('Profile picture must be less than 2MB');
+            return;
+        }
+        if (!file.type.match('image.*')) {
+            e.preventDefault();
+            alert('Please select an image file');
+            return;
+        }
+    }
+});
     </script>
 </body>
 </html>
