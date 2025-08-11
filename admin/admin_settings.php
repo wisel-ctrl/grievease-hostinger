@@ -1073,7 +1073,7 @@
             }
         });
 
-        // Enhanced validation functions with consecutive space prevention
+        // Enhanced validation functions with all requested features
 function validateName(fieldId, required = false) {
     const input = document.getElementById(fieldId);
     const value = input.value.trim();
@@ -1205,21 +1205,95 @@ function preventMultipleSpaces(event) {
     input.value = input.value.replace(/\s{2,}/g, ' ');
 }
 
-// Add event listeners for real-time validation and space prevention
-document.getElementById('first_name').addEventListener('blur', () => validateName('first_name', true));
-document.getElementById('first_name').addEventListener('input', preventMultipleSpaces);
-document.getElementById('last_name').addEventListener('blur', () => validateName('last_name', true));
-document.getElementById('last_name').addEventListener('input', preventMultipleSpaces);
-document.getElementById('middle_name').addEventListener('blur', () => validateName('middle_name'));
-document.getElementById('middle_name').addEventListener('input', preventMultipleSpaces);
-document.getElementById('suffix').addEventListener('blur', () => validateName('suffix'));
-document.getElementById('suffix').addEventListener('input', preventMultipleSpaces);
-document.getElementById('birthdate').addEventListener('change', validateBirthdate);
-document.getElementById('phone_number').addEventListener('blur', validatePhoneNumber);
-document.getElementById('email').addEventListener('blur', validateEmail);
+// Function to auto-capitalize first letter of names
+function autoCapitalizeName(event) {
+    const input = event.target;
+    if (input.value.length === 1) {
+        input.value = input.value.toUpperCase();
+    }
+    preventMultipleSpaces(event); // Also prevent multiple spaces
+}
+
+// Function to allow only numbers in phone field
+function allowOnlyNumbers(event) {
+    const input = event.target;
+    // Allow: backspace, delete, tab, escape, enter, numbers, and + (only at start)
+    if (event.key === '+' && input.selectionStart === 0) {
+        return; // Allow + only at the beginning
+    }
+    if ([8, 9, 27, 13].includes(event.keyCode) || 
+        (event.keyCode >= 48 && event.keyCode <= 57) || 
+        (event.keyCode >= 96 && event.keyCode <= 105)) {
+        return;
+    }
+    event.preventDefault();
+}
+
+// Initialize suffix dropdown
+function initializeSuffixDropdown() {
+    const suffixInput = document.getElementById('suffix');
+    if (suffixInput && suffixInput.tagName === 'INPUT') {
+        const suffixValue = suffixInput.value.trim();
+        const suffixContainer = suffixInput.parentElement;
+        
+        const select = document.createElement('select');
+        select.id = 'suffix';
+        select.className = suffixInput.className;
+        select.innerHTML = `
+            <option value="">Select Suffix</option>
+            <option value="Jr">Jr</option>
+            <option value="Sr">Sr</option>
+            <option value="II">II</option>
+            <option value="III">III</option>
+            <option value="IV">IV</option>
+        `;
+        
+        if (suffixValue) {
+            select.value = suffixValue;
+        }
+        
+        suffixContainer.replaceChild(select, suffixInput);
+    }
+}
+
+// Add event listeners for real-time validation and features
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize suffix dropdown
+    initializeSuffixDropdown();
+    
+    // Name fields - auto capitalize and prevent multiple spaces
+    const nameFields = ['first_name', 'last_name', 'middle_name'];
+    nameFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            field.addEventListener('input', autoCapitalizeName);
+            field.addEventListener('blur', () => validateName(fieldId, fieldId !== 'middle_name'));
+        }
+    });
+    
+    // Phone number - numbers only
+    const phoneField = document.getElementById('phone_number');
+    if (phoneField) {
+        phoneField.addEventListener('keydown', allowOnlyNumbers);
+        phoneField.addEventListener('blur', validatePhoneNumber);
+        phoneField.addEventListener('input', preventMultipleSpaces);
+    }
+    
+    // Other fields
+    document.getElementById('birthdate').addEventListener('change', validateBirthdate);
+    document.getElementById('email').addEventListener('blur', validateEmail);
+    
+    // Add space prevention to other text inputs
+    const textInputs = document.querySelectorAll('input[type="text"]');
+    textInputs.forEach(input => {
+        if (!nameFields.includes(input.id) && input.id !== 'phone_number') {
+            input.addEventListener('input', preventMultipleSpaces);
+        }
+    });
+});
 
 // Password fields validation on form submit
-document.getElementById('password-form').addEventListener('submit', function(e) {
+document.getElementById('password-form')?.addEventListener('submit', function(e) {
     const currentPass = document.getElementById('current_password').value;
     const newPass = document.getElementById('new_password').value;
     const confirmPass = document.getElementById('confirm_password').value;
@@ -1244,13 +1318,13 @@ document.getElementById('password-form').addEventListener('submit', function(e) 
 });
 
 // Enhanced personal details form validation
-document.getElementById('personal-details-form').addEventListener('submit', function(e) {
+document.getElementById('personal-details-form')?.addEventListener('submit', function(e) {
     let isValid = true;
     
     if (!validateName('first_name', true)) isValid = false;
     if (!validateName('last_name', true)) isValid = false;
     if (!validateName('middle_name')) isValid = false;
-    if (!validateName('suffix')) isValid = false;
+    // Suffix is now a dropdown, no need for name validation
     if (!validateBirthdate()) isValid = false;
     if (!validatePhoneNumber()) isValid = false;
     if (!validateEmail()) isValid = false;
@@ -1266,7 +1340,7 @@ document.getElementById('personal-details-form').addEventListener('submit', func
 });
 
 // GCash QR Modal validation
-document.getElementById('gcash-form').addEventListener('submit', function(e) {
+document.getElementById('gcash-form')?.addEventListener('submit', function(e) {
     const qrNumber = document.getElementById('modal_qr_number').value.trim();
     const qrImage = document.getElementById('modal_qr_image').value;
     let isValid = true;
@@ -1293,7 +1367,7 @@ document.getElementById('gcash-form').addEventListener('submit', function(e) {
 });
 
 // Profile picture validation
-document.querySelector('form[enctype="multipart/form-data"]').addEventListener('submit', function(e) {
+document.querySelector('form[enctype="multipart/form-data"]')?.addEventListener('submit', function(e) {
     const fileInput = document.getElementById('profile_picture');
     if (fileInput.files.length > 0) {
         const file = fileInput.files[0];
@@ -1309,57 +1383,6 @@ document.querySelector('form[enctype="multipart/form-data"]').addEventListener('
         }
     }
 });
-
-// Additional function to validate text fields with consecutive space prevention
-function validateTextField(fieldId, required = false) {
-    const input = document.getElementById(fieldId);
-    const value = input.value.trim();
-    const errorElement = document.getElementById(`${fieldId}_error`);
-    
-    if (required && !value) {
-        errorElement.textContent = 'This field is required';
-        errorElement.classList.remove('hidden');
-        return false;
-    }
-    
-    // Check for consecutive spaces
-    if (/\s{2,}/.test(input.value)) {
-        errorElement.textContent = 'Cannot have multiple consecutive spaces';
-        errorElement.classList.remove('hidden');
-        return false;
-    }
-    
-    errorElement.textContent = '';
-    errorElement.classList.add('hidden');
-    return true;
-}
-
-// Function to validate text areas with consecutive space prevention
-function validateTextArea(fieldId, required = false) {
-    const input = document.getElementById(fieldId);
-    const value = input.value.trim();
-    const errorElement = document.getElementById(`${fieldId}_error`);
-    
-    if (required && !value) {
-        errorElement.textContent = 'This field is required';
-        errorElement.classList.remove('hidden');
-        return false;
-    }
-    
-    // Check for consecutive spaces within each line
-    const lines = input.value.split('\n');
-    for (const line of lines) {
-        if (/\s{2,}/.test(line)) {
-            errorElement.textContent = 'Cannot have multiple consecutive spaces in any line';
-            errorElement.classList.remove('hidden');
-            return false;
-        }
-    }
-    
-    errorElement.textContent = '';
-    errorElement.classList.add('hidden');
-    return true;
-}
     </script>
 </body>
 </html>
