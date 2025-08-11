@@ -242,23 +242,22 @@ if ($count_result->num_rows > 0) {
     </div>
       
     <!-- User Profile -->
-<!-- User Profile -->
-<div class="flex items-center px-5 py-4 border-b border-sidebar-border bg-gradient-to-r from-navy to-primary">
-    <div class="hidden md:block w-8 h-8 xs:w-9 xs:h-9 sm:w-10 sm:h-10 md:w-11 md:h-11 lg:w-12 lg:h-12 rounded-full bg-yellow-600 flex items-center justify-center shadow-md overflow-hidden shrink-0">
-        <img src="<?php echo htmlspecialchars($profile_picture); ?>" alt="Profile Picture" class="w-full h-full object-cover">
-    </div>
-    <div class="ml-3">
-        <div class="text-sm font-medium text-sidebar-text">
-            <span class="md:inline text-sm">
-                <?php echo htmlspecialchars(ucfirst($first_name) . ' ' . ucfirst($last_name)); ?>
-            </span>
+    <div class="flex items-center px-5 py-4 border-b border-sidebar-border bg-gradient-to-r from-navy to-primary">
+        <div class="w-10 h-10 rounded-full bg-yellow-600 flex items-center justify-center shadow-md overflow-hidden">
+            <img src="<?php echo htmlspecialchars($profile_picture); ?>" alt="Profile Picture" class="w-full h-full object-cover">
         </div>
-        <div class="text-xs text-sidebar-text opacity-70">Administrator</div>
+        <div class="ml-3">
+            <div class="text-sm font-medium text-sidebar-text">
+                <span class="md:inline text-sm">
+                    <?php echo htmlspecialchars(ucfirst($first_name) . ' ' . ucfirst($last_name)); ?>
+                </span>
+            </div>
+            <div class="text-xs text-sidebar-text opacity-70">Administrator</div>
+        </div>
+        <div class="ml-auto">
+            <span class="w-3 h-3 bg-success rounded-full block"></span>
+        </div>
     </div>
-    <div class="ml-auto">
-        <span class="w-3 h-3 bg-success rounded-full block"></span>
-    </div>
-</div>
       
     <!-- Menu Items -->
     <div class="pt-4 pb-8">
