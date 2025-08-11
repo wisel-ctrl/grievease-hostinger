@@ -1141,10 +1141,21 @@ function validatePhoneNumber() {
         return false;
     }
     
-    if (!/^(\+63[0-9]{10}|[0-9]{11})$/.test(value)) {
-        errorElement.textContent = 'Phone number must be 11 digits, or 13 characters starting with +63';
-        errorElement.classList.remove('hidden');
-        return false;
+    // Validate format and length
+    if (/^\+63/.test(value)) {
+        // +63 format (total 13 chars: +63 + 10 digits)
+        if (value.length !== 13 || !/^\+63\d{10}$/.test(value)) {
+            errorElement.textContent = 'International format must be +63 followed by 10 digits';
+            errorElement.classList.remove('hidden');
+            return false;
+        }
+    } else {
+        // Local format (11 digits)
+        if (value.length !== 11 || !/^\d{11}$/.test(value)) {
+            errorElement.textContent = 'Local format must be 11 digits';
+            errorElement.classList.remove('hidden');
+            return false;
+        }
     }
     
     errorElement.textContent = '';
@@ -1159,6 +1170,13 @@ function validateEmail() {
     
     if (!value) {
         errorElement.textContent = 'Email is required';
+        errorElement.classList.remove('hidden');
+        return false;
+    }
+    
+    // Check for consecutive spaces
+    if (/\s{2,}/.test(input.value)) {
+        errorElement.textContent = 'Email cannot contain multiple consecutive spaces';
         errorElement.classList.remove('hidden');
         return false;
     }
@@ -1214,19 +1232,34 @@ function autoCapitalizeName(event) {
     preventMultipleSpaces(event); // Also prevent multiple spaces
 }
 
-// Function to allow only numbers in phone field
-function allowOnlyNumbers(event) {
+// Function to handle phone number input with max length
+function handlePhoneNumberInput(event) {
     const input = event.target;
-    // Allow: backspace, delete, tab, escape, enter, numbers, and + (only at start)
-    if (event.key === '+' && input.selectionStart === 0) {
-        return; // Allow + only at the beginning
+    const value = input.value;
+    
+    // Allow only numbers and + (only at start)
+    if (!/^\+?\d*$/.test(value)) {
+        input.value = value.replace(/[^\d+]/g, '');
+        if (value.indexOf('+') !== value.lastIndexOf('+')) {
+            input.value = value.replace(/\+/g, '');
+            if (value.length > 0) input.value = '+' + input.value;
+        }
     }
-    if ([8, 9, 27, 13].includes(event.keyCode) || 
-        (event.keyCode >= 48 && event.keyCode <= 57) || 
-        (event.keyCode >= 96 && event.keyCode <= 105)) {
-        return;
+    
+    // Enforce max length based on format
+    if (value.startsWith('+63')) {
+        // +63 format: max 13 chars (+63 + 10 digits)
+        if (value.length > 13) {
+            input.value = value.slice(0, 13);
+        }
+    } else {
+        // Local format: max 11 digits
+        if (value.length > 11) {
+            input.value = value.slice(0, 11);
+        }
     }
-    event.preventDefault();
+    
+    preventMultipleSpaces(event);
 }
 
 // Initialize suffix dropdown
@@ -1271,118 +1304,32 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Phone number - numbers only
+    // Phone number - numbers only with max length
     const phoneField = document.getElementById('phone_number');
     if (phoneField) {
-        phoneField.addEventListener('keydown', allowOnlyNumbers);
+        phoneField.addEventListener('input', handlePhoneNumberInput);
         phoneField.addEventListener('blur', validatePhoneNumber);
-        phoneField.addEventListener('input', preventMultipleSpaces);
+    }
+    
+    // Email - prevent multiple spaces
+    const emailField = document.getElementById('email');
+    if (emailField) {
+        emailField.addEventListener('input', preventMultipleSpaces);
+        emailField.addEventListener('blur', validateEmail);
     }
     
     // Other fields
-    document.getElementById('birthdate').addEventListener('change', validateBirthdate);
-    document.getElementById('email').addEventListener('blur', validateEmail);
+    document.getElementById('birthdate')?.addEventListener('change', validateBirthdate);
     
     // Add space prevention to other text inputs
-    const textInputs = document.querySelectorAll('input[type="text"]');
+    const textInputs = document.querySelectorAll('input[type="text"]:not(#phone_number):not(#email)');
     textInputs.forEach(input => {
-        if (!nameFields.includes(input.id) && input.id !== 'phone_number') {
+        if (!nameFields.includes(input.id)) {
             input.addEventListener('input', preventMultipleSpaces);
         }
     });
 });
 
-// Password fields validation on form submit
-document.getElementById('password-form')?.addEventListener('submit', function(e) {
-    const currentPass = document.getElementById('current_password').value;
-    const newPass = document.getElementById('new_password').value;
-    const confirmPass = document.getElementById('confirm_password').value;
-    
-    if (!currentPass) {
-        e.preventDefault();
-        alert('Current password is required');
-        return;
-    }
-    
-    if (newPass.length < 6) {
-        e.preventDefault();
-        alert('New password must be at least 6 characters');
-        return;
-    }
-    
-    if (newPass !== confirmPass) {
-        e.preventDefault();
-        alert('New passwords do not match');
-        return;
-    }
-});
-
-// Enhanced personal details form validation
-document.getElementById('personal-details-form')?.addEventListener('submit', function(e) {
-    let isValid = true;
-    
-    if (!validateName('first_name', true)) isValid = false;
-    if (!validateName('last_name', true)) isValid = false;
-    if (!validateName('middle_name')) isValid = false;
-    // Suffix is now a dropdown, no need for name validation
-    if (!validateBirthdate()) isValid = false;
-    if (!validatePhoneNumber()) isValid = false;
-    if (!validateEmail()) isValid = false;
-    
-    if (!isValid) {
-        e.preventDefault();
-        // Scroll to first error
-        const firstError = document.querySelector('.text-red-500:not(.hidden)');
-        if (firstError) {
-            firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-    }
-});
-
-// GCash QR Modal validation
-document.getElementById('gcash-form')?.addEventListener('submit', function(e) {
-    const qrNumber = document.getElementById('modal_qr_number').value.trim();
-    const qrImage = document.getElementById('modal_qr_image').value;
-    let isValid = true;
-    
-    if (!/^[0-9]{11}$/.test(qrNumber)) {
-        document.getElementById('modal_qr_number_error').textContent = 'GCash number must be 11 digits';
-        document.getElementById('modal_qr_number_error').classList.remove('hidden');
-        isValid = false;
-    } else {
-        document.getElementById('modal_qr_number_error').classList.add('hidden');
-    }
-    
-    if (!qrImage) {
-        document.getElementById('modal_qr_image_error').textContent = 'QR Code image is required';
-        document.getElementById('modal_qr_image_error').classList.remove('hidden');
-        isValid = false;
-    } else {
-        document.getElementById('modal_qr_image_error').classList.add('hidden');
-    }
-    
-    if (!isValid) {
-        e.preventDefault();
-    }
-});
-
-// Profile picture validation
-document.querySelector('form[enctype="multipart/form-data"]')?.addEventListener('submit', function(e) {
-    const fileInput = document.getElementById('profile_picture');
-    if (fileInput.files.length > 0) {
-        const file = fileInput.files[0];
-        if (file.size > 2 * 1024 * 1024) { // 2MB
-            e.preventDefault();
-            alert('Profile picture must be less than 2MB');
-            return;
-        }
-        if (!file.type.match('image.*')) {
-            e.preventDefault();
-            alert('Please select an image file');
-            return;
-        }
-    }
-});
     </script>
 </body>
 </html>
