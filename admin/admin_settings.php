@@ -1085,7 +1085,6 @@ function validateName(fieldId, required = false) {
         return false;
     }
     
-    // Check for consecutive spaces
     if (/\s{2,}/.test(input.value)) {
         errorElement.textContent = 'Cannot have multiple consecutive spaces';
         errorElement.classList.remove('hidden');
@@ -1117,7 +1116,7 @@ function validateBirthdate() {
     const birthDate = new Date(value);
     const currentDate = new Date();
     const minAgeDate = new Date();
-    minAgeDate.setFullYear(currentDate.getFullYear() - 13); // At least 13 years old
+    minAgeDate.setFullYear(currentDate.getFullYear() - 13);
     
     if (birthDate > minAgeDate) {
         errorElement.textContent = 'You must be at least 13 years old';
@@ -1141,16 +1140,13 @@ function validatePhoneNumber() {
         return false;
     }
     
-    // Validate format and length
     if (/^\+63/.test(value)) {
-        // +63 format (total 13 chars: +63 + 10 digits)
         if (value.length !== 13 || !/^\+63\d{10}$/.test(value)) {
             errorElement.textContent = 'International format must be +63 followed by 10 digits';
             errorElement.classList.remove('hidden');
             return false;
         }
     } else {
-        // Local format (11 digits)
         if (value.length !== 11 || !/^\d{11}$/.test(value)) {
             errorElement.textContent = 'Local format must be 11 digits';
             errorElement.classList.remove('hidden');
@@ -1174,7 +1170,6 @@ function validateEmail() {
         return false;
     }
     
-    // Check for consecutive spaces
     if (/\s{2,}/.test(input.value)) {
         errorElement.textContent = 'Email cannot contain multiple consecutive spaces';
         errorElement.classList.remove('hidden');
@@ -1193,33 +1188,55 @@ function validateEmail() {
 }
 
 function validatePasswordFields() {
-    const currentPass = document.getElementById('current_password').value;
-    const newPass = document.getElementById('new_password').value;
-    const confirmPass = document.getElementById('confirm_password').value;
+    const currentPass = document.getElementById('current_password');
+    const newPass = document.getElementById('new_password');
+    const confirmPass = document.getElementById('confirm_password');
     let isValid = true;
     
-    if (!currentPass) {
-        // No error shown for current password as it's handled server-side
+    // Check for spaces in passwords
+    if (currentPass.value.includes(' ')) {
+        document.getElementById('current_password_error').textContent = 'Password cannot contain spaces';
+        document.getElementById('current_password_error').classList.remove('hidden');
         isValid = false;
     }
     
-    if (newPass.length < 6) {
-        // Error will show on form submission
+    if (newPass.value.includes(' ')) {
+        document.getElementById('new_password_error').textContent = 'Password cannot contain spaces';
+        document.getElementById('new_password_error').classList.remove('hidden');
         isValid = false;
     }
     
-    if (newPass !== confirmPass) {
-        // Error will show on form submission
+    if (confirmPass.value.includes(' ')) {
+        document.getElementById('confirm_password_error').textContent = 'Password cannot contain spaces';
+        document.getElementById('confirm_password_error').classList.remove('hidden');
+        isValid = false;
+    }
+    
+    if (!currentPass.value) {
+        isValid = false;
+    }
+    
+    if (newPass.value.length < 6) {
+        isValid = false;
+    }
+    
+    if (newPass.value !== confirmPass.value) {
         isValid = false;
     }
     
     return isValid;
 }
 
-// Function to prevent multiple consecutive spaces in input fields
+// Function to prevent spaces in password fields
+function preventSpacesInPasswords(event) {
+    if (event.target.type === 'password') {
+        event.target.value = event.target.value.replace(/\s/g, '');
+    }
+}
+
+// Function to prevent multiple consecutive spaces
 function preventMultipleSpaces(event) {
     const input = event.target;
-    // Replace multiple spaces with a single space
     input.value = input.value.replace(/\s{2,}/g, ' ');
 }
 
@@ -1229,15 +1246,14 @@ function autoCapitalizeName(event) {
     if (input.value.length === 1) {
         input.value = input.value.toUpperCase();
     }
-    preventMultipleSpaces(event); // Also prevent multiple spaces
+    preventMultipleSpaces(event);
 }
 
-// Function to handle phone number input with max length
+// Function to handle phone number input
 function handlePhoneNumberInput(event) {
     const input = event.target;
     const value = input.value;
     
-    // Allow only numbers and + (only at start)
     if (!/^\+?\d*$/.test(value)) {
         input.value = value.replace(/[^\d+]/g, '');
         if (value.indexOf('+') !== value.lastIndexOf('+')) {
@@ -1246,14 +1262,11 @@ function handlePhoneNumberInput(event) {
         }
     }
     
-    // Enforce max length based on format
     if (value.startsWith('+63')) {
-        // +63 format: max 13 chars (+63 + 10 digits)
         if (value.length > 13) {
             input.value = value.slice(0, 13);
         }
     } else {
-        // Local format: max 11 digits
         if (value.length > 11) {
             input.value = value.slice(0, 11);
         }
@@ -1289,12 +1302,11 @@ function initializeSuffixDropdown() {
     }
 }
 
-// Add event listeners for real-time validation and features
+// Add event listeners
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize suffix dropdown
     initializeSuffixDropdown();
     
-    // Name fields - auto capitalize and prevent multiple spaces
+    // Name fields
     const nameFields = ['first_name', 'last_name', 'middle_name'];
     nameFields.forEach(fieldId => {
         const field = document.getElementById(fieldId);
@@ -1304,30 +1316,70 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Phone number - numbers only with max length
+    // Phone number
     const phoneField = document.getElementById('phone_number');
     if (phoneField) {
         phoneField.addEventListener('input', handlePhoneNumberInput);
         phoneField.addEventListener('blur', validatePhoneNumber);
     }
     
-    // Email - prevent multiple spaces
+    // Email
     const emailField = document.getElementById('email');
     if (emailField) {
         emailField.addEventListener('input', preventMultipleSpaces);
         emailField.addEventListener('blur', validateEmail);
     }
     
+    // Password fields - prevent spaces
+    const passwordFields = ['current_password', 'new_password', 'confirm_password'];
+    passwordFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            field.addEventListener('input', preventSpacesInPasswords);
+        }
+    });
+    
     // Other fields
     document.getElementById('birthdate')?.addEventListener('change', validateBirthdate);
     
-    // Add space prevention to other text inputs
+    // Other text inputs
     const textInputs = document.querySelectorAll('input[type="text"]:not(#phone_number):not(#email)');
     textInputs.forEach(input => {
         if (!nameFields.includes(input.id)) {
             input.addEventListener('input', preventMultipleSpaces);
         }
     });
+});
+
+// Password form submission
+document.getElementById('password-form')?.addEventListener('submit', function(e) {
+    if (!validatePasswordFields()) {
+        e.preventDefault();
+        // Show appropriate alerts
+        const currentPass = document.getElementById('current_password');
+        const newPass = document.getElementById('new_password');
+        const confirmPass = document.getElementById('confirm_password');
+        
+        if (!currentPass.value) {
+            alert('Current password is required');
+            return;
+        }
+        
+        if (newPass.value.includes(' ')) {
+            alert('New password cannot contain spaces');
+            return;
+        }
+        
+        if (newPass.value.length < 6) {
+            alert('New password must be at least 6 characters');
+            return;
+        }
+        
+        if (newPass.value !== confirmPass.value) {
+            alert('New passwords do not match');
+            return;
+        }
+    }
 });
 
     </script>
