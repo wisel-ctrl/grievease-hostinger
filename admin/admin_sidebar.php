@@ -242,8 +242,8 @@ if ($count_result->num_rows > 0) {
     </div>
       
     <!-- User Profile -->
-  <!-- User Profile -->
-<div class="flex items-center px-5 py-4 border-b border-sidebar-border bg-gradient-to-r from-navy to-primary">
+<!-- User Profile -->
+<div class="hidden md:flex items-center px-5 py-4 border-b border-sidebar-border bg-gradient-to-r from-navy to-primary">
     <div class="w-8 h-8 xs:w-9 xs:h-9 sm:w-10 sm:h-10 md:w-11 md:h-11 lg:w-12 lg:h-12 rounded-full bg-yellow-600 flex items-center justify-center shadow-md overflow-hidden shrink-0">
         <img src="<?php echo htmlspecialchars($profile_picture); ?>" alt="Profile Picture" class="w-full h-full object-cover">
     </div>

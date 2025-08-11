@@ -3,8 +3,6 @@ function toggleSidebar() {
   const sidebar = document.getElementById("sidebar");
   const mainContent = document.getElementById("main-content");
   const hamburgerMenu = document.getElementById("hamburger-menu");
-  const userProfileContainer = document.querySelector("#sidebar > div:nth-child(2)"); // Select the user profile div
-
   if (sidebar.classList.contains("w-64")) {
     // Collapse the sidebar
     sidebar.classList.remove("w-64");
@@ -34,12 +32,6 @@ function toggleSidebar() {
     userProfileText.forEach(el => {
       el.classList.add("hidden");
     });
-    
-    // Center the profile picture in collapsed state
-    if (userProfileContainer) {
-      userProfileContainer.classList.remove("px-5");
-      userProfileContainer.classList.add("justify-center");
-    }
     
     // Center the navigation icons when collapsed
     document.querySelectorAll(".sidebar-link").forEach(el => {
@@ -83,12 +75,6 @@ function toggleSidebar() {
     userProfileText.forEach(el => {
       el.classList.remove("hidden");
     });
-    
-    // Restore user profile container styling
-    if (userProfileContainer) {
-      userProfileContainer.classList.add("px-5");
-      userProfileContainer.classList.remove("justify-center");
-    }
     
     // Restore original navigation link styling
     document.querySelectorAll(".sidebar-link").forEach(el => {
