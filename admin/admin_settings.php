@@ -1073,7 +1073,7 @@
             }
         });
 
-        // Enhanced validation functions
+        // Enhanced validation functions with consecutive space prevention
 function validateName(fieldId, required = false) {
     const input = document.getElementById(fieldId);
     const value = input.value.trim();
@@ -1081,6 +1081,13 @@ function validateName(fieldId, required = false) {
     
     if (required && !value) {
         errorElement.textContent = 'This field is required';
+        errorElement.classList.remove('hidden');
+        return false;
+    }
+    
+    // Check for consecutive spaces
+    if (/\s{2,}/.test(input.value)) {
+        errorElement.textContent = 'Cannot have multiple consecutive spaces';
         errorElement.classList.remove('hidden');
         return false;
     }
@@ -1191,11 +1198,22 @@ function validatePasswordFields() {
     return isValid;
 }
 
-// Add event listeners for real-time validation
+// Function to prevent multiple consecutive spaces in input fields
+function preventMultipleSpaces(event) {
+    const input = event.target;
+    // Replace multiple spaces with a single space
+    input.value = input.value.replace(/\s{2,}/g, ' ');
+}
+
+// Add event listeners for real-time validation and space prevention
 document.getElementById('first_name').addEventListener('blur', () => validateName('first_name', true));
+document.getElementById('first_name').addEventListener('input', preventMultipleSpaces);
 document.getElementById('last_name').addEventListener('blur', () => validateName('last_name', true));
+document.getElementById('last_name').addEventListener('input', preventMultipleSpaces);
 document.getElementById('middle_name').addEventListener('blur', () => validateName('middle_name'));
+document.getElementById('middle_name').addEventListener('input', preventMultipleSpaces);
 document.getElementById('suffix').addEventListener('blur', () => validateName('suffix'));
+document.getElementById('suffix').addEventListener('input', preventMultipleSpaces);
 document.getElementById('birthdate').addEventListener('change', validateBirthdate);
 document.getElementById('phone_number').addEventListener('blur', validatePhoneNumber);
 document.getElementById('email').addEventListener('blur', validateEmail);
@@ -1291,6 +1309,57 @@ document.querySelector('form[enctype="multipart/form-data"]').addEventListener('
         }
     }
 });
+
+// Additional function to validate text fields with consecutive space prevention
+function validateTextField(fieldId, required = false) {
+    const input = document.getElementById(fieldId);
+    const value = input.value.trim();
+    const errorElement = document.getElementById(`${fieldId}_error`);
+    
+    if (required && !value) {
+        errorElement.textContent = 'This field is required';
+        errorElement.classList.remove('hidden');
+        return false;
+    }
+    
+    // Check for consecutive spaces
+    if (/\s{2,}/.test(input.value)) {
+        errorElement.textContent = 'Cannot have multiple consecutive spaces';
+        errorElement.classList.remove('hidden');
+        return false;
+    }
+    
+    errorElement.textContent = '';
+    errorElement.classList.add('hidden');
+    return true;
+}
+
+// Function to validate text areas with consecutive space prevention
+function validateTextArea(fieldId, required = false) {
+    const input = document.getElementById(fieldId);
+    const value = input.value.trim();
+    const errorElement = document.getElementById(`${fieldId}_error`);
+    
+    if (required && !value) {
+        errorElement.textContent = 'This field is required';
+        errorElement.classList.remove('hidden');
+        return false;
+    }
+    
+    // Check for consecutive spaces within each line
+    const lines = input.value.split('\n');
+    for (const line of lines) {
+        if (/\s{2,}/.test(line)) {
+            errorElement.textContent = 'Cannot have multiple consecutive spaces in any line';
+            errorElement.classList.remove('hidden');
+            return false;
+        }
+    }
+    
+    errorElement.textContent = '';
+    errorElement.classList.add('hidden');
+    return true;
+}
     </script>
 </body>
 </html>
