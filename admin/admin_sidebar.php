@@ -243,7 +243,7 @@ if ($count_result->num_rows > 0) {
       
     <!-- User Profile -->
     <div class="flex items-center px-5 py-4 border-b border-sidebar-border bg-gradient-to-r from-navy to-primary">
-      <div class="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 rounded-full bg-yellow-600 flex items-center justify-center shadow-md overflow-hidden shrink-0">
+      <div class="w-8 h-8 xs:w-9 xs:h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 rounded-full bg-yellow-600 flex items-center justify-center shadow-md overflow-hidden shrink-0">
     <img src="<?php echo htmlspecialchars($profile_picture); ?>" alt="Profile Picture" class="w-full h-full object-cover">
 </div>
         <div class="ml-3">
