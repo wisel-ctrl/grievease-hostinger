@@ -222,6 +222,7 @@ $ongoing_services = $ongoing_data['ongoing_count'];
     </div>
     <div class="flex space-x-3">
     
+</div>
 
   <!-- Quick Stats -->
     <div class="mb-8">
