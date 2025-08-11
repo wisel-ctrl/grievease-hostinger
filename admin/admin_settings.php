@@ -1159,6 +1159,36 @@ function validatePhoneNumber() {
     return true;
 }
 
+function validateGCashPhoneNumber() {
+    const input = document.getElementById('modal_qr_number');
+    const value = input.value.trim();
+    const errorElement = document.getElementById('modal_qr_number_error');
+    
+    if (!value) {
+        errorElement.textContent = 'GCash phone number is required';
+        errorElement.classList.remove('hidden');
+        return false;
+    }
+    
+    if (/^\+63/.test(value)) {
+        if (value.length !== 13 || !/^\+63\d{10}$/.test(value)) {
+            errorElement.textContent = 'International format must be +63 followed by 10 digits';
+            errorElement.classList.remove('hidden');
+            return false;
+        }
+    } else {
+        if (value.length !== 11 || !/^\d{11}$/.test(value)) {
+            errorElement.textContent = 'Local format must be 11 digits';
+            errorElement.classList.remove('hidden');
+            return false;
+        }
+    }
+    
+    errorElement.textContent = '';
+    errorElement.classList.add('hidden');
+    return true;
+}
+
 function validateEmail() {
     const input = document.getElementById('email');
     const value = input.value.trim();
@@ -1275,6 +1305,32 @@ function handlePhoneNumberInput(event) {
     preventMultipleSpaces(event);
 }
 
+// Function to handle GCash phone number input
+function handleGCashPhoneNumberInput(event) {
+    const input = event.target;
+    const value = input.value;
+    
+    if (!/^\+?\d*$/.test(value)) {
+        input.value = value.replace(/[^\d+]/g, '');
+        if (value.indexOf('+') !== value.lastIndexOf('+')) {
+            input.value = value.replace(/\+/g, '');
+            if (value.length > 0) input.value = '+' + input.value;
+        }
+    }
+    
+    if (value.startsWith('+63')) {
+        if (value.length > 13) {
+            input.value = value.slice(0, 13);
+        }
+    } else {
+        if (value.length > 11) {
+            input.value = value.slice(0, 11);
+        }
+    }
+    
+    preventMultipleSpaces(event);
+}
+
 // Initialize suffix dropdown
 function initializeSuffixDropdown() {
     const suffixInput = document.getElementById('suffix');
@@ -1323,6 +1379,13 @@ document.addEventListener('DOMContentLoaded', function() {
         phoneField.addEventListener('blur', validatePhoneNumber);
     }
     
+    // GCash phone number
+    const gcashPhoneField = document.getElementById('modal_qr_number');
+    if (gcashPhoneField) {
+        gcashPhoneField.addEventListener('input', handleGCashPhoneNumberInput);
+        gcashPhoneField.addEventListener('blur', validateGCashPhoneNumber);
+    }
+    
     // Email
     const emailField = document.getElementById('email');
     if (emailField) {
@@ -1343,7 +1406,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('birthdate')?.addEventListener('change', validateBirthdate);
     
     // Other text inputs
-    const textInputs = document.querySelectorAll('input[type="text"]:not(#phone_number):not(#email)');
+    const textInputs = document.querySelectorAll('input[type="text"]:not(#phone_number):not(#email):not(#modal_qr_number)');
     textInputs.forEach(input => {
         if (!nameFields.includes(input.id)) {
             input.addEventListener('input', preventMultipleSpaces);
@@ -1382,6 +1445,14 @@ document.getElementById('password-form')?.addEventListener('submit', function(e)
     }
 });
 
+// GCash QR form submission
+document.getElementById('gcash-qr-form')?.addEventListener('submit', function(e) {
+    if (!validateGCashPhoneNumber()) {
+        e.preventDefault();
+        return false;
+    }
+    // Continue with form submission if validation passes
+});
     </script>
 </body>
 </html>
