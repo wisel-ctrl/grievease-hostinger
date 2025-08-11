@@ -3,11 +3,18 @@ function toggleSidebar() {
   const sidebar = document.getElementById("sidebar");
   const mainContent = document.getElementById("main-content");
   const hamburgerMenu = document.getElementById("hamburger-menu");
+  const profileImage = document.getElementById("profile-image");
+
   if (sidebar.classList.contains("w-64")) {
     // Collapse the sidebar
     sidebar.classList.remove("w-64");
     sidebar.classList.add("w-16"); // Keep a small portion visible for the hamburger menu
     
+// Hide profile image
+    if (profileImage) {
+      profileImage.classList.add("hidden");
+    }
+
     // Keep icons visible but hide text in navigation links
     document.querySelectorAll(".sidebar-link span").forEach(el => {
       el.classList.add("hidden");
