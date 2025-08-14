@@ -2999,7 +2999,7 @@ document.getElementById('saveAddonBtn').addEventListener('click', function() {
   const addonName = document.getElementById('addonName').value;
   const addonPrice = document.getElementById('addonPrice').value;
   const addonBranch = document.getElementById('addonBranch').value;
-  const addonIcon = document.getElementById('selectedIcon').value;
+  const addonIcon = "fas" + document.getElementById('selectedIcon').value;
   
   if (!addonName || !addonPrice || !addonBranch || !addonIcon) {
     alert('Please fill in all fields');
