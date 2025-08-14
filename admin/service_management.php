@@ -2809,23 +2809,51 @@ function closeModal() {
 }
 
 // Function to load branches
-function loadBranches() {
-  // Example data - replace with your actual data
-  const branches = [
-    { id: 1, name: 'Main Branch' },
-    { id: 2, name: 'Downtown Branch' },
-    { id: 3, name: 'Westside Branch' }
-  ];
-  
+async function loadBranches() {
   const branchSelect = document.getElementById('addonBranch');
   branchSelect.innerHTML = '<option value="">Select Branch</option>';
   
-  branches.forEach(branch => {
+  try {
+    const response = await fetch('addCustomer/get_branches.php');
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    
+    const branches = await response.json();
+    
+    if (branches && branches.length > 0) {
+      branches.forEach(branch => {
+        const option = document.createElement('option');
+        option.value = branch.branch_id;
+        option.textContent = branch.branch_name;
+        branchSelect.appendChild(option);
+      });
+    } else {
+      console.warn('No branches found');
+      // Optional: Show a message to the user
+      const option = document.createElement('option');
+      option.value = '';
+      option.textContent = 'No branches available';
+      option.disabled = true;
+      branchSelect.appendChild(option);
+    }
+  } catch (error) {
+    console.error('Error loading branches:', error);
+    // Optional: Show error message to user
     const option = document.createElement('option');
-    option.value = branch.id;
-    option.textContent = branch.name;
+    option.value = '';
+    option.textContent = 'Error loading branches';
+    option.disabled = true;
     branchSelect.appendChild(option);
-  });
+    
+    // Show SweetAlert error
+    Swal.fire({
+      title: 'Error!',
+      text: 'Failed to load branches. Please try again later.',
+      icon: 'error',
+      confirmButtonText: 'OK'
+    });
+  }
 }
 
 // Function to load Font Awesome icons
@@ -2999,10 +3027,15 @@ document.getElementById('saveAddonBtn').addEventListener('click', function() {
   const addonName = document.getElementById('addonName').value;
   const addonPrice = document.getElementById('addonPrice').value;
   const addonBranch = document.getElementById('addonBranch').value;
-  const addonIcon = "fas" + document.getElementById('selectedIcon').value;
+  const addonIcon = "fas " + document.getElementById('selectedIcon').value;
   
   if (!addonName || !addonPrice || !addonBranch || !addonIcon) {
-    alert('Please fill in all fields');
+    Swal.fire({
+      title: 'Error!',
+      text: 'Please fill in all fields',
+      icon: 'error',
+      confirmButtonText: 'OK'
+    });
     return;
   }
   
@@ -3013,11 +3046,7 @@ document.getElementById('saveAddonBtn').addEventListener('click', function() {
     icon: addonIcon
   };
   
-  console.log('Add-on to be saved:', addonData);
-  
-  // Here you would typically make a fetch request to your backend
-  /*
-  fetch('/api/addons', {
+  fetch('servicesManagement/add_addOns.php', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -3026,17 +3055,21 @@ document.getElementById('saveAddonBtn').addEventListener('click', function() {
   })
   .then(response => response.json())
   .then(data => {
-    closeModal();
-    // Refresh your add-ons list or show success message
-    alert('Add-on saved successfully!');
+    if (data.status === 'success') {
+      // The SweetAlert is already in the response HTML
+      document.body.insertAdjacentHTML('beforeend', data.html);
+    } else {
+      document.body.insertAdjacentHTML('beforeend', data.html);
+    }
   })
   .catch(error => {
-    alert('Error saving add-on: ' + error.message);
+    Swal.fire({
+      title: 'Error!',
+      text: 'Network error: ' + error.message,
+      icon: 'error',
+      confirmButtonText: 'OK'
+    });
   });
-  */
-  
-  // For now, just close the modal
-  closeModal();
 });
 
 </script>
