@@ -1870,6 +1870,80 @@ window.addEventListener('popstate', function(event) {
   </div>
 </div>
 
+<!-- Add Add-ons Modal -->
+<div id="addAddonsModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+  <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+    <!-- Background overlay -->
+    <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+      <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+    </div>
+
+    <!-- Modal container -->
+    <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+      <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+        <div class="sm:flex sm:items-start">
+          <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+            <h3 class="text-lg leading-6 font-medium text-gray-900" id="addAddonsModalLabel">
+              Add New Add-on
+            </h3>
+            <div class="mt-4">
+              <form id="addAddonsForm">
+                <div class="mb-4">
+                  <label for="addonName" class="block text-sm font-medium text-gray-700">Add-on Name</label>
+                  <input type="text" id="addonName" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" required>
+                </div>
+                
+                <div class="mb-4">
+                  <label for="addonPrice" class="block text-sm font-medium text-gray-700">Price</label>
+                  <div class="mt-1 relative rounded-md shadow-sm">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <span class="text-gray-500 sm:text-sm">$</span>
+                    </div>
+                    <input type="number" id="addonPrice" min="0" step="0.01" class="block w-full pl-7 pr-12 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" required>
+                  </div>
+                </div>
+                
+                <div class="mb-4">
+                  <label for="addonBranch" class="block text-sm font-medium text-gray-700">Branch</label>
+                  <select id="addonBranch" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" required>
+                    <option value="">Select Branch</option>
+                    <!-- Options will be populated dynamically -->
+                  </select>
+                </div>
+                
+                <div class="mb-4">
+                  <label class="block text-sm font-medium text-gray-700">Icon Selection</label>
+                  <div class="mt-1 border border-gray-300 rounded-md p-4">
+                    <div class="flex mb-3">
+                      <div class="flex items-center justify-center px-3 rounded-l-md bg-gray-50 border border-r-0 border-gray-300">
+                        <i id="selectedIconPreview" class="fas fa-plus text-gray-500"></i>
+                      </div>
+                      <input type="text" id="iconSearch" class="flex-1 min-w-0 block w-full rounded-none rounded-r-md border-gray-300 focus:border-blue-500 focus:ring-blue-500 sm:text-sm border" placeholder="Search icons...">
+                      <input type="hidden" id="selectedIcon" value="fa-plus">
+                    </div>
+                    
+                    <div id="iconGrid" class="grid grid-cols-6 gap-2 max-h-64 overflow-y-auto p-1">
+                      <!-- Icons will be loaded here -->
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+        <button type="button" id="saveAddonBtn" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
+          Save Add-on
+        </button>
+        <button type="button" onclick="closeModal()" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const archiveModal = document.getElementById('archiveModal');
@@ -2710,6 +2784,259 @@ function deleteAddOn(id) {
         // Add your delete logic here
     }
 }
+
+// Function to open the modal
+function openAddAddonsModal() {
+  // Clear previous selections
+  document.getElementById('addAddonsForm').reset();
+  document.getElementById('selectedIcon').value = 'fa-plus';
+  document.getElementById('selectedIconPreview').className = 'fas fa-plus text-gray-500';
+  
+  // Load branches
+  loadBranches();
+  
+  // Load icons
+  loadFontAwesomeIcons();
+  
+  // Show modal
+  document.getElementById('addAddonsModal').classList.remove('hidden');
+}
+
+// Function to close the modal
+function closeModal() {
+  document.getElementById('addAddonsModal').classList.add('hidden');
+}
+
+// Function to load branches
+function loadBranches() {
+  // Example data - replace with your actual data
+  const branches = [
+    { id: 1, name: 'Main Branch' },
+    { id: 2, name: 'Downtown Branch' },
+    { id: 3, name: 'Westside Branch' }
+  ];
+  
+  const branchSelect = document.getElementById('addonBranch');
+  branchSelect.innerHTML = '<option value="">Select Branch</option>';
+  
+  branches.forEach(branch => {
+    const option = document.createElement('option');
+    option.value = branch.id;
+    option.textContent = branch.name;
+    branchSelect.appendChild(option);
+  });
+}
+
+// Function to load Font Awesome icons
+function loadFontAwesomeIcons(searchTerm = '') {
+  const icons = [
+    // General funeral services
+    'fa-church', 
+    'fa-pray', 
+    'fa-hands-praying',
+    'fa-cross',
+    'fa-star-of-david',
+    'fa-om',
+    'fa-place-of-worship',
+    'fa-bible',
+    'fa-torah',
+    'fa-quran',
+    'fa-book-open',
+    
+    // Memorial symbols
+    'fa-urn',
+    'fa-headstone',
+    'fa-monument',
+    'fa-memorial',
+    'fa-landmark',
+    'fa-ribbon',
+    'fa-dove',
+    'fa-feather',
+    'fa-feather-alt',
+    'fa-leaf',
+    'fa-tree',
+    'fa-seedling',
+    
+    // Sympathy and grief
+    'fa-heart',
+    'fa-heart-broken',
+    'fa-hand-holding-heart',
+    'fa-hands-helping',
+    'fa-handshake',
+    'fa-hands-holding',
+    'fa-hands-holding-heart',
+    
+    // Funeral process
+    'fa-hearse',
+    'fa-car-side',
+    'fa-van-shuttle',
+    'fa-flower',
+    'fa-flower-tulip',
+    'fa-flower-daffodil',
+    'fa-lilies',
+    'fa-roses',
+    'fa-wreath',
+    'fa-candle-holder',
+    'fa-candle',
+    'fa-fire',
+    'fa-smoke',
+    
+    // Death symbols
+    'fa-skull',
+    'fa-skull-crossbones',
+    'fa-hourglass',
+    'fa-hourglass-half',
+    'fa-hourglass-end',
+    'fa-clock',
+    'fa-calendar',
+    'fa-calendar-days',
+    
+    // Afterlife concepts
+    'fa-cloud',
+    'fa-cloud-sun',
+    'fa-sun',
+    'fa-moon',
+    'fa-stars',
+    'fa-star',
+    'fa-star-and-crescent',
+    'fa-angel',
+    'fa-angels',
+    'fa-spa',
+    
+    // Documentation
+    'fa-file-contract',
+    'fa-file-signature',
+    'fa-certificate',
+    'fa-award',
+    'fa-medal',
+    
+    // Support services
+    'fa-phone',
+    'fa-envelope',
+    'fa-comments',
+    'fa-user-nurse',
+    'fa-user-md',
+    'fa-user-graduate',
+    'fa-user-tie',
+    'fa-users',
+    
+    // Payment/Financial
+    'fa-money-bill',
+    'fa-money-bill-wave',
+    'fa-credit-card',
+    'fa-receipt',
+    'fa-calculator',
+    
+    // Location
+    'fa-map',
+    'fa-map-marker',
+    'fa-map-marker-alt',
+    'fa-globe',
+    'fa-globe-americas',
+    
+    // Digital memorials
+    'fa-laptop',
+    'fa-tablet',
+    'fa-mobile',
+    'fa-camera',
+    'fa-photo-film',
+    'fa-images',
+    'fa-portrait',
+    'fa-frame'
+  ];
+  
+  const filteredIcons = icons.filter(icon => 
+    icon.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  
+  const iconGrid = document.getElementById('iconGrid');
+  iconGrid.innerHTML = '';
+  
+  if (filteredIcons.length === 0) {
+    const noResults = document.createElement('div');
+    noResults.className = 'col-span-6 text-center py-3 text-gray-500';
+    noResults.textContent = 'No icons found';
+    iconGrid.appendChild(noResults);
+    return;
+  }
+  
+  filteredIcons.forEach(icon => {
+    const iconName = icon.replace('fa-', '');
+    const iconItem = document.createElement('div');
+    iconItem.className = 'flex flex-col items-center p-2 rounded cursor-pointer hover:bg-gray-100';
+    iconItem.dataset.icon = icon;
+    iconItem.innerHTML = `
+      <i class="fas ${icon} text-xl mb-1"></i>
+      <span class="text-xs text-center break-all">${iconName}</span>
+    `;
+    
+    iconItem.addEventListener('click', function() {
+      document.getElementById('selectedIcon').value = icon;
+      const previewIcon = document.getElementById('selectedIconPreview');
+      previewIcon.className = `fas ${icon} text-gray-500`;
+      
+      // Remove selected class from all icons
+      document.querySelectorAll('#iconGrid > div').forEach(el => {
+        el.classList.remove('bg-blue-100', 'border', 'border-blue-300');
+      });
+      
+      // Add selected class to clicked icon
+      this.classList.add('bg-blue-100', 'border', 'border-blue-300');
+    });
+    
+    iconGrid.appendChild(iconItem);
+  });
+}
+
+// Search functionality for icons
+document.getElementById('iconSearch').addEventListener('input', function() {
+  loadFontAwesomeIcons(this.value);
+});
+
+// Save add-on functionality
+document.getElementById('saveAddonBtn').addEventListener('click', function() {
+  const addonName = document.getElementById('addonName').value;
+  const addonPrice = document.getElementById('addonPrice').value;
+  const addonBranch = document.getElementById('addonBranch').value;
+  const addonIcon = document.getElementById('selectedIcon').value;
+  
+  if (!addonName || !addonPrice || !addonBranch || !addonIcon) {
+    alert('Please fill in all fields');
+    return;
+  }
+  
+  const addonData = {
+    name: addonName,
+    price: parseFloat(addonPrice),
+    branch_id: addonBranch,
+    icon: addonIcon
+  };
+  
+  console.log('Add-on to be saved:', addonData);
+  
+  // Here you would typically make a fetch request to your backend
+  /*
+  fetch('/api/addons', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(addonData)
+  })
+  .then(response => response.json())
+  .then(data => {
+    closeModal();
+    // Refresh your add-ons list or show success message
+    alert('Add-on saved successfully!');
+  })
+  .catch(error => {
+    alert('Error saving add-on: ' + error.message);
+  });
+  */
+  
+  // For now, just close the modal
+  closeModal();
+});
 
 </script>
   
