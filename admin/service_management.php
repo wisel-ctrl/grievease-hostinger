@@ -634,7 +634,7 @@ if ($branchResult->num_rows > 0) {
         <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
             <!-- Title and Counter -->
             <div class="flex items-center gap-3 mb-4 lg:mb-0">
-                <h4 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Branch: Main Branch</h4>
+                <h4 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Add-Ons Management</h4>
                 
                 <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
                     5
@@ -697,7 +697,7 @@ if ($branchResult->num_rows > 0) {
 
                 <!-- Add Service Button -->
                 <button class="px-4 py-2 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap" 
-                        onclick="openAddServiceModal(1)"><span>Add New Service</span>
+                        onclick="openAddServiceModal(1)"><span>+ Add-Ons</span>
                 </button>
             </div>
         </div>
@@ -737,7 +737,7 @@ if ($branchResult->num_rows > 0) {
             <!-- Second row: Add Service Button - Full width -->
             <div class="w-full">
                 <button class="px-4 py-2.5 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap w-full justify-center" 
-                        onclick="openAddServiceModal(1)"><span>Add New Service</span>
+                        onclick="openAddServiceModal(1)"><span>+ Add-Ons</span>
                 </button>
             </div>
         </div>
@@ -771,7 +771,17 @@ if ($branchResult->num_rows > 0) {
                         </th>
                         <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(1, 3)">
                             <div class="flex items-center gap-1.5">
+                                <i class="fas fa-code-branch text-sidebar-accent"></i> Branch 
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(1, 4)">
+                            <div class="flex items-center gap-1.5">
                                 <i class="fas fa-toggle-on text-sidebar-accent"></i> Status 
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-cog text-sidebar-accent"></i> Actions 
                             </div>
                         </th>
                     </tr>
@@ -781,50 +791,105 @@ if ($branchResult->num_rows > 0) {
                         <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">#SVC-001</td>
                         <td class="px-4 py-3.5 text-sm text-sidebar-text">Haircut</td>
                         <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱300.00</td>
+                        <td class="px-4 py-3.5 text-sm text-sidebar-text">Main Branch</td>
                         <td class="px-4 py-3.5 text-sm">
                             <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-600 border border-green-200">
                                 <i class="fas fa-check-circle mr-1"></i> Active
                             </span>
+                        </td>
+                        <td class="px-4 py-3.5 text-sm">
+                            <div class="flex items-center gap-2">
+                                <button class="text-blue-500 hover:text-blue-700" onclick="editService(1)">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-red-500 hover:text-red-700" onclick="deleteService(1)">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                     <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
                         <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">#SVC-002</td>
                         <td class="px-4 py-3.5 text-sm text-sidebar-text">Hair Coloring</td>
                         <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱1,200.00</td>
+                        <td class="px-4 py-3.5 text-sm text-sidebar-text">North Branch</td>
                         <td class="px-4 py-3.5 text-sm">
                             <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-600 border border-green-200">
                                 <i class="fas fa-check-circle mr-1"></i> Active
                             </span>
+                        </td>
+                        <td class="px-4 py-3.5 text-sm">
+                            <div class="flex items-center gap-2">
+                                <button class="text-blue-500 hover:text-blue-700" onclick="editService(2)">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-red-500 hover:text-red-700" onclick="deleteService(2)">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                     <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
                         <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">#SVC-003</td>
                         <td class="px-4 py-3.5 text-sm text-sidebar-text">Manicure</td>
                         <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱150.00</td>
+                        <td class="px-4 py-3.5 text-sm text-sidebar-text">South Branch</td>
                         <td class="px-4 py-3.5 text-sm">
                             <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-500 border border-orange-200">
                                 <i class="fas fa-pause-circle mr-1"></i> Inactive
                             </span>
+                        </td>
+                        <td class="px-4 py-3.5 text-sm">
+                            <div class="flex items-center gap-2">
+                                <button class="text-blue-500 hover:text-blue-700" onclick="editService(3)">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-red-500 hover:text-red-700" onclick="deleteService(3)">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                     <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
                         <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">#SVC-004</td>
                         <td class="px-4 py-3.5 text-sm text-sidebar-text">Pedicure</td>
                         <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱200.00</td>
+                        <td class="px-4 py-3.5 text-sm text-sidebar-text">East Branch</td>
                         <td class="px-4 py-3.5 text-sm">
                             <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-600 border border-green-200">
                                 <i class="fas fa-check-circle mr-1"></i> Active
                             </span>
+                        </td>
+                        <td class="px-4 py-3.5 text-sm">
+                            <div class="flex items-center gap-2">
+                                <button class="text-blue-500 hover:text-blue-700" onclick="editService(4)">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-red-500 hover:text-red-700" onclick="deleteService(4)">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                     <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
                         <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">#SVC-005</td>
                         <td class="px-4 py-3.5 text-sm text-sidebar-text">Facial</td>
                         <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱500.00</td>
+                        <td class="px-4 py-3.5 text-sm text-sidebar-text">West Branch</td>
                         <td class="px-4 py-3.5 text-sm">
                             <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-500 border border-orange-200">
                                 <i class="fas fa-pause-circle mr-1"></i> Inactive
                             </span>
+                        </td>
+                        <td class="px-4 py-3.5 text-sm">
+                            <div class="flex items-center gap-2">
+                                <button class="text-blue-500 hover:text-blue-700" onclick="editService(5)">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-red-500 hover:text-red-700" onclick="deleteService(5)">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                 </tbody>
