@@ -1476,7 +1476,7 @@ window.addEventListener('popstate', function(event) {
             </label>
             <div class="relative">
               <div class="flex items-center border border-gray-300 rounded-lg px-3 py-2 focus-within:ring-1 focus-within:ring-sidebar-accent focus-within:border-sidebar-accent transition-all duration-200">
-                <input type="file" id="editServiceImage" name="serviceImage" class="w-full focus:outline-none">
+                <input type="file" id="editServiceImage" name="serviceImage" class="w-full focus:outline-none" accept="image/*">
               </div>
             </div>
             <input type="hidden" id="currentImagePath" name="currentImagePath">
