@@ -611,6 +611,20 @@ if ($branchResult->num_rows > 0) {
     </div>
 </div>
 
+</div>
+
+<?php
+    } // End branch while loop
+} else {
+    echo "<div class='p-8 text-center bg-white rounded-lg shadow-md'>";
+    echo "<i class='fas fa-store-slash text-gray-300 text-5xl mb-4'></i>";
+    echo "<p class='text-gray-500 text-lg'>No branches found in the system</p>";
+    echo "<button class='mt-4 px-4 py-2 bg-sidebar-accent text-white rounded-md text-sm hover:bg-darkgold transition-all'>";
+    echo "<i class='fas fa-plus-circle mr-2'></i> Add Branch</button>";
+    echo "</div>";
+}
+?>
+
 <div class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden branch-container" 
      data-branch-id="1" 
      data-total-services="5">
@@ -854,22 +868,6 @@ if ($branchResult->num_rows > 0) {
         </div>
     </div>
 </div>
-
-</div>
-
-<?php
-    } // End branch while loop
-} else {
-    echo "<div class='p-8 text-center bg-white rounded-lg shadow-md'>";
-    echo "<i class='fas fa-store-slash text-gray-300 text-5xl mb-4'></i>";
-    echo "<p class='text-gray-500 text-lg'>No branches found in the system</p>";
-    echo "<button class='mt-4 px-4 py-2 bg-sidebar-accent text-white rounded-md text-sm hover:bg-darkgold transition-all'>";
-    echo "<i class='fas fa-plus-circle mr-2'></i> Add Branch</button>";
-    echo "</div>";
-}
-?>
-
-
 
 <script>
 // Global variable to track active filters
