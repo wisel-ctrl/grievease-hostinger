@@ -1909,8 +1909,8 @@ function populateEditForm(service) {
     
     // Set image if available
     if (service.image_url) {
-        document.getElementById('currentImagePath').value = service.image_url;
-        document.getElementById('currentServiceImage').src = service.image_url;
+        document.getElementById('currentImagePath').value = "serviceManagement/" + service.image_url;
+        document.getElementById('currentServiceImage').src = "serviceManagement/" + service.image_url;
         document.getElementById('currentServiceImage').classList.remove('hidden');
         document.getElementById('noImageText').classList.add('hidden');
     } else {
