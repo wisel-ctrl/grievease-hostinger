@@ -2608,11 +2608,11 @@ function fetchAndPopulateAddOns() {
             }
             
             data.data.forEach(addOn => {
-                const statusClass = addOn.status === 'Active' ? 
+                const statusClass = addOn.status === 'active' ? 
                     'bg-green-100 text-green-600 border-green-200' : 
                     'bg-orange-100 text-orange-500 border-orange-200';
                 
-                const statusIcon = addOn.status === 'Active' ? 
+                const statusIcon = addOn.status === 'active' ? 
                     'fa-check-circle' : 'fa-pause-circle';
                 
                 const row = document.createElement('tr');
