@@ -697,7 +697,7 @@ if ($branchResult->num_rows > 0) {
 
                 <!-- Add Service Button -->
                 <button class="px-4 py-2 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap" 
-                        onclick="openAddServiceModal(1)"><span>+ Add-Ons</span>
+                        onclick="openAddAddonsModal()"><span>+ Add-Ons</span>
                 </button>
             </div>
         </div>
@@ -737,7 +737,7 @@ if ($branchResult->num_rows > 0) {
             <!-- Second row: Add Service Button - Full width -->
             <div class="w-full">
                 <button class="px-4 py-2.5 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap w-full justify-center" 
-                        onclick="openAddServiceModal(1)"><span>+ Add-Ons</span>
+                        onclick="openAddAddonsModal()"><span>+ Add-Ons</span>
                 </button>
             </div>
         </div>
@@ -2648,6 +2648,132 @@ document.getElementById('editServiceImage').addEventListener('change', function(
         reader.readAsDataURL(file);
     }
 });
+
+// Function to fetch and populate add-ons data
+function fetchAndPopulateAddOns() {
+    const tableBody = document.querySelector('#tableContainer1 tbody');
+    const loadingIndicator = document.getElementById('loadingIndicator1');
+    
+    // Show loading indicator
+    loadingIndicator.classList.remove('hidden');
+    tableBody.innerHTML = '';
+    
+    // Fetch data from PHP endpoint
+    fetch('servicesManagement/get_addOns.php')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Hide loading indicator
+            loadingIndicator.classList.add('hidden');
+            
+            if (data.error) {
+                console.error('Error:', data.error);
+                // Display error message in table
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="px-4 py-3.5 text-sm text-red-500 text-center">
+                            Error loading data: ${data.error}
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            // Update the counter
+            const counterElement = document.querySelector('.branch-container[data-branch-id="1"] .bg-sidebar-accent');
+            if (counterElement) {
+                counterElement.textContent = data.data.length;
+            }
+            
+            // Update the "Showing X of Y" text
+            const paginationInfo = document.getElementById('paginationInfo_1');
+            if (paginationInfo) {
+                paginationInfo.textContent = `Showing 1 - ${data.data.length} of ${data.data.length} services`;
+            }
+            
+            // Populate the table
+            if (data.data.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="px-4 py-3.5 text-sm text-gray-500 text-center">
+                            No add-ons found
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            data.data.forEach(addOn => {
+                const statusClass = addOn.status === 'Active' ? 
+                    'bg-green-100 text-green-600 border-green-200' : 
+                    'bg-orange-100 text-orange-500 border-orange-200';
+                
+                const statusIcon = addOn.status === 'Active' ? 
+                    'fa-check-circle' : 'fa-pause-circle';
+                
+                const row = document.createElement('tr');
+                row.className = 'border-b border-sidebar-border hover:bg-sidebar-hover transition-colors';
+                row.innerHTML = `
+                    <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">#AO-${addOn.addOns_id.toString().padStart(3, '0')}</td>
+                    <td class="px-4 py-3.5 text-sm text-sidebar-text">
+                        ${addOn.icon ? `<i class="${addOn.icon} mr-2"></i>` : ''}
+                        ${addOn.addOns_name}
+                    </td>
+                    <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱${parseFloat(addOn.price).toFixed(2)}</td>
+                    <td class="px-4 py-3.5 text-sm text-sidebar-text">${addOn.branch_name}</td>
+                    <td class="px-4 py-3.5 text-sm">
+                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${statusClass} border">
+                            <i class="fas ${statusIcon} mr-1"></i> ${addOn.status}
+                        </span>
+                    </td>
+                    <td class="px-4 py-3.5 text-sm">
+                        <div class="flex items-center gap-2">
+                            <button class="text-blue-500 hover:text-blue-700" onclick="editAddOn(${addOn.addOns_id})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="text-red-500 hover:text-red-700" onclick="deleteAddOn(${addOn.addOns_id})">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            loadingIndicator.classList.add('hidden');
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="px-4 py-3.5 text-sm text-red-500 text-center">
+                        Error loading data: ${error.message}
+                    </td>
+                </tr>
+            `;
+        });
+}
+
+// Call the function when the page loads
+document.addEventListener('DOMContentLoaded', fetchAndPopulateAddOns);
+
+// Placeholder functions for edit and delete actions
+function editAddOn(id) {
+    console.log('Edit add-on with ID:', id);
+    // Implement edit functionality
+}
+
+function deleteAddOn(id) {
+    console.log('Delete add-on with ID:', id);
+    // Implement delete functionality
+    if (confirm('Are you sure you want to delete this add-on?')) {
+        // Add your delete logic here
+    }
+}
+
 </script>
   
 
