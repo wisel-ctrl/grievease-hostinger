@@ -786,112 +786,8 @@ if ($branchResult->num_rows > 0) {
                         </th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
-                        <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">#SVC-001</td>
-                        <td class="px-4 py-3.5 text-sm text-sidebar-text">Haircut</td>
-                        <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱300.00</td>
-                        <td class="px-4 py-3.5 text-sm text-sidebar-text">Main Branch</td>
-                        <td class="px-4 py-3.5 text-sm">
-                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-600 border border-green-200">
-                                <i class="fas fa-check-circle mr-1"></i> Active
-                            </span>
-                        </td>
-                        <td class="px-4 py-3.5 text-sm">
-                            <div class="flex items-center gap-2">
-                                <button class="text-blue-500 hover:text-blue-700" onclick="editService(1)">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="text-red-500 hover:text-red-700" onclick="deleteService(1)">
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
-                        <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">#SVC-002</td>
-                        <td class="px-4 py-3.5 text-sm text-sidebar-text">Hair Coloring</td>
-                        <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱1,200.00</td>
-                        <td class="px-4 py-3.5 text-sm text-sidebar-text">North Branch</td>
-                        <td class="px-4 py-3.5 text-sm">
-                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-600 border border-green-200">
-                                <i class="fas fa-check-circle mr-1"></i> Active
-                            </span>
-                        </td>
-                        <td class="px-4 py-3.5 text-sm">
-                            <div class="flex items-center gap-2">
-                                <button class="text-blue-500 hover:text-blue-700" onclick="editService(2)">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="text-red-500 hover:text-red-700" onclick="deleteService(2)">
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
-                        <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">#SVC-003</td>
-                        <td class="px-4 py-3.5 text-sm text-sidebar-text">Manicure</td>
-                        <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱150.00</td>
-                        <td class="px-4 py-3.5 text-sm text-sidebar-text">South Branch</td>
-                        <td class="px-4 py-3.5 text-sm">
-                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-500 border border-orange-200">
-                                <i class="fas fa-pause-circle mr-1"></i> Inactive
-                            </span>
-                        </td>
-                        <td class="px-4 py-3.5 text-sm">
-                            <div class="flex items-center gap-2">
-                                <button class="text-blue-500 hover:text-blue-700" onclick="editService(3)">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="text-red-500 hover:text-red-700" onclick="deleteService(3)">
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
-                        <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">#SVC-004</td>
-                        <td class="px-4 py-3.5 text-sm text-sidebar-text">Pedicure</td>
-                        <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱200.00</td>
-                        <td class="px-4 py-3.5 text-sm text-sidebar-text">East Branch</td>
-                        <td class="px-4 py-3.5 text-sm">
-                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-600 border border-green-200">
-                                <i class="fas fa-check-circle mr-1"></i> Active
-                            </span>
-                        </td>
-                        <td class="px-4 py-3.5 text-sm">
-                            <div class="flex items-center gap-2">
-                                <button class="text-blue-500 hover:text-blue-700" onclick="editService(4)">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="text-red-500 hover:text-red-700" onclick="deleteService(4)">
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
-                        <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">#SVC-005</td>
-                        <td class="px-4 py-3.5 text-sm text-sidebar-text">Facial</td>
-                        <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱500.00</td>
-                        <td class="px-4 py-3.5 text-sm text-sidebar-text">West Branch</td>
-                        <td class="px-4 py-3.5 text-sm">
-                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-500 border border-orange-200">
-                                <i class="fas fa-pause-circle mr-1"></i> Inactive
-                            </span>
-                        </td>
-                        <td class="px-4 py-3.5 text-sm">
-                            <div class="flex items-center gap-2">
-                                <button class="text-blue-500 hover:text-blue-700" onclick="editService(5)">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="text-red-500 hover:text-red-700" onclick="deleteService(5)">
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
+                <tbody id="addOnsTableBody">
+                    
                 </tbody>
             </table>
         </div>
@@ -2650,16 +2546,18 @@ document.getElementById('editServiceImage').addEventListener('change', function(
 });
 
 // Function to fetch and populate add-ons data
+// Function to fetch and populate add-ons data
 function fetchAndPopulateAddOns() {
-    const tableBody = document.querySelector('#tableContainer1 tbody');
+    const tableBody = document.getElementById('addOnsTableBody');
     const loadingIndicator = document.getElementById('loadingIndicator1');
+    const branchContainer = document.querySelector('.branch-container[data-branch-id="1"]');
     
     // Show loading indicator
     loadingIndicator.classList.remove('hidden');
     tableBody.innerHTML = '';
     
     // Fetch data from PHP endpoint
-    fetch('servicesManagement/get_addOns.php')
+    fetch('get_addOns.php')
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -2684,15 +2582,17 @@ function fetchAndPopulateAddOns() {
             }
             
             // Update the counter
-            const counterElement = document.querySelector('.branch-container[data-branch-id="1"] .bg-sidebar-accent');
+            const counterElement = branchContainer.querySelector('.bg-sidebar-accent');
             if (counterElement) {
                 counterElement.textContent = data.data.length;
+                // Also update the data attribute if needed
+                branchContainer.setAttribute('data-total-services', data.data.length);
             }
             
             // Update the "Showing X of Y" text
             const paginationInfo = document.getElementById('paginationInfo_1');
             if (paginationInfo) {
-                paginationInfo.textContent = `Showing 1 - ${data.data.length} of ${data.data.length} services`;
+                paginationInfo.textContent = `Showing 1 - ${data.data.length} of ${data.data.length} add-ons`;
             }
             
             // Populate the table
@@ -2755,6 +2655,43 @@ function fetchAndPopulateAddOns() {
                 </tr>
             `;
         });
+}
+
+// Update the filter function to use the specific table body ID
+function filterAddOns(branchId) {
+    const searchInput = document.getElementById(`searchInput${branchId}`) || 
+                        document.getElementById(`searchInputMobile${branchId}`);
+    const statusFilter = document.querySelector(`.branch-container[data-branch-id="${branchId}"] .filter-option.bg-sidebar-accent`);
+    
+    const searchTerm = searchInput.value.toLowerCase();
+    let statusTerm = '';
+    
+    if (statusFilter && !statusFilter.textContent.includes('All Statuses')) {
+        statusTerm = statusFilter.textContent.trim();
+    }
+    
+    const rows = document.querySelectorAll('#addOnsTableBody tr');
+    
+    let visibleCount = 0;
+    rows.forEach(row => {
+        const name = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+        const status = row.querySelector('td:nth-child(5) span').textContent.trim();
+        
+        const nameMatch = name.includes(searchTerm);
+        const statusMatch = statusTerm === '' || status === statusTerm;
+        
+        if (nameMatch && statusMatch) {
+            row.style.display = '';
+            visibleCount++;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+    
+    // Update visible count
+    const totalRows = rows.length;
+    document.getElementById(`paginationInfo_${branchId}`).textContent = 
+        `Showing ${visibleCount > 0 ? 1 : 0} - ${visibleCount} of ${totalRows} add-ons`;
 }
 
 // Call the function when the page loads
