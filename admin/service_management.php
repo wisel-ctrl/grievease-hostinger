@@ -2557,7 +2557,7 @@ function fetchAndPopulateAddOns() {
     tableBody.innerHTML = '';
     
     // Fetch data from PHP endpoint
-    fetch('get_addOns.php')
+    fetch('servicesManagement/get_addOns.php')
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
