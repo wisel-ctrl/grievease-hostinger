@@ -611,6 +611,250 @@ if ($branchResult->num_rows > 0) {
     </div>
 </div>
 
+<div class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden branch-container" 
+     data-branch-id="1" 
+     data-total-services="5">
+    <!-- Branch Header with Search and Filters -->
+    <div class="bg-sidebar-hover p-4 border-b border-sidebar-border">
+        <!-- Desktop layout for big screens - Title on left, controls on right -->
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+            <!-- Title and Counter -->
+            <div class="flex items-center gap-3 mb-4 lg:mb-0">
+                <h4 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Branch: Main Branch</h4>
+                
+                <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+                    5
+                </span>
+            </div>
+            
+            <!-- Controls for big screens - aligned right -->
+            <div class="hidden lg:flex items-center gap-3">
+                <!-- Search Input -->
+                <div class="relative">
+                    <input type="text" id="searchInput1" 
+                           placeholder="Search services..." 
+                           value=""
+                           class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent"
+                           oninput="debouncedFilter(1)">
+                    <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
+                </div>
+
+                <!-- Filter Dropdown -->
+                <div class="relative filter-dropdown">
+                    <button id="filterToggle1" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover"
+                            onclick="toggleFilterWindow(1)">
+                        <i class="fas fa-filter text-sidebar-accent"></i>
+                        <span>Filters</span>
+                    </button>
+                    
+                    <!-- Filter Window -->
+                    <div id="filterWindow1" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
+                        <div class="space-y-4">
+                            <!-- Status Filter -->
+                            <div>
+                                <h5 class="text-sm font-medium text-sidebar-text mb-2">Status</h5>
+                                <div class="space-y-1">
+                                    <div class="flex items-center cursor-pointer" onclick="setFilter(1, 'status', '')">
+                                        <span class="filter-option bg-sidebar-accent text-white px-2 py-1 rounded text-sm w-full">
+                                            All Statuses
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer" onclick="setFilter(1, 'status', 'Active')">
+                                        <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            Active
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer" onclick="setFilter(1, 'status', 'Inactive')">
+                                        <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            Inactive
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Archive Button -->
+                <button class="px-4 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover whitespace-nowrap" onclick="openArchiveModal(1)">
+                    <i class="fas fa-archive text-sidebar-accent"></i>
+                    <span>Archive</span>
+                </button>
+
+                <!-- Add Service Button -->
+                <button class="px-4 py-2 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap" 
+                        onclick="openAddServiceModal(1)"><span>Add New Service</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile/Tablet Controls - Only visible on smaller screens -->
+        <div class="lg:hidden w-full mt-4">
+            <!-- First row: Search bar with filter and archive icons on the right -->
+            <div class="flex items-center w-full gap-3 mb-4">
+                <!-- Search Input - Takes most of the space -->
+                <div class="relative flex-grow">
+                    <input type="text" id="searchInputMobile1" 
+                            placeholder="Search services..." 
+                            value=""
+                            class="pl-8 pr-3 py-2.5 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent"
+                            oninput="debouncedFilter(1)">
+                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                </div>
+
+                <!-- Icon-only buttons for filter and archive -->
+                <div class="flex items-center gap-3">
+                    <!-- Filter Icon Button -->
+                    <div class="relative filter-dropdown">
+                        <button id="serviceFilterToggle1" class="w-10 h-10 flex items-center justify-center text-sidebar-accent"
+                                onclick="toggleFilterWindow(1)">
+                            <i class="fas fa-filter text-xl"></i>
+                            <span id="filterIndicator1" class="hidden absolute top-1 right-1 h-2 w-2 bg-sidebar-accent rounded-full"></span>
+                        </button>
+                    </div>
+
+                    <!-- Archive Icon Button -->
+                    <button class="w-10 h-10 flex items-center justify-center text-sidebar-accent" onclick="openArchiveModal(1)">
+                        <i class="fas fa-archive text-xl"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Second row: Add Service Button - Full width -->
+            <div class="w-full">
+                <button class="px-4 py-2.5 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap w-full justify-center" 
+                        onclick="openAddServiceModal(1)"><span>Add New Service</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Responsive Table Container with improved spacing -->
+    <div class="overflow-x-auto scrollbar-thin" id="tableContainer1">
+        <div id="loadingIndicator1" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center">
+            <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
+        </div>
+        
+        <!-- Responsive Table with improved spacing and horizontal scroll for small screens -->
+        <div class="min-w-full">
+            <table class="w-full">
+                <thead>
+                    <tr class="bg-gray-50 border-b border-sidebar-border">
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(1, 0)">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-hashtag text-sidebar-accent"></i> ID 
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(1, 1)">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-tag text-sidebar-accent"></i> Service Name 
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(1, 2)">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-peso-sign text-sidebar-accent"></i> Price 
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(1, 3)">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-toggle-on text-sidebar-accent"></i> Status 
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
+                        <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">#SVC-001</td>
+                        <td class="px-4 py-3.5 text-sm text-sidebar-text">Haircut</td>
+                        <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱300.00</td>
+                        <td class="px-4 py-3.5 text-sm">
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-600 border border-green-200">
+                                <i class="fas fa-check-circle mr-1"></i> Active
+                            </span>
+                        </td>
+                    </tr>
+                    <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
+                        <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">#SVC-002</td>
+                        <td class="px-4 py-3.5 text-sm text-sidebar-text">Hair Coloring</td>
+                        <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱1,200.00</td>
+                        <td class="px-4 py-3.5 text-sm">
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-600 border border-green-200">
+                                <i class="fas fa-check-circle mr-1"></i> Active
+                            </span>
+                        </td>
+                    </tr>
+                    <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
+                        <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">#SVC-003</td>
+                        <td class="px-4 py-3.5 text-sm text-sidebar-text">Manicure</td>
+                        <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱150.00</td>
+                        <td class="px-4 py-3.5 text-sm">
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-500 border border-orange-200">
+                                <i class="fas fa-pause-circle mr-1"></i> Inactive
+                            </span>
+                        </td>
+                    </tr>
+                    <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
+                        <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">#SVC-004</td>
+                        <td class="px-4 py-3.5 text-sm text-sidebar-text">Pedicure</td>
+                        <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱200.00</td>
+                        <td class="px-4 py-3.5 text-sm">
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-600 border border-green-200">
+                                <i class="fas fa-check-circle mr-1"></i> Active
+                            </span>
+                        </td>
+                    </tr>
+                    <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
+                        <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">#SVC-005</td>
+                        <td class="px-4 py-3.5 text-sm text-sidebar-text">Facial</td>
+                        <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱500.00</td>
+                        <td class="px-4 py-3.5 text-sm">
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-500 border border-orange-200">
+                                <i class="fas fa-pause-circle mr-1"></i> Inactive
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Sticky Pagination Footer with improved spacing -->
+    <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div id="paginationInfo_1" class="text-sm text-gray-500 text-center sm:text-left">
+            Showing 1 - 5 of 5 services
+        </div>
+        <div id="paginationContainer_1" class="flex space-x-2">
+            <button onclick="changePage(1, 1)" 
+                    class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 cursor-not-allowed"
+                    disabled>
+                &laquo;
+            </button>
+            
+            <button onclick="changePage(1, 1)" 
+                    class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 cursor-not-allowed"
+                    disabled>
+                &lsaquo;
+            </button>
+            
+            <button onclick="changePage(1, 1)" class="px-3.5 py-1.5 rounded text-sm bg-sidebar-accent text-white">
+                1
+            </button>
+            
+            <button onclick="changePage(1, 1)" 
+                    class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 cursor-not-allowed"
+                    disabled>
+                &rsaquo;
+            </button>
+            
+            <button onclick="changePage(1, 1)" 
+                    class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 cursor-not-allowed"
+                    disabled>
+                &raquo;
+            </button>
+        </div>
+    </div>
+</div>
+
 </div>
 
 <?php
