@@ -2825,7 +2825,7 @@ async function loadBranches() {
       branches.forEach(branch => {
         const option = document.createElement('option');
         option.value = branch.branch_id;
-        option.textContent = branch.branch_name;
+        option.textContent = branch.branch_name.replace(/\b\w/g, char => char.toUpperCase());
         branchSelect.appendChild(option);
       });
     } else {
@@ -3056,10 +3056,26 @@ document.getElementById('saveAddonBtn').addEventListener('click', function() {
   .then(response => response.json())
   .then(data => {
     if (data.status === 'success') {
-      // The SweetAlert is already in the response HTML
-      document.body.insertAdjacentHTML('beforeend', data.html);
+      Swal.fire({
+        title: 'Success!',
+        text: data.message,
+        icon: 'success',
+        confirmButtonText: 'OK'
+      }).then(() => {
+        // Close modal and refresh or redirect as needed
+        if (typeof closeModal === "function") {
+          closeModal();
+        }
+        // Optionally refresh the page or update the add-ons list
+        window.location.reload();
+      });
     } else {
-      document.body.insertAdjacentHTML('beforeend', data.html);
+      Swal.fire({
+        title: 'Error!',
+        text: data.message,
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
     }
   })
   .catch(error => {

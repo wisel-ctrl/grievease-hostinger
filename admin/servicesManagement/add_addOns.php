@@ -42,39 +42,12 @@ $stmt->bind_param("ssid", $addonName, $icon, $branchId, $price);
 if ($stmt->execute()) {
     $response = [
         'status' => 'success',
-        'message' => 'Add-on saved successfully!',
-        'html' => '
-            <script>
-                Swal.fire({
-                    title: "Success!",
-                    text: "Add-on saved successfully!",
-                    icon: "success",
-                    confirmButtonText: "OK"
-                }).then(() => {
-                    // Close modal and refresh or redirect as needed
-                    if (typeof closeModal === "function") {
-                        closeModal();
-                    }
-                    // Optionally refresh the page or update the add-ons list
-                    window.location.reload();
-                });
-            </script>
-        '
+        'message' => 'Add-on saved successfully!'
     ];
 } else {
     $response = [
         'status' => 'error',
-        'message' => 'Error saving add-on: ' . $stmt->error,
-        'html' => '
-            <script>
-                Swal.fire({
-                    title: "Error!",
-                    text: "Error saving add-on: ' . addslashes($stmt->error) . '",
-                    icon: "error",
-                    confirmButtonText: "OK"
-                });
-            </script>
-        '
+        'message' => 'Error saving add-on: ' . $stmt->error
     ];
 }
 
