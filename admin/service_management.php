@@ -1898,7 +1898,7 @@ window.addEventListener('popstate', function(event) {
                   <label for="addonPrice" class="block text-sm font-medium text-gray-700">Price</label>
                   <div class="mt-1 relative rounded-md shadow-sm">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <span class="text-gray-500 sm:text-sm">$</span>
+                      <span class="text-gray-500 sm:text-sm">₱</span>
                     </div>
                     <input type="number" id="addonPrice" min="0" step="0.01" class="block w-full pl-7 pr-12 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" required>
                   </div>
@@ -2779,11 +2779,37 @@ function editAddOn(id) {
 }
 
 function deleteAddOn(id) {
-    console.log('Delete add-on with ID:', id);
-    // Implement delete functionality
-    if (confirm('Are you sure you want to delete this add-on?')) {
-        // Add your delete logic here
-    }
+    swal({
+        title: "Are you sure?",
+        text: "Warning: Archiving will disable this add-on for all users. You can restore it later if needed.",
+        icon: "warning",
+        buttons: true,
+        dangerMode: true,
+    })
+    .then((willDelete) => {
+        if (willDelete) {
+            // AJAX call to delete the add-on
+            $.ajax({
+                url: 'servicesManagement/delete_addOns.php',
+                type: 'POST',
+                data: { id: id },
+                success: function(response) {
+                    if (response.success) {
+                        swal("Success!", response.message, "success")
+                        .then(() => {
+                            // Refresh the page or update the UI as needed
+                            location.reload();
+                        });
+                    } else {
+                        swal("Error!", response.message, "error");
+                    }
+                },
+                error: function() {
+                    swal("Error!", "An error occurred while processing your request.", "error");
+                }
+            });
+        }
+    });
 }
 
 // Function to open the modal
