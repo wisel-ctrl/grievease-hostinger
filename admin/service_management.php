@@ -2698,7 +2698,7 @@ function fetchAndPopulateAddOns() {
                         ${addOn.icon ? `<i class="${addOn.icon} mr-2"></i>` : ''}
                         ${addOn.addOns_name}
                     </td>
-                    <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱${parseFloat(addOn.price).toFixed(2)}</td>
+                    <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱${formatPrice(addOn.price)}</td>
                     <td class="px-4 py-3.5 text-sm text-sidebar-text">${addOn.branch_name.replace(/\b\w/g, char => char.toUpperCase())}</td>
                     <td class="px-4 py-3.5 text-sm">
                         <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${statusClass} border">
@@ -3087,6 +3087,13 @@ document.getElementById('saveAddonBtn').addEventListener('click', function() {
     });
   });
 });
+
+function formatPrice(amount) {
+    return "₱" + Number(amount).toLocaleString('en-PH', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+}
 
 </script>
   
