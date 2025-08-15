@@ -3594,9 +3594,120 @@ async function loadEditBranches(selectedBranchId = null) {
 function loadEditFontAwesomeIcons(searchTerm = '') {
     // Use the same icons array as in the add modal
     const icons = [
-        // Same icon list as in your add modal...
-        'fa-church', 'fa-pray', 'fa-hands-praying', /* ... all other icons ... */
-    ];
+    // General funeral services
+    'fa-church', 
+    'fa-pray', 
+    'fa-hands-praying',
+    'fa-cross',
+    'fa-star-of-david',
+    'fa-om',
+    'fa-place-of-worship',
+    'fa-bible',
+    'fa-torah',
+    'fa-quran',
+    'fa-book-open',
+    
+    // Memorial symbols
+    'fa-urn',
+    'fa-headstone',
+    'fa-monument',
+    'fa-memorial',
+    'fa-landmark',
+    'fa-ribbon',
+    'fa-dove',
+    'fa-feather',
+    'fa-feather-alt',
+    'fa-leaf',
+    'fa-tree',
+    'fa-seedling',
+    
+    // Sympathy and grief
+    'fa-heart',
+    'fa-heart-broken',
+    'fa-hand-holding-heart',
+    'fa-hands-helping',
+    'fa-handshake',
+    'fa-hands-holding',
+    'fa-hands-holding-heart',
+    
+    // Funeral process
+    'fa-hearse',
+    'fa-car-side',
+    'fa-van-shuttle',
+    'fa-flower',
+    'fa-flower-tulip',
+    'fa-flower-daffodil',
+    'fa-lilies',
+    'fa-roses',
+    'fa-wreath',
+    'fa-candle-holder',
+    'fa-candle',
+    'fa-fire',
+    'fa-smoke',
+    
+    // Death symbols
+    'fa-skull',
+    'fa-skull-crossbones',
+    'fa-hourglass',
+    'fa-hourglass-half',
+    'fa-hourglass-end',
+    'fa-clock',
+    'fa-calendar',
+    'fa-calendar-days',
+    
+    // Afterlife concepts
+    'fa-cloud',
+    'fa-cloud-sun',
+    'fa-sun',
+    'fa-moon',
+    'fa-stars',
+    'fa-star',
+    'fa-star-and-crescent',
+    'fa-angel',
+    'fa-angels',
+    'fa-spa',
+    
+    // Documentation
+    'fa-file-contract',
+    'fa-file-signature',
+    'fa-certificate',
+    'fa-award',
+    'fa-medal',
+    
+    // Support services
+    'fa-phone',
+    'fa-envelope',
+    'fa-comments',
+    'fa-user-nurse',
+    'fa-user-md',
+    'fa-user-graduate',
+    'fa-user-tie',
+    'fa-users',
+    
+    // Payment/Financial
+    'fa-money-bill',
+    'fa-money-bill-wave',
+    'fa-credit-card',
+    'fa-receipt',
+    'fa-calculator',
+    
+    // Location
+    'fa-map',
+    'fa-map-marker',
+    'fa-map-marker-alt',
+    'fa-globe',
+    'fa-globe-americas',
+    
+    // Digital memorials
+    'fa-laptop',
+    'fa-tablet',
+    'fa-mobile',
+    'fa-camera',
+    'fa-photo-film',
+    'fa-images',
+    'fa-portrait',
+    'fa-frame'
+  ];
     
     const filteredIcons = icons.filter(icon => 
         icon.toLowerCase().includes(searchTerm.toLowerCase())
