@@ -20,7 +20,8 @@ $sql = "SELECT
             a.update_date
         FROM AddOnsService_tb AS a
         JOIN branch_tb AS b 
-            ON a.branch_id = b.branch_id";
+            ON a.branch_id = b.branch_id
+        WHERE a.status IN ('active', 'inactive')";
 
 $result = $conn->query($sql);
 
