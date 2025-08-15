@@ -10,7 +10,6 @@ if (!isset($input['id']) || !isset($input['name']) || !isset($input['price']) ||
     exit;
 }
 
-$conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
 if ($conn->connect_error) {
     echo json_encode(['status' => 'error', 'message' => 'Database connection failed: ' . $conn->connect_error]);
