@@ -2006,6 +2006,156 @@ window.addEventListener('popstate', function(event) {
         </div>
     </div>
 
+<!-- Edit Add-on Modal -->
+<div id="editAddonsModal" class="fixed inset-0 z-50 hidden overflow-y-auto animate-fade-in">
+    <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <!-- Background overlay with gradient -->
+        <div class="fixed inset-0 transition-opacity duration-300" aria-hidden="true">
+            <div class="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-gray-800/70 to-gold/20 backdrop-blur-sm"></div>
+        </div>
+
+        <!-- Modal container -->
+        <div class="inline-block align-bottom bg-gradient-to-br from-cream via-white to-navy rounded-2xl text-left overflow-hidden shadow-gold-lg transform transition-all duration-300 sm:my-8 sm:align-middle sm:max-w-xl sm:w-full animate-slide-up border border-gold/20">
+            
+            <!-- Decorative header with gold accent -->
+            <div class="bg-gradient-to-r from-gold to-yellow-600 h-2 w-full"></div>
+            
+            <!-- Modal Header -->
+            <div class="bg-gradient-to-br from-cream to-white px-6 pt-6 pb-4 border-b border-gold/10">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 bg-gradient-to-br from-gold to-yellow-600 rounded-full flex items-center justify-center shadow-gold">
+                            <i class="fas fa-edit text-white text-lg animate-bounce-gentle"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-playfair font-bold text-dark" id="editAddonsModalLabel">
+                                Edit Add-on
+                            </h3>
+                            <p class="text-sm text-gray-500 font-inter">Update the details of this add-on</p>
+                        </div>
+                    </div>
+                    <button onclick="closeEditModal()" class="text-gray-400 hover:text-gold transition-colors duration-200 p-2 rounded-full hover:bg-gold/10">
+                        <i class="fas fa-times text-lg"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="px-6 py-6">
+                <form id="editAddonsForm" class="space-y-6">
+                    <input type="hidden" id="editAddonId">
+                    
+                    <!-- Add-on Name -->
+                    <div class="group">
+                        <label for="editAddonName" class="block text-sm font-semibold text-dark font-inter mb-2">
+                            <i class="fas fa-tag text-gold mr-2"></i>Add-on Name
+                        </label>
+                        <div class="relative">
+                            <input type="text" id="editAddonName" 
+                                class="block w-full px-4 py-3 rounded-xl border-2 border-input-border bg-white/70 backdrop-blur-sm shadow-input focus:border-gold focus:ring-4 focus:ring-gold/20 transition-all duration-300 font-inter placeholder:text-gray-400 hover:border-gold/50" 
+                                placeholder="Enter add-on name..." 
+                                required>
+                            <div class="absolute inset-0 rounded-xl bg-gradient-to-r from-gold/0 to-yellow-600/0 group-focus-within:from-gold/5 group-focus-within:to-yellow-600/5 transition-all duration-300 pointer-events-none"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Price -->
+                    <div class="group">
+                        <label for="editAddonPrice" class="block text-sm font-semibold text-dark font-inter mb-2">
+                            <i class="fas fa-peso-sign text-gold mr-2"></i>Price
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
+                                <span class="text-gold font-bold text-lg">₱</span>
+                            </div>
+                            <input type="number" id="editAddonPrice" min="0" step="0.01" 
+                                class="block w-full pl-12 pr-4 py-3 rounded-xl border-2 border-input-border bg-white/70 backdrop-blur-sm shadow-input focus:border-gold focus:ring-4 focus:ring-gold/20 transition-all duration-300 font-inter placeholder:text-gray-400 hover:border-gold/50" 
+                                placeholder="0.00" 
+                                required>
+                            <div class="absolute inset-0 rounded-xl bg-gradient-to-r from-gold/0 to-yellow-600/0 group-focus-within:from-gold/5 group-focus-within:to-yellow-600/5 transition-all duration-300 pointer-events-none"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Branch -->
+                    <div class="group">
+                        <label for="editAddonBranch" class="block text-sm font-semibold text-dark font-inter mb-2">
+                            <i class="fas fa-store text-gold mr-2"></i>Branch
+                        </label>
+                        <div class="relative">
+                            <select id="editAddonBranch" 
+                                class="block w-full px-4 py-3 rounded-xl border-2 border-input-border bg-white/70 backdrop-blur-sm shadow-input focus:border-gold focus:ring-4 focus:ring-gold/20 transition-all duration-300 font-inter hover:border-gold/50 appearance-none cursor-pointer" 
+                                required>
+                                <option value="" class="text-gray-400">Select Branch</option>
+                                
+                            </select>
+                            <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                                <i class="fas fa-chevron-down text-gold"></i>
+                            </div>
+                            <div class="absolute inset-0 rounded-xl bg-gradient-to-r from-gold/0 to-yellow-600/0 group-focus-within:from-gold/5 group-focus-within:to-yellow-600/5 transition-all duration-300 pointer-events-none"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Status Toggle -->
+                    <div class="group">
+                        <label class="block text-sm font-semibold text-dark font-inter mb-2">
+                            <i class="fas fa-toggle-on text-gold mr-2"></i>Status
+                        </label>
+                        <div class="relative flex items-center">
+                            <label class="inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="editAddonStatus" class="sr-only peer" checked>
+                                <div class="relative w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-gold/30 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-gold peer-checked:to-yellow-600"></div>
+                                <span class="ml-3 text-sm font-medium text-gray-600 font-inter" id="editAddonStatusLabel">Active</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Icon Selection -->
+                    <div class="group">
+                        <label class="block text-sm font-semibold text-dark font-inter mb-2">
+                            <i class="fas fa-palette text-gold mr-2"></i>Icon Selection
+                        </label>
+                        <div class="border-2 border-input-border rounded-xl p-4 bg-white/70 backdrop-blur-sm hover:border-gold/50 transition-all duration-300">
+                            
+                            <!-- Icon Preview and Search -->
+                            <div class="flex mb-4">
+                                <div class="flex items-center justify-center px-4 py-3 rounded-l-xl bg-gradient-to-br from-gold to-yellow-600 border-2 border-gold shadow-gold">
+                                    <i id="editSelectedIconPreview" class="fas fa-edit text-white text-lg"></i>
+                                </div>
+                                <input type="text" id="editIconSearch" 
+                                    class="flex-1 px-4 py-3 rounded-r-xl border-2 border-l-0 border-gold bg-white focus:outline-none focus:ring-4 focus:ring-gold/20 font-inter placeholder:text-gray-400" 
+                                    placeholder="Search icons...">
+                                <input type="hidden" id="editSelectedIcon" value="fa-edit">
+                            </div>
+                            
+                            <!-- Icon Grid -->
+                            <div class="mb-2">
+                                <p class="text-xs text-gray-500 font-inter mb-3">Choose an icon for your add-on:</p>
+                            </div>
+                            <div id="editIconGrid" class="grid grid-cols-8 gap-3 max-h-48 overflow-y-auto p-2 bg-gradient-to-br from-cream/30 to-navy/30 rounded-lg border border-gold/10">
+                                
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="bg-gradient-to-br from-navy to-cream px-6 py-4 border-t border-gold/10 flex flex-col sm:flex-row sm:justify-end space-y-3 sm:space-y-0 sm:space-x-3">
+                <button type="button" onclick="closeEditModal()" 
+                    class="w-full sm:w-auto inline-flex justify-center items-center px-6 py-3 rounded-xl border-2 border-gray-300 bg-white text-dark font-inter font-medium hover:bg-gray-50 hover:border-gold/50 focus:outline-none focus:ring-4 focus:ring-gray-200 transition-all duration-300 transform hover:scale-105">
+                    <i class="fas fa-times mr-2"></i>
+                    Cancel
+                </button>
+                <button type="button" id="updateAddonBtn" 
+                    class="w-full sm:w-auto inline-flex justify-center items-center px-8 py-3 rounded-xl border-2 border-gold bg-gradient-to-r from-gold to-yellow-600 text-white font-inter font-semibold hover:from-darkgold hover:to-gold focus:outline-none focus:ring-4 focus:ring-gold/30 shadow-gold transition-all duration-300 transform hover:scale-105 hover:shadow-gold-lg">
+                    <i class="fas fa-save mr-2"></i>
+                    Update Add-on
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const archiveModal = document.getElementById('archiveModal');
@@ -2833,11 +2983,7 @@ function filterAddOns(branchId) {
 // Call the function when the page loads
 document.addEventListener('DOMContentLoaded', fetchAndPopulateAddOns);
 
-// Placeholder functions for edit and delete actions
-function editAddOn(id) {
-    console.log('Edit add-on with ID:', id);
-    // Implement edit functionality
-}
+
 
 function deleteAddOn(id) {
     Swal.fire({
@@ -3340,6 +3486,276 @@ document.getElementById('saveAddonBtn').addEventListener('click', function() {
       confirmButtonText: 'OK'
     });
   });
+});
+
+// Function to open edit modal
+async function editAddOn(id) {
+    console.log('Edit add-on with ID:', id);
+    
+    try {
+        // Show loading state
+        Swal.fire({
+            title: 'Loading add-on details',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+        
+        // Fetch add-on details
+        const response = await fetch(`servicesManagement/get_editAddondetails.php?id=${id}`);
+        const data = await response.json();
+        
+        Swal.close();
+        
+        if (data.error) {
+            Swal.fire('Error', data.error, 'error');
+            return;
+        }
+        
+        const addon = data.data;
+        
+        // Populate form fields
+        document.getElementById('editAddonId').value = addon.addOns_id;
+        document.getElementById('editAddonName').value = addon.addOns_name;
+        document.getElementById('editAddonPrice').value = addon.price;
+        
+        // Set status toggle
+        const statusToggle = document.getElementById('editAddonStatus');
+        statusToggle.checked = addon.status === 'active';
+        document.getElementById('editAddonStatusLabel').textContent = addon.status === 'active' ? 'Active' : 'Inactive';
+        
+        // Set icon
+        document.getElementById('editSelectedIcon').value = addon.icon;
+        document.getElementById('editSelectedIconPreview').className = `fas ${addon.icon} text-white text-lg`;
+        
+        // Load branches and set selected branch
+        await loadEditBranches(addon.branch_id);
+        
+        // Load icons and highlight selected one
+        loadEditFontAwesomeIcons();
+        highlightSelectedEditIcon(addon.icon);
+        
+        // Show modal
+        document.getElementById('editAddonsModal').classList.remove('hidden');
+        
+    } catch (error) {
+        Swal.close();
+        Swal.fire('Error', 'Failed to load add-on details: ' + error.message, 'error');
+        console.error('Error loading add-on details:', error);
+    }
+}
+
+// Function to close edit modal
+function closeEditModal() {
+    document.getElementById('editAddonsModal').classList.add('hidden');
+}
+
+// Function to load branches for edit modal
+async function loadEditBranches(selectedBranchId = null) {
+    const branchSelect = document.getElementById('editAddonBranch');
+    branchSelect.innerHTML = '<option value="">Select Branch</option>';
+    
+    try {
+        const response = await fetch('addCustomer/get_branches.php');
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        
+        const branches = await response.json();
+        
+        if (branches && branches.length > 0) {
+            branches.forEach(branch => {
+                const option = document.createElement('option');
+                option.value = branch.branch_id;
+                option.textContent = branch.branch_name.replace(/\b\w/g, char => char.toUpperCase());
+                option.selected = (selectedBranchId && branch.branch_id == selectedBranchId);
+                branchSelect.appendChild(option);
+            });
+        } else {
+            console.warn('No branches found');
+            const option = document.createElement('option');
+            option.value = '';
+            option.textContent = 'No branches available';
+            option.disabled = true;
+            branchSelect.appendChild(option);
+        }
+    } catch (error) {
+        console.error('Error loading branches:', error);
+        const option = document.createElement('option');
+        option.value = '';
+        option.textContent = 'Error loading branches';
+        option.disabled = true;
+        branchSelect.appendChild(option);
+    }
+}
+
+// Function to load icons for edit modal
+function loadEditFontAwesomeIcons(searchTerm = '') {
+    // Use the same icons array as in the add modal
+    const icons = [
+        // Same icon list as in your add modal...
+        'fa-church', 'fa-pray', 'fa-hands-praying', /* ... all other icons ... */
+    ];
+    
+    const filteredIcons = icons.filter(icon => 
+        icon.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    
+    const iconGrid = document.getElementById('editIconGrid');
+    iconGrid.innerHTML = '';
+    
+    if (filteredIcons.length === 0) {
+        const noResults = document.createElement('div');
+        noResults.className = 'col-span-full flex flex-col items-center justify-center py-8 text-center';
+        noResults.innerHTML = `
+            <div class="w-16 h-16 bg-gradient-to-br from-gold/20 to-yellow-600/20 rounded-full flex items-center justify-center mb-3">
+                <i class="fas fa-search text-2xl text-gold"></i>
+            </div>
+            <p class="text-gray-500 font-inter font-medium">No icons found</p>
+            <p class="text-xs text-gray-400 font-inter mt-1">Try a different search term</p>
+        `;
+        iconGrid.appendChild(noResults);
+        return;
+    }
+    
+    filteredIcons.forEach(icon => {
+        const iconName = icon.replace('fa-', '');
+        const iconItem = document.createElement('div');
+        iconItem.className = 'icon-item group flex flex-col items-center p-3 rounded-xl border-2 border-gray-200 cursor-pointer transition-all duration-300 hover:border-gold hover:bg-gold/10 hover:scale-110 hover:shadow-gold bg-white/70 backdrop-blur-sm';
+        iconItem.dataset.icon = icon;
+        iconItem.innerHTML = `
+            <div class="w-8 h-8 flex items-center justify-center mb-2 transition-colors duration-200">
+                <i class="fas ${icon} text-lg text-gray-600 group-hover:text-gold transition-colors duration-200"></i>
+            </div>
+            <span class="text-xs text-center font-inter font-medium text-gray-600 group-hover:text-dark transition-colors duration-200 leading-tight max-w-full truncate" title="${iconName}">${iconName}</span>
+        `;
+        
+        iconItem.addEventListener('click', function() {
+            document.getElementById('editSelectedIcon').value = icon;
+            const previewIcon = document.getElementById('editSelectedIconPreview');
+            previewIcon.className = `fas ${icon} text-white text-lg`;
+            
+            document.querySelectorAll('#editIconGrid .icon-item').forEach(el => {
+                el.classList.remove('selected', 'border-gold', 'bg-gold/20', 'shadow-gold');
+                el.classList.add('border-gray-200');
+                const iconEl = el.querySelector('i');
+                const textEl = el.querySelector('span');
+                if (iconEl && textEl) {
+                    iconEl.classList.remove('text-gold');
+                    iconEl.classList.add('text-gray-600');
+                    textEl.classList.remove('text-dark');
+                    textEl.classList.add('text-gray-600');
+                }
+            });
+            
+            this.classList.add('selected', 'border-gold', 'bg-gold/20', 'shadow-gold');
+            this.classList.remove('border-gray-200');
+            const iconEl = this.querySelector('i');
+            const textEl = this.querySelector('span');
+            if (iconEl && textEl) {
+                iconEl.classList.add('text-gold');
+                iconEl.classList.remove('text-gray-600');
+                textEl.classList.add('text-dark');
+                textEl.classList.remove('text-gray-600');
+            }
+            
+            this.style.animation = 'bounceGentle 0.6s ease-out';
+            setTimeout(() => {
+                this.style.animation = '';
+            }, 600);
+        });
+        
+        iconGrid.appendChild(iconItem);
+    });
+}
+
+// Function to highlight the selected icon in edit modal
+function highlightSelectedEditIcon(icon) {
+    setTimeout(() => {
+        const iconItems = document.querySelectorAll('#editIconGrid .icon-item');
+        iconItems.forEach(item => {
+            if (item.dataset.icon === icon) {
+                item.click(); // Simulate click to select it
+            }
+        });
+    }, 300); // Small delay to ensure icons are loaded
+}
+
+// Status toggle event listener
+document.getElementById('editAddonStatus').addEventListener('change', function() {
+    document.getElementById('editAddonStatusLabel').textContent = this.checked ? 'Active' : 'Inactive';
+});
+
+// Icon search for edit modal
+document.getElementById('editIconSearch').addEventListener('input', function() {
+    loadEditFontAwesomeIcons(this.value);
+});
+
+// Update add-on functionality
+document.getElementById('updateAddonBtn').addEventListener('click', function() {
+    const addonId = document.getElementById('editAddonId').value;
+    const addonName = document.getElementById('editAddonName').value;
+    const addonPrice = document.getElementById('editAddonPrice').value;
+    const addonBranch = document.getElementById('editAddonBranch').value;
+    const addonIcon = "fas " + document.getElementById('editSelectedIcon').value;
+    const addonStatus = document.getElementById('editAddonStatus').checked ? 'active' : 'inactive';
+    
+    if (!addonName || !addonPrice || !addonBranch || !addonIcon) {
+        Swal.fire({
+            title: 'Error!',
+            text: 'Please fill in all fields',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+        return;
+    }
+    
+    const addonData = {
+        id: addonId,
+        name: addonName,
+        price: parseFloat(addonPrice),
+        branch_id: addonBranch,
+        icon: addonIcon,
+        status: addonStatus
+    };
+    
+    fetch('servicesManagement/update_addOns.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(addonData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            Swal.fire({
+                title: 'Success!',
+                text: data.message,
+                icon: 'success',
+                confirmButtonText: 'OK'
+            }).then(() => {
+                closeEditModal();
+                window.location.reload();
+            });
+        } else {
+            Swal.fire({
+                title: 'Error!',
+                text: data.message,
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        }
+    })
+    .catch(error => {
+        Swal.fire({
+            title: 'Error!',
+            text: 'Network error: ' + error.message,
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+    });
 });
 
 function formatPrice(amount) {
