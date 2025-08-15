@@ -3080,10 +3080,17 @@ function loadFontAwesomeIcons(searchTerm = '') {
   const iconGrid = document.getElementById('iconGrid');
   iconGrid.innerHTML = '';
   
+  // Enhanced no results styling
   if (filteredIcons.length === 0) {
     const noResults = document.createElement('div');
-    noResults.className = 'col-span-6 text-center py-3 text-gray-500';
-    noResults.textContent = 'No icons found';
+    noResults.className = 'col-span-full flex flex-col items-center justify-center py-8 text-center';
+    noResults.innerHTML = `
+      <div class="w-16 h-16 bg-gradient-to-br from-gold/20 to-yellow-600/20 rounded-full flex items-center justify-center mb-3">
+        <i class="fas fa-search text-2xl text-gold"></i>
+      </div>
+      <p class="text-gray-500 font-inter font-medium">No icons found</p>
+      <p class="text-xs text-gray-400 font-inter mt-1">Try a different search term</p>
+    `;
     iconGrid.appendChild(noResults);
     return;
   }
@@ -3091,29 +3098,177 @@ function loadFontAwesomeIcons(searchTerm = '') {
   filteredIcons.forEach(icon => {
     const iconName = icon.replace('fa-', '');
     const iconItem = document.createElement('div');
-    iconItem.className = 'flex flex-col items-center p-2 rounded cursor-pointer hover:bg-gray-100';
+    
+    // Enhanced styling with gold theme
+    iconItem.className = 'icon-item group flex flex-col items-center p-3 rounded-xl border-2 border-gray-200 cursor-pointer transition-all duration-300 hover:border-gold hover:bg-gold/10 hover:scale-110 hover:shadow-gold bg-white/70 backdrop-blur-sm';
     iconItem.dataset.icon = icon;
+    
+    // Enhanced icon display with better spacing and typography
     iconItem.innerHTML = `
-      <i class="fas ${icon} text-xl mb-1"></i>
-      <span class="text-xs text-center break-all">${iconName}</span>
+      <div class="w-8 h-8 flex items-center justify-center mb-2 transition-colors duration-200">
+        <i class="fas ${icon} text-lg text-gray-600 group-hover:text-gold transition-colors duration-200"></i>
+      </div>
+      <span class="text-xs text-center font-inter font-medium text-gray-600 group-hover:text-dark transition-colors duration-200 leading-tight max-w-full truncate" title="${iconName}">${iconName}</span>
     `;
     
+    // Enhanced click handler with smooth animations
     iconItem.addEventListener('click', function() {
+      // Update hidden input and preview
       document.getElementById('selectedIcon').value = icon;
       const previewIcon = document.getElementById('selectedIconPreview');
-      previewIcon.className = `fas ${icon} text-gray-500`;
+      previewIcon.className = `fas ${icon} text-white text-lg`;
       
-      // Remove selected class from all icons
-      document.querySelectorAll('#iconGrid > div').forEach(el => {
-        el.classList.remove('bg-blue-100', 'border', 'border-blue-300');
+      // Remove selected class from all icons with smooth transitions
+      document.querySelectorAll('.icon-item').forEach(el => {
+        el.classList.remove('selected', 'border-gold', 'bg-gold/20', 'shadow-gold');
+        el.classList.add('border-gray-200');
+        
+        // Reset icon and text colors
+        const iconEl = el.querySelector('i');
+        const textEl = el.querySelector('span');
+        if (iconEl && textEl) {
+          iconEl.classList.remove('text-gold');
+          iconEl.classList.add('text-gray-600');
+          textEl.classList.remove('text-dark');
+          textEl.classList.add('text-gray-600');
+        }
       });
       
-      // Add selected class to clicked icon
-      this.classList.add('bg-blue-100', 'border', 'border-blue-300');
+      // Add selected class to clicked icon with enhanced styling
+      this.classList.add('selected', 'border-gold', 'bg-gold/20', 'shadow-gold');
+      this.classList.remove('border-gray-200');
+      
+      // Update icon and text colors for selected state
+      const iconEl = this.querySelector('i');
+      const textEl = this.querySelector('span');
+      if (iconEl && textEl) {
+        iconEl.classList.add('text-gold');
+        iconEl.classList.remove('text-gray-600');
+        textEl.classList.add('text-dark');
+        textEl.classList.remove('text-gray-600');
+      }
+      
+      // Add a subtle bounce animation to indicate selection
+      this.style.animation = 'bounceGentle 0.6s ease-out';
+      setTimeout(() => {
+        this.style.animation = '';
+      }, 600);
     });
     
     iconGrid.appendChild(iconItem);
   });
+}
+
+// Enhanced initialization function with search functionality
+function initializeIconSelector() {
+  // Load icons initially
+  loadFontAwesomeIcons();
+  
+  // Enhanced search functionality
+  const iconSearch = document.getElementById('iconSearch');
+  if (iconSearch) {
+    let searchTimeout;
+    
+    iconSearch.addEventListener('input', function() {
+      clearTimeout(searchTimeout);
+      const searchIcon = this.parentElement.querySelector('.search-icon');
+      
+      // Add loading state
+      if (searchIcon) {
+        searchIcon.className = 'fas fa-spinner fa-spin text-gold absolute right-3 top-1/2 transform -translate-y-1/2';
+      }
+      
+      // Debounce search
+      searchTimeout = setTimeout(() => {
+        loadFontAwesomeIcons(this.value.trim());
+        
+        // Reset search icon
+        if (searchIcon) {
+          searchIcon.className = 'fas fa-search text-gold absolute right-3 top-1/2 transform -translate-y-1/2';
+        }
+      }, 300);
+    });
+    
+    // Add search icon if it doesn't exist
+    if (!iconSearch.parentElement.querySelector('.search-icon')) {
+      const searchIconEl = document.createElement('i');
+      searchIconEl.className = 'fas fa-search text-gold absolute right-3 top-1/2 transform -translate-y-1/2 search-icon pointer-events-none';
+      iconSearch.parentElement.style.position = 'relative';
+      iconSearch.parentElement.appendChild(searchIconEl);
+      iconSearch.classList.add('pr-10'); // Add padding to make room for icon
+    }
+  }
+}
+
+// Enhanced category filtering (optional enhancement)
+function filterIconsByCategory(category = 'all') {
+  const categoryMap = {
+    'religious': ['fa-church', 'fa-pray', 'fa-hands-praying', 'fa-cross', 'fa-star-of-david', 'fa-om', 'fa-place-of-worship', 'fa-bible', 'fa-torah', 'fa-quran', 'fa-book-open'],
+    'memorial': ['fa-urn', 'fa-headstone', 'fa-monument', 'fa-memorial', 'fa-landmark', 'fa-ribbon', 'fa-dove', 'fa-feather', 'fa-feather-alt', 'fa-leaf', 'fa-tree', 'fa-seedling'],
+    'sympathy': ['fa-heart', 'fa-heart-broken', 'fa-hand-holding-heart', 'fa-hands-helping', 'fa-handshake', 'fa-hands-holding', 'fa-hands-holding-heart'],
+    'flowers': ['fa-flower', 'fa-flower-tulip', 'fa-flower-daffodil', 'fa-lilies', 'fa-roses', 'fa-wreath'],
+    'spiritual': ['fa-cloud', 'fa-cloud-sun', 'fa-sun', 'fa-moon', 'fa-stars', 'fa-star', 'fa-star-and-crescent', 'fa-angel', 'fa-angels', 'fa-spa'],
+    'services': ['fa-phone', 'fa-envelope', 'fa-comments', 'fa-user-nurse', 'fa-user-md', 'fa-user-graduate', 'fa-user-tie', 'fa-users']
+  };
+  
+  if (category === 'all') {
+    loadFontAwesomeIcons();
+  } else if (categoryMap[category]) {
+    const iconGrid = document.getElementById('iconGrid');
+    iconGrid.innerHTML = '';
+    
+    categoryMap[category].forEach(icon => {
+      // Use the same icon creation logic as in loadFontAwesomeIcons
+      const iconName = icon.replace('fa-', '');
+      const iconItem = document.createElement('div');
+      iconItem.className = 'icon-item group flex flex-col items-center p-3 rounded-xl border-2 border-gray-200 cursor-pointer transition-all duration-300 hover:border-gold hover:bg-gold/10 hover:scale-110 hover:shadow-gold bg-white/70 backdrop-blur-sm';
+      iconItem.dataset.icon = icon;
+      iconItem.innerHTML = `
+        <div class="w-8 h-8 flex items-center justify-center mb-2 transition-colors duration-200">
+          <i class="fas ${icon} text-lg text-gray-600 group-hover:text-gold transition-colors duration-200"></i>
+        </div>
+        <span class="text-xs text-center font-inter font-medium text-gray-600 group-hover:text-dark transition-colors duration-200 leading-tight max-w-full truncate" title="${iconName}">${iconName}</span>
+      `;
+      
+      // Add the same click handler logic
+      iconItem.addEventListener('click', function() {
+        document.getElementById('selectedIcon').value = icon;
+        const previewIcon = document.getElementById('selectedIconPreview');
+        previewIcon.className = `fas ${icon} text-white text-lg`;
+        
+        document.querySelectorAll('.icon-item').forEach(el => {
+          el.classList.remove('selected', 'border-gold', 'bg-gold/20', 'shadow-gold');
+          el.classList.add('border-gray-200');
+          const iconEl = el.querySelector('i');
+          const textEl = el.querySelector('span');
+          if (iconEl && textEl) {
+            iconEl.classList.remove('text-gold');
+            iconEl.classList.add('text-gray-600');
+            textEl.classList.remove('text-dark');
+            textEl.classList.add('text-gray-600');
+          }
+        });
+        
+        this.classList.add('selected', 'border-gold', 'bg-gold/20', 'shadow-gold');
+        this.classList.remove('border-gray-200');
+        const iconEl = this.querySelector('i');
+        const textEl = this.querySelector('span');
+        if (iconEl && textEl) {
+          iconEl.classList.add('text-gold');
+          iconEl.classList.remove('text-gray-600');
+          textEl.classList.add('text-dark');
+          textEl.classList.remove('text-gray-600');
+        }
+        
+        this.style.animation = 'bounceGentle 0.6s ease-out';
+        setTimeout(() => {
+          this.style.animation = '';
+        }, 600);
+      });
+      
+      iconGrid.appendChild(iconItem);
+    });
+  }
 }
 
 // Search functionality for icons
