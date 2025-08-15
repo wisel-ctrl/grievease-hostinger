@@ -2702,7 +2702,7 @@ function fetchAndPopulateAddOns() {
                     <td class="px-4 py-3.5 text-sm text-sidebar-text">${addOn.branch_name.replace(/\b\w/g, char => char.toUpperCase())}</td>
                     <td class="px-4 py-3.5 text-sm">
                         <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${statusClass} border">
-                            <i class="fas ${statusIcon} mr-1"></i> ${addOn.status}
+                            <i class="fas ${statusIcon} mr-1"></i> ${addOn.status.charAt(0).toUpperCase() + addOn.status.slice(1)}
                         </span>
                     </td>
                     <td class="px-4 py-3.5 text-sm">
