@@ -2791,7 +2791,7 @@ function deleteAddOn(id) {
         if (result.isConfirmed) {
             // AJAX call to delete the add-on
             $.ajax({
-                url: 'delete_addOn.php',
+                url: 'servicesManagement/delete_addOns.php',
                 type: 'POST',
                 data: { id: id },
                 success: function(response) {
