@@ -1973,7 +1973,7 @@ window.addEventListener('popstate', function(event) {
                                     </div>
                                     <input type="text" id="iconSearch" 
                                         class="flex-1 px-4 py-3 rounded-r-xl border-2 border-l-0 border-gold bg-white focus:outline-none focus:ring-4 focus:ring-gold/20 font-inter placeholder:text-gray-400" 
-                                        placeholder="Search icons (coffee, food, drink...)">
+                                        placeholder="Search icons...">
                                     <input type="hidden" id="selectedIcon" value="fa-plus">
                                 </div>
                                 
