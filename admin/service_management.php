@@ -2779,33 +2779,45 @@ function editAddOn(id) {
 }
 
 function deleteAddOn(id) {
-    swal({
+    Swal.fire({
         title: "Are you sure?",
         text: "Warning: Archiving will disable this add-on for all users. You can restore it later if needed.",
         icon: "warning",
-        buttons: true,
-        dangerMode: true,
-    })
-    .then((willDelete) => {
-        if (willDelete) {
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
+    }).then((result) => {
+        if (result.isConfirmed) {
             // AJAX call to delete the add-on
             $.ajax({
-                url: 'servicesManagement/delete_addOns.php',
+                url: 'delete_addOn.php',
                 type: 'POST',
                 data: { id: id },
                 success: function(response) {
                     if (response.success) {
-                        swal("Success!", response.message, "success")
-                        .then(() => {
+                        Swal.fire(
+                            "Deleted!",
+                            response.message,
+                            "success"
+                        ).then(() => {
                             // Refresh the page or update the UI as needed
                             location.reload();
                         });
                     } else {
-                        swal("Error!", response.message, "error");
+                        Swal.fire(
+                            "Error!",
+                            response.message,
+                            "error"
+                        );
                     }
                 },
                 error: function() {
-                    swal("Error!", "An error occurred while processing your request.", "error");
+                    Swal.fire(
+                        "Error!",
+                        "An error occurred while processing your request.",
+                        "error"
+                    );
                 }
             });
         }
