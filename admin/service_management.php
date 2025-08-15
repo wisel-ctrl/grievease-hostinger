@@ -3847,7 +3847,7 @@ document.getElementById('updateAddonBtn').addEventListener('click', function() {
     
     // Validate price is a positive number
     const priceValue = parseFloat(addonPrice);
-    if (isNaN(priceValue) {
+    if (isNaN(priceValue)) {
         Swal.fire({
             title: 'Error!',
             text: 'Price must be a valid number',
