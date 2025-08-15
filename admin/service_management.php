@@ -3424,11 +3424,12 @@ document.getElementById('iconSearch').addEventListener('input', function() {
 
 // Save add-on functionality
 document.getElementById('saveAddonBtn').addEventListener('click', function() {
-  const addonName = document.getElementById('addonName').value;
-  const addonPrice = document.getElementById('addonPrice').value;
+  const addonName = document.getElementById('addonName').value.trim();
+  const addonPrice = document.getElementById('addonPrice').value.trim();
   const addonBranch = document.getElementById('addonBranch').value;
   const addonIcon = "fas " + document.getElementById('selectedIcon').value;
   
+  // Validate all fields are filled
   if (!addonName || !addonPrice || !addonBranch || !addonIcon) {
     Swal.fire({
       title: 'Error!',
@@ -3439,9 +3440,32 @@ document.getElementById('saveAddonBtn').addEventListener('click', function() {
     return;
   }
   
+  // Validate price is a positive number
+  const priceValue = parseFloat(addonPrice);
+  if (isNaN(priceValue) || priceValue < 0) {
+    Swal.fire({
+      title: 'Error!',
+      text: 'Price must be a positive number',
+      icon: 'error',
+      confirmButtonText: 'OK'
+    });
+    return;
+  }
+  
+  // Validate name isn't too short
+  if (addonName.length < 2) {
+    Swal.fire({
+      title: 'Error!',
+      text: 'Addon name must be at least 2 characters',
+      icon: 'error',
+      confirmButtonText: 'OK'
+    });
+    return;
+  }
+  
   const addonData = {
     name: addonName,
-    price: parseFloat(addonPrice),
+    price: priceValue,
     branch_id: addonBranch,
     icon: addonIcon
   };
@@ -3462,11 +3486,9 @@ document.getElementById('saveAddonBtn').addEventListener('click', function() {
         icon: 'success',
         confirmButtonText: 'OK'
       }).then(() => {
-        // Close modal and refresh or redirect as needed
         if (typeof closeModal === "function") {
           closeModal();
         }
-        // Optionally refresh the page or update the add-ons list
         window.location.reload();
       });
     } else {
@@ -3806,12 +3828,13 @@ document.getElementById('editIconSearch').addEventListener('input', function() {
 // Update add-on functionality
 document.getElementById('updateAddonBtn').addEventListener('click', function() {
     const addonId = document.getElementById('editAddonId').value;
-    const addonName = document.getElementById('editAddonName').value;
-    const addonPrice = document.getElementById('editAddonPrice').value;
+    const addonName = document.getElementById('editAddonName').value.trim();
+    const addonPrice = document.getElementById('editAddonPrice').value.trim();
     const addonBranch = document.getElementById('editAddonBranch').value;
     const addonIcon = "fas " + document.getElementById('editSelectedIcon').value;
     const addonStatus = document.getElementById('editAddonStatus').checked ? 'active' : 'inactive';
     
+    // Validate all fields are filled
     if (!addonName || !addonPrice || !addonBranch || !addonIcon) {
         Swal.fire({
             title: 'Error!',
@@ -3822,10 +3845,43 @@ document.getElementById('updateAddonBtn').addEventListener('click', function() {
         return;
     }
     
+    // Validate price is a positive number
+    const priceValue = parseFloat(addonPrice);
+    if (isNaN(priceValue) {
+        Swal.fire({
+            title: 'Error!',
+            text: 'Price must be a valid number',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+        return;
+    }
+    
+    if (priceValue < 0) {
+        Swal.fire({
+            title: 'Error!',
+            text: 'Price must be a positive number',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+        return;
+    }
+    
+    // Validate name isn't too short
+    if (addonName.length < 2) {
+        Swal.fire({
+            title: 'Error!',
+            text: 'Addon name must be at least 2 characters',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+        return;
+    }
+    
     const addonData = {
         id: addonId,
         name: addonName,
-        price: parseFloat(addonPrice),
+        price: priceValue,
         branch_id: addonBranch,
         icon: addonIcon,
         status: addonStatus
