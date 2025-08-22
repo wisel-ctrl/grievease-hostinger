@@ -80,11 +80,6 @@
                             <p class="text-sm text-dark">To complete necessary documentation and comply with legal obligations related to funeral services.</p>
                         </div>
                     </div>
-                    <div class="flex items-start">
-                        <div class="text-yellow-600 mr-3 mt-1">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                    </div>
                 </div>
             </div>
 
