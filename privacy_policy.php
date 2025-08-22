@@ -345,7 +345,6 @@
                         <li><a href="index.php#about" class="text-gray-300 hover:text-white transition">About</a></li>
                         <li><a href="memorial.php" class="text-gray-300 hover:text-white transition">Memorials</a></li>
                         <li><a href="index.php#services" class="text-gray-300 hover:text-white transition">Services</a></li>
-                        <li><a href="index.php#contact" class="text-gray-300 hover:text-white transition">Contact Us</a></li>
                         <li><a href="faqs.php" class="text-gray-300 hover:text-white transition">FAQs</a></li>
                     </ul>
                 </div>
