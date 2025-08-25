@@ -64,27 +64,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' || $_SERVER['REQUEST_METHOD'] === 'POST
     exit;
 }
 
-// Handle POST request to unarchive an add-on
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $data = json_decode(file_get_contents('php://input'), true);
-    
-    if (isset($data['id'])) {
-        $id = $data['id'];
-        
-        $stmt = $conn->prepare("UPDATE AddOnsService_tb SET status = 'active' WHERE addOns_id = ?");
-        $stmt->bind_param("i", $id);
-        
-        if ($stmt->execute()) {
-            echo json_encode(["success" => "Add-on unarchived successfully"]);
-        } else {
-            echo json_encode(["error" => "Error unarchiving add-on: " . $stmt->error]);
-        }
-        
-        $stmt->close();
-    } else {
-        echo json_encode(["error" => "No ID provided"]);
-    }
-}
-
 $conn->close();
 ?>

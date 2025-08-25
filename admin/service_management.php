@@ -4083,7 +4083,7 @@ function handleSearch() {
 // Function to unarchive an addon
 function unarchiveAddon(id) {
     if (confirm('Are you sure you want to unarchive this add-on?')) {
-        fetch('servicesManagement/get_archived_addOns.php', {
+        fetch('servicesManagement/unarchive_addOns.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
