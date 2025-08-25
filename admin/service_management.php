@@ -729,7 +729,7 @@ if ($branchResult->num_rows > 0) {
                     </div>
 
                     <!-- Archive Icon Button -->
-                    <button class="w-10 h-10 flex items-center justify-center text-sidebar-accent" onclick="openArchiveModal(1)">
+                    <button class="w-10 h-10 flex items-center justify-center text-sidebar-accent" onclick="openAddonsArchived()">
                         <i class="fas fa-archive text-xl"></i>
                     </button>
                 </div>
@@ -2155,6 +2155,74 @@ window.addEventListener('popstate', function(event) {
         </div>
     </div>
 </div>
+
+    <div id="archivedModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl shadow-2xl w-11/12 max-w-6xl max-h-[90vh] overflow-hidden slide-down">
+            <!-- Modal Header -->
+            <div class="flex justify-between items-center bg-blue-500 text-white p-6">
+                <h2 class="text-2xl font-bold">Archived Add-Ons</h2>
+                <button onclick="closeModal()" class="text-white hover:text-gray-200 text-2xl">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <!-- Search and Filter Section -->
+            <div class="p-4 bg-gray-50 border-b flex flex-wrap gap-4">
+                <div class="relative flex-1 min-w-[200px]">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-search text-gray-400"></i>
+                    </div>
+                    <input type="text" id="searchInput" placeholder="Search archived add-ons..." 
+                           class="pl-10 pr-4 py-2 w-full border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div class="flex gap-2">
+                    <select class="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option>All Branches</option>
+                        <option>Downtown Branch</option>
+                        <option>Westside Branch</option>
+                        <option>Eastside Branch</option>
+                    </select>
+                    <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors">
+                        <i class="fas fa-filter mr-2"></i> Filter
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Modal Body with Table -->
+            <div class="p-4 overflow-auto table-container max-h-[50vh]">
+                <table class="w-full text-left rounded-lg overflow-hidden">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="p-4 font-semibold">ID</th>
+                            <th class="p-4 font-semibold">Service Name</th>
+                            <th class="p-4 font-semibold">Price</th>
+                            <th class="p-4 font-semibold">Branch</th>
+                            <th class="p-4 font-semibold">Status</th>
+                            <th class="p-4 font-semibold text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="archivedTableBody">
+                        <!-- Table rows will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Modal Footer -->
+            <div class="flex justify-between items-center p-4 border-t bg-gray-50">
+                <div class="text-sm text-gray-600">
+                    Showing <span id="itemCount">5</span> out of 8 archived items
+                </div>
+                <div class="flex space-x-2">
+                    <button class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg transition-colors" onclick="closeModal()">
+                        Close
+                    </button>
+                    <button class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors">
+                        <i class="fas fa-download mr-2"></i> Export
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -3932,6 +4000,118 @@ function formatPrice(amount) {
     });
 }
 
+</script>
+
+<script>
+// Function to open the modal
+function openAddonsArchived() {
+    const modal = document.getElementById('archivedModal');
+    modal.classList.remove('hidden');
+    setTimeout(() => {
+        modal.classList.add('fade-in');
+    }, 10);
+    loadArchivedAddons();
+}
+
+// Close modal when clicking outside the content
+window.onclick = function(event) {
+    const modal = document.getElementById('archivedModal');
+    if (event.target === modal) {
+        closeModal();
+    }
+};
+
+// Function to load archived add-ons (simulated with static data)
+function loadArchivedAddons() {
+    // In a real implementation, this would fetch data from the PHP API
+    const archivedAddons = [
+        {
+            id: 101,
+            name: "Extra Cheese",
+            price: 1.99,
+            branch: "Downtown Branch",
+            status: "archived"
+        },
+        {
+            id: 102,
+            name: "Premium Sauce",
+            price: 0.99,
+            branch: "Westside Branch",
+            status: "archived"
+        },
+        {
+            id: 103,
+            name: "Double Portion",
+            price: 3.49,
+            branch: "Downtown Branch",
+            status: "archived"
+        },
+        {
+            id: 104,
+            name: "Special Seasoning",
+            price: 0.49,
+            branch: "Eastside Branch",
+            status: "archived"
+        },
+        {
+            id: 105,
+            name: "Extra Dip",
+            price: 0.79,
+            branch: "Westside Branch",
+            status: "archived"
+        }
+    ];
+    
+    const tableBody = document.getElementById('archivedTableBody');
+    tableBody.innerHTML = '';
+    
+    archivedAddons.forEach(addon => {
+        const row = document.createElement('tr');
+        row.className = 'hover:bg-gray-50 border-b';
+        row.innerHTML = `
+            <td class="p-4 font-medium">${addon.id}</td>
+            <td class="p-4">${addon.name}</td>
+            <td class="p-4">$${addon.price.toFixed(2)}</td>
+            <td class="p-4">${addon.branch}</td>
+            <td class="p-4"><span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">Archived</span></td>
+            <td class="p-4 text-center">
+                <button class="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded transition-colors" onclick="unarchiveAddon(${addon.id})">
+                    <i class="fas fa-box-open mr-1"></i> Unarchive
+                </button>
+            </td>
+        `;
+        tableBody.appendChild(row);
+    });
+}
+
+// Function to unarchive an add-on
+function unarchiveAddon(id) {
+    if (confirm("Are you sure you want to unarchive this add-on?")) {
+        // In a real implementation, this would call a PHP API
+        console.log(`Unarchiving add-on with ID: ${id}`);
+        alert(`Add-on ${id} has been unarchived successfully!`);
+        
+        // Reload the table to reflect changes
+        loadArchivedAddons();
+    }
+}
+
+// Search functionality
+document.getElementById('searchInput').addEventListener('input', function() {
+    const searchText = this.value.toLowerCase();
+    const rows = document.querySelectorAll('#archivedTableBody tr');
+    
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(searchText) ? '' : 'none';
+    });
+});
+
+// Initialize the modal with data on first open
+document.addEventListener('DOMContentLoaded', function() {
+    // Preload the data
+    loadArchivedAddons();
+});
 </script>
   
 
