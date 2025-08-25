@@ -4024,7 +4024,7 @@ window.onclick = function(event) {
 // Function to load archived add-ons (simulated with static data)
 function loadArchivedAddons(searchTerm = '', branchFilter = '') {
     // Fetch data from the PHP API
-    fetch('servicesManagements/get_archived_addOns.php', {
+    fetch('servicesManagement/get_archived_addOns.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
