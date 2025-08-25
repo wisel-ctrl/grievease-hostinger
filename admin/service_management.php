@@ -4053,7 +4053,7 @@ function loadArchivedAddons(searchTerm = '', branchFilter = '') {
             row.innerHTML = `
                 <td class="p-4 font-medium">${addon.addOns_id}</td>
                 <td class="p-4">${addon.addOns_name}</td>
-                <td class="p-4">$${parseFloat(addon.price).toFixed(2)}</td>
+                <td class="p-4">${formatPrice(addon.price)}</td>
                 <td class="p-4">${addon.branch_name}</td>
                 <td class="p-4"><span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">Archived</span></td>
                 <td class="p-4 text-center">
@@ -4076,7 +4076,7 @@ function loadArchivedAddons(searchTerm = '', branchFilter = '') {
 // Function to handle search
 function handleSearch() {
     const searchTerm = document.getElementById('searchInput').value;
-    const branchFilter = document.querySelector('select').value;
+    const branchFilter = document.getElementById('branchFilter').value;
     loadArchivedAddons(searchTerm, branchFilter);
 }
 
