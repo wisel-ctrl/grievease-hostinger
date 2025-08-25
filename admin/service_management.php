@@ -2173,16 +2173,15 @@ window.addEventListener('popstate', function(event) {
                         <i class="fas fa-search text-gray-400"></i>
                     </div>
                     <input type="text" id="searchInput" placeholder="Search archived add-ons..." 
-                           class="pl-10 pr-4 py-2 w-full border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    oninput="handleSearch()"
+                    class="pl-10 pr-4 py-2 w-full border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                 </div>
                 <div class="flex gap-2">
-                    <select class="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        <option>All Branches</option>
-                        <option>Downtown Branch</option>
-                        <option>Westside Branch</option>
-                        <option>Eastside Branch</option>
+                    <select id="branchFilter" class="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" onchange="handleSearch()">
+                        <option value="">All Branches</option>
+                        <!-- Options will be populated dynamically -->
                     </select>
-                    <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors">
+                    <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors" onclick="handleSearch()">
                         <i class="fas fa-filter mr-2"></i> Filter
                     </button>
                 </div>
@@ -4011,6 +4010,7 @@ function openAddonsArchived() {
         modal.classList.add('fade-in');
     }, 10);
     loadArchivedAddons();
+    populateBranchFilter();
 }
 
 // Close modal when clicking outside the content
@@ -4022,78 +4022,93 @@ window.onclick = function(event) {
 };
 
 // Function to load archived add-ons (simulated with static data)
-function loadArchivedAddons() {
-    // In a real implementation, this would fetch data from the PHP API
-    const archivedAddons = [
-        {
-            id: 101,
-            name: "Extra Cheese",
-            price: 1.99,
-            branch: "Downtown Branch",
-            status: "archived"
+function loadArchivedAddons(searchTerm = '', branchFilter = '') {
+    // Fetch data from the PHP API
+    fetch('servicesManagements/get_archived_addOns.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
         },
-        {
-            id: 102,
-            name: "Premium Sauce",
-            price: 0.99,
-            branch: "Westside Branch",
-            status: "archived"
-        },
-        {
-            id: 103,
-            name: "Double Portion",
-            price: 3.49,
-            branch: "Downtown Branch",
-            status: "archived"
-        },
-        {
-            id: 104,
-            name: "Special Seasoning",
-            price: 0.49,
-            branch: "Eastside Branch",
-            status: "archived"
-        },
-        {
-            id: 105,
-            name: "Extra Dip",
-            price: 0.79,
-            branch: "Westside Branch",
-            status: "archived"
+        body: JSON.stringify({
+            search: searchTerm,
+            branch: branchFilter
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
         }
-    ];
-    
-    const tableBody = document.getElementById('archivedTableBody');
-    tableBody.innerHTML = '';
-    
-    archivedAddons.forEach(addon => {
-        const row = document.createElement('tr');
-        row.className = 'hover:bg-gray-50 border-b';
-        row.innerHTML = `
-            <td class="p-4 font-medium">${addon.id}</td>
-            <td class="p-4">${addon.name}</td>
-            <td class="p-4">$${addon.price.toFixed(2)}</td>
-            <td class="p-4">${addon.branch}</td>
-            <td class="p-4"><span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">Archived</span></td>
-            <td class="p-4 text-center">
-                <button class="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded transition-colors" onclick="unarchiveAddon(${addon.id})">
-                    <i class="fas fa-box-open mr-1"></i> Unarchive
-                </button>
-            </td>
-        `;
-        tableBody.appendChild(row);
+        return response.json();
+    })
+    .then(archivedAddons => {
+        const tableBody = document.getElementById('archivedTableBody');
+        tableBody.innerHTML = '';
+        
+        // Update item count
+        document.getElementById('itemCount').textContent = archivedAddons.length;
+        
+        archivedAddons.forEach(addon => {
+            const row = document.createElement('tr');
+            row.className = 'hover:bg-gray-50 border-b';
+            row.innerHTML = `
+                <td class="p-4 font-medium">${addon.addOns_id}</td>
+                <td class="p-4">${addon.addOns_name}</td>
+                <td class="p-4">$${parseFloat(addon.price).toFixed(2)}</td>
+                <td class="p-4">${addon.branch_name}</td>
+                <td class="p-4"><span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">Archived</span></td>
+                <td class="p-4 text-center">
+                    <button class="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded transition-colors" onclick="unarchiveAddon(${addon.addOns_id})">
+                        <i class="fas fa-box-open mr-1"></i> Unarchive
+                    </button>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+    })
+    .catch(error => {
+        console.error('Error fetching archived add-ons:', error);
+        // Fallback to hardcoded data if API fails
+        console.log('Using fallback data');
+        // You could add the hardcoded fallback here if needed
     });
 }
 
-// Function to unarchive an add-on
+// Function to handle search
+function handleSearch() {
+    const searchTerm = document.getElementById('searchInput').value;
+    const branchFilter = document.querySelector('select').value;
+    loadArchivedAddons(searchTerm, branchFilter);
+}
+
+// Function to unarchive an addon
 function unarchiveAddon(id) {
-    if (confirm("Are you sure you want to unarchive this add-on?")) {
-        // In a real implementation, this would call a PHP API
-        console.log(`Unarchiving add-on with ID: ${id}`);
-        alert(`Add-on ${id} has been unarchived successfully!`);
-        
-        // Reload the table to reflect changes
-        loadArchivedAddons();
+    if (confirm('Are you sure you want to unarchive this add-on?')) {
+        fetch('servicesManagements/get_archived_addOns.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ id: id })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Add-on unarchived successfully');
+                loadArchivedAddons(); // Reload the table
+            } else {
+                alert('Error: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error unarchiving add-on');
+        });
     }
+}
+
+// Function to close modal
+function closeModal() {
+    document.getElementById('archivedModal').classList.add('hidden');
 }
 
 // Search functionality
@@ -4112,6 +4127,20 @@ document.addEventListener('DOMContentLoaded', function() {
     // Preload the data
     loadArchivedAddons();
 });
+
+// Function to populate branch filter options
+function populateBranchFilter() {
+    // You would typically fetch this from an API
+    const branches = ["Paete", "Pila"];
+    const select = document.getElementById('branchFilter');
+    
+    branches.forEach(branch => {
+        const option = document.createElement('option');
+        option.value = branch.toLowerCase();;
+        option.textContent = branch;
+        select.appendChild(option);
+    });
+}
 </script>
   
 
