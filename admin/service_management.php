@@ -4095,6 +4095,7 @@ function unarchiveAddon(id) {
             if (data.success) {
                 alert('Add-on unarchived successfully');
                 loadArchivedAddons(); // Reload the table
+                fetchAndPopulateAddOns();
             } else {
                 alert('Error: ' + data.error);
             }
