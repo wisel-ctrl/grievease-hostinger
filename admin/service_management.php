@@ -4054,7 +4054,7 @@ function loadArchivedAddons(searchTerm = '', branchFilter = '') {
                 <td class="p-4 font-medium">${addon.addOns_id}</td>
                 <td class="p-4">${addon.addOns_name}</td>
                 <td class="p-4">${formatPrice(addon.price)}</td>
-                <td class="p-4">${addon.branch_name}</td>
+                <td class="p-4">${addon.branch_name.replace(/\b\w/g, char => char.toUpperCase())}</td>
                 <td class="p-4"><span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">Archived</span></td>
                 <td class="p-4 text-center">
                     <button class="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded transition-colors" onclick="unarchiveAddon(${addon.addOns_id})">
