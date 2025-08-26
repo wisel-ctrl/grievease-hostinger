@@ -18,12 +18,13 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 if (!isset($data['name']) || !isset($data['price']) || !isset($data['branch_id']) || !isset($data['icon'])) {
-    echo json_encode(['status' => 'error', 'message' => 'All fields are required']);
+    echo json_encode(['status' => 'error', 'message' => 'All required fields are missing']);
     exit;
 }
 
 // Sanitize and validate input
 $addonName = $conn->real_escape_string(trim($data['name']));
+$description = isset($data['description']) ? $conn->real_escape_string(trim($data['description'])) : '';
 $price = floatval($data['price']);
 $branchId = intval($data['branch_id']);
 $icon = $conn->real_escape_string(trim($data['icon']));
@@ -35,8 +36,8 @@ if ($price <= 0) {
 }
 
 // Prepare and bind
-$stmt = $conn->prepare("INSERT INTO AddOnsService_tb (addOns_name, icon, branch_id, price) VALUES (?, ?, ?, ?)");
-$stmt->bind_param("ssid", $addonName, $icon, $branchId, $price);
+$stmt = $conn->prepare("INSERT INTO AddOnsService_tb (addOns_name, description, icon, branch_id, price) VALUES (?, ?, ?, ?, ?)");
+$stmt->bind_param("sssid", $addonName, $description, $icon, $branchId, $price);
 
 // Execute the statement
 if ($stmt->execute()) {

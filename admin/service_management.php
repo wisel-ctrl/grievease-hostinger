@@ -1873,138 +1873,151 @@ window.addEventListener('popstate', function(event) {
 
 <!-- Add Add-ons Modal -->
 <div id="addAddonsModal" class="fixed inset-0 z-50 hidden overflow-y-auto animate-fade-in">
-        <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <!-- Background overlay with gradient -->
-            <div class="fixed inset-0 transition-opacity duration-300" aria-hidden="true">
-                <div class="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-gray-800/70 to-gold/20 backdrop-blur-sm"></div>
+    <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <!-- Background overlay with gradient -->
+        <div class="fixed inset-0 transition-opacity duration-300" aria-hidden="true">
+            <div class="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-gray-800/70 to-gold/20 backdrop-blur-sm"></div>
+        </div>
+
+        <!-- Modal container -->
+        <div class="inline-block align-bottom bg-gradient-to-br from-cream via-white to-navy rounded-2xl text-left overflow-hidden shadow-gold-lg transform transition-all duration-300 sm:my-8 sm:align-middle sm:max-w-xl sm:w-full animate-slide-up border border-gold/20">
+            
+            <!-- Decorative header with gold accent -->
+            <div class="bg-gradient-to-r from-gold to-yellow-600 h-2 w-full"></div>
+            
+            <!-- Modal Header -->
+            <div class="bg-gradient-to-br from-cream to-white px-6 pt-6 pb-4 border-b border-gold/10">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 bg-gradient-to-br from-gold to-yellow-600 rounded-full flex items-center justify-center shadow-gold">
+                            <i class="fas fa-plus text-white text-lg animate-bounce-gentle"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-playfair font-bold text-dark" id="addAddonsModalLabel">
+                                Add New Add-on
+                            </h3>
+                            <p class="text-sm text-gray-500 font-inter">Create a beautiful new add-on for your service</p>
+                        </div>
+                    </div>
+                    <button onclick="closeModal()" class="text-gray-400 hover:text-gold transition-colors duration-200 p-2 rounded-full hover:bg-gold/10">
+                        <i class="fas fa-times text-lg"></i>
+                    </button>
+                </div>
             </div>
 
-            <!-- Modal container -->
-            <div class="inline-block align-bottom bg-gradient-to-br from-cream via-white to-navy rounded-2xl text-left overflow-hidden shadow-gold-lg transform transition-all duration-300 sm:my-8 sm:align-middle sm:max-w-xl sm:w-full animate-slide-up border border-gold/20">
-                
-                <!-- Decorative header with gold accent -->
-                <div class="bg-gradient-to-r from-gold to-yellow-600 h-2 w-full"></div>
-                
-                <!-- Modal Header -->
-                <div class="bg-gradient-to-br from-cream to-white px-6 pt-6 pb-4 border-b border-gold/10">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-12 h-12 bg-gradient-to-br from-gold to-yellow-600 rounded-full flex items-center justify-center shadow-gold">
-                                <i class="fas fa-plus text-white text-lg animate-bounce-gentle"></i>
-                            </div>
-                            <div>
-                                <h3 class="text-2xl font-playfair font-bold text-dark" id="addAddonsModalLabel">
-                                    Add New Add-on
-                                </h3>
-                                <p class="text-sm text-gray-500 font-inter">Create a beautiful new add-on for your service</p>
-                            </div>
+            <!-- Modal Body -->
+            <div class="px-6 py-6">
+                <form id="addAddonsForm" class="space-y-6">
+                    
+                    <!-- Add-on Name -->
+                    <div class="group">
+                        <label for="addonName" class="block text-sm font-semibold text-dark font-inter mb-2">
+                            <i class="fas fa-tag text-gold mr-2"></i>Add-on Name
+                        </label>
+                        <div class="relative">
+                            <input type="text" id="addonName" 
+                                class="block w-full px-4 py-3 rounded-xl border-2 border-input-border bg-white/70 backdrop-blur-sm shadow-input focus:border-gold focus:ring-4 focus:ring-gold/20 transition-all duration-300 font-inter placeholder:text-gray-400 hover:border-gold/50" 
+                                placeholder="Enter add-on name..." 
+                                required>
+                            <div class="absolute inset-0 rounded-xl bg-gradient-to-r from-gold/0 to-yellow-600/0 group-focus-within:from-gold/5 group-focus-within:to-yellow-600/5 transition-all duration-300 pointer-events-none"></div>
                         </div>
-                        <button onclick="closeModal()" class="text-gray-400 hover:text-gold transition-colors duration-200 p-2 rounded-full hover:bg-gold/10">
-                            <i class="fas fa-times text-lg"></i>
-                        </button>
                     </div>
-                </div>
-
-                <!-- Modal Body -->
-                <div class="px-6 py-6">
-                    <form id="addAddonsForm" class="space-y-6">
-                        
-                        <!-- Add-on Name -->
-                        <div class="group">
-                            <label for="addonName" class="block text-sm font-semibold text-dark font-inter mb-2">
-                                <i class="fas fa-tag text-gold mr-2"></i>Add-on Name
-                            </label>
-                            <div class="relative">
-                                <input type="text" id="addonName" 
-                                    class="block w-full px-4 py-3 rounded-xl border-2 border-input-border bg-white/70 backdrop-blur-sm shadow-input focus:border-gold focus:ring-4 focus:ring-gold/20 transition-all duration-300 font-inter placeholder:text-gray-400 hover:border-gold/50" 
-                                    placeholder="Enter add-on name..." 
-                                    required>
-                                <div class="absolute inset-0 rounded-xl bg-gradient-to-r from-gold/0 to-yellow-600/0 group-focus-within:from-gold/5 group-focus-within:to-yellow-600/5 transition-all duration-300 pointer-events-none"></div>
-                            </div>
+                    
+                    <!-- Add-on Description -->
+                    <div class="group">
+                        <label for="addonDescription" class="block text-sm font-semibold text-dark font-inter mb-2">
+                            <i class="fas fa-align-left text-gold mr-2"></i>Description
+                        </label>
+                        <div class="relative">
+                            <textarea id="addonDescription" rows="3"
+                                class="block w-full px-4 py-3 rounded-xl border-2 border-input-border bg-white/70 backdrop-blur-sm shadow-input focus:border-gold focus:ring-4 focus:ring-gold/20 transition-all duration-300 font-inter placeholder:text-gray-400 hover:border-gold/50 resize-none" 
+                                placeholder="Enter add-on description..."></textarea>
+                            <div class="absolute inset-0 rounded-xl bg-gradient-to-r from-gold/0 to-yellow-600/0 group-focus-within:from-gold/5 group-focus-within:to-yellow-600/5 transition-all duration-300 pointer-events-none"></div>
                         </div>
-                        
-                        <!-- Price -->
-                        <div class="group">
-                            <label for="addonPrice" class="block text-sm font-semibold text-dark font-inter mb-2">
-                                <i class="fas fa-peso-sign text-gold mr-2"></i>Price
-                            </label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
-                                    <span class="text-gold font-bold text-lg">₱</span>
-                                </div>
-                                <input type="number" id="addonPrice" min="0" step="0.01" 
-                                    class="block w-full pl-12 pr-4 py-3 rounded-xl border-2 border-input-border bg-white/70 backdrop-blur-sm shadow-input focus:border-gold focus:ring-4 focus:ring-gold/20 transition-all duration-300 font-inter placeholder:text-gray-400 hover:border-gold/50" 
-                                    placeholder="0.00" 
-                                    required>
-                                <div class="absolute inset-0 rounded-xl bg-gradient-to-r from-gold/0 to-yellow-600/0 group-focus-within:from-gold/5 group-focus-within:to-yellow-600/5 transition-all duration-300 pointer-events-none"></div>
+                    </div>
+                    
+                    <!-- Price -->
+                    <div class="group">
+                        <label for="addonPrice" class="block text-sm font-semibold text-dark font-inter mb-2">
+                            <i class="fas fa-peso-sign text-gold mr-2"></i>Price
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
+                                <span class="text-gold font-bold text-lg">₱</span>
                             </div>
+                            <input type="number" id="addonPrice" min="0" step="0.01" 
+                                class="block w-full pl-12 pr-4 py-3 rounded-xl border-2 border-input-border bg-white/70 backdrop-blur-sm shadow-input focus:border-gold focus:ring-4 focus:ring-gold/20 transition-all duration-300 font-inter placeholder:text-gray-400 hover:border-gold/50" 
+                                placeholder="0.00" 
+                                required>
+                            <div class="absolute inset-0 rounded-xl bg-gradient-to-r from-gold/0 to-yellow-600/0 group-focus-within:from-gold/5 group-focus-within:to-yellow-600/5 transition-all duration-300 pointer-events-none"></div>
                         </div>
-                        
-                        <!-- Branch -->
-                        <div class="group">
-                            <label for="addonBranch" class="block text-sm font-semibold text-dark font-inter mb-2">
-                                <i class="fas fa-store text-gold mr-2"></i>Branch
-                            </label>
-                            <div class="relative">
-                                <select id="addonBranch" 
-                                    class="block w-full px-4 py-3 rounded-xl border-2 border-input-border bg-white/70 backdrop-blur-sm shadow-input focus:border-gold focus:ring-4 focus:ring-gold/20 transition-all duration-300 font-inter hover:border-gold/50 appearance-none cursor-pointer" 
-                                    required>
-                                    <option value="" class="text-gray-400">Select Branch</option>
-                                    
-                                </select>
-                                <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                                    <i class="fas fa-chevron-down text-gold"></i>
-                                </div>
-                                <div class="absolute inset-0 rounded-xl bg-gradient-to-r from-gold/0 to-yellow-600/0 group-focus-within:from-gold/5 group-focus-within:to-yellow-600/5 transition-all duration-300 pointer-events-none"></div>
-                            </div>
-                        </div>
-                        
-                        <!-- Icon Selection -->
-                        <div class="group">
-                            <label class="block text-sm font-semibold text-dark font-inter mb-2">
-                                <i class="fas fa-palette text-gold mr-2"></i>Icon Selection
-                            </label>
-                            <div class="border-2 border-input-border rounded-xl p-4 bg-white/70 backdrop-blur-sm hover:border-gold/50 transition-all duration-300">
+                    </div>
+                    
+                    <!-- Branch -->
+                    <div class="group">
+                        <label for="addonBranch" class="block text-sm font-semibold text-dark font-inter mb-2">
+                            <i class="fas fa-store text-gold mr-2"></i>Branch
+                        </label>
+                        <div class="relative">
+                            <select id="addonBranch" 
+                                class="block w-full px-4 py-3 rounded-xl border-2 border-input-border bg-white/70 backdrop-blur-sm shadow-input focus:border-gold focus:ring-4 focus:ring-gold/20 transition-all duration-300 font-inter hover:border-gold/50 appearance-none cursor-pointer" 
+                                required>
+                                <option value="" class="text-gray-400">Select Branch</option>
                                 
-                                <!-- Icon Preview and Search -->
-                                <div class="flex mb-4">
-                                    <div class="flex items-center justify-center px-4 py-3 rounded-l-xl bg-gradient-to-br from-gold to-yellow-600 border-2 border-gold shadow-gold">
-                                        <i id="selectedIconPreview" class="fas fa-plus text-white text-lg"></i>
-                                    </div>
-                                    <input type="text" id="iconSearch" 
-                                        class="flex-1 px-4 py-3 rounded-r-xl border-2 border-l-0 border-gold bg-white focus:outline-none focus:ring-4 focus:ring-gold/20 font-inter placeholder:text-gray-400" 
-                                        placeholder="Search icons...">
-                                    <input type="hidden" id="selectedIcon" value="fa-plus">
-                                </div>
-                                
-                                <!-- Icon Grid -->
-                                <div class="mb-2">
-                                    <p class="text-xs text-gray-500 font-inter mb-3">Choose an icon for your add-on:</p>
-                                </div>
-                                <diva id="iconGrid" class="grid grid-cols-8 gap-3 max-h-48 overflow-y-auto p-2 bg-gradient-to-br from-cream/30 to-navy/30 rounded-lg border border-gold/10">
-                                    
-                                </diva>
+                            </select>
+                            <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                                <i class="fas fa-chevron-down text-gold"></i>
                             </div>
+                            <div class="absolute inset-0 rounded-xl bg-gradient-to-r from-gold/0 to-yellow-600/0 group-focus-within:from-gold/5 group-focus-within:to-yellow-600/5 transition-all duration-300 pointer-events-none"></div>
                         </div>
-                    </form>
-                </div>
+                    </div>
+                    
+                    <!-- Icon Selection -->
+                    <div class="group">
+                        <label class="block text-sm font-semibold text-dark font-inter mb-2">
+                            <i class="fas fa-palette text-gold mr-2"></i>Icon Selection
+                        </label>
+                        <div class="border-2 border-input-border rounded-xl p-4 bg-white/70 backdrop-blur-sm hover:border-gold/50 transition-all duration-300">
+                            
+                            <!-- Icon Preview and Search -->
+                            <div class="flex mb-4">
+                                <div class="flex items-center justify-center px-4 py-3 rounded-l-xl bg-gradient-to-br from-gold to-yellow-600 border-2 border-gold shadow-gold">
+                                    <i id="selectedIconPreview" class="fas fa-plus text-white text-lg"></i>
+                                </div>
+                                <input type="text" id="iconSearch" 
+                                    class="flex-1 px-4 py-3 rounded-r-xl border-2 border-l-0 border-gold bg-white focus:outline-none focus:ring-4 focus:ring-gold/20 font-inter placeholder:text-gray-400" 
+                                    placeholder="Search icons...">
+                                <input type="hidden" id="selectedIcon" value="fa-plus">
+                            </div>
+                            
+                            <!-- Icon Grid -->
+                            <div class="mb-2">
+                                <p class="text-xs text-gray-500 font-inter mb-3">Choose an icon for your add-on:</p>
+                            </div>
+                            <diva id="iconGrid" class="grid grid-cols-8 gap-3 max-h-48 overflow-y-auto p-2 bg-gradient-to-br from-cream/30 to-navy/30 rounded-lg border border-gold/10">
+                                
+                            </diva>
+                        </div>
+                    </div>
+                </form>
+            </div>
 
-                <!-- Modal Footer -->
-                <div class="bg-gradient-to-br from-navy to-cream px-6 py-4 border-t border-gold/10 flex flex-col sm:flex-row sm:justify-end space-y-3 sm:space-y-0 sm:space-x-3">
-                    <button type="button" onclick="closeModal()" 
-                        class="w-full sm:w-auto inline-flex justify-center items-center px-6 py-3 rounded-xl border-2 border-gray-300 bg-white text-dark font-inter font-medium hover:bg-gray-50 hover:border-gold/50 focus:outline-none focus:ring-4 focus:ring-gray-200 transition-all duration-300 transform hover:scale-105">
-                        <i class="fas fa-times mr-2"></i>
-                        Cancel
-                    </button>
-                    <button type="button" id="saveAddonBtn" 
-                        class="w-full sm:w-auto inline-flex justify-center items-center px-8 py-3 rounded-xl border-2 border-gold bg-gradient-to-r from-gold to-yellow-600 text-white font-inter font-semibold hover:from-darkgold hover:to-gold focus:outline-none focus:ring-4 focus:ring-gold/30 shadow-gold transition-all duration-300 transform hover:scale-105 hover:shadow-gold-lg">
-                        <i class="fas fa-save mr-2"></i>
-                        Save Add-on
-                    </button>
-                </div>
+            <!-- Modal Footer -->
+            <div class="bg-gradient-to-br from-navy to-cream px-6 py-4 border-t border-gold/10 flex flex-col sm:flex-row sm:justify-end space-y-3 sm:space-y-0 sm:space-x-3">
+                <button type="button" onclick="closeModal()" 
+                    class="w-full sm:w-auto inline-flex justify-center items-center px-6 py-3 rounded-xl border-2 border-gray-300 bg-white text-dark font-inter font-medium hover:bg-gray-50 hover:border-gold/50 focus:outline-none focus:ring-4 focus:ring-gray-200 transition-all duration-300 transform hover:scale-105">
+                    <i class="fas fa-times mr-2"></i>
+                    Cancel
+                </button>
+                <button type="button" id="saveAddonBtn" 
+                    class="w-full sm:w-auto inline-flex justify-center items-center px-8 py-3 rounded-xl border-2 border-gold bg-gradient-to-r from-gold to-yellow-600 text-white font-inter font-semibold hover:from-darkgold hover:to-gold focus:outline-none focus:ring-4 focus:ring-gold/30 shadow-gold transition-all duration-300 transform hover:scale-105 hover:shadow-gold-lg">
+                    <i class="fas fa-save mr-2"></i>
+                    Save Add-on
+                </button>
             </div>
         </div>
     </div>
+</div>
 
 <!-- Edit Add-on Modal -->
 <div id="editAddonsModal" class="fixed inset-0 z-50 hidden overflow-y-auto animate-fade-in">
@@ -3492,15 +3505,16 @@ document.getElementById('iconSearch').addEventListener('input', function() {
 // Save add-on functionality
 document.getElementById('saveAddonBtn').addEventListener('click', function() {
   const addonName = document.getElementById('addonName').value.trim();
+  const addonDescription = document.getElementById('addonDescription').value.trim();
   const addonPrice = document.getElementById('addonPrice').value.trim();
   const addonBranch = document.getElementById('addonBranch').value;
   const addonIcon = "fas " + document.getElementById('selectedIcon').value;
   
-  // Validate all fields are filled
+  // Validate all required fields are filled
   if (!addonName || !addonPrice || !addonBranch || !addonIcon) {
     Swal.fire({
       title: 'Error!',
-      text: 'Please fill in all fields',
+      text: 'Please fill in all required fields',
       icon: 'error',
       confirmButtonText: 'OK'
     });
@@ -3532,6 +3546,7 @@ document.getElementById('saveAddonBtn').addEventListener('click', function() {
   
   const addonData = {
     name: addonName,
+    description: addonDescription, // Added description to the data object
     price: priceValue,
     branch_id: addonBranch,
     icon: addonIcon
