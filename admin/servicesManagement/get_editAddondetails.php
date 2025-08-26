@@ -19,6 +19,7 @@ $query = "
     SELECT 
         a.addOns_id,
         a.addOns_name,
+        a.description,
         a.icon,
         b.branch_name,
         b.branch_id,

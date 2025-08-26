@@ -2072,6 +2072,19 @@ window.addEventListener('popstate', function(event) {
                         </div>
                     </div>
                     
+                    <!-- Add-on Description -->
+                    <div class="group">
+                        <label for="editAddonDescription" class="block text-sm font-semibold text-dark font-inter mb-2">
+                            <i class="fas fa-align-left text-gold mr-2"></i>Description
+                        </label>
+                        <div class="relative">
+                            <textarea id="editAddonDescription" rows="3"
+                                class="block w-full px-4 py-3 rounded-xl border-2 border-input-border bg-white/70 backdrop-blur-sm shadow-input focus:border-gold focus:ring-4 focus:ring-gold/20 transition-all duration-300 font-inter placeholder:text-gray-400 hover:border-gold/50 resize-none" 
+                                placeholder="Enter add-on description..."></textarea>
+                            <div class="absolute inset-0 rounded-xl bg-gradient-to-r from-gold/0 to-yellow-600/0 group-focus-within:from-gold/5 group-focus-within:to-yellow-600/5 transition-all duration-300 pointer-events-none"></div>
+                        </div>
+                    </div>
+                    
                     <!-- Price -->
                     <div class="group">
                         <label for="editAddonPrice" class="block text-sm font-semibold text-dark font-inter mb-2">
@@ -3622,6 +3635,7 @@ async function editAddOn(id) {
         // Populate form fields
         document.getElementById('editAddonId').value = addon.addOns_id;
         document.getElementById('editAddonName').value = addon.addOns_name;
+        document.getElementById('editAddonDescription').value = addon.description || '';
         document.getElementById('editAddonPrice').value = addon.price;
         
         // Set status toggle
@@ -3911,16 +3925,17 @@ document.getElementById('editIconSearch').addEventListener('input', function() {
 document.getElementById('updateAddonBtn').addEventListener('click', function() {
     const addonId = document.getElementById('editAddonId').value;
     const addonName = document.getElementById('editAddonName').value.trim();
+    const addonDescription = document.getElementById('editAddonDescription').value.trim();
     const addonPrice = document.getElementById('editAddonPrice').value.trim();
     const addonBranch = document.getElementById('editAddonBranch').value;
     const addonIcon = "fas " + document.getElementById('editSelectedIcon').value;
     const addonStatus = document.getElementById('editAddonStatus').checked ? 'active' : 'inactive';
     
-    // Validate all fields are filled
+    // Validate all required fields are filled
     if (!addonName || !addonPrice || !addonBranch || !addonIcon) {
         Swal.fire({
             title: 'Error!',
-            text: 'Please fill in all fields',
+            text: 'Please fill in all required fields',
             icon: 'error',
             confirmButtonText: 'OK'
         });
@@ -3963,6 +3978,7 @@ document.getElementById('updateAddonBtn').addEventListener('click', function() {
     const addonData = {
         id: addonId,
         name: addonName,
+        description: addonDescription,
         price: priceValue,
         branch_id: addonBranch,
         icon: addonIcon,

@@ -10,7 +10,6 @@ if (!isset($input['id']) || !isset($input['name']) || !isset($input['price']) ||
     exit;
 }
 
-
 if ($conn->connect_error) {
     echo json_encode(['status' => 'error', 'message' => 'Database connection failed: ' . $conn->connect_error]);
     exit;
@@ -18,6 +17,7 @@ if ($conn->connect_error) {
 
 $addonId = $input['id'];
 $name = trim($input['name']);
+$description = isset($input['description']) ? trim($input['description']) : '';
 $price = floatval($input['price']);
 $branchId = $input['branch_id'];
 $icon = trim($input['icon']);
@@ -44,6 +44,7 @@ $updateQuery = "
     UPDATE AddOnsService_tb 
     SET 
         addOns_name = ?,
+        description = ?,
         price = ?,
         branch_id = ?,
         icon = ?,
@@ -53,7 +54,7 @@ $updateQuery = "
 ";
 
 $updateStmt = $conn->prepare($updateQuery);
-$updateStmt->bind_param("sdisss", $name, $price, $branchId, $icon, $status, $addonId);
+$updateStmt->bind_param("ssdisss", $name, $description, $price, $branchId, $icon, $status, $addonId);
 
 if ($updateStmt->execute()) {
     echo json_encode([
@@ -62,6 +63,7 @@ if ($updateStmt->execute()) {
         'data' => [
             'id' => $addonId,
             'name' => $name,
+            'description' => $description,
             'price' => $price,
             'branch_id' => $branchId,
             'icon' => $icon,
