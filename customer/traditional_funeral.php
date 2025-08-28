@@ -2400,9 +2400,6 @@ document.addEventListener('DOMContentLoaded', function() {
     let selectedAddons = [];
     let totalPackagePrice = 35000; // Starting price of 35,000 pesos
     let basePackagePrice = 35000; // Store base price separately
-
-    let currentTotal = parseInt(document.getElementById('traditionalSelectedPackagePrice').value) || 0;
-    const basePrice = currentTotal;
     
     // Get the modal elements
     const customPackageModal = document.getElementById('customPackageModal');
@@ -2814,18 +2811,19 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     document.getElementById('cremationCheckbox').addEventListener('change', function() {
-        updateTraditionalPaymentSummary(this.checked);
+        updateTraditionalPaymentSummary();
     });
 
-    function updateTraditionalPaymentSummary(isChecked) {
-        let currentTotal = parseInt(document.getElementById('traditionalTotalPrice').value) || basePrice;
-
-        if (isChecked) {
-            currentTotal += parseInt(document.getElementById('cremationCheckbox').value);
-        } else {
-            currentTotal -= parseInt(document.getElementById('cremationCheckbox').value);
-        }
+    function updateTraditionalPaymentSummary() {
+        const basePrice = parseInt(document.getElementById('traditionalSelectedPackagePrice').value) || 0;
+        let additionalCost = 0;
         
+        // Check if cremation is selected
+        const cremationCheckbox = document.getElementById('cremationCheckbox');
+        if (cremationCheckbox.checked) {
+            additionalCost += parseInt(cremationCheckbox.value);
+        }
+
         const totalPrice = basePrice + additionalCost;
         const downpayment = Math.ceil(totalPrice * 0.3);
         console.log("totalPrice: ",totalPrice);
