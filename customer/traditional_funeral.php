@@ -2400,6 +2400,9 @@ document.addEventListener('DOMContentLoaded', function() {
     let selectedAddons = [];
     let totalPackagePrice = 35000; // Starting price of 35,000 pesos
     let basePackagePrice = 35000; // Store base price separately
+
+    let currentTotal = parseInt(document.getElementById('traditionalSelectedPackagePrice').value) || 0;
+    const basePrice = currentTotal;
     
     // Get the modal elements
     const customPackageModal = document.getElementById('customPackageModal');
@@ -2811,26 +2814,22 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     document.getElementById('cremationCheckbox').addEventListener('change', function() {
-        updateTraditionalPaymentSummary();
+        updateTraditionalPaymentSummary(this.checked);
     });
 
-    // Function to update payment summary in traditional modal
-    function updateTraditionalPaymentSummary() {
-        const basePrice = parseInt(document.getElementById('traditionalSelectedPackagePrice').value) || 0;
-        let additionalCost = 0;
-        
-        // Check if cremation is selected
-        const cremationCheckbox = document.getElementById('cremationCheckbox');
-        if (cremationCheckbox.checked) {
-            additionalCost += parseInt(cremationCheckbox.value);
+    function updateTraditionalPaymentSummary(isChecked) {
+        let currentTotal = parseInt(document.getElementById('traditionalTotalPrice').dataset.total) || basePrice;
+
+        if (isChecked) {
+            currentTotal += parseInt(document.getElementById('cremationCheckbox').value);
+        } else {
+            currentTotal -= parseInt(document.getElementById('cremationCheckbox').value);
         }
-        
-        const totalPrice = basePrice + additionalCost;
-        const downpayment = Math.ceil(totalPrice * 0.3);
-        console.log("totalPrice: ",totalPrice);
-        
-        document.getElementById('traditionalTotalPrice').textContent = `₱${totalPrice.toLocaleString()}`;
-        document.getElementById('traditionalSelectedPackagePrice').value = totalPrice;
+
+        const downpayment = Math.ceil(currentTotal * 0.3);
+
+        document.getElementById('traditionalTotalPrice').textContent = `₱${currentTotal.toLocaleString()}`;
+        document.getElementById('traditionalTotalPrice').dataset.total = currentTotal; // store total for next time
         document.getElementById('traditionalDownpayment').textContent = `₱${downpayment.toLocaleString()}`;
         document.getElementById('traditionalAmountDue').textContent = `₱${downpayment.toLocaleString()}`;
     }
