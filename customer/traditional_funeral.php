@@ -2825,11 +2825,13 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             currentTotal -= parseInt(document.getElementById('cremationCheckbox').value);
         }
-
-        const downpayment = Math.ceil(currentTotal * 0.3);
-
-        document.getElementById('traditionalTotalPrice').textContent = `₱${currentTotal.toLocaleString()}`;
-        document.getElementById('traditionalTotalPrice').dataset.total = currentTotal; // store total for next time
+        
+        const totalPrice = basePrice + additionalCost;
+        const downpayment = Math.ceil(totalPrice * 0.3);
+        console.log("totalPrice: ",totalPrice);
+        
+        document.getElementById('traditionalTotalPrice').textContent = `₱${totalPrice.toLocaleString()}`;
+        document.getElementById('traditionalSelectedPackagePrice').value = totalPrice;
         document.getElementById('traditionalDownpayment').textContent = `₱${downpayment.toLocaleString()}`;
         document.getElementById('traditionalAmountDue').textContent = `₱${downpayment.toLocaleString()}`;
     }
