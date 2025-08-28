@@ -2445,7 +2445,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     casketOption.innerHTML = `
                         <img src="${casket.inventory_img ? '../admin/' + casket.inventory_img : '/api/placeholder/300/200'}" alt="${casket.item_name}" class="w-full h-32 object-cover rounded-lg mb-2">
                         <h5 class="font-medium mb-1">${casket.item_name}</h5>
-                        <p class="text-yellow-600">₱${casket.price.toLocaleString()}</p>
+                        <p class="text-yellow-600">${formatPrice(casket.price)}</p>
                     `;
                     
                     casketOption.addEventListener('click', function() {
@@ -2840,11 +2840,14 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('backToOptions').addEventListener('click', function() {
         showCustomStep('customStepOptions');
     });
-
-
-    
-
 });
+
+function formatPrice(amount) {
+    return "₱" + Number(amount).toLocaleString('en-PH', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+}
 </script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
