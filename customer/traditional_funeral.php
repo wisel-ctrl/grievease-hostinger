@@ -2818,7 +2818,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     function updateTraditionalPaymentSummary(isChecked) {
-        let currentTotal = parseInt(document.getElementById('traditionalTotalPrice').dataset.total) || basePrice;
+        let currentTotal = parseInt(document.getElementById('traditionalTotalPrice').value) || basePrice;
 
         if (isChecked) {
             currentTotal += parseInt(document.getElementById('cremationCheckbox').value);
