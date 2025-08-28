@@ -2827,6 +2827,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const totalPrice = basePrice + additionalCost;
         const downpayment = Math.ceil(totalPrice * 0.3);
+        console.log("totalPrice: ",totalPrice);
         
         document.getElementById('traditionalTotalPrice').textContent = `₱${totalPrice.toLocaleString()}`;
         document.getElementById('traditionalSelectedPackagePrice').value = totalPrice;
