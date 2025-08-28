@@ -1543,49 +1543,14 @@ if ($result_gcash) {
                         <!-- Additional Services Checkboxes -->
                         <div class="border-b border-gray-200 pb-6">
                             <h4 class="text-lg font-hedvig text-navy mb-4">Additional Services</h4>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div class="flex items-start border rounded-lg p-4">
-                                    <input type="checkbox" id="customCatering" name="additionalServices" value="25000" class="custom-addon h-5 w-5 text-yellow-600 rounded focus:ring-yellow-500 mt-1" data-name="Catering Service (100 pax)">
-                                    <label for="customCatering" class="ml-3">
-                                        <span class="block font-medium mb-1">Catering Service (100 pax)</span>
-                                        <span class="block text-sm text-gray-600 mb-1">Food and refreshments for 100 people</span>
-                                        <span class="text-yellow-600">₱25,000</span>
-                                    </label>
-                                </div>
-                                <div class="flex items-start border rounded-lg p-4">
-                                    <input type="checkbox" id="customVideo" name="additionalServices" value="15000" class="custom-addon h-5 w-5 text-yellow-600 rounded focus:ring-yellow-500 mt-1" data-name="Video Memorial Package">
-                                    <label for="customVideo" class="ml-3">
-                                        <span class="block font-medium mb-1">Video Memorial Package</span>
-                                        <span class="block text-sm text-gray-600 mb-1">Professional photo/video service</span>
-                                        <span class="text-yellow-600">₱15,000</span>
-                                    </label>
-                                </div>
-                                <div class="flex items-start border rounded-lg p-4">
-                                    <input type="checkbox" id="customTransport" name="additionalServices" value="8000" class="custom-addon h-5 w-5 text-yellow-600 rounded focus:ring-yellow-500 mt-1" data-name="Additional Transportation">
-                                    <label for="customTransport" class="ml-3">
-                                        <span class="block font-medium mb-1">Additional Transportation</span>
-                                        <span class="block text-sm text-gray-600 mb-1">For family members (up to 10 people)</span>
-                                        <span class="text-yellow-600">₱8,000</span>
-                                    </label>
-                                </div>
-                                <div class="flex items-start border rounded-lg p-4">
-                                    <input type="checkbox" id="customLiveStream" name="additionalServices" value="12000" class="custom-addon h-5 w-5 text-yellow-600 rounded focus:ring-yellow-500 mt-1" data-name="Live Streaming Service">
-                                    <label for="customLiveStream" class="ml-3">
-                                        <span class="block font-medium mb-1">Live Streaming Service</span>
-                                        <span class="block text-sm text-gray-600 mb-1">For remote family and friends</span>
-                                        <span class="text-yellow-600">₱12,000</span>
-                                    </label>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="additionalServicesContainer">
+                                <!-- Additional services will be loaded here via AJAX -->
+                                <div class="text-center py-4 col-span-2">
+                                    <i class="fas fa-spinner fa-spin text-xl text-yellow-600"></i>
+                                    <p class="mt-2">Loading additional services...</p>
                                 </div>
                             </div>
                         </div>
-
-                        <div class="mt-6">
-                            <label for="customNotes" class="block text-lg font-hedvig text-navy mb-2">Additional Notes</label>
-                            <textarea id="customNotes" name="notes" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500" placeholder="Any special requests or additional information you'd like us to know..."></textarea>
-                            <p class="text-sm text-gray-500 mt-1">Please include any special requests or requirements for your package.</p>
-                        </div>
-
-                    </div>
                     
                     <!-- Package Summary -->
                     <div class="mt-8 bg-white p-6 rounded-lg shadow">
@@ -2409,6 +2374,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function openCustomPackageModal() {
         // Reset selections
         resetCustomSelections();
+        fetchAdditionalServices();
         
         // Show the modal
         customPackageModal.classList.remove('hidden');
@@ -2477,6 +2443,63 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error('Error fetching caskets:', error);
                 document.getElementById('casketOptionsContainer').innerHTML = 
                     '<p class="text-red-500 col-span-3 text-center py-8">Error loading caskets. Please try again.</p>';
+            });
+    }
+
+    function fetchAdditionalServices() {
+        // Get the branch_id from session
+        const branchId = <?php echo isset($_SESSION['branch_loc']) ? json_encode($_SESSION['branch_loc']) : 'null'; ?>;
+        
+        // Make an AJAX request to fetch additional services
+        fetch(`booking/fetch_additional_services.php?branch_id=${branchId}`)
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('additionalServicesContainer');
+                container.innerHTML = '';
+                
+                if (data.length === 0) {
+                    container.innerHTML = '<p class="text-gray-500 col-span-2 text-center py-4">No additional services available for this branch.</p>';
+                    return;
+                }
+                
+                data.forEach(service => {
+                    const serviceElement = document.createElement('div');
+                    serviceElement.className = 'flex items-start border rounded-lg p-4';
+                    serviceElement.innerHTML = `
+                        <input type="checkbox" id="customService${service.addOns_id}" 
+                                name="additionalServices" value="${service.price}" 
+                                class="custom-addon h-5 w-5 text-yellow-600 rounded focus:ring-yellow-500 mt-1" 
+                                data-name="${service.addOns_name}" data-id="${service.addOns_id}">
+                        <label for="customService${service.addOns_id}" class="ml-3">
+                            <span class="block font-medium mb-1">${service.addOns_name}</span>
+                            <span class="block text-sm text-gray-600 mb-1">${service.description}</span>
+                            <span class="text-yellow-600">₱${parseInt(service.price).toLocaleString()}</span>
+                        </label>
+                    `;
+                    
+                    // Add event listener for the checkbox
+                    const checkbox = serviceElement.querySelector('input');
+                    checkbox.addEventListener('change', function() {
+                        // Update selected addons list
+                        selectedAddons = [];
+                        document.querySelectorAll('.custom-addon:checked').forEach(checked => {
+                            selectedAddons.push({
+                                id: checked.dataset.id,
+                                name: checked.dataset.name,
+                                price: parseInt(checked.value)
+                            });
+                        });
+                        
+                        updateCustomSummary();
+                    });
+                    
+                    container.appendChild(serviceElement);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching additional services:', error);
+                document.getElementById('additionalServicesContainer').innerHTML = 
+                    '<p class="text-red-500 col-span-2 text-center py-4">Error loading additional services. Please try again.</p>';
             });
     }
 
