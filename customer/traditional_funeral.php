@@ -2822,6 +2822,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const cremationCheckbox = document.getElementById('cremationCheckbox');
         if (cremationCheckbox.checked) {
             additionalCost += parseInt(cremationCheckbox.value);
+        } else {
+            additionalCost -= parseInt(cremationCheckbox.value);
         }
 
         const totalPrice = basePrice + additionalCost;
