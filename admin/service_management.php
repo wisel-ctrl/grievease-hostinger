@@ -1899,7 +1899,7 @@ window.addEventListener('popstate', function(event) {
                             <p class="text-sm text-gray-500 font-inter">Create a beautiful new add-on for your service</p>
                         </div>
                     </div>
-                    <button onclick="closeModal()" class="text-gray-400 hover:text-gold transition-colors duration-200 p-2 rounded-full hover:bg-gold/10">
+                    <button onclick="closeAddAddonsModal()" class="text-gray-400 hover:text-gold transition-colors duration-200 p-2 rounded-full hover:bg-gold/10">
                         <i class="fas fa-times text-lg"></i>
                     </button>
                 </div>
@@ -2004,7 +2004,7 @@ window.addEventListener('popstate', function(event) {
 
             <!-- Modal Footer -->
             <div class="bg-gradient-to-br from-navy to-cream px-6 py-4 border-t border-gold/10 flex flex-col sm:flex-row sm:justify-end space-y-3 sm:space-y-0 sm:space-x-3">
-                <button type="button" onclick="closeModal()" 
+                <button type="button" onclick="closeAddAddonsModal()" 
                     class="w-full sm:w-auto inline-flex justify-center items-center px-6 py-3 rounded-xl border-2 border-gray-300 bg-white text-dark font-inter font-medium hover:bg-gray-50 hover:border-gold/50 focus:outline-none focus:ring-4 focus:ring-gray-200 transition-all duration-300 transform hover:scale-105">
                     <i class="fas fa-times mr-2"></i>
                     Cancel
@@ -3142,7 +3142,7 @@ function openAddAddonsModal() {
 }
 
 // Function to close the modal
-function closeModal() {
+function closeAddAddonsModal() {
   document.getElementById('addAddonsModal').classList.add('hidden');
 }
 
