@@ -626,8 +626,9 @@ if ($branchResult->num_rows > 0) {
 }
 ?>
 
+<!-- Add-Ons Management Card -->
 <div class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden branch-container" 
-     data-branch-id="1" 
+     data-branch-id="addons" 
      data-total-services="5">
     <!-- Branch Header with Search and Filters -->
     <div class="bg-sidebar-hover p-4 border-b border-sidebar-border">
@@ -637,7 +638,7 @@ if ($branchResult->num_rows > 0) {
             <div class="flex items-center gap-3 mb-4 lg:mb-0">
                 <h4 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Add-Ons Management</h4>
                 
-                <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+                <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1" id="addonsTotalCount">
                     5
                 </span>
             </div>
@@ -646,40 +647,40 @@ if ($branchResult->num_rows > 0) {
             <div class="hidden lg:flex items-center gap-3">
                 <!-- Search Input -->
                 <div class="relative">
-                    <input type="text" id="searchInput1" 
-                           placeholder="Search services..." 
+                    <input type="text" id="searchInputAddons" 
+                           placeholder="Search add-ons..." 
                            value=""
                            class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent"
-                           oninput="debouncedFilter(1)">
+                           oninput="debouncedFilterAddons()">
                     <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
                 </div>
 
                 <!-- Filter Dropdown -->
                 <div class="relative filter-dropdown">
-                    <button id="filterToggle1" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover"
-                            onclick="toggleFilterWindow(1)">
+                    <button id="filterToggleAddons" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover"
+                            onclick="toggleFilterWindowAddons()">
                         <i class="fas fa-filter text-sidebar-accent"></i>
                         <span>Filters</span>
                     </button>
                     
                     <!-- Filter Window -->
-                    <div id="filterWindow1" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
+                    <div id="filterWindowAddons" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
                         <div class="space-y-4">
                             <!-- Status Filter -->
                             <div>
                                 <h5 class="text-sm font-medium text-sidebar-text mb-2">Status</h5>
                                 <div class="space-y-1">
-                                    <div class="flex items-center cursor-pointer" onclick="setFilter(1, 'status', '')">
+                                    <div class="flex items-center cursor-pointer" onclick="setFilterAddons('status', '')">
                                         <span class="filter-option bg-sidebar-accent text-white px-2 py-1 rounded text-sm w-full">
                                             All Statuses
                                         </span>
                                     </div>
-                                    <div class="flex items-center cursor-pointer" onclick="setFilter(1, 'status', 'Active')">
+                                    <div class="flex items-center cursor-pointer" onclick="setFilterAddons('status', 'Active')">
                                         <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
                                             Active
                                         </span>
                                     </div>
-                                    <div class="flex items-center cursor-pointer" onclick="setFilter(1, 'status', 'Inactive')">
+                                    <div class="flex items-center cursor-pointer" onclick="setFilterAddons('status', 'Inactive')">
                                         <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
                                             Inactive
                                         </span>
@@ -709,11 +710,11 @@ if ($branchResult->num_rows > 0) {
             <div class="flex items-center w-full gap-3 mb-4">
                 <!-- Search Input - Takes most of the space -->
                 <div class="relative flex-grow">
-                    <input type="text" id="searchInputMobile1" 
-                            placeholder="Search services..." 
+                    <input type="text" id="searchInputMobileAddons" 
+                            placeholder="Search add-ons..." 
                             value=""
                             class="pl-8 pr-3 py-2.5 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent"
-                            oninput="debouncedFilter(1)">
+                            oninput="debouncedFilterAddons()">
                     <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
                 </div>
 
@@ -721,10 +722,10 @@ if ($branchResult->num_rows > 0) {
                 <div class="flex items-center gap-3">
                     <!-- Filter Icon Button -->
                     <div class="relative filter-dropdown">
-                        <button id="serviceFilterToggle1" class="w-10 h-10 flex items-center justify-center text-sidebar-accent"
-                                onclick="toggleFilterWindow(1)">
+                        <button id="serviceFilterToggleAddons" class="w-10 h-10 flex items-center justify-center text-sidebar-accent"
+                                onclick="toggleFilterWindowAddons()">
                             <i class="fas fa-filter text-xl"></i>
-                            <span id="filterIndicator1" class="hidden absolute top-1 right-1 h-2 w-2 bg-sidebar-accent rounded-full"></span>
+                            <span id="filterIndicatorAddons" class="hidden absolute top-1 right-1 h-2 w-2 bg-sidebar-accent rounded-full"></span>
                         </button>
                     </div>
 
@@ -745,8 +746,8 @@ if ($branchResult->num_rows > 0) {
     </div>
     
     <!-- Responsive Table Container with improved spacing -->
-    <div class="overflow-x-auto scrollbar-thin" id="tableContainer1">
-        <div id="loadingIndicator1" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center">
+    <div class="overflow-x-auto scrollbar-thin" id="tableContainerAddons">
+        <div id="loadingIndicatorAddons" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center">
             <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
         </div>
         
@@ -755,81 +756,33 @@ if ($branchResult->num_rows > 0) {
             <table class="w-full">
                 <thead>
                     <tr class="bg-gray-50 border-b border-sidebar-border">
-                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(1, 0)">
-                            <div class="flex items-center gap-1.5">
-                                <i class="fas fa-hashtag text-sidebar-accent"></i> ID 
-                            </div>
-                        </th>
-                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(1, 1)">
-                            <div class="flex items-center gap-1.5">
-                                <i class="fas fa-tag text-sidebar-accent"></i> Service Name 
-                            </div>
-                        </th>
-                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(1, 2)">
-                            <div class="flex items-center gap-1.5">
-                                <i class="fas fa-peso-sign text-sidebar-accent"></i> Price 
-                            </div>
-                        </th>
-                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(1, 3)">
-                            <div class="flex items-center gap-1.5">
-                                <i class="fas fa-code-branch text-sidebar-accent"></i> Branch 
-                            </div>
-                        </th>
-                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(1, 4)">
-                            <div class="flex items-center gap-1.5">
-                                <i class="fas fa-toggle-on text-sidebar-accent"></i> Status 
-                            </div>
-                        </th>
-                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
-                            <div class="flex items-center gap-1.5">
-                                <i class="fas fa-cog text-sidebar-accent"></i> Actions 
-                            </div>
-                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text">ID</th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text">Name</th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text">Description</th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text">Icon</th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text">Price</th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text">Status</th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text">Actions</th>
                     </tr>
                 </thead>
-                <tbody id="addOnsTableBody">
-                    
+                <tbody id="addonTableBody">
+                    <!-- Rows will be populated by JavaScript -->
                 </tbody>
             </table>
         </div>
     </div>
     
-    <!-- Sticky Pagination Footer with improved spacing -->
+    <!-- Sticky Pagination Footer -->
     <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
-        <div id="paginationInfo_1" class="text-sm text-gray-500 text-center sm:text-left">
-            Showing 1 - 5 of 5 services
+        <div id="paginationInfo_addons" class="text-sm text-gray-500 text-center sm:text-left">
+            Loading add-ons...
         </div>
-        <div id="paginationContainer_1" class="flex space-x-2">
-            <button onclick="changePage(1, 1)" 
-                    class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 cursor-not-allowed"
-                    disabled>
-                &laquo;
-            </button>
-            
-            <button onclick="changePage(1, 1)" 
-                    class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 cursor-not-allowed"
-                    disabled>
-                &lsaquo;
-            </button>
-            
-            <button onclick="changePage(1, 1)" class="px-3.5 py-1.5 rounded text-sm bg-sidebar-accent text-white">
-                1
-            </button>
-            
-            <button onclick="changePage(1, 1)" 
-                    class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 cursor-not-allowed"
-                    disabled>
-                &rsaquo;
-            </button>
-            
-            <button onclick="changePage(1, 1)" 
-                    class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 cursor-not-allowed"
-                    disabled>
-                &raquo;
-            </button>
+        <div id="paginationContainer_addons" class="flex space-x-2">
+            <!-- Pagination buttons will be populated by JavaScript -->
         </div>
     </div>
 </div>
+    
 
 <script>
 // Global variable to track active filters
@@ -2924,117 +2877,235 @@ document.getElementById('editServiceImage').addEventListener('change', function(
     }
 });
 
-// Function to fetch and populate add-ons data
-// Function to fetch and populate add-ons data
+// Global variable for add-ons filters
+const addonsFilters = {
+    search: '',
+    status: '',
+    page: 1
+};
+
+// Debounced filter for add-ons search input
+const debouncedFilterAddons = debounce(function() {
+    addonsFilters.search = document.getElementById('searchInputAddons').value || 
+                           document.getElementById('searchInputMobileAddons').value;
+    addonsFilters.page = 1;
+    fetchAndPopulateAddOns();
+}, 300);
+
+// Toggle filter window for add-ons
+function toggleFilterWindowAddons() {
+    const filterWindow = document.getElementById('filterWindowAddons');
+    filterWindow.classList.toggle('hidden');
+}
+
+// Set filter for add-ons
+function setFilterAddons(type, value) {
+    if (type === 'status') {
+        addonsFilters.status = value;
+    }
+    
+    // Close the filter window
+    document.getElementById('filterWindowAddons').classList.add('hidden');
+    
+    // Apply the filter
+    addonsFilters.page = 1;
+    fetchAndPopulateAddOns();
+}
+
+// Change page for add-ons
+function changePageAddons(page) {
+    addonsFilters.page = page;
+    fetchAndPopulateAddOns();
+}
+
+// Modified fetchAndPopulateAddOns function with filtering
 function fetchAndPopulateAddOns() {
-    const tableBody = document.getElementById('addOnsTableBody');
-    const loadingIndicator = document.getElementById('loadingIndicator1');
-    const branchContainer = document.querySelector('.branch-container[data-branch-id="1"]');
-    
+    const tableBody = document.getElementById('addonTableBody');
+    const paginationContainer = document.getElementById('paginationContainer_addons');
+    const paginationInfo = document.getElementById('paginationInfo_addons');
+    const loadingIndicator = document.getElementById('loadingIndicatorAddons');
+    const totalCountElement = document.getElementById('addonsTotalCount');
+
     // Show loading indicator
-    loadingIndicator.classList.remove('hidden');
-    tableBody.innerHTML = '';
+    if (loadingIndicator) loadingIndicator.classList.remove('hidden');
+
+    // Prepare query parameters
+    const params = new URLSearchParams();
+    params.append('page', addonsFilters.page);
     
-    // Fetch data from PHP endpoint
-    fetch('servicesManagement/get_addOns.php')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            // Hide loading indicator
-            loadingIndicator.classList.add('hidden');
-            
-            if (data.error) {
-                console.error('Error:', data.error);
-                // Display error message in table
-                tableBody.innerHTML = `
-                    <tr>
-                        <td colspan="6" class="px-4 py-3.5 text-sm text-red-500 text-center">
-                            Error loading data: ${data.error}
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-            
-            // Update the counter
-            const counterElement = branchContainer.querySelector('.bg-sidebar-accent');
-            if (counterElement) {
-                counterElement.textContent = data.data.length;
-                // Also update the data attribute if needed
-                branchContainer.setAttribute('data-total-services', data.data.length);
-            }
-            
-            // Update the "Showing X of Y" text
-            const paginationInfo = document.getElementById('paginationInfo_1');
-            if (paginationInfo) {
-                paginationInfo.textContent = `Showing 1 - ${data.data.length} of ${data.data.length} add-ons`;
-            }
-            
-            // Populate the table
-            if (data.data.length === 0) {
-                tableBody.innerHTML = `
-                    <tr>
-                        <td colspan="6" class="px-4 py-3.5 text-sm text-gray-500 text-center">
-                            No add-ons found
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-            
-            data.data.forEach(addOn => {
-                const statusClass = addOn.status === 'active' ? 
-                    'bg-green-100 text-green-600 border-green-200' : 
-                    'bg-orange-100 text-orange-500 border-orange-200';
-                
-                const statusIcon = addOn.status === 'active' ? 
-                    'fa-check-circle' : 'fa-pause-circle';
-                
+    if (addonsFilters.search) {
+        params.append('search', addonsFilters.search);
+    }
+    if (addonsFilters.status) {
+        params.append('status', addonsFilters.status);
+    }
+
+    fetch(`servicesManagement/get_addOns.php?${params.toString()}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Hide loading indicator
+        if (loadingIndicator) loadingIndicator.classList.add('hidden');
+
+        if (data.error) {
+            console.error('Error:', data.error);
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="px-4 py-6 text-sm text-center">
+                        <div class="flex flex-col items-center">
+                            <i class="fas fa-exclamation-circle text-gray-300 text-4xl mb-3"></i>
+                            <p class="text-gray-500">Error loading add-ons</p>
+                        </div>
+                    </td>
+                </tr>`;
+            return;
+        }
+
+        // Update total count
+        if (totalCountElement) {
+            totalCountElement.textContent = data.totalRecords;
+        }
+
+        // Update dataset for pagination
+        const container = document.querySelector('.branch-container[data-branch-id="addons"]');
+        if (container) {
+            container.dataset.totalServices = data.totalRecords;
+        }
+
+        // Populate table
+        tableBody.innerHTML = '';
+        if (data.data.length === 0) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="px-4 py-6 text-sm text-center">
+                        <div class="flex flex-col items-center">
+                            <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
+                            <p class="text-gray-500">No add-ons found</p>
+                        </div>
+                    </td>
+                </tr>`;
+        } else {
+            data.data.forEach(addon => {
+                const statusClass = addon.status === 'active' 
+                    ? 'bg-green-100 text-green-600 border border-green-200' 
+                    : 'bg-orange-100 text-orange-500 border border-orange-200';
+                const statusIcon = addon.status === 'active' ? 'fa-check-circle' : 'fa-pause-circle';
+
                 const row = document.createElement('tr');
                 row.className = 'border-b border-sidebar-border hover:bg-sidebar-hover transition-colors';
                 row.innerHTML = `
-                    <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">#AO-${addOn.addOns_id.toString().padStart(3, '0')}</td>
+                    <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">AOS-${String(addon.addOns_id).padStart(3, '0')}</td>
+                    <td class="px-4 py-3.5 text-sm text-sidebar-text">${addon.addOns_name}</td>
+                    <td class="px-4 py-3.5 text-sm text-sidebar-text">${addon.description || 'N/A'}</td>
                     <td class="px-4 py-3.5 text-sm text-sidebar-text">
-                        ${addOn.icon ? `<i class="${addOn.icon} mr-2"></i>` : ''}
-                        ${addOn.addOns_name}
+                        <i class="${addon.icon} mr-2"></i>
                     </td>
-                    <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">${formatPrice(addOn.price)}</td>
-                    <td class="px-4 py-3.5 text-sm text-sidebar-text">${addOn.branch_name.replace(/\b\w/g, char => char.toUpperCase())}</td>
+                    <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">${formatPrice(addon.price)}</td>
                     <td class="px-4 py-3.5 text-sm">
-                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${statusClass} border">
-                            <i class="fas ${statusIcon} mr-1"></i> ${addOn.status.charAt(0).toUpperCase() + addOn.status.slice(1)}
+                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${statusClass}">
+                            <i class="fas ${statusIcon} mr-1"></i> ${addon.status.charAt(0).toUpperCase() + addon.status.slice(1)}
                         </span>
                     </td>
                     <td class="px-4 py-3.5 text-sm">
-                        <div class="flex items-center gap-2">
-                            <button class="text-blue-500 hover:text-blue-700" onclick="editAddOn(${addOn.addOns_id})">
+                        <div class="flex space-x-2">
+                            <button class="p-2 bg-yellow-100 text-yellow-600 rounded-lg hover:bg-yellow-200 transition-all tooltip" 
+                                    title="Edit Add-on" 
+                                    onclick="editAddOn(${addon.addOns_id})">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button class="text-red-500 hover:text-red-700" onclick="deleteAddOn(${addOn.addOns_id})">
-                                <i class="fas fa-trash-alt"></i>
+                            <button class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all tooltip" 
+                                    title="Archive Add-on" 
+                                    onclick="deleteAddOn(${addon.addOns_id})">
+                                <i class="fas fa-archive"></i>
                             </button>
                         </div>
-                    </td>
-                `;
+                    </td>`;
                 tableBody.appendChild(row);
             });
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            loadingIndicator.classList.add('hidden');
-            tableBody.innerHTML = `
-                <tr>
-                    <td colspan="6" class="px-4 py-3.5 text-sm text-red-500 text-center">
-                        Error loading data: ${error.message}
-                    </td>
-                </tr>
-            `;
-        });
+        }
+
+        // Update pagination info
+        const start = Math.min((data.currentPage - 1) * 5 + 1, data.totalRecords);
+        const end = Math.min(data.currentPage * 5, data.totalRecords);
+        paginationInfo.innerHTML = data.totalRecords > 0 
+            ? `Showing ${start} - ${end} of ${data.totalRecords} add-ons`
+            : 'No add-ons found';
+
+        // Generate pagination controls
+        paginationContainer.innerHTML = '';
+        if (data.totalPages > 1) {
+            // First page button
+            const firstButton = document.createElement('button');
+            firstButton.className = `px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover ${data.currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}`;
+            firstButton.innerHTML = '&laquo;';
+            firstButton.onclick = () => { if (data.currentPage !== 1) changePageAddons(1); };
+            if (data.currentPage === 1) firstButton.disabled = true;
+            paginationContainer.appendChild(firstButton);
+            
+            // Previous page button
+            const prevButton = document.createElement('button');
+            prevButton.className = `px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover ${data.currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}`;
+            prevButton.innerHTML = '&lsaquo;';
+            prevButton.onclick = () => { if (data.currentPage > 1) changePageAddons(data.currentPage - 1); };
+            if (data.currentPage === 1) prevButton.disabled = true;
+            paginationContainer.appendChild(prevButton);
+            
+            // Page numbers
+            let startPage = Math.max(1, data.currentPage - 2);
+            let endPage = Math.min(data.totalPages, startPage + 4);
+            
+            if (endPage - startPage < 4) {
+                startPage = Math.max(1, endPage - 4);
+            }
+            
+            for (let i = startPage; i <= endPage; i++) {
+                const pageButton = document.createElement('button');
+                pageButton.className = `px-3.5 py-1.5 rounded text-sm ${i === data.currentPage ? 'bg-sidebar-accent text-white' : 'border border-sidebar-border hover:bg-sidebar-hover'}`;
+                pageButton.textContent = i;
+                pageButton.onclick = () => changePageAddons(i);
+                paginationContainer.appendChild(pageButton);
+            }
+            
+            // Next page button
+            const nextButton = document.createElement('button');
+            nextButton.className = `px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover ${data.currentPage === data.totalPages ? 'opacity-50 cursor-not-allowed' : ''}`;
+            nextButton.innerHTML = '&rsaquo;';
+            nextButton.onclick = () => { if (data.currentPage < data.totalPages) changePageAddons(data.currentPage + 1); };
+            if (data.currentPage === data.totalPages) nextButton.disabled = true;
+            paginationContainer.appendChild(nextButton);
+            
+            // Last page button
+            const lastButton = document.createElement('button');
+            lastButton.className = `px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover ${data.currentPage === data.totalPages ? 'opacity-50 cursor-not-allowed' : ''}`;
+            lastButton.innerHTML = '&raquo;';
+            lastButton.onclick = () => { if (data.currentPage !== data.totalPages) changePageAddons(data.totalPages); };
+            if (data.currentPage === data.totalPages) lastButton.disabled = true;
+            paginationContainer.appendChild(lastButton);
+        }
+    })
+    .catch(error => {
+        console.error('Error fetching add-ons:', error);
+        if (loadingIndicator) loadingIndicator.classList.add('hidden');
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="7" class="px-4 py-6 text-sm text-center">
+                    <div class="flex flex-col items-center">
+                        <i class="fas fa-exclamation-circle text-gray-300 text-4xl mb-3"></i>
+                        <p class="text-gray-500">Error loading add-ons</p>
+                    </div>
+                </td>
+            </tr>`;
+    });
 }
+
+// Initialize add-ons table on page load
+document.addEventListener('DOMContentLoaded', function() {
+    fetchAndPopulateAddOns(1);
+});
 
 // Update the filter function to use the specific table body ID
 function filterAddOns(branchId) {
@@ -3086,22 +3157,21 @@ function deleteAddOn(id) {
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, delete it!"
+        confirmButtonText: "Yes, archive it!" // Changed text
     }).then((result) => {
         if (result.isConfirmed) {
-            // AJAX call to delete the add-on
+            // AJAX call to archive the add-on
             $.ajax({
-                url: 'servicesManagement/delete_addOns.php',
+                url: 'servicesManagement/delete_addOns.php', // This file archives, not deletes
                 type: 'POST',
                 data: { id: id },
                 success: function(response) {
                     if (response.success) {
                         Swal.fire(
-                            "Deleted!",
+                            "Archived!",
                             response.message,
                             "success"
                         ).then(() => {
-                            // Refresh the page or update the UI as needed
                             location.reload();
                         });
                     } else {
