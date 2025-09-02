@@ -618,7 +618,7 @@ if ($branchResult->num_rows > 0) {
         <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
             <!-- Title and Counter -->
             <div class="flex items-center gap-3 mb-4 lg:mb-0">
-                <h4 class="text-lg font-bold text-sidebar-text whitespace-nowrap"><?php echo $branchName; ?> - Expenses</h4>
+                <h4 class="text-lg font-bold text-sidebar-text whitespace-nowrap"><?php echo ucfirst($branchName); ?> - Expenses</h4>
                 
                 <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
                     <?php echo $totalBranchExpenses . ($totalBranchExpenses != 1 ? "" : ""); ?>
@@ -2258,8 +2258,5 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
   <script src="script.js"></script>
   <script src="tailwind.js"></script>
-  
-
-  
 </body>
 </html>
