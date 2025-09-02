@@ -197,7 +197,7 @@ $lifeplan_offset = ($lifeplan_current_page - 1) * $lifeplan_bookings_per_page;
                           if ($total_bookings > 0) {
                               echo $total_bookings . ($total_bookings != 1 ? "" : "");
                           } else {
-                              echo "No bookings";
+                              echo "0";
                           }
                         ?>
                     </span>
@@ -543,7 +543,7 @@ $lifeplan_offset = ($lifeplan_current_page - 1) * $lifeplan_bookings_per_page;
     if ($total_custom_bookings > 0) {
         echo $total_custom_bookings . ($total_custom_bookings != 1 ? "" : "");
     } else {
-        echo "No bookings";
+        echo "0";
     }
     ?>
 </span>
@@ -889,7 +889,7 @@ $lifeplan_offset = ($lifeplan_current_page - 1) * $lifeplan_bookings_per_page;
         if ($total_lifeplan_bookings > 0) {
             echo $total_lifeplan_bookings . ($total_lifeplan_bookings != 1 ? "" : "");
         } else {
-            echo "No bookings";
+            echo "0";
         }
         ?>
     </span>
@@ -5254,8 +5254,5 @@ lifeplanSearchInputs.forEach(id => {
 });
 
 </script>
-
-
-
 </body>
 </html>
