@@ -1458,15 +1458,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 <div id="comakerIdPreview" class="mt-3 hidden">
                   <p class="text-xs text-gray-700 mb-1">Preview:</p>
-                  <div class="border border-gray-200 rounded-lg p-2 flex items-center justify-between">
-                    <div class="flex items-center">
-                      <i class="fas fa-file-image text-sidebar-accent text-xl mr-2"></i>
-                      <div>
-                        <p id="comakerIdFileName" class="text-sm font-medium text-gray-700"></p>
-                        <p id="comakerIdFileSize" class="text-xs text-gray-500"></p>
-                      </div>
+                  <div class="border border-gray-200 rounded-lg p-2 flex items-center">
+                    <div class="mr-3" id="comakerIdPreviewImage">
+                      <!-- Image preview will be inserted here -->
                     </div>
-                    <button type="button" id="comakerIdRemove" class="text-red-500 hover:text-red-700">
+                    <div class="flex-1">
+                      <p id="comakerIdFileName" class="text-sm font-medium text-gray-700"></p>
+                      <p id="comakerIdFileSize" class="text-xs text-gray-500"></p>
+                    </div>
+                    <button type="button" id="comakerIdRemove" class="text-red-500 hover:text-red-700 ml-2">
                       <i class="fas fa-times"></i>
                     </button>
                   </div>
@@ -1575,6 +1575,7 @@ document.addEventListener('DOMContentLoaded', function() {
 document.addEventListener('DOMContentLoaded', function() {
   const comakerIdImage = document.getElementById('comakerIdImage');
   const comakerIdPreview = document.getElementById('comakerIdPreview');
+  const comakerIdPreviewImage = document.getElementById('comakerIdPreviewImage');
   const comakerIdFileName = document.getElementById('comakerIdFileName');
   const comakerIdFileSize = document.getElementById('comakerIdFileSize');
   const comakerIdRemove = document.getElementById('comakerIdRemove');
@@ -1601,6 +1602,29 @@ document.addEventListener('DOMContentLoaded', function() {
         // Display file info
         comakerIdFileName.textContent = file.name;
         comakerIdFileSize.textContent = formatFileSize(file.size);
+        
+        // Create preview for images
+        if (file.type.includes('image')) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            // Clear previous preview
+            comakerIdPreviewImage.innerHTML = '';
+            
+            // Create image element
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.alt = "ID Preview";
+            img.className = "w-16 h-16 object-cover rounded";
+            
+            // Add to preview container
+            comakerIdPreviewImage.appendChild(img);
+          };
+          reader.readAsDataURL(file);
+        } else {
+          // For PDF files, show a document icon
+          comakerIdPreviewImage.innerHTML = '<i class="fas fa-file-pdf text-3xl text-red-500"></i>';
+        }
+        
         comakerIdPreview.classList.remove('hidden');
       }
     });
@@ -1610,6 +1634,7 @@ document.addEventListener('DOMContentLoaded', function() {
     comakerIdRemove.addEventListener('click', function() {
       comakerIdImage.value = '';
       comakerIdPreview.classList.add('hidden');
+      comakerIdPreviewImage.innerHTML = '';
     });
   }
   
