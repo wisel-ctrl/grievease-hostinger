@@ -1736,6 +1736,16 @@ window.addEventListener('click', function(event) {
                                     // Set the search input to the customer's name
                                     document.getElementById('customerSearch').value = 
                                         `${customer.first_name} ${customer.last_name}`;
+                                } else {
+                                    // If no customerID, use the individual fields from the lifeplan data
+                                    document.getElementById('fname').value = data.fname || '';
+                                    document.getElementById('mname').value = data.mname || '';
+                                    document.getElementById('lname').value = data.lname || '';
+                                    document.getElementById('suffix').value = data.suffix || '';
+                                    document.getElementById('email').value = data.email || '';
+                                    document.getElementById('phone').value = data.phone || '';
+                                    
+                                    
                                 }
                             });
                     }
