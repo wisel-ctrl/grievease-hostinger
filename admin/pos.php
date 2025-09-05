@@ -3008,7 +3008,7 @@ function confirmLifeplanCheckout() {
   
   // Calculate balance
   const totalPrice = parseFloat(document.getElementById('lp-totalPrice').value) || 0;
-  const amountPaid = parseFloat(document.getElementById('lp-amountPaid').value) || 0;
+  const amountPaid = parseFloat(parseFloat(document.getElementById('lp-amountPaid').value).toFixed(2)) || 0;
   const balance = totalPrice - amountPaid;
   
   formData.set('balance', balance.toFixed(2));

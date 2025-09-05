@@ -85,7 +85,8 @@ try {
     // Pricing
     $initial_price = floatval($_POST['service_price']);
     $custom_price = floatval($_POST['totalPrice']);
-    $amount_paid = !empty($_POST['amountPaid']) ? floatval($_POST['amountPaid']) : 0.00;
+    $amount_paid = !empty($_POST['amountPaid']) ? 
+    (float) number_format((float)$_POST['amountPaid'], 2, '.', '') : 0.00;
 
     // Calculate dates and status
     $initial_date = date('Y-m-d');
