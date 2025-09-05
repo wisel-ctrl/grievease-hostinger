@@ -756,6 +756,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <input type="hidden" id="service-id" name="service_id" value="">
         <input type="hidden" id="service-price" name="service_price">
         <input type="hidden" id="branch-id" name="branch_id" value="">
+        <input type="hidden" id="deceasedAddress" name="deceased_address" value="">
 
         <!-- Client Information Section -->
         <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
@@ -2623,6 +2624,10 @@ function confirmCheckout() {
   const form = document.getElementById('checkoutForm');
   const formData = new FormData(form);
 
+  //address
+  const address = document.getElementById('deceasedAddress').value;
+  formData.append('deceasedAddress', address);
+
   const withCremation = document.getElementById('withCremation').checked;
   formData.append('withCremation', withCremation ? 'on' : 'off');
 
@@ -2690,9 +2695,28 @@ function confirmCheckout() {
   }
 
   // Payment validations
-  const servicePrice = parseFloat(document.getElementById('service-price').value) || 0;
-  const totalPrice = parseFloat(document.getElementById('totalPrice').value) || 0;
-  const amountPaid = parseFloat(document.getElementById('amountPaid').value) || 0;
+  const servicePrice = parseFloat(document.getElementById('service-price').value);
+  const totalPrice = parseFloat(document.getElementById('totalPrice').value);
+  const amountPaid = parseFloat(document.getElementById('amountPaid').value);
+
+  // Check if values are valid numbers
+  if (isNaN(servicePrice) || servicePrice <= 0) {
+    alert("Service price must be a valid positive number.");
+    document.getElementById('service-price').focus();
+    return;
+  }
+
+  if (isNaN(totalPrice) || totalPrice <= 0) {
+    alert("Total price must be a valid positive number.");
+    document.getElementById('totalPrice').focus();
+    return;
+  }
+
+  if (isNaN(amountPaid) || amountPaid < 0) {
+    alert("Amount paid must be a valid non-negative number.");
+    document.getElementById('amountPaid').focus();
+    return;
+  }
 
   // Validate total price is at least 50% of service price
   const minimumAllowedPrice = servicePrice * 0.5;
@@ -2713,7 +2737,7 @@ function confirmCheckout() {
 
   // Add service data (single service now instead of cart)
   formData.append('service_id', document.getElementById('service-id').value);
-  formData.append('sold_by', userId); // Assuming admin ID is 1
+  formData.append('sold_by', userId); 
   formData.append('status', 'Pending');
   
   // Calculate balance
