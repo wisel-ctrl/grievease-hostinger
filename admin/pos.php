@@ -2967,10 +2967,12 @@ function confirmLifeplanCheckout() {
   submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
   submitBtn.disabled = true;
 
-  // Validate required fields - USE THE CORRECT LP- PREFIXED IDs
+  // Validate required fields - ADDED CO-MAKER FIELDS
   const requiredFields = [
     'lp-clientFirstName', 'lp-clientLastName', 'lp-clientPhone',
-    'beneficiaryFirstName', 'beneficiaryLastName', 'beneficiaryRelationship'
+    'beneficiaryFirstName', 'beneficiaryLastName', 'beneficiaryRelationship',
+    'comakerFirstName', 'comakerLastName', 'comakerOccupation',
+    'comakerIdType', 'comakerIdNumber'
   ];
 
   for (const fieldId of requiredFields) {
@@ -2984,7 +2986,15 @@ function confirmLifeplanCheckout() {
     }
   }
 
-  // Rest of your function remains the same...
+  // Validate ID image
+  const idImageInput = document.getElementById('comakerIdImage');
+  if (!idImageInput.files || !idImageInput.files[0]) {
+    submitBtn.innerHTML = originalBtnText;
+    submitBtn.disabled = false;
+    alert('Please upload a valid ID image for the co-maker');
+    return;
+  }
+
   // Prepare data for submission
   const formData = new FormData(form);
 
@@ -3003,6 +3013,9 @@ function confirmLifeplanCheckout() {
   
   formData.set('balance', balance.toFixed(2));
   formData.set('payment_status', balance > 0 ? 'With Balance' : 'Fully Paid');
+
+  // Add the ID image file
+  formData.append('comakerIdImage', idImageInput.files[0]);
 
   console.log('Submitting the following form data:');
   for (let [key, value] of formData.entries()) {
