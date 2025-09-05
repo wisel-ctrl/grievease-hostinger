@@ -119,6 +119,8 @@ $branchesJson = json_encode($branches);
 $categoriesJson = json_encode($categories);
 $servicesJson = json_encode($allServices);
 
+$userId = $_SESSION['user_id'];
+
 
 ?>
 
@@ -2561,11 +2563,13 @@ function confirmLifeplanCheckout() {
   // Rest of your function remains the same...
   // Prepare data for submission
   const formData = new FormData(form);
+
+  let userId = <?php echo json_encode($userId); ?>;
   
   // Add additional fields that aren't in the form
   formData.set('service_id', document.getElementById('lp-service-id').value);
   formData.set('branch_id', document.getElementById('lp-branch-id').value);
-  formData.set('sold_by', 1); // Example admin ID
+  formData.set('sold_by', userId); // Example admin ID
   formData.set('withCremation', document.getElementById('lp-withCremation').checked ? 'on' : 'off');
   
   // Calculate balance
