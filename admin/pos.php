@@ -2709,9 +2709,11 @@ function confirmCheckout() {
     return;
   }
 
+  let userId = <?php echo json_encode($userId); ?>;
+
   // Add service data (single service now instead of cart)
   formData.append('service_id', document.getElementById('service-id').value);
-  formData.append('sold_by', 1); // Assuming admin ID is 1
+  formData.append('sold_by', userId); // Assuming admin ID is 1
   formData.append('status', 'Pending');
   
   // Calculate balance
