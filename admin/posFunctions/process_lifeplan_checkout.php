@@ -147,7 +147,7 @@ try {
     ");
 
     $stmt->bind_param(
-        "iiissssssssssssssssssdddsssssssssss",
+        "iiissssssssssssssssssdddssssssssss",
         $service_id, $branch_id, $sellerID, $fname, $mname, $lname, $suffix,
         $email, $phone, $initial_date, $end_date, $beneficiary_fname,
         $beneficiary_mname, $beneficiary_lname, $beneficiary_suffix,
