@@ -1399,6 +1399,80 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
               </div>
             </div>
+            
+            <!-- ID Image Upload Section -->
+            <div class="pt-4 border-t border-gray-200">
+              <h5 class="text-sm font-semibold text-gray-700 mb-3 flex items-center">
+                <i class="fas fa-id-card mr-2 text-sidebar-accent"></i> Identification Document
+              </h5>
+              
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label for="comakerIdType" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                    ID Type <span class="text-red-500">*</span>
+                  </label>
+                  <select id="comakerIdType" name="comakerIdType" required 
+                          class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                    <option value="" disabled selected>Select ID Type</option>
+                    <option value="Passport">Passport</option>
+                    <option value="Driver's License">Driver's License</option>
+                    <option value="SSS ID">SSS ID</option>
+                    <option value="PhilHealth ID">PhilHealth ID</option>
+                    <option value="TIN ID">TIN ID</option>
+                    <option value="Postal ID">Postal ID</option>
+                    <option value="Voter's ID">Voter's ID</option>
+                    <option value="PRC ID">PRC ID</option>
+                    <option value="UMID">Unified Multi-Purpose ID (UMID)</option>
+                    <option value="Company ID">Company ID</option>
+                    <option value="School ID">School ID</option>
+                    <option value="Other">Other Government-Issued ID</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label for="comakerIdNumber" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                    ID Number <span class="text-red-500">*</span>
+                  </label>
+                  <input type="text" id="comakerIdNumber" name="comakerIdNumber" required 
+                         class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                         placeholder="Enter ID number">
+                </div>
+              </div>
+              
+              <div class="mt-4">
+                <label class="block text-xs font-medium text-gray-700 mb-2 flex items-center">
+                  Upload ID Image <span class="text-red-500">*</span>
+                  <span class="text-xs text-gray-500 ml-2">(Max 5MB, JPG, PNG or PDF)</span>
+                </label>
+                
+                <div class="flex items-center justify-center w-full">
+                  <label for="comakerIdImage" class="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors duration-200">
+                    <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                      <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                      <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload</span> or drag and drop</p>
+                      <p class="text-xs text-gray-500">JPG, PNG, PDF (Max 5MB)</p>
+                    </div>
+                    <input id="comakerIdImage" name="comakerIdImage" type="file" class="hidden" accept=".jpg,.jpeg,.png,.pdf" required />
+                  </label>
+                </div>
+                
+                <div id="comakerIdPreview" class="mt-3 hidden">
+                  <p class="text-xs text-gray-700 mb-1">Preview:</p>
+                  <div class="border border-gray-200 rounded-lg p-2 flex items-center justify-between">
+                    <div class="flex items-center">
+                      <i class="fas fa-file-image text-sidebar-accent text-xl mr-2"></i>
+                      <div>
+                        <p id="comakerIdFileName" class="text-sm font-medium text-gray-700"></p>
+                        <p id="comakerIdFileSize" class="text-xs text-gray-500"></p>
+                      </div>
+                    </div>
+                    <button type="button" id="comakerIdRemove" class="text-red-500 hover:text-red-700">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
   
@@ -1495,6 +1569,59 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
   </div>
 </div>
+
+<script>
+// Function to handle ID image upload preview
+document.addEventListener('DOMContentLoaded', function() {
+  const comakerIdImage = document.getElementById('comakerIdImage');
+  const comakerIdPreview = document.getElementById('comakerIdPreview');
+  const comakerIdFileName = document.getElementById('comakerIdFileName');
+  const comakerIdFileSize = document.getElementById('comakerIdFileSize');
+  const comakerIdRemove = document.getElementById('comakerIdRemove');
+  
+  if (comakerIdImage) {
+    comakerIdImage.addEventListener('change', function(event) {
+      const file = event.target.files[0];
+      if (file) {
+        // Check file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+          alert('File size exceeds 5MB limit. Please choose a smaller file.');
+          this.value = '';
+          return;
+        }
+        
+        // Check file type
+        const validTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+        if (!validTypes.includes(file.type)) {
+          alert('Please select a JPG, PNG, or PDF file.');
+          this.value = '';
+          return;
+        }
+        
+        // Display file info
+        comakerIdFileName.textContent = file.name;
+        comakerIdFileSize.textContent = formatFileSize(file.size);
+        comakerIdPreview.classList.remove('hidden');
+      }
+    });
+  }
+  
+  if (comakerIdRemove) {
+    comakerIdRemove.addEventListener('click', function() {
+      comakerIdImage.value = '';
+      comakerIdPreview.classList.add('hidden');
+    });
+  }
+  
+  function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
+});
+</script>
 
     <!-- Order Confirmation Modal -->
 <div id="confirmation-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
