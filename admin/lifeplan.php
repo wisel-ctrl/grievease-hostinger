@@ -1746,10 +1746,6 @@ window.addEventListener('click', function(event) {
                         document.getElementById('suffix').value = data.suffix || '';
                         document.getElementById('email').value = data.email || '';
                         document.getElementById('phone').value = data.phone || '';
-                        
-                        // Set the search input to the customer's name
-                        document.getElementById('customerSearch').value = 
-                            `${data.fname || ''} ${data.lname || ''}`.trim();
                     }
                     
                     // Populate beneficiary fields
