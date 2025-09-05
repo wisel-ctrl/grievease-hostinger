@@ -1111,6 +1111,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <input type="hidden" id="lp-service-price" name="service_price">
         <input type="hidden" id="lp-branch-id" name="branch_id" value="">
         <input type="hidden" id="beneficiaryAddress" name="beneficiaryAddress" value="">
+        <input type="hidden" id="comakerAddress" name="comakerAddress" value="">
 
         <!-- Client Information Section -->
         <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
@@ -1387,7 +1388,7 @@ document.addEventListener('DOMContentLoaded', function() {
                   <label for="comakerStreet" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                     Street Address <span class="text-red-500">*</span>
                   </label>
-                  <input type="text" id="comakerStreet" name="comakerAddress" required 
+                  <input type="text" id="comakerStreet" name="comakerStreet" required 
                          class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
                 </div>
                 <div>
@@ -1909,6 +1910,162 @@ document.addEventListener('DOMContentLoaded', function() {
       
       
       // LIFE-PLAN 
+
+// Fetch co-maker regions
+function fetchComakerRegions() {
+    fetch('../customer/address/get_regions.php')
+        .then(response => response.json())
+        .then(data => {
+            const regionSelect = document.getElementById('comakerRegion');
+            regionSelect.innerHTML = '<option value="" disabled selected>Select Region</option>';
+            
+            data.forEach(region => {
+                const option = document.createElement('option');
+                option.value = region.region_id;
+                option.textContent = region.region_name;
+                regionSelect.appendChild(option);
+            });
+        })
+        .catch(error => console.error('Error fetching regions:', error));
+}
+
+// Fetch co-maker provinces based on region
+function fetchComakerProvinces(regionId) {
+    const provinceSelect = document.getElementById('comakerProvince');
+    provinceSelect.innerHTML = '<option value="" disabled selected>Select Province</option>';
+    provinceSelect.disabled = true;
+    
+    if (!regionId) return;
+    
+    fetch(`../customer/address/get_provinces.php?region_id=${regionId}`)
+        .then(response => response.json())
+        .then(data => {
+            provinceSelect.innerHTML = '<option value="" disabled selected>Select Province</option>';
+            
+            data.forEach(province => {
+                const option = document.createElement('option');
+                option.value = province.province_id;
+                option.textContent = province.province_name;
+                provinceSelect.appendChild(option);
+            });
+            
+            provinceSelect.disabled = false;
+        })
+        .catch(error => console.error('Error fetching provinces:', error));
+}
+
+// Fetch co-maker cities based on province
+function fetchComakerCities(provinceId) {
+    const citySelect = document.getElementById('comakerCity');
+    citySelect.innerHTML = '<option value="" disabled selected>Select City/Municipality</option>';
+    citySelect.disabled = true;
+    
+    if (!provinceId) return;
+    
+    fetch(`../customer/address/get_cities.php?province_id=${provinceId}`)
+        .then(response => response.json())
+        .then(data => {
+            citySelect.innerHTML = '<option value="" disabled selected>Select City/Municipality</option>';
+            
+            data.forEach(city => {
+                const option = document.createElement('option');
+                option.value = city.municipality_id;
+                option.textContent = city.municipality_name;
+                citySelect.appendChild(option);
+            });
+            
+            citySelect.disabled = false;
+        })
+        .catch(error => console.error('Error fetching cities:', error));
+}
+
+// Fetch co-maker barangays based on city
+function fetchComakerBarangays(cityId) {
+    const barangaySelect = document.getElementById('comakerBarangay');
+    barangaySelect.innerHTML = '<option value="" disabled selected>Select Barangay</option>';
+    barangaySelect.disabled = true;
+    
+    if (!cityId) return;
+    
+    fetch(`../customer/address/get_barangays.php?city_id=${cityId}`)
+        .then(response => response.json())
+        .then(data => {
+            barangaySelect.innerHTML = '<option value="" disabled selected>Select Barangay</option>';
+            
+            data.forEach(barangay => {
+                const option = document.createElement('option');
+                option.value = barangay.barangay_id;
+                option.textContent = barangay.barangay_name;
+                barangaySelect.appendChild(option);
+            });
+            
+            barangaySelect.disabled = false;
+        })
+        .catch(error => console.error('Error fetching barangays:', error));
+}
+
+// Update the combined address for co-maker
+function updateComakerCombinedAddress() {
+    const regionSelect = document.getElementById('comakerRegion');
+    const provinceSelect = document.getElementById('comakerProvince');
+    const citySelect = document.getElementById('comakerCity');
+    const barangaySelect = document.getElementById('comakerBarangay');
+    const streetAddress = document.getElementById('comakerStreet').value;
+    const zipCode = document.getElementById('comakerZip').value;
+    
+    const region = regionSelect.options[regionSelect.selectedIndex]?.text || '';
+    const province = provinceSelect.options[provinceSelect.selectedIndex]?.text || '';
+    const city = citySelect.options[citySelect.selectedIndex]?.text || '';
+    const barangay = barangaySelect.options[barangaySelect.selectedIndex]?.text || '';
+    
+    const addressParts = [];
+    if (streetAddress) addressParts.push(streetAddress);
+    if (barangay) addressParts.push(barangay);
+    if (city) addressParts.push(city);
+    if (province) addressParts.push(province);
+    if (region) addressParts.push(region);
+    if (zipCode) addressParts.push(zipCode);
+    
+    const combinedAddress = addressParts.join(', ');
+    // If you have a hidden field for the comaker address, update it here
+    document.getElementById('comakerAddress').value = combinedAddress;
+}
+
+// Initialize co-maker address dropdowns
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize both beneficiary and co-maker regions
+    fetchBeneficiaryRegions();
+    fetchComakerRegions();
+    
+    // Set up event listeners for co-maker cascading dropdowns
+    document.getElementById('comakerRegion').addEventListener('change', function() {
+        fetchComakerProvinces(this.value);
+        document.getElementById('comakerProvince').value = '';
+        document.getElementById('comakerCity').value = '';
+        document.getElementById('comakerBarangay').value = '';
+        document.getElementById('comakerCity').disabled = true;
+        document.getElementById('comakerBarangay').disabled = true;
+        updateComakerCombinedAddress();
+    });
+    
+    document.getElementById('comakerProvince').addEventListener('change', function() {
+        fetchComakerCities(this.value);
+        document.getElementById('comakerCity').value = '';
+        document.getElementById('comakerBarangay').value = '';
+        document.getElementById('comakerBarangay').disabled = true;
+        updateComakerCombinedAddress();
+    });
+    
+    document.getElementById('comakerCity').addEventListener('change', function() {
+        fetchComakerBarangays(this.value);
+        document.getElementById('comakerBarangay').value = '';
+        updateComakerCombinedAddress();
+    });
+    
+    document.getElementById('comakerBarangay').addEventListener('change', updateComakerCombinedAddress);
+    document.getElementById('comakerStreet').addEventListener('input', updateComakerCombinedAddress);
+    document.getElementById('comakerZip').addEventListener('input', updateComakerCombinedAddress);
+});
       // Address handling functions for beneficiary
 function fetchBeneficiaryRegions() {
     fetch('../customer/address/get_regions.php')
