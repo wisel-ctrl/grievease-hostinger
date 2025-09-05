@@ -110,7 +110,7 @@
                         </div>
                     </div>
                     
-                    <div class="flex items-center text-xs text-gray-500 -mt-2 ml-1" id="ageRequirement" style="display:none;">
+                    <div class="flex items-center text-xs text-gray-500 -mt-2 ml-1" id="ageRequirement">
                         <i class="fas fa-info-circle mr-1"></i>
                         <span>Must be 18 years or older</span>
                     </div>
