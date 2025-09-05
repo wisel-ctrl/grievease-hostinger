@@ -873,7 +873,7 @@ document.addEventListener('DOMContentLoaded', function() {
               </div>
               <div>
                 <label for="dateOfBurial" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                  Date of Burial/Cremation <span class="text-xs text-gray-500">(Optional)</span>
+                  Interment/Cremation Date <span class="text-xs text-gray-500">(Optional)</span>
                 </label>
                 <input type="date" id="dateOfBurial" name="dateOfBurial" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
