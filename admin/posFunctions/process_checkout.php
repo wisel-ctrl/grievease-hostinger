@@ -1,6 +1,6 @@
 <?php
 // Database connection
-include '../db_connect.php';
+include '../../db_connect.php';
 
 // Set default timezone
 date_default_timezone_set('Asia/Manila');
