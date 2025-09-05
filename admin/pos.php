@@ -1288,6 +1288,119 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
           </div>
         </div>
+
+        <!-- Co-Maker Information Section -->
+        <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
+          <h4 class="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4 pb-2 border-b border-gray-200 flex items-center">
+            Co-Maker Information
+          </h4>
+          <div class="space-y-3 sm:space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-2 sm:gap-4">
+              <div>
+                <label for="comakerFirstName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  First Name
+                </label>
+                <input type="text" id="comakerFirstName" name="comakerFirstName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              </div>
+              <div>
+                <label for="comakerMiddleName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  Middle Name <span class="text-xs text-gray-500">(Optional)</span>
+                </label>
+                <input type="text" id="comakerMiddleName" name="comakerMiddleName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              </div>
+              <div>
+                <label for="comakerLastName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  Last Name
+                </label>
+                <input type="text" id="comakerLastName" name="comakerLastName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              </div>
+              <div>
+                <label for="comakerSuffix" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  Suffix <span class="text-xs text-gray-500">(Optional)</span>
+                </label>
+                <select id="comakerSuffix" name="comakerSuffix" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                  <option value="">None</option>
+                  <option value="Jr.">Jr.</option>
+                  <option value="Sr.">Sr.</option>
+                  <option value="I">I</option>
+                  <option value="II">II</option>
+                  <option value="III">III</option>
+                  <option value="IV">IV</option>
+                  <option value="V">V</option>
+                </select>
+              </div>
+            </div>
+            
+            <div>
+              <label for="comakerOccupation" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                Occupation/Work
+              </label>
+              <input type="text" id="comakerOccupation" name="comakerOccupation" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+            </div>
+            
+            <!-- New Address Dropdown Hierarchy -->
+            <div class="space-y-3">
+              <div class="grid grid-cols-1 md:grid-cols-4 gap-2 sm:gap-4">
+                <div>
+                  <label for="comakerRegion" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                    Region <span class="text-red-500">*</span>
+                  </label>
+                  <select id="comakerRegion" name="comakerRegion" required 
+                          class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                    <option value="" disabled selected>Select Region</option>
+                    <?php foreach ($regions as $region): ?>
+                      <option value="<?php echo $region['region_code']; ?>"><?php echo $region['region_name']; ?></option>
+                    <?php endforeach; ?>
+                  </select>
+                </div>
+                <div>
+                  <label for="comakerProvince" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                    Province <span class="text-red-500">*</span>
+                  </label>
+                  <select id="comakerProvince" name="comakerProvince" required disabled
+                          class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                    <option value="" disabled selected>Select Province</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="comakerCity" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                    City/Municipality <span class="text-red-500">*</span>
+                  </label>
+                  <select id="comakerCity" name="comakerCity" required disabled
+                          class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                    <option value="" disabled selected>Select City/Municipality</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="comakerBarangay" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                    Barangay <span class="text-red-500">*</span>
+                  </label>
+                  <select id="comakerBarangay" name="comakerBarangay" required disabled
+                          class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                    <option value="" disabled selected>Select Barangay</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-4">
+                <div class="md:col-span-2">
+                  <label for="comakerStreet" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                    Street Address <span class="text-red-500">*</span>
+                  </label>
+                  <input type="text" id="comakerStreet" name="comakerAddress" required 
+                         class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                </div>
+                <div>
+                  <label for="comakerZip" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                    ZIP Code <span class="text-red-500">*</span>
+                  </label>
+                  <input type="text" id="comakerZip" name="comakerZip" required 
+                         class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
   
         <!-- Payment Information -->
         <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
