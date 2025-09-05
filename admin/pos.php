@@ -627,6 +627,15 @@ function initializeAllValidations() {
   document.getElementById('beneficiaryLastName')?.addEventListener('input', function() {
     validateNameInput(this, true);
   });
+  document.getElementById('comakerFirstName')?.addEventListener('input', function() {
+    validateNameInput(this, true);
+  });
+  document.getElementById('comakerMiddleName')?.addEventListener('input', function() {
+    validateNameInput(this, false);
+  });
+  document.getElementById('comakerLastName')?.addEventListener('input', function() {
+    validateNameInput(this, true);
+  });
   
   // Address fields validation
   document.getElementById('beneficiaryStreet')?.addEventListener('input', function() {
