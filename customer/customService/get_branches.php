@@ -19,9 +19,12 @@ $branches = [];
 
 if ($result) {
     while ($row = $result->fetch_assoc()) {
+        // Capitalize only the first letter of each word
+        $capitalizedName = ucwords(strtolower($row['branch_name']));
+        
         $branches[] = [
             'id' => $row['branch_id'],
-            'name' => $row['branch_name']
+            'name' => $capitalizedName
         ];
     }
     echo json_encode(['success' => true, 'branches' => $branches]);

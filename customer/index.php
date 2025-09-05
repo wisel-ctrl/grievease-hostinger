@@ -1177,6 +1177,80 @@ document.addEventListener('DOMContentLoaded', function() {
     const mobileMenu = document.getElementById('mobile-menu');
     mobileMenu.classList.toggle('hidden');
 }
+
+// Branch Selection Modal Logic
+document.addEventListener('DOMContentLoaded', function() {
+    const branchModal = document.getElementById('branch-modal');
+    const branchOptions = document.getElementById('branch-options');
+    const overlay = document.getElementById('overlay');
+    
+    // Check if user needs to select a branch
+    <?php if ($user['branch_loc'] === 'unknown'): ?>
+    // Show branch modal on page load if branch is unknown
+    setTimeout(() => {
+        showBranchModal();
+    }, 1000);
+    <?php endif; ?>
+
+    // Function to show branch modal
+    async function showBranchModal() {
+        // Show loading state
+        branchOptions.innerHTML = '<div class="text-center py-4"><i class="fas fa-spinner fa-spin"></i> Loading branches...</div>';
+        branchModal.classList.remove('hidden');
+        overlay.classList.remove('hidden');
+        
+        try {
+            // Fetch branches from server
+            const response = await fetch('customService/get_branches.php');
+            const data = await response.json();
+            
+            if (data.success) {
+                // Clear loading state and add branch buttons
+                branchOptions.innerHTML = '';
+                
+                data.branches.forEach(branch => {
+                    const branchDiv = document.createElement('div');
+                    branchDiv.className = 'p-3 border rounded-lg hover:bg-gray-100 cursor-pointer transition';
+                    branchDiv.innerHTML = `
+                        <p class="font-medium">${branch.name}</p>
+                    `;
+                    
+                    branchDiv.addEventListener('click', async function() {
+                        // Save branch selection
+                        const saveResponse = await fetch('customService/save_branch.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                branch: branch.id,
+                                user_id: <?php echo $user_id; ?>
+                            })
+                        });
+                        
+                        const saveData = await saveResponse.json();
+                        
+                        if (saveData.success) {
+                            // Close modal and refresh page
+                            branchModal.classList.add('hidden');
+                            overlay.classList.add('hidden');
+                            location.reload();
+                        } else {
+                            alert('Error saving branch selection');
+                        }
+                    });
+                    
+                    branchOptions.appendChild(branchDiv);
+                });
+            } else {
+                branchOptions.innerHTML = '<div class="text-red-500 text-sm py-2">Failed to load branches. Please try again later.</div>';
+            }
+        } catch (error) {
+            console.error('Error loading branches:', error);
+            branchOptions.innerHTML = '<div class="text-red-500 text-sm py-2">Error loading branches. Please refresh the page.</div>';
+        }
+    }
+});
 </script>
         <?php include 'customService/chat_elements.html'; ?>
 
