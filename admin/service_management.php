@@ -3374,12 +3374,11 @@ function loadFontAwesomeIcons(searchTerm = '') {
     iconItem.className = 'icon-item group flex flex-col items-center p-3 rounded-xl border-2 border-gray-200 cursor-pointer transition-all duration-300 hover:border-gold hover:bg-gold/10 hover:scale-110 hover:shadow-gold bg-white/70 backdrop-blur-sm';
     iconItem.dataset.icon = icon;
     
-    // Enhanced icon display with better spacing and typography
+    // Icon display inside a circle
     iconItem.innerHTML = `
-      <div class="w-8 h-8 flex items-center justify-center mb-2 transition-colors duration-200">
-        <i class="fas ${icon} text-lg text-gray-600 group-hover:text-gold transition-colors duration-200"></i>
+      <div class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 group-hover:bg-sidebar-accent transition-colors duration-200">
+        <i class="fas ${icon} text-lg text-gray-600 group-hover:text-white transition-colors duration-200"></i>
       </div>
-      <span class="text-xs text-center font-inter font-medium text-gray-600 group-hover:text-dark transition-colors duration-200 leading-tight max-w-full truncate" title="${iconName}">${iconName}</span>
     `;
     
     // Enhanced click handler with smooth animations
@@ -3495,10 +3494,9 @@ function filterIconsByCategory(category = 'all') {
       iconItem.className = 'icon-item group flex flex-col items-center p-3 rounded-xl border-2 border-gray-200 cursor-pointer transition-all duration-300 hover:border-gold hover:bg-gold/10 hover:scale-110 hover:shadow-gold bg-white/70 backdrop-blur-sm';
       iconItem.dataset.icon = icon;
       iconItem.innerHTML = `
-        <div class="w-8 h-8 flex items-center justify-center mb-2 transition-colors duration-200">
-          <i class="fas ${icon} text-lg text-gray-600 group-hover:text-gold transition-colors duration-200"></i>
+        <div class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 group-hover:bg-sidebar-accent transition-colors duration-200">
+          <i class="fas ${icon} text-lg text-gray-600 group-hover:text-white transition-colors duration-200"></i>
         </div>
-        <span class="text-xs text-center font-inter font-medium text-gray-600 group-hover:text-dark transition-colors duration-200 leading-tight max-w-full truncate" title="${iconName}">${iconName}</span>
       `;
       
       // Add the same click handler logic
