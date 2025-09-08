@@ -1131,7 +1131,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="grid grid-cols-1 md:grid-cols-4 gap-2 sm:gap-4">
               <div>
                 <label for="lp-clientFirstName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                  First Name
+                  First Name <span class="text-red-500">*</span>
                 </label>
                 <input type="text" id="lp-clientFirstName" name="clientFirstName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
@@ -1143,7 +1143,7 @@ document.addEventListener('DOMContentLoaded', function() {
               </div>
               <div>
                 <label for="lp-clientLastName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                  Last Name
+                  Last Name <span class="text-red-500">*</span>
                 </label>
                 <input type="text" id="lp-clientLastName" name="clientLastName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
@@ -1166,7 +1166,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-4">
               <div>
                 <label for="lp-clientPhone" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                  Phone Number
+                  Phone Number <span class="text-red-500">*</span>
                 </label>
                 <input type="tel" id="lp-clientPhone" name="clientPhone" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" minlength="11" maxlength="11">
               </div>
@@ -1189,7 +1189,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="grid grid-cols-1 md:grid-cols-4 gap-2 sm:gap-4">
               <div>
                 <label for="beneficiaryFirstName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                  First Name
+                  First Name <span class="text-red-500">*</span>
                 </label>
                 <input type="text" id="beneficiaryFirstName" name="beneficiaryFirstName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
@@ -1201,7 +1201,7 @@ document.addEventListener('DOMContentLoaded', function() {
               </div>
               <div>
                 <label for="beneficiaryLastName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                  Last Name
+                  Last Name <span class="text-red-500">*</span>
                 </label>
                 <input type="text" id="beneficiaryLastName" name="beneficiaryLastName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
@@ -1302,13 +1302,13 @@ document.addEventListener('DOMContentLoaded', function() {
         <!-- Co-Maker Information Section -->
         <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
           <h4 class="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4 pb-2 border-b border-gray-200 flex items-center">
-            Co-Maker Information
+            Co-Maker Information 
           </h4>
           <div class="space-y-3 sm:space-y-4">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-2 sm:gap-4">
               <div>
                 <label for="comakerFirstName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                  First Name
+                  First Name <span class="text-red-500">*</span>
                 </label>
                 <input type="text" id="comakerFirstName" name="comakerFirstName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
@@ -1320,7 +1320,7 @@ document.addEventListener('DOMContentLoaded', function() {
               </div>
               <div>
                 <label for="comakerLastName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                  Last Name
+                  Last Name <span class="text-red-500">*</span>
                 </label>
                 <input type="text" id="comakerLastName" name="comakerLastName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
@@ -1343,7 +1343,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             <div>
               <label for="comakerOccupation" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                Occupation/Work
+                Occupation/Work <span class="text-red-500">*</span>
               </label>
               <input type="text" id="comakerOccupation" name="comakerOccupation" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
             </div>
