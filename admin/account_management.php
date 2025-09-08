@@ -681,68 +681,6 @@ document.addEventListener('DOMContentLoaded', function() {
     setupFilterOptions(filterOptions, filterDropdown);
     setupFilterOptions(filterOptionsMobile, filterDropdownMobile);
 });
-
-
-// Add this function to handle search input validation
-function validateSearchInput(inputElement) {
-    let lastValue = inputElement.value;
-    
-    inputElement.addEventListener('input', function() {
-        // Remove multiple consecutive spaces
-        let newValue = this.value.replace(/\s{2,}/g, ' ');
-        
-        // Don't allow space as first character
-        if (newValue.startsWith(' ')) {
-            newValue = newValue.substring(1);
-        }
-        
-        // Don't allow space until at least 2 characters are entered
-        if (newValue.length < 2 && newValue.includes(' ')) {
-            newValue = newValue.replace(/\s/g, '');
-        }
-        
-        // Update the field value if it changed
-        if (newValue !== this.value) {
-            this.value = newValue;
-        }
-        
-        lastValue = this.value;
-    });
-    
-    // Prevent paste of content with invalid spacing
-    inputElement.addEventListener('paste', function(e) {
-        e.preventDefault();
-        const pastedText = (e.clipboardData || window.clipboardData).getData('text');
-        
-        // Clean the pasted text
-        let cleanedText = pastedText.replace(/\s{2,}/g, ' ');
-        if (cleanedText.startsWith(' ')) {
-            cleanedText = cleanedText.substring(1);
-        }
-        if (cleanedText.length < 2 && cleanedText.includes(' ')) {
-            cleanedText = cleanedText.replace(/\s/g, '');
-        }
-        
-        document.execCommand('insertText', false, cleanedText);
-    });
-}
-
-// Apply validation to all search inputs
-document.addEventListener('DOMContentLoaded', function() {
-    // Customer search inputs
-    const customerSearchInput = document.getElementById('customerSearchInput');
-    const customerSearchInputMobile = document.getElementById('customerSearchInputMobile');
-    
-    if (customerSearchInput) validateSearchInput(customerSearchInput);
-    if (customerSearchInputMobile) validateSearchInput(customerSearchInputMobile);
-    
-    // Employee search inputs
-    const searchInput = document.getElementById('searchInput');
-    const searchInputMobile = document.getElementById('searchInputMobile');
-    
-    if (searchInput) validateSearchInput(searchInput);
-    if (searchInputMobile) validateSearchInput(searchInputMobile);
-});
 </script>
 
 
