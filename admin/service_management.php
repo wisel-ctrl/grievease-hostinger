@@ -2060,72 +2060,86 @@ window.addEventListener('popstate', function(event) {
   </div>
 </div>
 
-    <div id="archivedModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-        <div class="bg-white rounded-xl shadow-2xl w-11/12 max-w-6xl max-h-[90vh] overflow-hidden slide-down">
-            <!-- Modal Header -->
-            <div class="flex justify-between items-center bg-blue-500 text-white p-6">
-                <h2 class="text-2xl font-bold">Archived Add-Ons</h2>
-                <button onclick="closeModal()" class="text-white hover:text-gray-200 text-2xl">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            
-            <!-- Search and Filter Section -->
-            <div class="p-4 bg-gray-50 border-b flex flex-wrap gap-4">
-                <div class="relative flex-1 min-w-[200px]">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <i class="fas fa-search text-gray-400"></i>
-                    </div>
-                    <input type="text" id="searchInput" placeholder="Search archived add-ons..." 
-                    oninput="handleSearch()"
-                    class="pl-10 pr-4 py-2 w-full border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                </div>
-                <div class="flex gap-2">
-                    <select id="branchFilter" class="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" onchange="handleSearch()">
-                        <option value="">All Branches</option>
-                        <!-- Options will be populated dynamically -->
-                    </select>
-                    <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors" onclick="handleSearch()">
-                        <i class="fas fa-filter mr-2"></i> Filter
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Modal Body with Table -->
-            <div class="p-4 overflow-auto table-container max-h-[50vh]">
-                <table class="w-full text-left rounded-lg overflow-hidden">
-                    <thead class="bg-gray-100">
-                        <tr>
-                            <th class="p-4 font-semibold">ID</th>
-                            <th class="p-4 font-semibold">Service Name</th>
-                            <th class="p-4 font-semibold">Price</th>
-                            <th class="p-4 font-semibold">Branch</th>
-                            <th class="p-4 font-semibold">Status</th>
-                            <th class="p-4 font-semibold text-center">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="archivedTableBody">
-                        <!-- Table rows will be populated by JavaScript -->
-                    </tbody>
-                </table>
-            </div>
-            
-            <!-- Modal Footer -->
-            <div class="flex justify-between items-center p-4 border-t bg-gray-50">
-                <div class="text-sm text-gray-600">
-                    Showing <span id="itemCount">5</span> out of 8 archived items
-                </div>
-                <div class="flex space-x-2">
-                    <button class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg transition-colors" onclick="closeModal()">
-                        Close
-                    </button>
-                    <button class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors">
-                        <i class="fas fa-download mr-2"></i> Export
-                    </button>
-                </div>
-            </div>
-        </div>
+<!-- Archived Add-Ons Modal -->
+<div class="fixed inset-0 z-50 flex items-center justify-center hidden" id="archivedModal">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-4xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <!-- Modal Header -->
+    <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-xl font-bold text-white flex items-center">
+        <span>Archived Add-Ons</span>
+      </h3>
     </div>
+    
+    <!-- Search Bar -->
+    <div class="px-6 py-4 border-b border-gray-200">
+      <div class="relative">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <i class="fas fa-search text-gray-400"></i>
+        </div>
+        <input type="text" id="searchInput" placeholder="Search archived add-ons..." 
+          oninput="handleSearch()"
+          class="w-full pl-10 pr-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+      </div>
+    </div>
+    
+    <!-- Modal Body -->
+    <div class="px-6 py-5 max-h-[70vh] overflow-y-auto w-full">
+      <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+        <table class="w-full text-sm text-left text-gray-500">
+          <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+            <tr>
+              <th scope="col" class="px-6 py-3">
+                <div class="flex items-center">ID
+                </div>
+              </th>
+              <th scope="col" class="px-6 py-3">
+                <div class="flex items-center">Add-On Name
+                </div>
+              </th>
+              <th scope="col" class="px-6 py-3">
+                <div class="flex items-center">Price
+                </div>
+              </th>
+              <th scope="col" class="px-6 py-3">
+                <div class="flex items-center">Branch
+                </div>
+              </th>
+              <th scope="col" class="px-6 py-3">
+                <div class="flex items-center">Actions
+                </div>
+              </th>
+            </tr>
+          </thead>
+          <tbody id="archivedTableBody">
+            <!-- Table content will be loaded dynamically -->
+          </tbody>
+        </table>
+      </div>
+      <div id="noArchivedAddons" class="hidden text-center py-4 w-full">
+        <div class="flex flex-col items-center justify-center py-6">
+          <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
+          <p>No archived add-ons found</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Modal Footer --> 
+    <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeModal()">
+        Close
+      </button>
+    </div>
+  </div>
+</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
