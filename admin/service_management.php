@@ -3740,20 +3740,9 @@ async function editAddOn(id) {
     console.log('Edit add-on with ID:', id);
     
     try {
-        // Show loading state
-        Swal.fire({
-            title: 'Loading add-on details',
-            allowOutsideClick: false,
-            didOpen: () => {
-                Swal.showLoading();
-            }
-        });
-        
         // Fetch add-on details
         const response = await fetch(`servicesManagement/get_editAddondetails.php?id=${id}`);
         const data = await response.json();
-        
-        Swal.close();
         
         if (data.error) {
             Swal.fire('Error', data.error, 'error');
@@ -3788,7 +3777,6 @@ async function editAddOn(id) {
         document.getElementById('editAddonsModal').classList.remove('hidden');
         
     } catch (error) {
-        Swal.close();
         Swal.fire('Error', 'Failed to load add-on details: ' + error.message, 'error');
         console.error('Error loading add-on details:', error);
     }
