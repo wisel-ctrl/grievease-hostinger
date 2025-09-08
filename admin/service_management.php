@@ -1760,7 +1760,7 @@ window.addEventListener('popstate', function(event) {
   <!-- Modal Content -->
   <div class="relative bg-white rounded-xl shadow-card w-full max-w-4xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
     <!-- Close Button -->
-    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" id="closeArchiveModal">
+    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeArchiveModal()">
       <i class="fas fa-times"></i>
     </button>
     
@@ -1798,6 +1798,14 @@ window.addEventListener('popstate', function(event) {
                 </div>
               </th>
               <th scope="col" class="px-6 py-3">
+                <div class="flex items-center">Price
+                </div>
+              </th>
+              <th scope="col" class="px-6 py-3">
+                <div class="flex items-center">Branch
+                </div>
+              </th>
+              <th scope="col" class="px-6 py-3">
                 <div class="flex items-center">Actions
                 </div>
               </th>
@@ -1818,7 +1826,7 @@ window.addEventListener('popstate', function(event) {
     
     <!-- Modal Footer --> 
     <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-      <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" id="closeArchiveModalBtn">
+      <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeArchiveModal()">
         Close
       </button>
     </div>
@@ -2071,7 +2079,7 @@ window.addEventListener('popstate', function(event) {
   <!-- Modal Content -->
   <div class="relative bg-white rounded-xl shadow-card w-full max-w-4xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
     <!-- Close Button -->
-    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeModal()">
+    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeArchivedModal()">
       <i class="fas fa-times"></i>
     </button>
     
@@ -2137,7 +2145,7 @@ window.addEventListener('popstate', function(event) {
     
     <!-- Modal Footer --> 
     <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-      <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeModal()">
+      <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeArchivedModal()">
         Close
       </button>
     </div>
@@ -2161,28 +2169,21 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     // Function to close archive modal
-    function closeModal() {
+    function closeArchiveModal() {
         archiveModal.classList.add('hidden');
         currentBranchId = null;
         archivedServicesTable.innerHTML = ''; // Clear table content
-        noArchivedServices.classList.add('hidden'); // Hide no services message
+        noArchivedServices.classList.add('hidden'); // Hide no results message
     }
 
-    // Close modal when close button (X) is clicked
-    if (closeArchiveModal) {
-        closeArchiveModal.addEventListener('click', closeModal);
-    }
-
-    // Close modal when close button (footer) is clicked
-    if (closeArchiveModalBtn) {
-        closeArchiveModalBtn.addEventListener('click', closeModal);
-    }
+    // Make closeArchiveModal function globally available
+    window.closeArchiveModal = closeArchiveModal;
 
     // Close modal when clicking outside the modal content
     if (archiveModal) {
         archiveModal.addEventListener('click', function(e) {
             if (e.target === archiveModal) {
-                closeModal();
+                closeArchiveModal();
             }
         });
     }
@@ -2190,7 +2191,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Function to fetch archived services for a specific branch
     function fetchArchivedServices(branchId) {
         // Show loading state
-        archivedServicesTable.innerHTML = '<tr><td colspan="3" class="px-6 py-4 text-center"><div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mx-auto"></div></td></tr>';
+        archivedServicesTable.innerHTML = '<tr><td colspan="5" class="px-6 py-4 text-center"><div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mx-auto"></div></td></tr>';
         
         fetch(`servicesManagement/fetch_archived_services.php?branch_id=${branchId}`)
             .then(response => {
@@ -2305,7 +2306,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     icon: 'success',
                     confirmButtonColor: '#10B981'
                 }).then(() => {
-                    closeModal(); // Close modal after unarchiving
+                    closeArchiveModal(); // Close modal after unarchiving
                     loadBranchTable(branchId); // Refresh the branch table
                 });
             } else {
@@ -4289,8 +4290,8 @@ function unarchiveAddon(id) {
     }
 }
 
-// Function to close modal
-function closeModal() {
+// Function to close archived add-ons modal
+function closeArchivedModal() {
     document.getElementById('archivedModal').classList.add('hidden');
 }
 
