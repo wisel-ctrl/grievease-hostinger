@@ -306,7 +306,7 @@ if ($branchResult->num_rows > 0) {
                            placeholder="Search services..." 
                            value="<?php echo htmlspecialchars($searchQuery); ?>"
                            class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent"
-                           oninput="debouncedFilter(<?php echo $branchId; ?>)">
+                           oninput="validateSearchInput(this); debouncedFilter(<?php echo $branchId; ?>)">
                     <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
                 </div>
 
@@ -396,7 +396,7 @@ if ($branchResult->num_rows > 0) {
                             placeholder="Search services..." 
                             value="<?php echo htmlspecialchars($searchQuery); ?>"
                             class="pl-8 pr-3 py-2.5 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent"
-                            oninput="debouncedFilter(<?php echo $branchId; ?>)">
+                            oninput="validateSearchInput(this); debouncedFilter(<?php echo $branchId; ?>)">
                     <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
                 </div>
 
@@ -651,7 +651,7 @@ if ($branchResult->num_rows > 0) {
                            placeholder="Search add-ons..." 
                            value=""
                            class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent"
-                           oninput="debouncedFilterAddons()">
+                           oninput="validateSearchInput(this); debouncedFilterAddons()">
                     <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
                 </div>
 
@@ -714,7 +714,7 @@ if ($branchResult->num_rows > 0) {
                             placeholder="Search add-ons..." 
                             value=""
                             class="pl-8 pr-3 py-2.5 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent"
-                            oninput="debouncedFilterAddons()">
+                            oninput="validateSearchInput(this); debouncedFilterAddons()">
                     <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
                 </div>
 
@@ -1778,6 +1778,7 @@ window.addEventListener('popstate', function(event) {
           <i class="fas fa-search text-gray-400"></i>
         </div>
         <input type="text" id="archivedServicesSearch" placeholder="Search archived services..." 
+          oninput="validateSearchInput(this)"
           class="w-full pl-10 pr-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
       </div>
     </div>
@@ -1906,7 +1907,8 @@ window.addEventListener('popstate', function(event) {
               </div>
               <input type="text" id="iconSearch" 
                 class="flex-1 px-4 py-3 rounded-r-lg border border-l-0 border-gray-300 bg-white focus:outline-none focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent transition-all duration-200" 
-                placeholder="Search icons...">
+                placeholder="Search icons..."
+                oninput="validateSearchInput(this)">
               <input type="hidden" id="selectedIcon" value="fa-plus">
             </div>
             
@@ -2032,7 +2034,8 @@ window.addEventListener('popstate', function(event) {
               </div>
               <input type="text" id="editIconSearch" 
                 class="flex-1 px-4 py-3 rounded-r-lg border border-l-0 border-gray-300 bg-white focus:outline-none focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent transition-all duration-200" 
-                placeholder="Search icons...">
+                placeholder="Search icons..."
+                oninput="validateSearchInput(this)">
               <input type="hidden" id="editSelectedIcon" value="fa-edit">
             </div>
             
@@ -2086,7 +2089,7 @@ window.addEventListener('popstate', function(event) {
           <i class="fas fa-search text-gray-400"></i>
         </div>
         <input type="text" id="searchInput" placeholder="Search archived add-ons..." 
-          oninput="handleSearch()"
+          oninput="validateSearchInput(this); handleSearch()"
           class="w-full pl-10 pr-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
       </div>
     </div>
@@ -3726,6 +3729,39 @@ function preventConsecutiveSpaces(input) {
     // Restore cursor position (adjust for removed spaces)
     const removedSpaces = value.length - newValue.length;
     const newCursorPosition = Math.max(0, cursorPosition - removedSpaces);
+    input.setSelectionRange(newCursorPosition, newCursorPosition);
+  }
+  
+  // Additional validation: ensure no spaces at the beginning
+  if (input.value.startsWith(' ')) {
+    input.value = input.value.trimStart();
+  }
+}
+
+// Function to validate search input - prevents consecutive spaces and requires 2 characters before allowing spaces
+function validateSearchInput(input) {
+  const cursorPosition = input.selectionStart;
+  const value = input.value;
+  
+  // Prevent consecutive spaces
+  const newValue = value.replace(/\s{2,}/g, ' ');
+  
+  // Check if user is trying to add a space when there are less than 2 characters
+  const nonSpaceChars = value.replace(/\s/g, '').length;
+  let finalValue = newValue;
+  
+  if (nonSpaceChars < 2 && newValue.includes(' ')) {
+    // Remove all spaces if less than 2 non-space characters
+    finalValue = value.replace(/\s/g, '');
+  }
+  
+  // Update input value if it changed
+  if (finalValue !== value) {
+    input.value = finalValue;
+    
+    // Restore cursor position (adjust for removed characters)
+    const removedChars = value.length - finalValue.length;
+    const newCursorPosition = Math.max(0, cursorPosition - removedChars);
     input.setSelectionRange(newCursorPosition, newCursorPosition);
   }
   
