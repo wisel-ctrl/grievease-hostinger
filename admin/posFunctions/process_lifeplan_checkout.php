@@ -48,7 +48,7 @@ try {
     // Prepare data
     $service_id = intval($_POST['service_id']);
     $branch_id = intval($_POST['branch_id']);
-    $sellerID = 1; // Assuming admin ID is 1
+    $sellerID = intval($_POST['sold_by']); // Assuming admin ID is 1
 
     // Client information
     $fname = trim($_POST['clientFirstName']);
