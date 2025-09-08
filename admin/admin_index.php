@@ -1422,14 +1422,14 @@ function time_elapsed_string($datetime, $full = false) {
         <h3 class="font-medium text-sidebar-text">Cash Revenue</h3>
         <div class="flex items-center gap-2">
           <div class="flex items-center bg-gray-100 rounded-full p-1">
-            <button id="cashMonthlyView" class="px-3 py-1 rounded-full text-sm font-medium bg-[#4ade80] text-white">
+            <button id="cashMonthlyView" class="px-3 py-1 rounded-full text-sm font-medium <?php echo (!isset($_GET['view']) || $_GET['view'] !== 'yearly') ? 'bg-[#4ade80] text-white' : 'text-gray-600 hover:text-gray-800' ?>">
               Monthly
             </button>
-            <button id="cashYearlyView" class="px-3 py-1 rounded-full text-sm font-medium text-gray-600 hover:text-gray-800">
+            <button id="cashYearlyView" class="px-3 py-1 rounded-full text-sm font-medium <?php echo (isset($_GET['view']) && $_GET['view'] === 'yearly') ? 'bg-[#4ade80] text-white' : 'text-gray-600 hover:text-gray-800' ?>">
               Yearly
             </button>
           </div>
-          <button id="exportCashRevenue" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm flex items-center gap-1">
+          <button id="exportCashRevenue" class="bg-[#4ade80] hover:bg-[#3bc973] text-white px-3 py-1 rounded text-sm flex items-center gap-1">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
               <polyline points="7 10 12 15 17 10"></polyline>
@@ -1484,7 +1484,7 @@ function time_elapsed_string($datetime, $full = false) {
   <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 w-full">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-4 sm:p-5 border-b border-sidebar-border">
       <h3 class="font-medium text-sidebar-text">Top Selling Packages</h3>
-      <button id="exportTopSellingPackages" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm flex items-center gap-1">
+      <button id="exportTopSellingPackages" class="bg-[#4ade80] hover:bg-[#3bc973] text-white px-3 py-1 rounded text-sm flex items-center gap-1">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
               <polyline points="7 10 12 15 17 10"></polyline>
@@ -2462,16 +2462,16 @@ document.getElementById('exportProjectedIncome').addEventListener('click', funct
 
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({
-      orientation: 'portrait'
+    orientation: 'portrait'
   });
 
   // Set document metadata
   doc.setProperties({
-      title: 'Vjay Relova Accrued Revenue Report',
-      subject: 'Financial Report',
-      author: 'Vjay Relova Funeral Services',
-      keywords: 'revenue, report, financial',
-      creator: 'Vjay Relova Web Application'
+    title: 'Vjay Relova Accrued Revenue Report',
+    subject: 'Financial Report',
+    author: 'Vjay Relova Funeral Services',
+    keywords: 'revenue, report, financial',
+    creator: 'Vjay Relova Web Application'
   });
 
   // Add header
@@ -2486,11 +2486,11 @@ document.getElementById('exportProjectedIncome').addEventListener('click', funct
   doc.setFontSize(10);
   doc.setTextColor(100, 100, 100);
   doc.text('Generated on: ' + new Date().toLocaleString('en-PH', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
   }), 105, 36, { align: 'center' });
 
   // Calculate page width and column widths
@@ -2500,66 +2500,378 @@ document.getElementById('exportProjectedIncome').addEventListener('click', funct
   
   // Create table with adjusted settings
   doc.autoTable({
-      head: [tableData[0]],
-      body: tableData.slice(1, -1),
-      startY: 45,
-      theme: 'grid',
-      headStyles: {
-          fillColor: [59, 130, 246],
-          textColor: 255,
-          fontStyle: 'bold',
-          fontSize: 11,
-          halign: 'center'
+    head: [tableData[0]],
+    body: tableData.slice(1, -1),
+    startY: 45,
+    theme: 'grid',
+    headStyles: {
+      fillColor: [59, 130, 246],
+      textColor: 255,
+      fontStyle: 'bold',
+      fontSize: 11,
+      halign: 'center'
+    },
+    columnStyles: {
+      0: { 
+        cellWidth: availableWidth * 0.4,  // Increased width for Month column
+        halign: 'left',
+        fontStyle: 'bold'
       },
-      columnStyles: {
-          0: { 
-              cellWidth: availableWidth * 0.4,
-              halign: 'left',
-              fontStyle: 'bold'
-          },
-          1: { 
-              cellWidth: availableWidth * 0.6,
-              halign: 'right',
-              minCellHeight: 10
-          }
-      },
-      styles: {
-          fontSize: 9,
-          cellPadding: 3,
-          overflow: 'linebreak',
-          valign: 'middle',
-          lineWidth: 0.1
-      },
-      margin: { 
-          left: margin,
-          right: margin,
-          top: 45
-      },
-      tableWidth: 'wrap',
-      didDrawPage: function (data) {
-          if (data.pageCount === data.pageNumber) {
-              const finalY = data.cursor.y + 10;
-              doc.setFontSize(12);
-              doc.setFont('courier', 'bold');
-              
-              // Draw total line with full width
-              doc.setFillColor(240, 240, 240);
-              doc.rect(margin, finalY - 5, availableWidth, 10, 'F');
-              
-              doc.text(tableData[tableData.length - 1][0], margin + 5, finalY);
-              doc.text(tableData[tableData.length - 1][1], pageWidth - margin - 5, finalY, { align: 'right' });
-
-              const footerY = doc.internal.pageSize.height - 10;
-              doc.setFontSize(9);
-              doc.setTextColor(100, 100, 100);
-              doc.setFont('courier', 'normal');
-              doc.text('For inquiries: Tel: (02) 1234-5678 • Mobile: 0917-123-4567 • Email: info@vjayrelova.com',
-                  105, footerY, { align: 'center' });
-          }
+      1: { 
+        cellWidth: availableWidth * 0.6,  // Adjusted width for Amount column
+        halign: 'right',
+        minCellHeight: 10  // Ensure enough height for values
       }
+    },
+    styles: {
+      fontSize: 9,  // Slightly smaller font to prevent overlap
+      cellPadding: 3,  // Reduced padding
+      overflow: 'linebreak',
+      valign: 'middle',
+      lineWidth: 0.1  // Thinner grid lines
+    },
+    margin: { 
+      left: margin,
+      right: margin,
+      top: 45
+    },
+    tableWidth: 'wrap',  // Let the table adjust its width
+    didDrawPage: function (data) {
+      if (data.pageCount === data.pageNumber) {
+        const finalY = data.cursor.y + 10;
+        doc.setFontSize(12);
+        doc.setFont('courier', 'bold');
+        
+        // Draw total line with full width
+        doc.setFillColor(240, 240, 240);
+        doc.rect(margin, finalY - 5, availableWidth, 10, 'F');
+        
+        doc.text(tableData[tableData.length - 1][0], margin + 5, finalY);
+        doc.text(tableData[tableData.length - 1][1], pageWidth - margin - 5, finalY, { align: 'right' });
+
+        const footerY = doc.internal.pageSize.height - 10;
+        doc.setFontSize(9);
+        doc.setTextColor(100, 100, 100);
+        doc.setFont('courier', 'normal');
+        doc.text('For inquiries: Tel: (02) 1234-5678 • Mobile: 0917-123-4567 • Email: info@vjayrelova.com',
+          105, footerY, { align: 'center' });
+      }
+    }
   });
 
   doc.save(`Vjay-Relova-Income-Report-${new Date().toISOString().slice(0, 10)}.pdf`);
+});
+</script>
+<script>
+// Store the chart data in variables
+const monthlyData = {
+  pila: <?php echo json_encode($pilaMonthlyRevenue); ?>,
+  paete: <?php echo json_encode($paeteMonthlyRevenue); ?>,
+  labels: <?php echo json_encode($monthLabels); ?>,
+  title: "Monthly Revenue by Branch"
+};
+
+const yearlyData = {
+  pila: <?php echo json_encode($pilaYearlyRevenue); ?>,
+  paete: <?php echo json_encode($paeteYearlyRevenue); ?>,
+  labels: <?php echo json_encode($yearLabels); ?>,
+  title: "Yearly Revenue by Branch"
+};
+
+// Initialize the chart with monthly data
+var branchRevenueChart = new ApexCharts(document.querySelector("#branchRevenueChart"), getChartOptions(monthlyData));
+branchRevenueChart.render();
+
+// Toggle between monthly and yearly data
+document.getElementById('monthlyViewBranch').addEventListener('click', function() {
+  this.classList.add('bg-blue-500', 'text-white');
+  this.classList.remove('text-gray-600', 'hover:text-gray-800');
+  document.getElementById('yearlyViewBranch').classList.remove('bg-blue-500', 'text-white');
+  document.getElementById('yearlyViewBranch').classList.add('text-gray-600', 'hover:text-gray-800');
+  
+  branchRevenueChart.updateOptions(getChartOptions(monthlyData));
+});
+
+document.getElementById('yearlyViewBranch').addEventListener('click', function() {
+  this.classList.add('bg-blue-500', 'text-white');
+  this.classList.remove('text-gray-600', 'hover:text-gray-800');
+  document.getElementById('monthlyViewBranch').classList.remove('bg-blue-500', 'text-white');
+  document.getElementById('monthlyViewBranch').classList.add('text-gray-600', 'hover:text-gray-800');
+  
+  branchRevenueChart.updateOptions(getChartOptions(yearlyData));
+});
+
+// Function to generate chart options based on data
+function getChartOptions(data) {
+  return {
+    series: [
+      {
+        name: 'Pila Branch',
+        data: data.pila
+      },
+      {
+        name: 'Paete Branch',
+        data: data.paete
+      }
+    ],
+    chart: {
+      type: 'bar',
+      height: '100%',
+      width: '100%',
+      stacked: false,
+      toolbar: {
+        show: true,
+        tools: {
+          download: false,
+          selection: true,
+          zoom: true,
+          zoomin: true,
+          zoomout: true,
+          pan: true,
+          reset: true
+        },
+        export: {
+          csv: {
+            filename: 'branch-revenue-comparison',
+            columnDelimiter: ',',
+            headerCategory: data.title.includes('Monthly') ? 'Month' : 'Year',
+            headerValue: 'Revenue (₱)',
+          },
+          png: {
+            filename: 'branch-revenue-comparison',
+          },
+          svg: {
+            filename: 'branch-revenue-comparison',
+          }
+        }
+      }
+    },
+    plotOptions: {
+      bar: {
+        horizontal: false,
+        columnWidth: '80%',
+        endingShape: 'rounded',
+        borderRadius: 4
+      },
+    },
+    dataLabels: {
+      enabled: false
+    },
+    colors: ['#4f46e5', '#10b981'],
+    stroke: {
+      show: true,
+      width: 2,
+      colors: ['transparent']
+    },
+    xaxis: {
+      categories: data.labels,
+      title: {
+        text: data.title.includes('Monthly') ? 'Month' : 'Year'
+      },
+      labels: {
+        style: {
+          fontSize: '12px',
+          fontWeight: 500
+        },
+        rotate: -45,
+        hideOverlappingLabels: true
+      }
+    },
+    yaxis: {
+      title: {
+        text: 'Revenue (₱)'
+      },
+      labels: {
+        formatter: function(val) {
+          return "₱" + val.toLocaleString();
+        }
+      }
+    },
+    fill: {
+      opacity: 1
+    },
+    tooltip: {
+      y: {
+        formatter: function(val) {
+          return "₱" + val.toLocaleString();
+        }
+      }
+    },
+    legend: {
+      position: 'top',
+      horizontalAlign: 'center',
+      offsetY: 0,
+      markers: {
+        width: 12,
+        height: 12,
+        radius: 12,
+      }
+    },
+    responsive: [{
+      breakpoint: 768,
+      options: {
+        chart: {
+          height: 400
+        },
+        xaxis: {
+          labels: {
+            rotate: -45
+          }
+        }
+      }
+    }],
+    title: {
+      text: data.title,
+      align: 'center',
+      style: {
+        fontSize: '16px',
+        fontWeight: 'bold'
+      }
+    }
+  };
+}
+
+document.getElementById('exportPdfBtn').addEventListener('click', function() {
+  try {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({
+      orientation: 'portrait'
+    });
+
+    // Set document metadata
+    doc.setProperties({
+      title: 'Vjay Relova Branch Revenue Report',
+      subject: 'Financial Report',
+      author: 'Vjay Relova Funeral Services',
+      keywords: 'revenue, report, financial, branch',
+      creator: 'Vjay Relova Web Application'
+    });
+
+    // Get the current timeframe based on which button is active
+    const isYearly = document.getElementById('yearlyViewBranch').classList.contains('bg-blue-500');
+    const currentData = isYearly ? yearlyData : monthlyData;
+    const timeframe = isYearly ? 'Yearly' : 'Monthly';
+
+    // Add header
+    doc.setFontSize(20);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(33, 37, 41);
+    doc.text('VJAY RELOVA FUNERAL SERVICES', 105, 20, { align: 'center' });
+
+    doc.setFontSize(16);
+    doc.text(`${timeframe.toUpperCase()} BRANCH REVENUE REPORT`, 105, 30, { align: 'center' });
+
+    doc.setFontSize(10);
+    doc.setTextColor(100, 100, 100);
+    doc.text('Generated on: ' + new Date().toLocaleString('en-PH', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    }), 105, 36, { align: 'center' });
+
+    // Create table data
+    const headers = [isYearly ? 'Year' : 'Month', 'Pila Revenue', 'Paete Revenue'];
+    const body = [];
+    
+    // Add data rows
+    for (let i = 0; i < currentData.labels.length; i++) {
+      body.push([
+        currentData.labels[i],
+        `PHP ${parseFloat(currentData.pila[i] || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+        `PHP ${parseFloat(currentData.paete[i] || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+      ]);
+    }
+
+    // Add totals row
+    const pilaTotal = currentData.pila.reduce((a, b) => a + (parseFloat(b) || 0), 0);
+    const paeteTotal = currentData.paete.reduce((a, b) => a + (parseFloat(b) || 0), 0);
+    body.push([
+      'TOTAL',
+      `PHP ${pilaTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+      `PHP ${paeteTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+    ]);
+    
+    // Calculate page width and column widths
+    const pageWidth = doc.internal.pageSize.width;
+    const margin = 15;
+    const availableWidth = pageWidth - (2 * margin);
+    
+    // Add table
+    doc.autoTable({
+      head: [headers],
+      body: body.slice(0, -1), // Exclude totals row from main body
+      startY: 45,
+      theme: 'grid',
+      headStyles: {
+        fillColor: [79, 70, 229],
+        textColor: 255,
+        fontStyle: 'bold',
+        fontSize: 11,
+        halign: 'center'
+      },
+      columnStyles: {
+        0: { 
+          cellWidth: availableWidth * 0.4,
+          halign: 'left',
+          fontStyle: 'bold'
+        },
+        1: { 
+          cellWidth: availableWidth * 0.3,
+          halign: 'right'
+        },
+        2: { 
+          cellWidth: availableWidth * 0.3,
+          halign: 'right'
+        }
+      },
+      styles: {
+        fontSize: 9,
+        cellPadding: 3,
+        overflow: 'linebreak',
+        valign: 'middle',
+        lineWidth: 0.1
+      },
+      margin: { 
+        left: margin,
+        right: margin,
+        top: 45
+      },
+      tableWidth: 'wrap',
+      didDrawPage: function (data) {
+        if (data.pageCount === data.pageNumber) {
+          const finalY = data.cursor.y + 10;
+          doc.setFontSize(12);
+          doc.setFont('courier', 'bold');
+          
+          // Draw total line with full width
+          doc.setFillColor(240, 240, 240);
+          doc.rect(margin, finalY - 5, availableWidth, 10, 'F');
+          
+          // Add totals row
+          const totalsRow = body[body.length - 1];
+          doc.text(totalsRow[0], margin + 5, finalY);
+          doc.text(totalsRow[1], margin + availableWidth * 0.7, finalY, { align: 'right' });
+          doc.text(totalsRow[2], pageWidth - margin - 5, finalY, { align: 'right' });
+
+          // Add footer
+          const footerY = doc.internal.pageSize.height - 10;
+          doc.setFontSize(9);
+          doc.setTextColor(100, 100, 100);
+          doc.setFont('courier', 'normal');
+          doc.text('For inquiries: Tel: (02) 1234-5678 • Mobile: 0917-123-4567 • Email: info@vjayrelova.com',
+            105, footerY, { align: 'center' });
+        }
+      }
+    });
+    
+    doc.save(`Vjay-Relova-Branch-Report-${timeframe}-${new Date().toISOString().slice(0, 10)}.pdf`);
+    
+  } catch (error) {
+    console.error('PDF export failed:', error);
+    alert('Failed to generate PDF. Please check console for details.');
+  }
 });
 </script>
 <script>
