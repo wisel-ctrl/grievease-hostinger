@@ -1120,7 +1120,7 @@ require_once '../db_connect.php'; // Database connection
                             
                             <!-- Street & Zip Code (Side by side) -->
                             <div class="flex flex-wrap -mx-2 mb-3">
-                                <div class="w-full sm:w-3/4 px-2 mb-3 sm:mb-0">
+                                <div class="w-full sm:w-4/4 px-2 mb-3 sm:mb-0">
                                     <label for="comakerStreet" class="block text-sm font-medium text-navy mb-1">Street/Block/House Number <span class="text-red-500">*</span></label>
                                     <input type="text" id="comakerStreet" name="comakerStreet" required 
                                         class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" 
