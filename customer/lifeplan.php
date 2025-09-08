@@ -1126,14 +1126,6 @@ require_once '../db_connect.php'; // Database connection
                                         class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" 
                                         placeholder="e.g. 123 Main Street">
                                 </div>
-                                <div class="w-full sm:w-1/4 px-2">
-                                    <label for="comakerZipCode" class="block text-sm font-medium text-navy mb-1">Zip Code <span class="text-red-500">*</span></label>
-                                    <input type="text" id="comakerZipCode" name="comakerZipCode" required 
-                                        class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" 
-                                        pattern="[0-9]{4}" 
-                                        title="Please enter a valid 4-digit zip code"
-                                        placeholder="0000">
-                                </div>
                             </div>
                         </div>
                         
