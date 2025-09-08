@@ -498,7 +498,7 @@ if ($branchResult->num_rows > 0) {
                                             <i class="fas fa-edit"></i>
                                         </button>
                                         <button class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all tooltip" 
-                                                title="Archive Services" 
+                                                title="Archive Service" 
                                                 onclick="archiveService('<?php echo htmlspecialchars($row['service_id'], ENT_QUOTES); ?>', '<?php echo htmlspecialchars($branchId, ENT_QUOTES); ?>')">
                                             <i class="fas fa-archive"></i>
                                         </button>
