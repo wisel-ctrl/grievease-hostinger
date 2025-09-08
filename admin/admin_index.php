@@ -1,3 +1,4 @@
+@ -1,3229 +1,2519 @@
 <?php
 session_start();
 
@@ -2729,7 +2730,6 @@ function getChartOptions(data) {
     }
   };
 }
-
 document.getElementById('exportPdfBtn').addEventListener('click', function() {
   try {
     const { jsPDF } = window.jspdf;
@@ -3121,7 +3121,6 @@ branchServicesChart.render();
   }
 });
 </script>
-
 <script>
 // Improved notification bell functionality
 document.getElementById('notification-bell').addEventListener('click', function(event) {
