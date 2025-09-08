@@ -488,9 +488,9 @@ for ($i = 4; $i >= 0; $i--) {
         SELECT amount_paid 
         FROM sales_tb 
         WHERE YEAR(get_timestamp) = ?
-
+        
         UNION ALL
-
+        
         -- 2. Direct custom sales from customsales_tb not referenced in analytics_tb
         SELECT amount_paid
         FROM customsales_tb
@@ -500,9 +500,9 @@ for ($i = 4; $i >= 0; $i--) {
             WHERE sales_type = 'custom'
             AND YEAR(sale_date) = ?
         )
-
+        
         UNION ALL
-
+        
         -- 3. All analytics records (they may or may not reference other tables)
         SELECT 
             CASE
@@ -730,9 +730,9 @@ for ($i = 4; $i >= 0; $i--) {
         SELECT amount_paid 
         FROM sales_tb 
         WHERE branch_id = 2 AND YEAR(get_timestamp) = ?
-
+        
         UNION ALL
-
+        
         -- 2. Direct custom sales from customsales_tb not referenced in analytics_tb
         SELECT amount_paid
         FROM customsales_tb
@@ -742,9 +742,9 @@ for ($i = 4; $i >= 0; $i--) {
             WHERE sales_type = 'custom'
             AND YEAR(sale_date) = ?
         )
-
+        
         UNION ALL
-
+        
         -- 3. Analytics records that don't reference existing sales or have NULL sales_id
         SELECT a.amount_paid
         FROM analytics_tb a
@@ -788,9 +788,9 @@ for ($i = 4; $i >= 0; $i--) {
         SELECT amount_paid 
         FROM sales_tb 
         WHERE branch_id = 1 AND YEAR(get_timestamp) = ?
-
+        
         UNION ALL
-
+        
         -- 2. Direct custom sales from customsales_tb not referenced in analytics_tb
         SELECT amount_paid
         FROM customsales_tb
@@ -800,9 +800,9 @@ for ($i = 4; $i >= 0; $i--) {
             WHERE sales_type = 'custom'
             AND YEAR(sale_date) = ?
         )
-
+        
         UNION ALL
-
+        
         -- 3. Analytics records that don't reference existing sales or have NULL sales_id
         SELECT a.amount_paid
         FROM analytics_tb a
@@ -1881,15 +1881,16 @@ function loadInventoryLogs(page = 1) {
                     
                     // Determine badge styling
                     const badgeStyles = {
-                        'Depleted': 'fa-exclamation-circle',
-                        'Low Stock': 'fa-exclamation-triangle',
-                        'Restocked': 'fa-boxes',
-                        'Added': 'fa-plus-circle',
-                        'Removed': 'fa-minus-circle',
-                        'Adjusted': 'fa-adjust'
+                        'Depleted': 'bg-red-100 text-red-600 border-red-200',
+                        'Low Stock': 'bg-yellow-100 text-yellow-600 border-yellow-200',
+                        'Restocked': 'bg-green-100 text-green-600 border-green-200',
+                        'Added': 'bg-green-100 text-green-600 border-green-200',
+                        'Removed': 'bg-orange-100 text-orange-600 border-orange-200',
+                        'Adjusted': 'bg-blue-100 text-blue-600 border-blue-200'
                     };
                     
-                    const badgeIcon = badgeStyles[log.activity_type] || 'fa-info-circle';
+                    const badgeClass = badgeStyles[log.activity_type] || 'bg-gray-100 text-gray-600 border-gray-200';
+                    const badgeIcon = getActivityIcon(log.activity_type);
                     
                     // Format date
                     const activityDate = new Date(log.activity_date);
@@ -2377,20 +2378,30 @@ document.getElementById('exportPdfBtn').addEventListener('click', function() {
       startY: 50,
       theme: 'grid',
       headStyles: { fillColor: [79, 70, 229], textColor: 255, fontStyle: 'bold', fontSize: 11, halign: 'center' },
-      alternateRowStyles: { fillColor: [249, 250, 251] },
-      styles: { cellPadding: 3, fontSize: 9, valign: 'middle', lineWidth: 0.1 },
-      columnStyles: { 0: { cellWidth: availableWidth * 0.4, halign: 'left' }, 1: { cellWidth: availableWidth * 0.3, halign: 'right' }, 2: { cellWidth: availableWidth * 0.3, halign: 'right' } },
+      columnStyles: { 0: { cellWidth: availableWidth * 0.4, halign: 'left', fontStyle: 'bold' }, 1: { cellWidth: availableWidth * 0.3, halign: 'right' }, 2: { cellWidth: availableWidth * 0.3, halign: 'right' } },
+      styles: { fontSize: 9, cellPadding: 3, overflow: 'linebreak', valign: 'middle', lineWidth: 0.1 },
       margin: { left: margin, right: margin, top: 50 },
-      didDrawPage: function(data) {
-        const finalY = data.cursor.y + 10;
-        doc.setFontSize(11);
-        doc.setTextColor(33, 37, 41);
-        doc.text('Signature: ___________________________', 105, finalY + 15, { align: 'center' });
-        const footerY = doc.internal.pageSize.height - 10;
-        doc.setFontSize(9);
-        doc.setTextColor(100, 100, 100);
-        doc.setFont('courier', 'normal');
-        doc.text('For inquiries: Tel: (02) 1234-5678 • Mobile: 0917-123-4567 • Email: info@vjayrelova.com', 105, footerY, { align: 'center' });
+      tableWidth: 'wrap',
+      didDrawPage: function (data) {
+        if (data.pageCount === data.pageNumber) {
+          const finalY = data.cursor.y + 10;
+          doc.setFontSize(12);
+          doc.setFont('courier', 'bold');
+          doc.setFillColor(240, 240, 240);
+          doc.rect(margin, finalY - 5, availableWidth, 10, 'F');
+          const totalsRow = body[body.length - 1];
+          doc.text(totalsRow[0], margin + 5, finalY);
+          doc.text(totalsRow[1], margin + availableWidth * 0.7, finalY, { align: 'right' });
+          doc.text(totalsRow[2], pageWidth - margin - 5, finalY, { align: 'right' });
+          doc.setFontSize(11);
+          doc.setTextColor(33, 37, 41);
+          doc.text('Signature: ___________________________', 105, finalY + 15, { align: 'center' });
+          const footerY = doc.internal.pageSize.height - 10;
+          doc.setFontSize(9);
+          doc.setTextColor(100, 100, 100);
+          doc.setFont('courier', 'normal');
+          doc.text('For inquiries: Tel: (02) 1234-5678 • Mobile: 0917-123-4567 • Email: info@vjayrelova.com', 105, footerY, { align: 'center' });
+        }
       }
     });
     doc.save(`Vjay-Relova-Branch-Report-${timeframe}-${new Date().toISOString().slice(0, 10)}.pdf`);
@@ -2464,77 +2475,6 @@ document.getElementById('exportTopSellingPackages').addEventListener('click', fu
     alert('Failed to generate PDF. Please check console for details.');
   }
 });
-
-// --- Ensure Accrued Revenue Chart Renders ---
-var projectedIncomeOptions = {
-  series: [{
-    name: "Projected Income",
-    data: <?php echo json_encode($monthlyProjectedIncomeData); ?>
-  }],
-  chart: {
-    type: 'area',
-    height: '100%',
-    width: '100%',
-    animations: { enabled: true, easing: 'easeout', speed: 800 },
-    toolbar: { show: true, tools: { download: false, selection: true, zoom: true, zoomin: true, zoomout: true, pan: true, reset: true } }
-  },
-  colors: ['#3b82f6'],
-  dataLabels: { enabled: false },
-  stroke: { curve: 'smooth', width: 2 },
-  fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.7, opacityTo: 0.3 } },
-  xaxis: { categories: <?php echo json_encode($monthLabels); ?> },
-  yaxis: { title: { text: 'Projected Income (₱)' }, labels: { formatter: function(val) { return "₱" + val.toLocaleString() } } },
-  tooltip: { y: { formatter: function(val) { return "₱" + val.toLocaleString() } } },
-  title: { text: '(If all payments have been settled)', align: 'left', style: { fontSize: '14px', fontWeight: 'bold', color: '#333' } }
-};
-var projectedIncomeChart = new ApexCharts(document.querySelector("#projectedIncomeChart"), projectedIncomeOptions);
-projectedIncomeChart.render();
-
-// --- Ensure Revenue by Branch Chart Renders ---
-function getChartOptions(data) {
-  return {
-    series: [
-      { name: 'Pila Branch', data: data.pila },
-      { name: 'Paete Branch', data: data.paete }
-    ],
-    chart: { type: 'bar', height: '100%', width: '100%', stacked: false, toolbar: { show: true, tools: { download: false, selection: true, zoom: true, zoomin: true, zoomout: true, pan: true, reset: true } } },
-    plotOptions: { bar: { horizontal: false, columnWidth: '80%', endingShape: 'rounded', borderRadius: 4 } },
-    dataLabels: { enabled: false },
-    colors: ['#4f46e5', '#10b981'],
-    stroke: { show: true, width: 2, colors: ['transparent'] },
-    xaxis: { categories: data.labels, title: { text: data.title.includes('Monthly') ? 'Month' : 'Year' }, labels: { style: { fontSize: '12px', fontWeight: 500 }, rotate: -45, hideOverlappingLabels: true } },
-    yaxis: { title: { text: 'Revenue (₱)' }, labels: { formatter: function(val) { return "₱" + val.toLocaleString(); } } },
-    fill: { opacity: 1 },
-    tooltip: { y: { formatter: function(val) { return "₱" + val.toLocaleString(); } } },
-    legend: { position: 'top', horizontalAlign: 'center', offsetY: 0, markers: { width: 12, height: 12, radius: 12 } },
-    responsive: [{ breakpoint: 768, options: { chart: { height: 400 }, xaxis: { labels: { rotate: -45 } } } }],
-    title: { text: data.title, align: 'center', style: { fontSize: '16px', fontWeight: 'bold' } }
-  };
-}
-const monthlyData = { pila: <?php echo json_encode($pilaMonthlyRevenue); ?>, paete: <?php echo json_encode($paeteMonthlyRevenue); ?>, labels: <?php echo json_encode($monthLabels); ?>, title: "Monthly Revenue by Branch" };
-var branchRevenueChart = new ApexCharts(document.querySelector("#branchRevenueChart"), getChartOptions(monthlyData));
-branchRevenueChart.render();
-
-// --- Ensure Top Selling Packages Chart Renders ---
-var branchServicesOptions = {
-  series: [
-      { name: 'Pila Branch', data: <?php echo json_encode($pilaData); ?> },
-      { name: 'Paete Branch', data: <?php echo json_encode($paeteData); ?> }
-  ],
-  chart: { height: '100%', width: '100%', type: 'radar', dropShadow: { enabled: true, blur: 1, left: 1, top: 1 }, toolbar: { show: true, tools: { download: true, selection: false, zoom: false, zoomin: false, zoomout: false, pan: false, reset: true } } },
-  colors: ['#4f46e5', '#10b981'],
-  labels: <?php echo json_encode($services); ?>,
-  markers: { size: 5, hover: { size: 7 } },
-  yaxis: { show: false, min: 0 },
-  fill: { opacity: 0.2 },
-  stroke: { width: 2 },
-  tooltip: { y: { formatter: function(val) { return val + ' sales'; } } },
-  legend: { position: 'bottom', horizontalAlign: 'center' },
-  plotOptions: { radar: { size: 140, polygons: { strokeColors: '#e8e8e8', connectorColors: '#e8e8e8' } } },
-  responsive: [{ breakpoint: 1200, options: { plotOptions: { radar: { size: 160 } } } }, { breakpoint: 992, options: { plotOptions: { radar: { size: 140 } } } }, { breakpoint: 768, options: { plotOptions: { radar: { size: 120 } }, legend: { position: 'bottom', horizontalAlign: 'center' } } }]
-};
-var branchServicesChart = new ApexCharts(document.querySelector("#branchServicesChart"), branchServicesOptions);
-branchServicesChart.render();
 </script>
 
 <script>
