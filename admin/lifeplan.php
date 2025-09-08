@@ -738,56 +738,63 @@ document.addEventListener('DOMContentLoaded', function() {
 </div>
 
     <!-- Archive Modal -->
-    <div id="archiveModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
-        <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <!-- Background overlay -->
-            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
-                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
-            </div>
-            
-            <!-- Modal container -->
-            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
-                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                    <div class="sm:flex sm:items-start">
-                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                            <h3 class="text-lg leading-6 font-medium text-gray-900 border-b pb-2">
-                                Archived LifePlans
-                            </h3>
-                            
-                            <div class="mt-4">
-                                <div class="overflow-x-auto">
-                                    <table class="min-w-full divide-y divide-gray-200">
-                                        <thead class="bg-gray-50">
-                                            <tr>
-                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Beneficiary</th>
-                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Service</th>
-                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Duration</th>
-                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
-                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="archivedLifePlansBody" class="bg-white divide-y divide-gray-200">
-                                            <!-- Archived plans will be loaded here -->
-                                            <tr>
-                                                <td colspan="6" class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
-                                                    Loading archived lifeplans...
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                    <button type="button" id="closeArchiveModal" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
-                        Close
-                    </button>
-                </div>
-            </div>
+    <div id="archiveModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+      <!-- Modal Backdrop -->
+      <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+      <!-- Modal Content -->
+      <div class="relative bg-white rounded-xl shadow-card w-full max-w-4xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+        <!-- Close Button -->
+        <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" id="closeArchiveModal">
+          <i class="fas fa-times"></i>
+        </button>
+        <!-- Modal Header -->
+        <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+          <h3 class="text-xl font-bold text-white flex items-center">
+            Archived LifePlans
+          </h3>
         </div>
+        <!-- Search Bar -->
+        <div class="px-6 py-4 border-b border-gray-200">
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <i class="fas fa-search text-gray-400"></i>
+            </div>
+            <input type="text" id="archivedLifePlansSearch" placeholder="Search archived lifeplans..." 
+              class="w-full pl-10 pr-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+          </div>
+        </div>
+        <!-- Modal Body -->
+        <div class="px-6 py-5 max-h-[70vh] overflow-y-auto w-full">
+          <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+            <table class="w-full text-sm text-left text-gray-500">
+              <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                <tr>
+                  <th class="px-6 py-3">Beneficiary</th>
+                  <th class="px-6 py-3">Service</th>
+                  <th class="px-6 py-3">Duration</th>
+                  <th class="px-6 py-3">Price</th>
+                  <th class="px-6 py-3">Status</th>
+                  <th class="px-6 py-3">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="archivedLifePlansBody" class="bg-white divide-y divide-gray-200">
+                <!-- Archived plans will be loaded here -->
+                <tr>
+                  <td colspan="6" class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
+                    Loading archived lifeplans...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <!-- Modal Footer --> 
+        <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+          <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" id="closeArchiveModal">
+            Close
+          </button>
+        </div>
+      </div>
     </div>
 
   <!-- Receipt Modal -->
@@ -1785,6 +1792,7 @@ window.addEventListener('click', function(event) {
     }
 });
 </script>
+
 <script>
     // Add this to your existing JavaScript
 document.addEventListener('DOMContentLoaded', function() {
@@ -1979,328 +1987,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <script>
-    // Add this to your existing JavaScript
-document.addEventListener('DOMContentLoaded', function() {
-    const convertModal = document.getElementById('convertToSaleModal');
-    const closeConvertModalBtn = document.getElementById('closeConvertModal');
-    const cancelConvertModalBtn = document.getElementById('cancelConvertModal');
-    const confirmConvertBtn = document.getElementById('confirmConvertToSale');
-    const convertBtns = document.querySelectorAll('.convert-to-sale-btn');
-    
-    let currentLifeplanId = null;
-    
-    // Open modal when clicking Convert to Sale buttons
-    // Update the click handler for convert buttons
-    convertBtns.forEach(btn => {
-    btn.addEventListener('click', function() {
-        console.log('Convert to Sale button clicked');
-        
-        currentLifeplanId = this.getAttribute('data-id');
-        const beneficiaryName = this.getAttribute('data-name');
-        
-        console.log('LifePlan ID:', currentLifeplanId);
-        console.log('Beneficiary Name:', beneficiaryName);
-        
-        // Update modal content
-        document.getElementById('convertBeneficiaryName').textContent = 
-            `Converting LifePlan for ${beneficiaryName} to completed sale`;
-        
-        // Set default dates to today
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('dateOfDeath').value = today;
-        document.getElementById('burialDate').value = today;
-        
-        console.log('Set default dates - Date of Death:', today, 'Burial Date:', today);
-        
-        // Fetch LifePlan data and populate hidden inputs
-        console.log('Fetching LifePlan data from:', `lifeplan_process/get_lifeplan.php?id=${currentLifeplanId}`);
-        
-        fetch(`lifeplan_process/get_lifeplan.php?id=${currentLifeplanId}`)
-            .then(response => {
-                console.log('Received response from server, parsing JSON...');
-                return response.json();
-            })
-            .then(data => {
-                if (data) {
-                    console.log('Successfully fetched LifePlan data:', data);
-                    
-                    const container = document.getElementById('hiddenInputsContainer');
-                    container.innerHTML = '';
-                    console.log('Cleared hidden inputs container');
-                    
-                    // Create hidden inputs for all required fields
-                    const fields = [
-                        { name: 'customerID', value: data.customerID || '' },
-                        { name: 'branch_id', value: data.branch_id || ''},
-                        { name: 'service_id', value: data.service_id || ''},
-                        { name: 'fname', value: data.fname || '' },
-                        { name: 'mname', value: data.mname || '' },
-                        { name: 'lname', value: data.lname || '' },
-                        { name: 'suffix', value: data.suffix || '' },
-                        { name: 'email', value: data.email || '' },
-                        { name: 'phone', value: data.phone || '' },
-                        { name: 'fname_deceased', value: data.benefeciary_fname || '' },
-                        { name: 'mname_deceased', value: data.benefeciary_mname || '' },
-                        { name: 'lname_deceased', value: data.benefeciary_lname || '' },
-                        { name: 'suffix_deceased', value: data.benefeciary_suffix || '' },
-                        { name: 'date_of_birth', value: data.benefeciary_dob || '' },
-                        { name: 'deceased_address', value: data.benefeciary_address || '' },
-                        { name: 'with_cremate', value: data.with_cremate || '0' },
-                        { name: 'initial_price', value: data.initial_price || data.custom_price || '0' },
-                        { name: 'discounted_price', value: data.custom_price || '0' },
-                        { name: 'amount_paid', value: data.amount_paid || '0' },
-                        { name: 'balance', value: data.balance || '0' },
-                        { name: 'sold_by', value: <?php echo $_SESSION['user_id']; ?> },
-                        { name: 'payment_method', value: 'Lifeplan' }
-                    ];
-                    
-                    console.log('Preparing to create hidden inputs for fields:', fields);
-                    
-                    fields.forEach(field => {
-                        const input = document.createElement('input');
-                        input.type = 'hidden';
-                        input.name = field.name;
-                        input.value = field.value;
-                        input.id = `hidden_${field.name}`;
-                        container.appendChild(input);
-                        
-                        console.log(`Created hidden input: ${field.name} = ${field.value}`);
-                    });
-                    
-                    // Verify all inputs were created
-                    console.log('All hidden inputs created. Current container content:', container.innerHTML);
-                    
-                    // Show modal after inputs are populated
-                    convertModal.classList.remove('hidden');
-                    console.log('Modal shown with all data populated');
-                } else {
-                    console.error('No data received from server');
-                    alert('Error loading LifePlan data');
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching LifePlan data:', {
-                    error: error,
-                    message: error.message,
-                    stack: error.stack
-                });
-                alert('Error loading LifePlan data');
-            });
-    });
-});
-    
-    // Close modal
-    closeConvertModalBtn.addEventListener('click', function() {
-        convertModal.classList.add('hidden');
-    });
-
-    // Close modal
-    cancelConvertModalBtn.addEventListener('click', function() {
-        convertModal.classList.add('hidden');
-    });
-    
-    // Close modal when clicking outside
-    window.addEventListener('click', function(event) {
-        if (event.target === convertModal) {
-            convertModal.classList.add('hidden');
-        }
-    });
-    
-    // Confirm conversion
-    confirmConvertBtn.addEventListener('click', function() {
-        const dateOfDeath = document.getElementById('dateOfDeath').value;
-        const burialDate = document.getElementById('burialDate').value;
-        
-        
-        if (!dateOfDeath || !burialDate) {
-            alert('Please fill in all required dates');
-            return;
-        }
-        
-        // Disable button to prevent multiple submissions
-        confirmConvertBtn.disabled = true;
-        confirmConvertBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-        
-        // Collect all data to be sent
-        const submissionData = {
-            lifeplan_id: currentLifeplanId,
-            date_of_death: dateOfDeath,
-            burial_date: burialDate,
-        };
-        
-        // Add all hidden input values to the submission data
-        const hiddenInputs = document.querySelectorAll('#hiddenInputsContainer input');
-        hiddenInputs.forEach(input => {
-            submissionData[input.name] = input.value;
-        });
-        
-        console.log('Submitting data:', submissionData); // For debugging
-        
-        // Send conversion data to server
-        fetch('lifeplan_process/convert_to_sale.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(submissionData)
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                Swal.fire({
-                    title: 'Success!',
-                    text: 'LifePlan successfully converted to sale!',
-                    icon: 'success',
-                    confirmButtonText: 'OK'
-                }).then(() => {
-                    // Close modal
-                    convertModal.classList.add('hidden');
-                    // Optionally refresh the page or update the table
-                    location.reload();
-                });
-            } else {
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'Error converting to sale: ' + (data.message || 'Unknown error'),
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                });
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred during conversion');
-        })
-        .finally(() => {
-            confirmConvertBtn.disabled = false;
-            confirmConvertBtn.textContent = 'Confirm Conversion';
-        });
-    });
-});
-
-document.addEventListener('DOMContentLoaded', function() {
-    const convertModal = document.getElementById('convertToSaleModal');
-    const dateOfDeathInput = document.getElementById('dateOfDeath');
-    const burialDateInput = document.getElementById('burialDate');
-    
-    // Set max date for date of death (today)
-    const today = new Date().toISOString().split('T')[0];
-    dateOfDeathInput.max = today;
-    
-    // Set min date for burial date (tomorrow)
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    burialDateInput.min = tomorrow.toISOString().split('T')[0];
-    
-    // Validate date of death on input
-    dateOfDeathInput.addEventListener('input', function() {
-        if (this.value > today) {
-            this.value = today;
-        }
-        
-        // Ensure burial date is after date of death
-        if (burialDateInput.value && burialDateInput.value <= this.value) {
-            const minBurialDate = new Date(this.value);
-            minBurialDate.setDate(minBurialDate.getDate() + 1);
-            burialDateInput.min = minBurialDate.toISOString().split('T')[0];
-            burialDateInput.value = burialDateInput.min;
-        }
-    });
-    
-    // Validate burial date on input
-    burialDateInput.addEventListener('input', function() {
-        if (dateOfDeathInput.value && this.value <= dateOfDeathInput.value) {
-            const minBurialDate = new Date(dateOfDeathInput.value);
-            minBurialDate.setDate(minBurialDate.getDate() + 1);
-            this.value = minBurialDate.toISOString().split('T')[0];
-        }
-        
-        // Ensure burial date is not before tomorrow
-        if (this.value < tomorrow.toISOString().split('T')[0]) {
-            this.value = tomorrow.toISOString().split('T')[0];
-        }
-    });
-    
-    // When modal opens, set default dates
-    document.querySelectorAll('.convert-to-sale-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            // Set date of death to today by default
-            dateOfDeathInput.value = today;
-            
-            // Set burial date to tomorrow by default
-            burialDateInput.value = tomorrow.toISOString().split('T')[0];
-        });
-    });
-});
-
-// Add this function to validate search input
-function validateSearchInput(inputElement) {
-    if (!inputElement) return;
-    
-    inputElement.addEventListener('input', function() {
-        let value = this.value;
-        
-        // Don't allow consecutive spaces
-        if (/\s{2,}/.test(value)) {
-            this.value = value.replace(/\s{2,}/g, ' ');
-            return;
-        }
-        
-        // Don't allow space as first character
-        if (value.startsWith(' ')) {
-            this.value = value.substring(1);
-            return;
-        }
-        
-        // Only allow space after at least 2 characters
-        if (value.length < 2 && value.includes(' ')) {
-            this.value = value.replace(/\s/g, '');
-            return;
-        }
-    });
-    
-    // Prevent paste of content with invalid spacing
-    inputElement.addEventListener('paste', function(e) {
-        e.preventDefault();
-        const pastedText = (e.clipboardData || window.clipboardData).getData('text');
-        
-        // Clean the pasted text
-        let cleanedText = pastedText;
-        
-        // Remove consecutive spaces
-        cleanedText = cleanedText.replace(/\s{2,}/g, ' ');
-        
-        // Remove leading space
-        if (cleanedText.startsWith(' ')) {
-            cleanedText = cleanedText.substring(1);
-        }
-        
-        // Remove spaces before 2 characters
-        if (cleanedText.length < 2 && cleanedText.includes(' ')) {
-            cleanedText = cleanedText.replace(/\s/g, '');
-        }
-        
-        document.execCommand('insertText', false, cleanedText);
-    });
-}
-
-// Apply validation to all search inputs
-document.addEventListener('DOMContentLoaded', function() {
-    // Find all search input elements
-    const searchInputs = document.querySelectorAll('input[type="search"], input[placeholder*="search" i], input[placeholder*="Search" i], input[id*="search" i], input[name*="search" i]');
-    
-    // Apply validation to all found search inputs
-    searchInputs.forEach(input => {
-        validateSearchInput(input);
-    });
-});
-</script>
-
-<script>
-
-
-
-  // Add this to your existing JavaScript for the receipt modal
+    // Add this to your existing JavaScript for the receipt modal
 document.addEventListener('DOMContentLoaded', function() {
     const paymentAmount = document.getElementById('paymentAmount');
     const paymentNotes = document.getElementById('paymentNotes');
