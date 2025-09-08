@@ -4216,28 +4216,36 @@ function loadArchivedAddons(searchTerm = '', branchFilter = '') {
     })
     .then(archivedAddons => {
         const tableBody = document.getElementById('archivedTableBody');
+        const noArchivedAddons = document.getElementById('noArchivedAddons');
+        
         tableBody.innerHTML = '';
         
-        // Update item count
-        document.getElementById('itemCount').textContent = archivedAddons.length;
-        
-        archivedAddons.forEach(addon => {
-            const row = document.createElement('tr');
-            row.className = 'hover:bg-gray-50 border-b';
-            row.innerHTML = `
-                <td class="p-4 font-medium">${addon.addOns_id}</td>
-                <td class="p-4">${addon.addOns_name}</td>
-                <td class="p-4">${formatPrice(addon.price)}</td>
-                <td class="p-4">${addon.branch_name.replace(/\b\w/g, char => char.toUpperCase())}</td>
-                <td class="p-4"><span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">Archived</span></td>
-                <td class="p-4 text-center">
-                    <button class="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded transition-colors" onclick="unarchiveAddon(${addon.addOns_id})">
-                        <i class="fas fa-box-open mr-1"></i> Unarchive
-                    </button>
-                </td>
-            `;
-            tableBody.appendChild(row);
-        });
+        if (archivedAddons.length === 0) {
+            // Show no results message
+            noArchivedAddons.classList.remove('hidden');
+            tableBody.parentElement.classList.add('hidden');
+        } else {
+            // Hide no results message and show table
+            noArchivedAddons.classList.add('hidden');
+            tableBody.parentElement.classList.remove('hidden');
+            
+            archivedAddons.forEach(addon => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50 border-b';
+                row.innerHTML = `
+                    <td class="px-6 py-4 font-medium">${addon.addOns_id}</td>
+                    <td class="px-6 py-4">${addon.addOns_name}</td>
+                    <td class="px-6 py-4">${formatPrice(addon.price)}</td>
+                    <td class="px-6 py-4">${addon.branch_name.replace(/\b\w/g, char => char.toUpperCase())}</td>
+                    <td class="px-6 py-4 text-center">
+                        <button class="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded transition-colors" onclick="unarchiveAddon(${addon.addOns_id})">
+                            <i class="fas fa-box-open mr-1"></i> Unarchive
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
     })
     .catch(error => {
         console.error('Error fetching archived add-ons:', error);

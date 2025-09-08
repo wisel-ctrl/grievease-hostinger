@@ -36,7 +36,7 @@ if ($result) {
     if ($stmt->affected_rows > 0) {
         echo json_encode([
             'success' => true,
-            'message' => 'Add-on successfully deleted'
+            'message' => 'Add-on successfully archived'
         ]);
     } else {
         echo json_encode([
