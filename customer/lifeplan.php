@@ -1016,7 +1016,7 @@ require_once '../db_connect.php'; // Database connection
                         
                         <div class="mt-4">
                             <label for="traditionalDeceasedAddress" class="block text-sm font-medium text-navy mb-2">Street/Block/House Number <span class="text-red-500">*</span></label>
-                            <input type="text" id="traditionalDeceasedAddress" name="deceasedAddress" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" placeholder="e.g. 123 Main Street">
+                            <input type="text" id="traditionalDeceasedAddress" name="deceasedStreet" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" placeholder="e.g. 123 Main Street">
                         </div>
                     </div>
 
