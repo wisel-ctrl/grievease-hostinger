@@ -921,7 +921,7 @@ require_once '../db_connect.php'; // Database connection
                     <input type="hidden" id="deceasedAddress" name="deceasedAddress">
                     
                     <div class="border-b border-gray-200 pb-4 mb-4">
-                        <h3 class="text-base md:text-lg font-hedvig text-navy mb-3 md:mb-4">Plan Holder Information</h3>
+                        <h3 class="text-base md:text-lg font-hedvig text-navy mb-3 md:mb-4">Benefeciary Information</h3>
                         
                         <!-- First Name & Middle Name (Side by side) -->
                         <div class="flex flex-wrap -mx-2 mb-3">
@@ -1017,6 +1017,184 @@ require_once '../db_connect.php'; // Database connection
                         <div class="mt-4">
                             <label for="traditionalDeceasedAddress" class="block text-sm font-medium text-navy mb-2">Street/Block/House Number <span class="text-red-500">*</span></label>
                             <input type="text" id="traditionalDeceasedAddress" name="deceasedAddress" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" placeholder="e.g. 123 Main Street">
+                        </div>
+                    </div>
+
+                    <div class="border-b border-gray-200 pb-4 mb-4">
+                        <h3 class="text-base md:text-lg font-hedvig text-navy mb-3 md:mb-4">Comaker Information</h3>
+                        
+                        <!-- First Name & Middle Name (Side by side) -->
+                        <div class="flex flex-wrap -mx-2 mb-3">
+                            <div class="w-full sm:w-1/2 px-2 mb-3 sm:mb-0">
+                                <label for="comakerFirstName" class="block text-sm font-medium text-navy mb-1">First Name <span class="text-red-500">*</span></label>
+                                <input type="text" id="comakerFirstName" name="comakerFirstName" required 
+                                    class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" 
+                                    pattern="[A-Za-z'-][A-Za-z'-]*( [A-Za-z'-]+)*" 
+                                    title="Please enter a valid name (letters only, no leading spaces, numbers or symbols)">
+                            </div>
+                            <div class="w-full sm:w-1/2 px-2">
+                                <label for="comakerMiddleName" class="block text-sm font-medium text-navy mb-1">Middle Name</label>
+                                <input type="text" id="comakerMiddleName" name="comakerMiddleName" 
+                                    class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" 
+                                    pattern="[A-Za-z'-][A-Za-z'-]*( [A-Za-z'-]+)*" 
+                                    title="Please enter a valid name (letters only, no leading spaces, numbers or symbols)">
+                            </div>
+                        </div>
+                        
+                        <!-- Last Name & Suffix (Side by side) -->
+                        <div class="flex flex-wrap -mx-2 mb-3">
+                            <div class="w-full sm:w-3/4 px-2 mb-3 sm:mb-0">
+                                <label for="comakerLastName" class="block text-sm font-medium text-navy mb-1">Last Name <span class="text-red-500">*</span></label>
+                                <input type="text" id="comakerLastName" name="comakerLastName" required 
+                                    class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" 
+                                    pattern="[A-Za-z'-][A-Za-z'-]*( [A-Za-z'-]+)*" 
+                                    title="Please enter a valid name (letters only, no leading spaces, numbers or symbols)">
+                            </div>
+                            <div class="w-full sm:w-1/4 px-2">
+                                <label for="comakerSuffix" class="block text-sm font-medium text-navy mb-1">Suffix</label>
+                                <select id="comakerSuffix" name="comakerSuffix" 
+                                    class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                    <option value="">None</option>
+                                    <option value="Jr.">Jr.</option>
+                                    <option value="Sr.">Sr.</option>
+                                    <option value="I">I</option>
+                                    <option value="II">II</option>
+                                    <option value="III">III</option>
+                                    <option value="IV">IV</option>
+                                    <option value="V">V</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Occupation -->
+                        <div class="mb-3">
+                            <label for="comakerOccupation" class="block text-sm font-medium text-navy mb-1">Occupation <span class="text-red-500">*</span></label>
+                            <input type="text" id="comakerOccupation" name="comakerOccupation" required 
+                                class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" 
+                                placeholder="Enter occupation">
+                        </div>
+                        
+                        <!-- Address Section -->
+                        <div class="mb-4">
+                            <h4 class="text-sm font-medium text-navy mb-2">Address</h4>
+                            
+                            <!-- Region & Province (Side by side) -->
+                            <div class="flex flex-wrap -mx-2 mb-3">
+                                <div class="w-full sm:w-1/2 px-2 mb-3 sm:mb-0">
+                                    <label for="comakerRegion" class="block text-sm font-medium text-navy mb-1">Region <span class="text-red-500">*</span></label>
+                                    <select id="comakerRegion" name="comakerRegion" required
+                                        class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                        <option value="">Select Region</option>
+                                        <!-- Regions will be populated by JavaScript -->
+                                    </select>
+                                </div>
+                                <div class="w-full sm:w-1/2 px-2">
+                                    <label for="comakerProvince" class="block text-sm font-medium text-navy mb-1">Province/City <span class="text-red-500">*</span></label>
+                                    <select id="comakerProvince" name="comakerProvince" required disabled
+                                        class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                        <option value="">Select Province/City</option>
+                                        <!-- Provinces will be populated by JavaScript -->
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <!-- Municipality & Barangay (Side by side) -->
+                            <div class="flex flex-wrap -mx-2 mb-3">
+                                <div class="w-full sm:w-1/2 px-2 mb-3 sm:mb-0">
+                                    <label for="comakerMunicipality" class="block text-sm font-medium text-navy mb-1">Municipality <span class="text-red-500">*</span></label>
+                                    <select id="comakerMunicipality" name="comakerMunicipality" required disabled
+                                        class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                        <option value="">Select Municipality</option>
+                                        <!-- Municipalities will be populated by JavaScript -->
+                                    </select>
+                                </div>
+                                <div class="w-full sm:w-1/2 px-2">
+                                    <label for="comakerBarangay" class="block text-sm font-medium text-navy mb-1">Barangay <span class="text-red-500">*</span></label>
+                                    <select id="comakerBarangay" name="comakerBarangay" required disabled
+                                        class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                        <option value="">Select Barangay</option>
+                                        <!-- Barangays will be populated by JavaScript -->
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <!-- Street & Zip Code (Side by side) -->
+                            <div class="flex flex-wrap -mx-2 mb-3">
+                                <div class="w-full sm:w-4/4 px-2 mb-3 sm:mb-0">
+                                    <label for="comakerStreet" class="block text-sm font-medium text-navy mb-1">Street/Block/House Number <span class="text-red-500">*</span></label>
+                                    <input type="text" id="comakerStreet" name="comakerStreet" required 
+                                        class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" 
+                                        placeholder="e.g. 123 Main Street">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Valid ID Upload Section -->
+                        <div class="mb-4">
+                            <h4 class="text-sm font-medium text-navy mb-2">Valid ID</h4>
+                            
+                            <!-- ID Type Selection -->
+                            <div class="mb-3">
+                                <label for="comakerIdType" class="block text-sm font-medium text-navy mb-1">ID Type <span class="text-red-500">*</span></label>
+                                <select id="comakerIdType" name="comakerIdType" required
+                                    class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                    <option value="">Select ID Type</option>
+                                    <option value="passport">Passport</option>
+                                    <option value="drivers_license">Driver's License</option>
+                                    <option value="sss_id">SSS ID</option>
+                                    <option value="philhealth_id">PhilHealth ID</option>
+                                    <option value="tin_id">TIN ID</option>
+                                    <option value="postal_id">Postal ID</option>
+                                    <option value="voters_id">Voter's ID</option>
+                                    <option value="prc_id">PRC ID</option>
+                                    <option value="umid">UMID</option>
+                                    <option value="senior_citizen_id">Senior Citizen ID</option>
+                                    <option value="pwd_id">PWD ID</option>
+                                    <option value="barangay_id">Barangay ID</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            
+                            <!-- ID Number -->
+                            <div class="mb-3">
+                                <label for="comakerIdNumber" class="block text-sm font-medium text-navy mb-1">ID Number/Code <span class="text-red-500">*</span></label>
+                                <input type="text" id="comakerIdNumber" name="comakerIdNumber" required 
+                                    class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" 
+                                    placeholder="Enter ID number or code">
+                            </div>
+                            
+                            <!-- ID Image Upload -->
+                            <div class="mb-3">
+                                <label for="comakerIdImage" class="block text-sm font-medium text-navy mb-1">Upload Valid ID <span class="text-red-500">*</span></label>
+                                <div class="border border-input-border bg-white rounded-lg p-3 focus-within:ring-2 focus-within:ring-yellow-600">
+                                    <!-- Upload Button and File Name -->
+                                    <div class="flex items-center mb-2">
+                                        <label for="comakerIdImage" class="flex-1 cursor-pointer">
+                                            <div class="flex items-center justify-center py-2 px-3 bg-gray-50 rounded hover:bg-gray-100 transition">
+                                                <i class="fas fa-id-card mr-2 text-blue-500"></i>
+                                                <span class="text-sm text-gray-600">Upload ID Image</span>
+                                            </div>
+                                        </label>
+                                        <span class="text-xs ml-2 text-gray-500" id="comakerIdFileName">No file chosen</span>
+                                    </div>
+                                    
+                                    <!-- Preview Container -->
+                                    <div id="comakerIdPreviewContainer" class="hidden mt-2 rounded-lg overflow-hidden border border-gray-200">
+                                        <!-- Image Preview -->
+                                        <div id="comakerIdImagePreview" class="hidden">
+                                            <img id="comakerIdImageDisplay" src="" alt="ID Preview" class="w-full h-auto max-h-48 object-contain">
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Remove Button -->
+                                    <button type="button" id="removeComakerIdImage" class="text-xs text-red-600 hover:text-red-800 mt-2 hidden">
+                                        <i class="fas fa-trash-alt mr-1"></i> Remove file
+                                    </button>
+                                    
+                                    <input type="file" id="comakerIdImage" name="comakerIdImage" accept=".jpg,.jpeg,.png,.pdf" class="hidden" required>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-1">Accepted formats: JPG, JPEG, PNG, PDF (Max 5MB)</p>
+                            </div>
                         </div>
                     </div>
 
@@ -1267,6 +1445,103 @@ require_once '../db_connect.php'; // Database connection
         </div>
     </div>
 </div>
+
+<script>
+// Add JavaScript for comaker ID image upload functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const comakerIdInput = document.getElementById('comakerIdImage');
+    const comakerIdFileName = document.getElementById('comakerIdFileName');
+    const comakerIdPreviewContainer = document.getElementById('comakerIdPreviewContainer');
+    const comakerIdImagePreview = document.getElementById('comakerIdImagePreview');
+    const comakerIdImageDisplay = document.getElementById('comakerIdImageDisplay');
+    const removeComakerIdImageBtn = document.getElementById('removeComakerIdImage');
+
+    // Handle comaker ID image upload
+    if (comakerIdInput) {
+        comakerIdInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Update file name display
+                comakerIdFileName.textContent = file.name;
+                
+                // Show preview container
+                comakerIdPreviewContainer.classList.remove('hidden');
+                removeComakerIdImageBtn.classList.remove('hidden');
+                
+                // Handle different file types
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        comakerIdImageDisplay.src = e.target.result;
+                        comakerIdImagePreview.classList.remove('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    // For PDF files, show a placeholder
+                    comakerIdImagePreview.classList.add('hidden');
+                    comakerIdPreviewContainer.innerHTML = '<div class="p-4 text-center"><i class="fas fa-file-pdf text-red-500 text-3xl mb-2"></i><p class="text-sm text-gray-600">' + file.name + '</p></div>';
+                }
+            }
+        });
+    }
+
+    // Handle remove comaker ID image
+    if (removeComakerIdImageBtn) {
+        removeComakerIdImageBtn.addEventListener('click', function() {
+            comakerIdInput.value = '';
+            comakerIdFileName.textContent = 'No file chosen';
+            comakerIdPreviewContainer.classList.add('hidden');
+            comakerIdImagePreview.classList.add('hidden');
+            removeComakerIdImageBtn.classList.add('hidden');
+            comakerIdImageDisplay.src = '';
+        });
+    }
+
+    // Add address dropdown functionality for comaker
+    // You'll need to integrate this with your existing address API calls
+    const comakerRegion = document.getElementById('comakerRegion');
+    const comakerProvince = document.getElementById('comakerProvince');
+    const comakerMunicipality = document.getElementById('comakerMunicipality');
+    const comakerBarangay = document.getElementById('comakerBarangay');
+
+    if (comakerRegion) {
+        comakerRegion.addEventListener('change', function() {
+            if (this.value) {
+                comakerProvince.disabled = false;
+                // Load provinces based on selected region
+                // You'll need to integrate with your existing address loading function
+            } else {
+                comakerProvince.disabled = true;
+                comakerMunicipality.disabled = true;
+                comakerBarangay.disabled = true;
+            }
+        });
+    }
+
+    if (comakerProvince) {
+        comakerProvince.addEventListener('change', function() {
+            if (this.value) {
+                comakerMunicipality.disabled = false;
+                // Load municipalities based on selected province
+            } else {
+                comakerMunicipality.disabled = true;
+                comakerBarangay.disabled = true;
+            }
+        });
+    }
+
+    if (comakerMunicipality) {
+        comakerMunicipality.addEventListener('change', function() {
+            if (this.value) {
+                comakerBarangay.disabled = false;
+                // Load barangays based on selected municipality
+            } else {
+                comakerBarangay.disabled = true;
+            }
+        });
+    }
+});
+</script>
 
 <script>
 // Function to toggle submit button state
