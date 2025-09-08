@@ -1854,192 +1854,44 @@ function time_elapsed_string($datetime, $full = false) {
 <script>
 // Helper to get user name for export
 const generatedBy = <?php echo json_encode($first_name . ' ' . $last_name); ?>;
-// --- Branch Revenue Chart Data ---
-const monthlyData = {
-  labels: <?php echo json_encode($monthLabels); ?>,
-  pila: <?php echo json_encode($pilaMonthlyRevenue); ?>,
-  paete: <?php echo json_encode($paeteMonthlyRevenue); ?>,
-  title: 'Monthly Branch Revenue Comparison'
-};
-const yearlyData = {
-  labels: <?php echo json_encode($yearLabels); ?>,
-  pila: <?php echo json_encode($pilaYearlyRevenue); ?>,
-  paete: <?php echo json_encode($paeteYearlyRevenue); ?>,
-  title: 'Yearly Branch Revenue Comparison'
-};
-// --- Top Selling Packages Chart Data ---
-const services = <?php echo json_encode($services); ?>;
-const pilaData = <?php echo json_encode($pilaData); ?>;
-const paeteData = <?php echo json_encode($paeteData); ?>;
-// --- Chart Initialization ---
-// Accrued Revenue Chart
-var projectedIncomeOptions = {
-  series: [{
-    name: "Projected Income",
-    data: <?php echo json_encode($monthlyProjectedIncomeData); ?>
-  }],
-  chart: {
-    type: 'area',
-    height: '100%',
-    width: '100%',
-    animations: {
-      enabled: true,
-      easing: 'easeout',
-      speed: 800
-    },
-    toolbar: {
-      show: true,
-      tools: {
-        download: false,
-        selection: true,
-        zoom: true,
-        zoomin: true,
-        zoomout: true,
-        pan: true,
-        reset: true
-      }
-    }
-  },
-  colors: ['#3b82f6'],
-  dataLabels: { enabled: false },
-  stroke: { curve: 'smooth', width: 2 },
-  fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.7, opacityTo: 0.3 } },
-  xaxis: { categories: <?php echo json_encode($monthLabels); ?> },
-  yaxis: {
-    title: { text: 'Projected Income (₱)' },
-    labels: { formatter: function(val) { return "₱" + val.toLocaleString() } }
-  },
-  tooltip: { y: { formatter: function(val) { return "₱" + val.toLocaleString() } } },
-  title: {
-    text: '(If all payments have been settled)',
-    align: 'left',
-    style: { fontSize: '14px', fontWeight: 'bold', color: '#333' }
-  }
-};
-var projectedIncomeChart = new ApexCharts(document.querySelector("#projectedIncomeChart"), projectedIncomeOptions);
-projectedIncomeChart.render();
-
-// Toggle between monthly and yearly views
-document.getElementById('monthlyView').addEventListener('click', function() {
-    projectedIncomeChart.updateOptions({
-        series: [{
-            data: <?php echo json_encode($monthlyProjectedIncomeData); ?>
-        }],
-        xaxis: {
-            categories: <?php echo json_encode($monthLabels); ?>
-        }
-    });
-    
-    // Update button styles
-    this.classList.add('bg-blue-500', 'text-white');
-    this.classList.remove('text-gray-600', 'hover:text-gray-800');
-    document.getElementById('yearlyView').classList.remove('bg-blue-500', 'text-white');
-    document.getElementById('yearlyView').classList.add('text-gray-600', 'hover:text-gray-800');
-});
-
-document.getElementById('yearlyView').addEventListener('click', function() {
-    projectedIncomeChart.updateOptions({
-        series: [{
-            data: <?php echo json_encode($yearlyProjectedIncomeData); ?>
-        }],
-        xaxis: {
-            categories: <?php echo json_encode($yearLabels); ?>
-        }
-    });
-    
-    // Update button styles
-    this.classList.add('bg-blue-500', 'text-white');
-    this.classList.remove('text-gray-600', 'hover:text-gray-800');
-    document.getElementById('monthlyView').classList.remove('bg-blue-500', 'text-white');
-    document.getElementById('monthlyView').classList.add('text-gray-600', 'hover:text-gray-800');
-});
-
-// Branch Revenue Chart
-function getChartOptions(data) {
-  return {
-    series: [
-      { name: 'Pila Branch', data: data.pila },
-      { name: 'Paete Branch', data: data.paete }
-    ],
-    chart: {
-      type: 'bar', height: '100%', width: '100%', stacked: false,
-      toolbar: {
-        show: true,
-        tools: {
-          download: false,
-          selection: true,
-          zoom: true,
-          zoomin: true,
-          zoomout: true,
-          pan: true,
-          reset: true
-        },
-        export: {
-          csv: { filename: 'branch-revenue-comparison', columnDelimiter: ',', headerCategory: data.title.includes('Monthly') ? 'Month' : 'Year', headerValue: 'Revenue (₱)' },
-          png: { filename: 'branch-revenue-comparison' },
-          svg: { filename: 'branch-revenue-comparison' }
-        }
-      }
-    },
-    plotOptions: { bar: { horizontal: false, columnWidth: '80%', endingShape: 'rounded', borderRadius: 4 } },
-    dataLabels: { enabled: false },
-    colors: ['#4f46e5', '#10b981'],
-    stroke: { show: true, width: 2, colors: ['transparent'] },
-    xaxis: {
-      categories: data.labels,
-      title: { text: data.title.includes('Monthly') ? 'Month' : 'Year' },
-      labels: { style: { fontSize: '12px', fontWeight: 500 }, rotate: -45, hideOverlappingLabels: true }
-    },
-    yaxis: {
-      title: { text: 'Revenue (₱)' },
-      labels: { formatter: function(val) { return "₱" + val.toLocaleString(); } }
-    },
-    fill: { opacity: 1 },
-    tooltip: { y: { formatter: function(val) { return "₱" + val.toLocaleString(); } } },
-    legend: { position: 'top', horizontalAlign: 'center', offsetY: 0, markers: { width: 12, height: 12, radius: 12 } },
-    responsive: [{ breakpoint: 768, options: { chart: { height: 400 }, xaxis: { labels: { rotate: -45 } } } }],
-    title: { text: data.title, align: 'center', style: { fontSize: '16px', fontWeight: 'bold' } }
-  };
+// --- PDF Header/Footer Helpers ---
+function addPdfHeader(doc, title, subtitle) {
+  doc.setFontSize(20);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(33, 37, 41);
+  doc.text('VJAY RELOVA FUNERAL SERVICES', 105, 20, { align: 'center' });
+  doc.setFontSize(16);
+  doc.text(title, 105, 30, { align: 'center' });
+  doc.setFontSize(12);
+  doc.setTextColor(60, 60, 60);
+  if (subtitle) doc.text(subtitle, 105, 38, { align: 'center' });
+  doc.setFontSize(10);
+  doc.setTextColor(100, 100, 100);
+  doc.text('Generated on: ' + new Date().toLocaleString('en-PH', {
+    year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+  }), 105, 44, { align: 'center' });
+  doc.setFontSize(10);
+  doc.setTextColor(100, 100, 100);
+  doc.text('Generated by: ' + generatedBy, 105, 50, { align: 'center' });
 }
-var branchRevenueChart = new ApexCharts(document.querySelector("#branchRevenueChart"), getChartOptions(monthlyData));
-branchRevenueChart.render();
-
-// Top Selling Packages Chart
-var branchServicesOptions = {
-  series: [
-    { name: 'Pila Branch', data: <?php echo json_encode($pilaData); ?> },
-    { name: 'Paete Branch', data: <?php echo json_encode($paeteData); ?> }
-  ],
-  chart: {
-    height: '100%', width: '100%', type: 'radar', dropShadow: { enabled: true, blur: 1, left: 1, top: 1 },
-    toolbar: {
-      show: true,
-      tools: { download: true, selection: false, zoom: false, zoomin: false, zoomout: false, pan: false, reset: true },
-      export: {
-        csv: { filename: 'branch-services-comparison', headerCategory: 'Service', headerValue: 'Sales Count' },
-        png: { filename: 'branch-services-comparison' },
-        svg: { filename: 'branch-services-comparison' }
-      }
-    }
-  },
-  colors: ['#4f46e5', '#10b981'],
-  labels: <?php echo json_encode($services); ?>,
-  markers: { size: 5, hover: { size: 7 } },
-  yaxis: { show: false, min: 0 },
-  fill: { opacity: 0.2 },
-  stroke: { width: 2 },
-  tooltip: { y: { formatter: function(val) { return val + ' sales'; } } },
-  legend: { position: 'bottom', horizontalAlign: 'center' },
-  plotOptions: { radar: { size: 140, polygons: { strokeColors: '#e8e8e8', connectorColors: '#e8e8e8' } } },
-  responsive: [
-    { breakpoint: 1200, options: { plotOptions: { radar: { size: 160 } } } },
-    { breakpoint: 992, options: { plotOptions: { radar: { size: 140 } } } },
-    { breakpoint: 768, options: { plotOptions: { radar: { size: 120 } }, legend: { position: 'bottom', horizontalAlign: 'center' } } }
-  ]
-};
-var branchServicesChart = new ApexCharts(document.querySelector("#branchServicesChart"), branchServicesOptions);
-branchServicesChart.render();
+function addPdfFooter(doc, y) {
+  const pageWidth = doc.internal.pageSize.width;
+  const margin = 15;
+  const footerY = doc.internal.pageSize.height - 18;
+  doc.setFontSize(9);
+  doc.setTextColor(100, 100, 100);
+  doc.setFont('courier', 'normal');
+  doc.text('For inquiries: Tel: (02) 1234-5678 • Mobile: 0917-123-4567 • Email: info@vjayrelova.com',
+    105, footerY, { align: 'center' });
+  // Signature line
+  doc.setFontSize(11);
+  doc.setTextColor(33, 37, 41);
+  doc.setFont('helvetica', 'normal');
+  doc.text('Signature: ___________________________', pageWidth - margin - 90, footerY - 10);
+}
+// --- End of PDF Header/Footer Helpers ---
 </script>
+
 <script>
   document.querySelectorAll('.branch-name').forEach(div => {
     div.textContent = div.textContent
