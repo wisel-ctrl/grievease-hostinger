@@ -165,21 +165,23 @@ $ratioChange = number_format($changes['ratio_change'] ?? 0, 1);
         <div class="bg-gradient-to-r from-blue-100 to-blue-200 px-6 py-4">
             <div class="flex items-center justify-between mb-1">
                 <h3 class="text-sm font-medium text-gray-700">Sales Forecast (next 6 Months)</h3>
-                <div class="w-10 h-10 rounded-full bg-white/90 text-blue-600 flex items-center justify-center">
-                    <i class="fas fa-chart-line"></i>
-                </div>
-            </div>
-            <div class="flex items-end">
-                <span class="text-2xl md:text-3xl font-bold text-gray-800 sales-forecast-value">₱000,000</span>
+                <button onclick="printRevenueTables()" id="exportRevenueBtn" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm flex items-center gap-1" title="Print/Export">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="7 10 12 15 17 10"></polyline>
+                      <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Export
+                </button>
             </div>
         </div>
-        
+        <div id="salesForecastChart"></div>
         <!-- Card footer with change indicator -->
         <div class="px-6 py-3 bg-white border-t border-gray-100">
             <div class="flex items-center text-emerald-600">
                 <i class="fas fa-arrow-up mr-1.5 text-xs"></i>
-                <span class="font-medium text-xs">12% </span>
-                <span class="text-xs text-gray-500 ml-1">projected growth</span>
+                <span class="font-medium text-xs forecast-accuracy-value">0% </span>
+                <span class="text-xs text-gray-500 ml-1">forecast accuracy</span>
             </div>
         </div>
     </div>
@@ -1339,7 +1341,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 </script>
-
 <script>
 const salesData = <?php echo json_encode($salesData); ?>;
 
