@@ -488,9 +488,9 @@ for ($i = 4; $i >= 0; $i--) {
         SELECT amount_paid 
         FROM sales_tb 
         WHERE YEAR(get_timestamp) = ?
-
+        
         UNION ALL
-
+        
         -- 2. Direct custom sales from customsales_tb not referenced in analytics_tb
         SELECT amount_paid
         FROM customsales_tb
@@ -500,9 +500,9 @@ for ($i = 4; $i >= 0; $i--) {
             WHERE sales_type = 'custom'
             AND YEAR(sale_date) = ?
         )
-
+        
         UNION ALL
-
+        
         -- 3. All analytics records (they may or may not reference other tables)
         SELECT 
             CASE
@@ -531,7 +531,8 @@ for ($i = 4; $i >= 0; $i--) {
     $data = $result->fetch_assoc();
     
     $yearlyRevenueData[] = $data['revenue'] ?? 0;
-}
+    $yearLabels[] = $year;
+  }
 
 // Original monthly data query
 $monthlyRevenueData = [];
@@ -590,6 +591,7 @@ for ($i = 11; $i >= 0; $i--) {
     $data = $result->fetch_assoc();
     
     $monthlyRevenueData[] = $data['revenue'] ?? 0;
+    $monthLabels[] = $date->format('M Y');
 }
 
 ?>
@@ -1555,8 +1557,6 @@ function time_elapsed_string($datetime, $full = false) {
                                 <i class="fas fa-clipboard-list text-sidebar-accent"></i> Services
                             </div>
                         </th>
-                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(2)">
-                            <div class="flex items-center gap-1.5">
                         <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(2)">
                             <div class="flex items-center gap-1.5">
                                 <i class="fas fa-dollar-sign text-sidebar-accent"></i> Revenue
