@@ -363,9 +363,9 @@ for ($i = 4; $i >= 0; $i--) {
         SELECT discounted_price as total_discounted 
         FROM sales_tb 
         WHERE YEAR(get_timestamp) = ?
-        
+
         UNION ALL
-        
+
         SELECT discounted_price as total_discounted
         FROM customsales_tb
         WHERE YEAR(get_timestamp) = ?
@@ -374,9 +374,9 @@ for ($i = 4; $i >= 0; $i--) {
             WHERE sales_type = 'custom'
             AND YEAR(sale_date) = ?
         )
-        
+
         UNION ALL
-        
+
         SELECT 
             CASE
                 WHEN a.sales_type = 'traditional' AND s.sales_id IS NOT NULL THEN s.discounted_price
@@ -488,9 +488,9 @@ for ($i = 4; $i >= 0; $i--) {
         SELECT amount_paid 
         FROM sales_tb 
         WHERE YEAR(get_timestamp) = ?
-        
+
         UNION ALL
-        
+
         -- 2. Direct custom sales from customsales_tb not referenced in analytics_tb
         SELECT amount_paid
         FROM customsales_tb
@@ -500,9 +500,9 @@ for ($i = 4; $i >= 0; $i--) {
             WHERE sales_type = 'custom'
             AND YEAR(sale_date) = ?
         )
-        
+
         UNION ALL
-        
+
         -- 3. All analytics records (they may or may not reference other tables)
         SELECT 
             CASE
@@ -2183,7 +2183,8 @@ document.getElementById('exportCashRevenue').addEventListener('click', function(
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({orientation: 'portrait'});
     doc.setProperties({title: 'Vjay Relova Cash Revenue Report', subject: 'Financial Report', author: 'Vjay Relova Funeral Services', keywords: 'revenue, report, financial', creator: 'Vjay Relova Web Application'});
-    getUnifiedPdfOptions(doc, 'CASH REVENUE REPORT', isYearly ? 'YEARLY' : 'MONTHLY');
+    const generatedBy = <?php echo json_encode($first_name . ' ' . $last_name); ?>;
+    getUnifiedPdfOptions(doc, 'CASH REVENUE REPORT', isYearly ? 'YEARLY' : 'MONTHLY', generatedBy);
     const pageWidth = doc.internal.pageSize.width;
     const margin = 15;
     const availableWidth = pageWidth - (2 * margin);
@@ -2206,7 +2207,7 @@ document.getElementById('exportCashRevenue').addEventListener('click', function(
                 doc.rect(margin, finalY - 5, availableWidth, 10, 'F');
                 doc.text(tableData[tableData.length - 1][0], margin + 5, finalY);
                 doc.text(tableData[tableData.length - 1][1], pageWidth - margin - 5, finalY, { align: 'right' });
-                addUnifiedFooter(doc);
+                addUnifiedFooter(doc, generatedBy);
             }
         }
     });
@@ -2249,7 +2250,8 @@ document.getElementById('exportProjectedIncome').addEventListener('click', funct
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({orientation: 'portrait'});
   doc.setProperties({title: 'Vjay Relova Accrued Revenue Report', subject: 'Financial Report', author: 'Vjay Relova Funeral Services', keywords: 'revenue, report, financial', creator: 'Vjay Relova Web Application'});
-  getUnifiedPdfOptions(doc, 'ACCRUED REVENUE REPORT', isMonthly ? 'MONTHLY' : 'YEARLY');
+  const generatedBy = <?php echo json_encode($first_name . ' ' . $last_name); ?>;
+  getUnifiedPdfOptions(doc, 'ACCRUED REVENUE REPORT', isMonthly ? 'MONTHLY' : 'YEARLY', generatedBy);
   const pageWidth = doc.internal.pageSize.width;
   const margin = 15;
   const availableWidth = pageWidth - (2 * margin);
@@ -2272,7 +2274,7 @@ document.getElementById('exportProjectedIncome').addEventListener('click', funct
         doc.rect(margin, finalY - 5, availableWidth, 10, 'F');
         doc.text(tableData[tableData.length - 1][0], margin + 5, finalY);
         doc.text(tableData[tableData.length - 1][1], pageWidth - margin - 5, finalY, { align: 'right' });
-        addUnifiedFooter(doc);
+        addUnifiedFooter(doc, generatedBy);
       }
     }
   });
@@ -2288,7 +2290,8 @@ document.getElementById('exportPdfBtn').addEventListener('click', function() {
     const isYearly = document.getElementById('yearlyViewBranch').classList.contains('bg-blue-500');
     const currentData = isYearly ? yearlyData : monthlyData;
     const timeframe = isYearly ? 'Yearly' : 'Monthly';
-    getUnifiedPdfOptions(doc, 'BRANCH REVENUE REPORT', timeframe.toUpperCase());
+    const generatedBy = <?php echo json_encode($first_name . ' ' . $last_name); ?>;
+    getUnifiedPdfOptions(doc, 'BRANCH REVENUE REPORT', timeframe.toUpperCase(), generatedBy);
     const headers = [isYearly ? 'Year' : 'Month', 'Pila Revenue', 'Paete Revenue'];
     const body = [];
     for (let i = 0; i < currentData.labels.length; i++) {
@@ -2329,7 +2332,7 @@ document.getElementById('exportPdfBtn').addEventListener('click', function() {
           doc.text(totalsRow[0], margin + 5, finalY);
           doc.text(totalsRow[1], margin + availableWidth * 0.7, finalY, { align: 'right' });
           doc.text(totalsRow[2], pageWidth - margin - 5, finalY, { align: 'right' });
-          addUnifiedFooter(doc);
+          addUnifiedFooter(doc, generatedBy);
         }
       }
     });
@@ -2346,7 +2349,8 @@ document.getElementById('exportTopSellingPackages').addEventListener('click', fu
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({orientation: 'portrait'});
     doc.setProperties({title: 'Vjay Relova Service Package Sales Report', subject: 'Sales Report', author: 'Vjay Relova Funeral Services', keywords: 'sales, report, service, package', creator: 'Vjay Relova Web Application'});
-    getUnifiedPdfOptions(doc, 'SERVICE PACKAGE SALES REPORT', '');
+    const generatedBy = <?php echo json_encode($first_name . ' ' . $last_name); ?>;
+    getUnifiedPdfOptions(doc, 'SERVICE PACKAGE SALES REPORT', '', generatedBy);
     const tableData = [];
     tableData.push(['Service Package', 'Pila Branch', 'Paete Branch']);
     services.forEach((service, index) => {
@@ -2370,7 +2374,7 @@ document.getElementById('exportTopSellingPackages').addEventListener('click', fu
       columnStyles: {0: {cellWidth: availableWidth * 0.6, halign: 'left'}, 1: {cellWidth: availableWidth * 0.2, halign: 'right'}, 2: {cellWidth: availableWidth * 0.2, halign: 'right'}},
       margin: {left: margin, right: margin, top: 52},
       didDrawPage: function(data) {
-        addUnifiedFooter(doc);
+        addUnifiedFooter(doc, generatedBy);
       }
     });
     doc.save(`Vjay-Relova-Service-Packages-Report-${new Date().toISOString().slice(0, 10)}.pdf`);
@@ -2381,7 +2385,7 @@ document.getElementById('exportTopSellingPackages').addEventListener('click', fu
 });
 
 // Unified PDF export style for all exports
-function getUnifiedPdfOptions(doc, title, subtitle) {
+function getUnifiedPdfOptions(doc, title, subtitle, generatedBy) {
   doc.setFontSize(20);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(33, 37, 41);
@@ -2401,15 +2405,25 @@ function getUnifiedPdfOptions(doc, title, subtitle) {
   doc.text('Generated on: ' + new Date().toLocaleString('en-PH', {
     year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
   }), 105, 44, { align: 'center' });
+  if (generatedBy) {
+    doc.setFontSize(10);
+    doc.setTextColor(33, 37, 41);
+    doc.text('Generated by: ' + generatedBy, 105, 50, { align: 'center' });
+  }
 }
 
-function addUnifiedFooter(doc) {
+function addUnifiedFooter(doc, generatedBy) {
   const footerY = doc.internal.pageSize.height - 10;
   doc.setFontSize(9);
   doc.setTextColor(100, 100, 100);
   doc.setFont('courier', 'normal');
   doc.text('For inquiries: Tel: (02) 1234-5678 • Mobile: 0917-123-4567 • Email: info@vjayrelova.com',
-    105, footerY, { align: 'center' });
+    105, footerY - 8, { align: 'center' });
+  // Signature line
+  doc.setFontSize(10);
+  doc.setTextColor(33, 37, 41);
+  doc.setFont('helvetica', 'normal');
+  doc.text('Signature: ___________________________', 105, footerY, { align: 'center' });
 }
 </script>
 <script>
