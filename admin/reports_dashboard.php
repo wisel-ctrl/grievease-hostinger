@@ -1339,7 +1339,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 </script>
-
 <script>
 const salesData = <?php echo json_encode($salesData); ?>;
 
@@ -1891,65 +1890,193 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 <script>
-  // Update the branch selection script
-  document.addEventListener('DOMContentLoaded', function() {
-      const dropdownButton = document.getElementById('branchDropdownButton');
-      const dropdownMenu = document.getElementById('branchDropdown');
-      const branchOptions = document.querySelectorAll('.branch-option');
-      
-      // Get current branch from URL
-      const urlParams = new URLSearchParams(window.location.search);
-      const currentBranch = urlParams.get('branch') || 'all';
-      
-      // Set initial button text
-      const initialBranchText = currentBranch === 'all' ? 'All Branches' : 
-                              (currentBranch === 'paete' ? 'Paete' : 'Pila');
-      dropdownButton.querySelector('span').textContent = initialBranchText;
-      
-      // Toggle dropdown
-      dropdownButton.addEventListener('click', function(e) {
-          e.stopPropagation();
-          dropdownMenu.classList.toggle('hidden');
-          const icon = this.querySelector('i');
-          icon.classList.toggle('fa-chevron-down');
-          icon.classList.toggle('fa-chevron-up');
+// Add jsPDF export for Sales Forecast (Next 6 Months)
+document.addEventListener('DOMContentLoaded', function() {
+  // Add jsPDF export for the sales forecast export button
+  const exportBtn = document.querySelector('.bg-gradient-to-r.from-blue-100.to-blue-200 button[title="Print/Export"]');
+  if (exportBtn) {
+    exportBtn.addEventListener('click', function() {
+      // Get regression results from chart
+      if (typeof calculateLinearRegressionForecast !== 'function' || !window.historicalRevenueData || window.historicalRevenueData.length === 0) {
+        alert('No revenue data available to export');
+        return;
+      }
+      const regressionResults = calculateLinearRegressionForecast(window.historicalRevenueData, 6);
+      const branchName = document.querySelector('#branchDropdownButton span').textContent;
+      const branchAddress = branchName === 'All Branches' ? 
+        'Multiple Locations' : 
+        (branchName === 'Pila' ? 
+            '#6 J.P Rizal St. Brgy. Sta Clara Sur, (Pob) Pila, Laguna' : 
+            'J.P Rizal(corner), Quesada St. Bagumbayan, Paete, Laguna');
+      // Prepare table data
+      const historicalRows = regressionResults.historicalChartData.map(item => [
+        new Date(item.x).toLocaleDateString('en-PH', { month: 'short', year: 'numeric' }),
+        'PHP ' + Number(item.y).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+      ]);
+      const forecastRows = regressionResults.forecastData.map(item => [
+        new Date(item.x).toLocaleDateString('en-PH', { month: 'short', year: 'numeric' }),
+        'PHP ' + Number(item.y).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+      ]);
+      // Calculate forecast accuracy
+      const lastActual = regressionResults.historicalChartData[regressionResults.historicalChartData.length - 1].y;
+      const firstForecast = regressionResults.forecastData[0].y;
+      let forecastAccuracy = 0;
+      if (lastActual !== 0) {
+        forecastAccuracy = 100 - Math.abs((firstForecast - lastActual) / lastActual * 100);
+      }
+      // jsPDF export
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ orientation: 'portrait' });
+      doc.setProperties({
+        title: 'VJay Relova Sales Forecast Report',
+        subject: 'Forecast Report',
+        author: 'VJay Relova Funeral Services',
+        keywords: 'forecast, report, financial',
+        creator: 'VJay Relova Web Application'
       });
-      
-      // Close dropdown when clicking outside
-      document.addEventListener('click', function() {
+      doc.setFontSize(20);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(33, 37, 41);
+      doc.text('VJAY RELOVA FUNERAL SERVICES', 105, 20, { align: 'center' });
+      doc.setFontSize(14);
+      doc.text('SALES FORECAST REPORT - ' + branchName, 105, 30, { align: 'center' });
+      doc.setFontSize(10);
+      doc.setTextColor(100, 100, 100);
+      doc.text(branchAddress, 105, 36, { align: 'center' });
+      doc.text('Generated on: ' + new Date().toLocaleString('en-PH', {
+        year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+      }), 105, 42, { align: 'center' });
+      // Historical Revenue Table
+      doc.autoTable({
+        head: [['Month', 'Actual Revenue (PHP)']],
+        body: historicalRows,
+        startY: 50,
+        theme: 'grid',
+        headStyles: {
+          fillColor: [59, 130, 246],
+          textColor: 255,
+          fontStyle: 'bold',
+          fontSize: 11,
+          halign: 'center'
+        },
+        columnStyles: {
+          0: { cellWidth: 60, halign: 'left', fontStyle: 'bold' },
+          1: { cellWidth: 80, halign: 'right' }
+        },
+        styles: {
+          fontSize: 9,
+          cellPadding: 3,
+          valign: 'middle',
+          lineWidth: 0.1
+        },
+        margin: { left: 15, right: 15, top: 50 },
+        tableWidth: 'wrap'
+      });
+      // Forecasted Revenue Table
+      doc.autoTable({
+        head: [['Month', 'Forecasted Revenue (PHP)']],
+        body: forecastRows,
+        startY: doc.lastAutoTable.finalY + 10,
+        theme: 'grid',
+        headStyles: {
+          fillColor: [255, 87, 51],
+          textColor: 255,
+          fontStyle: 'bold',
+          fontSize: 11,
+          halign: 'center'
+        },
+        columnStyles: {
+          0: { cellWidth: 60, halign: 'left', fontStyle: 'bold' },
+          1: { cellWidth: 80, halign: 'right' }
+        },
+        styles: {
+          fontSize: 9,
+          cellPadding: 3,
+          valign: 'middle',
+          lineWidth: 0.1
+        },
+        margin: { left: 15, right: 15 },
+        tableWidth: 'wrap',
+        didDrawPage: function(data) {
+          if (data.pageCount === data.pageNumber) {
+            const finalY = data.cursor.y + 10;
+            doc.setFontSize(12);
+            doc.setFont('courier', 'bold');
+            doc.setFillColor(240, 240, 240);
+            doc.rect(15, finalY - 5, 175, 10, 'F');
+            doc.text('Forecast Accuracy: ' + forecastAccuracy.toFixed(1) + '%', 20, finalY + 2);
+            const footerY = doc.internal.pageSize.height - 10;
+            doc.setFontSize(9);
+            doc.setTextColor(100, 100, 100);
+            doc.setFont('courier', 'normal');
+            doc.text('For inquiries: Tel: (02) 1234-5678 • Mobile: 0917-123-4567 • Email: info@vjayrelova.com',
+              105, footerY, { align: 'center' });
+          }
+        }
+      });
+      doc.save(`Vjay-Relova-Sales-Forecast-Report-${branchName.replace(/\s/g,'-')}-${new Date().toISOString().slice(0, 10)}.pdf`);
+    });
+  }
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Toggle dropdown
+  const dropdownButton = document.getElementById('branchDropdownButton');
+  const dropdownMenu = document.getElementById('branchDropdown');
+  
+  dropdownButton.addEventListener('click', function(e) {
+      e.stopPropagation();
+      dropdownMenu.classList.toggle('hidden');
+      const icon = this.querySelector('i');
+      icon.classList.toggle('fa-chevron-down');
+      icon.classList.toggle('fa-chevron-up');
+  });
+  
+  // Close dropdown when clicking outside
+  document.addEventListener('click', function() {
+      dropdownMenu.classList.add('hidden');
+      const icon = dropdownButton.querySelector('i');
+      icon.classList.remove('fa-chevron-up');
+      icon.classList.add('fa-chevron-down');
+  });
+  
+  // Branch selection
+  const branchOptions = document.querySelectorAll('.branch-option');
+  branchOptions.forEach(option => {
+      option.addEventListener('click', function(e) {
+          e.preventDefault();
+          const branch = this.getAttribute('data-branch');
+          const branchName = this.textContent;
+          
+          // Update button text
+          dropdownButton.querySelector('span').textContent = branchName;
+          
+          // Close dropdown
           dropdownMenu.classList.add('hidden');
           const icon = dropdownButton.querySelector('i');
           icon.classList.remove('fa-chevron-up');
           icon.classList.add('fa-chevron-down');
-      });
-      
-      // Handle branch selection
-      branchOptions.forEach(option => {
-          option.addEventListener('click', function(e) {
-              e.preventDefault();
-              const branch = this.getAttribute('data-branch');
-              const branchName = this.textContent;
-              
-              // Update button text
-              dropdownButton.querySelector('span').textContent = branchName;
-              
-              // Close dropdown
-              dropdownMenu.classList.add('hidden');
-              const icon = dropdownButton.querySelector('i');
-              icon.classList.remove('fa-chevron-up');
-              icon.classList.add('fa-chevron-down');
-              
-              // Reload page with new branch filter
-              const url = new URL(window.location.href);
-              if (branch === 'all') {
-                  url.searchParams.delete('branch');
-              } else {
-                  url.searchParams.set('branch', branch);
-              }
-              window.location.href = url.toString();
-          });
+          
+          // Reload page with new branch filter
+          const url = new URL(window.location.href);
+          if (branch === 'all') {
+              url.searchParams.delete('branch');
+          } else {
+              url.searchParams.set('branch', branch);
+          }
+          window.location.href = url.toString();
       });
   });
+  
+  // Set initial button text based on URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const currentBranch = urlParams.get('branch') || 'all';
+  const initialBranchText = currentBranch === 'all' ? 'All Branches' : 
+                          (currentBranch === 'paete' ? 'Paete' : 'Pila');
+  dropdownButton.querySelector('span').textContent = initialBranchText;
+});
 </script>
 
     <script src="tailwind.js"></script>
