@@ -3553,140 +3553,34 @@ document.getElementById('saveAddonBtn').addEventListener('click', function() {
   const addonBranch = document.getElementById('addonBranch').value;
   const addonIcon = "fas " + document.getElementById('selectedIcon').value;
   
-  // Enhanced validation for addon name
-  if (!addonName || addonName.length === 0) {
+  // Validate all required fields are filled
+  if (!addonName || !addonPrice || !addonBranch || !addonIcon) {
     Swal.fire({
-      title: 'Validation Error!',
-      text: 'Add-on name is required',
+      title: 'Error!',
+      text: 'Please fill in all required fields',
       icon: 'error',
       confirmButtonText: 'OK'
     });
-    document.getElementById('addonName').focus();
     return;
   }
   
-  // Check if name contains only spaces or special characters
-  if (!/^[a-zA-Z0-9\s\-_&().,]+$/.test(addonName)) {
+  // Validate price is a positive number
+  const priceValue = parseFloat(addonPrice);
+  if (isNaN(priceValue) || priceValue < 0) {
     Swal.fire({
-      title: 'Validation Error!',
-      text: 'Add-on name contains invalid characters. Only letters, numbers, spaces, and basic punctuation are allowed.',
+      title: 'Error!',
+      text: 'Price must be a positive number',
       icon: 'error',
       confirmButtonText: 'OK'
     });
-    document.getElementById('addonName').focus();
     return;
   }
   
-  // Check if name is not just spaces
-  if (addonName.replace(/\s/g, '').length === 0) {
-    Swal.fire({
-      title: 'Validation Error!',
-      text: 'Add-on name cannot be empty or contain only spaces',
-      icon: 'error',
-      confirmButtonText: 'OK'
-    });
-    document.getElementById('addonName').focus();
-    return;
-  }
-  
-  // Validate name length
+  // Validate name isn't too short
   if (addonName.length < 2) {
     Swal.fire({
-      title: 'Validation Error!',
-      text: 'Add-on name must be at least 2 characters long',
-      icon: 'error',
-      confirmButtonText: 'OK'
-    });
-    document.getElementById('addonName').focus();
-    return;
-  }
-  
-  if (addonName.length > 100) {
-    Swal.fire({
-      title: 'Validation Error!',
-      text: 'Add-on name cannot exceed 100 characters',
-      icon: 'error',
-      confirmButtonText: 'OK'
-    });
-    document.getElementById('addonName').focus();
-    return;
-  }
-  
-  // Validate description if provided
-  if (addonDescription && addonDescription.length > 500) {
-    Swal.fire({
-      title: 'Validation Error!',
-      text: 'Description cannot exceed 500 characters',
-      icon: 'error',
-      confirmButtonText: 'OK'
-    });
-    document.getElementById('addonDescription').focus();
-    return;
-  }
-  
-  // Enhanced price validation
-  if (!addonPrice || addonPrice.length === 0) {
-    Swal.fire({
-      title: 'Validation Error!',
-      text: 'Price is required',
-      icon: 'error',
-      confirmButtonText: 'OK'
-    });
-    document.getElementById('addonPrice').focus();
-    return;
-  }
-  
-  const priceValue = parseFloat(addonPrice);
-  if (isNaN(priceValue)) {
-    Swal.fire({
-      title: 'Validation Error!',
-      text: 'Price must be a valid number',
-      icon: 'error',
-      confirmButtonText: 'OK'
-    });
-    document.getElementById('addonPrice').focus();
-    return;
-  }
-  
-  if (priceValue < 0) {
-    Swal.fire({
-      title: 'Validation Error!',
-      text: 'Price cannot be negative',
-      icon: 'error',
-      confirmButtonText: 'OK'
-    });
-    document.getElementById('addonPrice').focus();
-    return;
-  }
-  
-  if (priceValue > 999999.99) {
-    Swal.fire({
-      title: 'Validation Error!',
-      text: 'Price cannot exceed ₱999,999.99',
-      icon: 'error',
-      confirmButtonText: 'OK'
-    });
-    document.getElementById('addonPrice').focus();
-    return;
-  }
-  
-  // Validate branch selection
-  if (!addonBranch) {
-    Swal.fire({
-      title: 'Validation Error!',
-      text: 'Please select a branch',
-      icon: 'error',
-      confirmButtonText: 'OK'
-    });
-    document.getElementById('addonBranch').focus();
-    return;
-  }
-  
-  // Validate icon selection
-  if (!addonIcon || addonIcon === "fas fa-plus") {
-    Swal.fire({
-      title: 'Validation Error!',
-      text: 'Please select an icon for the add-on',
+      title: 'Error!',
+      text: 'Addon name must be at least 2 characters',
       icon: 'error',
       confirmButtonText: 'OK'
     });
@@ -3741,193 +3635,91 @@ document.getElementById('saveAddonBtn').addEventListener('click', function() {
   });
 });
 
-// Real-time input validation for add-on modal
+// Input validation for add-on modal fields
 document.addEventListener('DOMContentLoaded', function() {
-  // Add-on name validation
+  // Add-on name input validation
   const addonNameInput = document.getElementById('addonName');
   if (addonNameInput) {
-    addonNameInput.addEventListener('input', function() {
-      validateAddonName(this);
+    addonNameInput.addEventListener('keypress', function(e) {
+      validateSpaceInput(e, this);
     });
     
-    addonNameInput.addEventListener('blur', function() {
-      validateAddonName(this);
+    addonNameInput.addEventListener('input', function(e) {
+      preventConsecutiveSpaces(this);
     });
   }
   
-  // Add-on description validation
+  // Add-on description input validation
   const addonDescInput = document.getElementById('addonDescription');
   if (addonDescInput) {
-    addonDescInput.addEventListener('input', function() {
-      validateAddonDescription(this);
+    addonDescInput.addEventListener('keypress', function(e) {
+      validateSpaceInput(e, this);
+    });
+    
+    addonDescInput.addEventListener('input', function(e) {
+      preventConsecutiveSpaces(this);
     });
   }
   
-  // Add-on price validation
-  const addonPriceInput = document.getElementById('addonPrice');
-  if (addonPriceInput) {
-    addonPriceInput.addEventListener('input', function() {
-      validateAddonPrice(this);
+  // Icon search input validation
+  const iconSearchInput = document.getElementById('iconSearch');
+  if (iconSearchInput) {
+    iconSearchInput.addEventListener('keypress', function(e) {
+      validateSpaceInput(e, this);
     });
     
-    addonPriceInput.addEventListener('blur', function() {
-      validateAddonPrice(this);
-    });
-    
-    // Prevent non-numeric input except decimal point
-    addonPriceInput.addEventListener('keypress', function(e) {
-      const char = String.fromCharCode(e.which);
-      if (!/[0-9.]/.test(char)) {
-        e.preventDefault();
-      }
-      
-      // Prevent multiple decimal points
-      if (char === '.' && this.value.includes('.')) {
-        e.preventDefault();
-      }
+    iconSearchInput.addEventListener('input', function(e) {
+      preventConsecutiveSpaces(this);
     });
   }
 });
 
-// Validation functions
-function validateAddonName(input) {
-  const value = input.value.trim();
-  const container = input.parentElement;
+// Function to validate space input
+function validateSpaceInput(event, input) {
+  const char = event.key;
+  const currentValue = input.value;
   
-  // Remove existing error styling
-  input.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
-  input.classList.add('border-gray-300', 'focus:border-sidebar-accent', 'focus:ring-sidebar-accent');
-  
-  // Remove existing error message
-  const existingError = container.querySelector('.error-message');
-  if (existingError) {
-    existingError.remove();
-  }
-  
-  let isValid = true;
-  let errorMessage = '';
-  
-  if (value.length === 0) {
-    errorMessage = 'Add-on name is required';
-    isValid = false;
-  } else if (value.replace(/\s/g, '').length === 0) {
-    errorMessage = 'Add-on name cannot contain only spaces';
-    isValid = false;
-  } else if (value.length < 2) {
-    errorMessage = 'Add-on name must be at least 2 characters';
-    isValid = false;
-  } else if (value.length > 100) {
-    errorMessage = 'Add-on name cannot exceed 100 characters';
-    isValid = false;
-  } else if (!/^[a-zA-Z0-9\s\-_&().,]+$/.test(value)) {
-    errorMessage = 'Invalid characters. Only letters, numbers, spaces, and basic punctuation allowed';
-    isValid = false;
-  }
-  
-  if (!isValid) {
-    input.classList.remove('border-gray-300', 'focus:border-sidebar-accent', 'focus:ring-sidebar-accent');
-    input.classList.add('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
+  // If space is pressed
+  if (char === ' ') {
+    // Check if there are at least 2 non-space characters
+    const nonSpaceChars = currentValue.replace(/\s/g, '');
+    if (nonSpaceChars.length < 2) {
+      event.preventDefault();
+      return false;
+    }
     
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'error-message text-red-500 text-xs mt-1';
-    errorDiv.textContent = errorMessage;
-    container.appendChild(errorDiv);
-  }
-  
-  return isValid;
-}
-
-function validateAddonDescription(input) {
-  const value = input.value.trim();
-  const container = input.parentElement;
-  
-  // Remove existing error styling
-  input.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
-  input.classList.add('border-gray-300', 'focus:border-sidebar-accent', 'focus:ring-sidebar-accent');
-  
-  // Remove existing error message
-  const existingError = container.querySelector('.error-message');
-  if (existingError) {
-    existingError.remove();
-  }
-  
-  let isValid = true;
-  let errorMessage = '';
-  
-  if (value.length > 500) {
-    errorMessage = 'Description cannot exceed 500 characters';
-    isValid = false;
-  }
-  
-  // Add character counter
-  const existingCounter = container.querySelector('.char-counter');
-  if (existingCounter) {
-    existingCounter.remove();
-  }
-  
-  const counterDiv = document.createElement('div');
-  counterDiv.className = 'char-counter text-xs text-gray-500 mt-1 text-right';
-  counterDiv.textContent = `${value.length}/500 characters`;
-  container.appendChild(counterDiv);
-  
-  if (!isValid) {
-    input.classList.remove('border-gray-300', 'focus:border-sidebar-accent', 'focus:ring-sidebar-accent');
-    input.classList.add('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
-    
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'error-message text-red-500 text-xs mt-1';
-    errorDiv.textContent = errorMessage;
-    container.appendChild(errorDiv);
-  }
-  
-  return isValid;
-}
-
-function validateAddonPrice(input) {
-  const value = input.value.trim();
-  const container = input.parentElement;
-  
-  // Remove existing error styling
-  input.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
-  input.classList.add('border-gray-300', 'focus:border-sidebar-accent', 'focus:ring-sidebar-accent');
-  
-  // Remove existing error message
-  const existingError = container.querySelector('.error-message');
-  if (existingError) {
-    existingError.remove();
-  }
-  
-  let isValid = true;
-  let errorMessage = '';
-  
-  if (value.length === 0) {
-    errorMessage = 'Price is required';
-    isValid = false;
-  } else {
-    const priceValue = parseFloat(value);
-    if (isNaN(priceValue)) {
-      errorMessage = 'Price must be a valid number';
-      isValid = false;
-    } else if (priceValue < 0) {
-      errorMessage = 'Price cannot be negative';
-      isValid = false;
-    } else if (priceValue > 999999.99) {
-      errorMessage = 'Price cannot exceed ₱999,999.99';
-      isValid = false;
+    // Check if the last character is already a space
+    if (currentValue.length > 0 && currentValue[currentValue.length - 1] === ' ') {
+      event.preventDefault();
+      return false;
     }
   }
   
-  if (!isValid) {
-    input.classList.remove('border-gray-300', 'focus:border-sidebar-accent', 'focus:ring-sidebar-accent');
-    input.classList.add('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
+  return true;
+}
+
+// Function to prevent consecutive spaces in existing text
+function preventConsecutiveSpaces(input) {
+  let value = input.value;
+  const cursorPosition = input.selectionStart;
+  
+  // Replace multiple consecutive spaces with single space
+  const newValue = value.replace(/\s{2,}/g, ' ');
+  
+  // Update input value if it changed
+  if (newValue !== value) {
+    input.value = newValue;
     
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'error-message text-red-500 text-xs mt-1';
-    errorDiv.textContent = errorMessage;
-    container.appendChild(errorDiv);
+    // Restore cursor position (adjust for removed spaces)
+    const removedSpaces = value.length - newValue.length;
+    const newCursorPosition = Math.max(0, cursorPosition - removedSpaces);
+    input.setSelectionRange(newCursorPosition, newCursorPosition);
   }
   
-  return isValid;
+  // Additional validation: ensure no spaces at the beginning
+  if (input.value.startsWith(' ')) {
+    input.value = input.value.trimStart();
+  }
 }
 
 // Function to open edit modal
