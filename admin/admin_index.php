@@ -284,6 +284,7 @@ $currentDate = new DateTime(); // Get current date
 $currentDate->modify('first day of this month'); // Start from beginning of current month
 
 // Prepare labels for last 12 months
+$monthLabels = [];
 for ($i = 11; $i >= 0; $i--) {
     $date = clone $currentDate;
     $date->modify("-$i months");
@@ -291,6 +292,7 @@ for ($i = 11; $i >= 0; $i--) {
 }
 
 // Prepare labels for last 5 years
+$yearLabels = [];
 for ($i = 4; $i >= 0; $i--) {
     $date = clone $currentDate;
     $date->modify("-$i years");
@@ -364,9 +366,9 @@ for ($i = 4; $i >= 0; $i--) {
         SELECT discounted_price as total_discounted 
         FROM sales_tb 
         WHERE YEAR(get_timestamp) = ?
-        
+
         UNION ALL
-        
+
         SELECT discounted_price as total_discounted
         FROM customsales_tb
         WHERE YEAR(get_timestamp) = ?
@@ -597,13 +599,13 @@ for ($i = 11; $i >= 0; $i--) {
 <?php
 // Get monthly revenue data for Pila branch (branch_id = 2)
 $pilaMonthlyRevenue = [];
-$monthLabels = [];
+$pilaMonthLabels = [];
 for ($i = 11; $i >= 0; $i--) {
     $date = clone $currentDate;
     $date->modify("-$i months");
     $month = $date->format('m');
     $year = $date->format('Y');
-    $monthLabels[] = $date->format('M Y');
+    $pilaMonthLabels[] = $date->format('M Y');
     
     $query = "SELECT SUM(amount_paid) as revenue FROM (
         -- 1. Direct sales from sales_tb
@@ -658,11 +660,13 @@ for ($i = 11; $i >= 0; $i--) {
 
 // Get monthly revenue data for Paete branch (branch_id = 1)
 $paeteMonthlyRevenue = [];
+$paeteMonthLabels = [];
 for ($i = 11; $i >= 0; $i--) {
     $date = clone $currentDate;
     $date->modify("-$i months");
     $month = $date->format('m');
     $year = $date->format('Y');
+    $paeteMonthLabels[] = $date->format('M Y');
     
     $query = "SELECT SUM(amount_paid) as revenue FROM (
         -- 1. Direct sales from sales_tb
@@ -717,12 +721,12 @@ for ($i = 11; $i >= 0; $i--) {
 
 // Get yearly revenue data for Pila branch (branch_id = 2)
 $pilaYearlyRevenue = [];
-$yearLabels = [];
+$pilaYearLabels = [];
 for ($i = 4; $i >= 0; $i--) {
     $date = clone $currentDate;
     $date->modify("-$i years");
     $year = $date->format('Y');
-    $yearLabels[] = $year;
+    $pilaYearLabels[] = $year;
     
     $query = "SELECT SUM(amount_paid) as revenue FROM (
         -- 1. Direct sales from sales_tb
@@ -777,10 +781,12 @@ for ($i = 4; $i >= 0; $i--) {
 
 // Get yearly revenue data for Paete branch (branch_id = 1)
 $paeteYearlyRevenue = [];
+$paeteYearLabels = [];
 for ($i = 4; $i >= 0; $i--) {
     $date = clone $currentDate;
     $date->modify("-$i years");
     $year = $date->format('Y');
+    $paeteYearLabels[] = $year;
     
     $query = "SELECT SUM(amount_paid) as revenue FROM (
         -- 1. Direct sales from sales_tb
@@ -2402,7 +2408,7 @@ document.getElementById('exportPdfBtn').addEventListener('click', function() {
       title: 'Vjay Relova Branch Revenue Report',
       subject: 'Financial Report',
       author: 'Vjay Relova Funeral Services',
-      keywords: 'revenue, report, financial, branch',
+      keywords: 'revenue, report, financial',
       creator: 'Vjay Relova Web Application'
     });
     const isYearly = document.getElementById('yearlyViewBranch').classList.contains('bg-blue-500');
