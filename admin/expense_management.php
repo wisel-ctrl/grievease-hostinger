@@ -1169,40 +1169,29 @@ $conn->close();
 
 
 <!-- Archive Modal -->
-<div id="archiveModal" class="fixed inset-0 z-50 flex items-center justify-center hidden" >
+<div id="archiveModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
   <!-- Modal Backdrop -->
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-4xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-4xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] flex flex-col">
     <!-- Close Button -->
-    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeArchiveModal()">
+    <button type="button" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition-colors" onclick="closeArchiveModal()">
       <i class="fas fa-times"></i>
     </button>
     
     <!-- Modal Header -->
-    <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
-      <h3 class="text-xl font-bold text-white flex items-center">
-        <span id="modalTitle">Archived Expenses</span>
+    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
+        <i class="fas fa-archive mr-2"></i> Archived Expenses
       </h3>
     </div>
     
-    <!-- Search Bar -->
-    <div class="px-6 py-4 border-b border-gray-200">
-      <div class="relative">
-        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <i class="fas fa-search text-gray-400"></i>
-        </div>
-        <input type="text" id="archivedExpensesSearch" placeholder="Search archived expenses..." 
-          class="w-full pl-10 pr-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
-      </div>
-    </div>
-    
     <!-- Modal Body -->
-    <div class="px-6 py-5 max-h-[70vh] overflow-y-auto w-full">
-      <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-        <table class="w-full text-sm text-left text-gray-500">
-          <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+    <div class="px-4 sm:px-6 py-4 sm:py-5 overflow-y-auto modal-scroll-container">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
             <tr>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Expense Name</th>
@@ -1220,8 +1209,8 @@ $conn->close();
     </div>
     
     <!-- Modal Footer -->
-    <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-      <button type="button" class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeArchiveModal()">
+    <div class="px-4 sm:px-6 py-3 sm:py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button type="button" class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors" onclick="closeArchiveModal()">
         Close
       </button>
     </div>
@@ -1500,7 +1489,7 @@ function loadExpenses(branchId, page = 1) {
         if (tbody) {
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="7" class="px-4 py-6 text-sm text-center">
+                    <td colspan="7" class="px-4 py-6 text-sm text-center text-red-500">
                         Error loading expenses. Please try again.
                     </td>
                 </tr>
@@ -2204,7 +2193,8 @@ document.addEventListener('DOMContentLoaded', function() {
                             }
                         }
                     }
-                });
+                }
+            });
         }
     }
     
@@ -2239,7 +2229,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                     }
                 }
-            });
+            }
+        });
     }
     
     // Initialize charts
