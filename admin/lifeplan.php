@@ -790,7 +790,7 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
         <!-- Modal Footer --> 
         <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-          <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" id="closeArchiveModal">
+          <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" id="archiveModalFooterClose">
             Close
           </button>
         </div>
@@ -1793,6 +1793,7 @@ window.addEventListener('click', function(event) {
 });
 </script>
 
+
 <script>
     // Add this to your existing JavaScript
 document.addEventListener('DOMContentLoaded', function() {
@@ -1800,6 +1801,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const openArchiveModalBtn = document.getElementById('openArchiveModal');
     const openArchiveModalMobileBtn = document.getElementById('openArchiveModalMobile');
     const closeArchiveModalBtn = document.getElementById('closeArchiveModal');
+    const archiveModalFooterCloseBtn = document.getElementById('archiveModalFooterClose');
     const archivedLifePlansBody = document.getElementById('archivedLifePlansBody');
 
     // Open archive modal
@@ -1813,8 +1815,13 @@ document.addEventListener('DOMContentLoaded', function() {
         archiveModal.classList.remove('hidden');
     });
 
-    // Close archive modal
+    // Close archive modal (header close button)
     closeArchiveModalBtn.addEventListener('click', function() {
+        archiveModal.classList.add('hidden');
+    });
+
+    // Close archive modal (footer close button)
+    archiveModalFooterCloseBtn.addEventListener('click', function() {
         archiveModal.classList.add('hidden');
     });
 
