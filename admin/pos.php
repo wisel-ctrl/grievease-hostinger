@@ -776,7 +776,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="grid grid-cols-1 md:grid-cols-4 gap-2 sm:gap-4">
               <div>
                 <label for="clientFirstName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                  First Name
+                  First Name <span class="text-red-500">*</span>
                 </label>
                 <input type="text" id="clientFirstName" name="clientFirstName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
@@ -788,7 +788,7 @@ document.addEventListener('DOMContentLoaded', function() {
               </div>
               <div>
                 <label for="clientLastName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                  Last Name
+                  Last Name <span class="text-red-500">*</span>
                 </label>
                 <input type="text" id="clientLastName" name="clientLastName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
@@ -834,7 +834,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="grid grid-cols-1 md:grid-cols-4 gap-2 sm:gap-4">
               <div>
                 <label for="deceasedFirstName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                  First Name
+                  First Name <span class="text-red-500">*</span>
                 </label>
                 <input type="text" id="deceasedFirstName" name="deceasedFirstName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
@@ -846,7 +846,7 @@ document.addEventListener('DOMContentLoaded', function() {
               </div>
               <div>
                 <label for="deceasedLastName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                  Last Name
+                  Last Name <span class="text-red-500">*</span>
                 </label>
                 <input type="text" id="deceasedLastName" name="deceasedLastName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
@@ -981,7 +981,7 @@ document.addEventListener('DOMContentLoaded', function() {
               <label for="paymentMethod" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                 Method of Payment
               </label>
-              <select id="paymentMethod" name="paymentMethod" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              <select id="paymentMethod" name="paymentMethod" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
                 <option value="" disabled selected>Select payment method</option>
                 <option value="Cash">Cash</option>
                 <option value="G-Cash">G-Cash</option>
@@ -1009,7 +1009,7 @@ document.addEventListener('DOMContentLoaded', function() {
                   <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <span class="text-gray-500">₱</span>
                   </div>
-                  <input type="number" id="amountPaid" name="amountPaid" required class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                  <input type="number" id="amountPaid" name="amountPaid" class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
                 </div>
               </div>
             </div>
