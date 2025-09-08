@@ -1854,7 +1854,23 @@ function time_elapsed_string($datetime, $full = false) {
 <script>
 // Helper to get user name for export
 const generatedBy = <?php echo json_encode($first_name . ' ' . $last_name); ?>;
-
+// --- Branch Revenue Chart Data ---
+const monthlyData = {
+  labels: <?php echo json_encode($monthLabels); ?>,
+  pila: <?php echo json_encode($pilaMonthlyRevenue); ?>,
+  paete: <?php echo json_encode($paeteMonthlyRevenue); ?>,
+  title: 'Monthly Branch Revenue Comparison'
+};
+const yearlyData = {
+  labels: <?php echo json_encode($yearLabels); ?>,
+  pila: <?php echo json_encode($pilaYearlyRevenue); ?>,
+  paete: <?php echo json_encode($paeteYearlyRevenue); ?>,
+  title: 'Yearly Branch Revenue Comparison'
+};
+// --- Top Selling Packages Chart Data ---
+const services = <?php echo json_encode($services); ?>;
+const pilaData = <?php echo json_encode($pilaData); ?>;
+const paeteData = <?php echo json_encode($paeteData); ?>;
 // --- Chart Initialization ---
 // Accrued Revenue Chart
 var projectedIncomeOptions = {
