@@ -957,6 +957,7 @@ if ($branchResult->num_rows > 0) {
     </div>
 </div>
 </div>
+        </div>
 
 <?php
     } // End branch while loop
