@@ -547,9 +547,9 @@ for ($i = 11; $i >= 0; $i--) {
         SELECT amount_paid 
         FROM sales_tb 
         WHERE MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?
-
+        
         UNION ALL
-
+        
         -- 2. Direct custom sales from customsales_tb not referenced in analytics_tb
         SELECT amount_paid
         FROM customsales_tb
@@ -559,9 +559,9 @@ for ($i = 11; $i >= 0; $i--) {
             WHERE sales_type = 'custom'
             AND MONTH(sale_date) = ? AND YEAR(sale_date) = ?
         )
-
+        
         UNION ALL
-
+        
         -- 3. All analytics records (they may or may not reference other tables)
         SELECT 
             CASE
@@ -1879,16 +1879,15 @@ function loadInventoryLogs(page = 1) {
                     
                     // Determine badge styling
                     const badgeStyles = {
-                        'Depleted': 'bg-red-100 text-red-600 border-red-200',
-                        'Low Stock': 'bg-yellow-100 text-yellow-600 border-yellow-200',
-                        'Restocked': 'bg-green-100 text-green-600 border-green-200',
-                        'Added': 'bg-green-100 text-green-600 border-green-200',
-                        'Removed': 'bg-orange-100 text-orange-600 border-orange-200',
-                        'Adjusted': 'bg-blue-100 text-blue-600 border-blue-200'
+                        'Depleted': 'fa-exclamation-circle',
+                        'Low Stock': 'fa-exclamation-triangle',
+                        'Restocked': 'fa-boxes',
+                        'Added': 'fa-plus-circle',
+                        'Removed': 'fa-minus-circle',
+                        'Adjusted': 'fa-adjust'
                     };
                     
-                    const badgeClass = badgeStyles[log.activity_type] || 'bg-gray-100 text-gray-600 border-gray-200';
-                    const badgeIcon = getActivityIcon(log.activity_type);
+                    const badgeIcon = badgeStyles[log.activity_type] || 'fa-info-circle';
                     
                     // Format date
                     const activityDate = new Date(log.activity_date);
@@ -2165,332 +2164,252 @@ document.getElementById('cashYearlyView').addEventListener('click', function() {
 
 // Export PDF function
 document.getElementById('exportCashRevenue').addEventListener('click', function() {
-    // Get the data based on current view
-     const isYearly = document.getElementById('cashYearlyView').classList.contains('bg-[#4ade80]');
-    const currentData = isYearly ? chartData.yearly : chartData.monthly;
-    
-    // Rest of your export code remains the same, just use currentData instead
-    const categories = [...currentData.labels];
-    const revenues = [...currentData.data];
-    // Format the data for the table
-    const tableData = [[isYearly ? 'Year' : 'Month', 'Revenue (PHP)']];
-
-    categories.forEach((category, index) => {
-        const cleanCategory = category.toString()
-            .replace(/±/g, '')
-            .replace(/[^a-zA-Z0-9ñÑ\s]/g, '')
-            .trim() || (isYearly ? `Year ${index + 1}` : `Month ${index + 1}`);
-
-        let value = Number(revenues[index]);
-        if (isNaN(value)) value = 0;
-
-        tableData.push([
-            cleanCategory,
-            'PHP ' + value.toLocaleString('en-PH', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            })
-        ]);
-    });
-
-    // Calculate total
-    const total = revenues.reduce((sum, val) => sum + (Number(val) || 0), 0);
+  const isYearly = document.getElementById('cashYearlyView').classList.contains('bg-[#4ade80]');
+  const currentData = isYearly ? chartData.yearly : chartData.monthly;
+  const categories = [...currentData.labels];
+  const revenues = [...currentData.data];
+  const tableData = [[isYearly ? 'Year' : 'Month', 'Revenue (PHP)']];
+  categories.forEach((category, index) => {
+    const cleanCategory = category.toString().replace(/±/g, '').replace(/[^a-zA-Z0-9ñÑ\s]/g, '').trim() || (isYearly ? `Year ${index + 1}` : `Month ${index + 1}`);
+    let value = Number(revenues[index]);
+    if (isNaN(value)) value = 0;
     tableData.push([
-        'TOTAL',
-        'PHP ' + total.toLocaleString('en-PH', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        })
+      cleanCategory,
+      'PHP ' + value.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
     ]);
-
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({
-        orientation: 'portrait'
-    });
-
-    // Use standardized header
-    renderStandardHeader(doc, 'CASH REVENUE REPORT - ' + (isYearly ? 'YEARLY' : 'MONTHLY'));
-
-    // Add table
-    doc.autoTable({
-        head: [tableData[0]],
-        body: tableData.slice(1, -1),
-        startY: 55,
-        theme: 'grid',
-        headStyles: {
-            fillColor: [74, 222, 128],
-            textColor: 255,
-            fontStyle: 'bold',
-            fontSize: 11,
-            halign: 'center'
-        },
-        columnStyles: {
-            0: { cellWidth: availableWidth * 0.4, halign: 'left', fontStyle: 'bold' },
-            1: { cellWidth: availableWidth * 0.6, halign: 'right', minCellHeight: 10 }
-        },
-        styles: { fontSize: 9, cellPadding: 3, overflow: 'linebreak', valign: 'middle', lineWidth: 0.1 },
-        margin: { left: margin, right: margin, top: 55 },
-        tableWidth: 'wrap',
-        didDrawPage: function (data) {
-            if (data.pageCount === data.pageNumber) {
-                const finalY = data.cursor.y + 10;
-                doc.setFontSize(12);
-                doc.setFont('courier', 'bold');
-
-                // Draw total line with full width
-                doc.setFillColor(240, 240, 240);
-                doc.rect(margin, finalY - 5, availableWidth, 10, 'F');
-
-                doc.text(tableData[tableData.length - 1][0], margin + 5, finalY);
-                doc.text(tableData[tableData.length - 1][1], pageWidth - margin - 5, finalY, { align: 'right' });
-
-                // Add standardized footer and signature
-                renderStandardFooter(doc, reportGeneratedBy, margin, availableWidth);
-            }
-        }
-    });
-
-    doc.save(`Vjay-Relova-Cash-Revenue-Report-${isYearly ? 'Yearly' : 'Monthly'}-${new Date().toISOString().slice(0, 10)}.pdf`);
-});
-
-// Add a generated-by variable and shared header/footer helpers for consistent PDF exports
-const reportGeneratedBy = '<?php echo addslashes(htmlspecialchars($first_name . " " . $last_name)); ?>';
-
-function renderStandardHeader(doc, reportTitle, subtitle) {
-    // Standard metadata
-    doc.setProperties({
-        title: reportTitle,
-        subject: 'Financial Report',
-        author: 'Vjay Relova Funeral Services',
-        keywords: 'revenue, report, financial',
-        creator: 'Vjay Relova Web Application'
-    });
-
-    // Main header
-    doc.setFontSize(20);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(33, 37, 41);
-    doc.text('VJAY RELOVA FUNERAL SERVICES', 105, 20, { align: 'center' });
-
-    // Report title
-    doc.setFontSize(16);
-    doc.setFont('helvetica', 'normal');
-    doc.text(reportTitle, 105, 30, { align: 'center' });
-
-    // Optional subtitle (e.g., MONTHLY / YEARLY or note)
-    if (subtitle) {
+  });
+  const total = revenues.reduce((sum, val) => sum + (Number(val) || 0), 0);
+  tableData.push([
+    'TOTAL',
+    'PHP ' + total.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  ]);
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'portrait' });
+  addPdfHeaderFooter(doc, 'CASH REVENUE REPORT - ' + (isYearly ? 'YEARLY' : 'MONTHLY'), '', generatedBy);
+  // Set document metadata
+  doc.setProperties({
+      title: 'Vjay Relova Cash Revenue Report',
+      subject: 'Financial Report',
+      author: 'Vjay Relova Funeral Services',
+      keywords: 'revenue, report, financial',
+      creator: 'Vjay Relova Web Application'
+  });
+  // Add header
+  doc.setFontSize(20);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(33, 37, 41);
+  doc.text('VJAY RELOVA FUNERAL SERVICES', 105, 20, { align: 'center' });
+  doc.setFontSize(16);
+  doc.text('CASH REVENUE REPORT - ' + (isYearly ? 'YEARLY' : 'MONTHLY'), 105, 30, { align: 'center' });
+  doc.setFontSize(10);
+  doc.setTextColor(100, 100, 100);
+  doc.text('Generated on: ' + new Date().toLocaleString('en-PH', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+  }), 105, 36, { align: 'center' });
+  doc.setFontSize(10);
+  doc.setTextColor(100, 100, 100);
+  doc.text('Generated by: ' + generatedBy, 105, 50, { align: 'center' });
+  // Calculate page width and column widths
+  const pageWidth = doc.internal.pageSize.width;
+  const margin = 15;
+  const availableWidth = pageWidth - (2 * margin);
+  
+  // Create table with adjusted settings
+  doc.autoTable({
+    head: [tableData[0]],
+    body: tableData.slice(1, -1),
+    startY: 60,
+    theme: 'grid',
+    headStyles: {
+      fillColor: [74, 222, 128], textColor: 255, fontStyle: 'bold', fontSize: 11, halign: 'center'
+    },
+    columnStyles: {
+      0: { cellWidth: 70, halign: 'left', fontStyle: 'bold' },
+      1: { cellWidth: 90, halign: 'right', minCellHeight: 10 }
+    },
+    styles: { fontSize: 9, cellPadding: 3, overflow: 'linebreak', valign: 'middle', lineWidth: 0.1 },
+    margin: { left: 15, right: 15, top: 60 },
+    tableWidth: 'wrap',
+    didDrawPage: function (data) {
+      if (data.pageCount === data.pageNumber) {
+        const finalY = data.cursor.y + 10;
         doc.setFontSize(12);
-        doc.text(subtitle, 105, 36, { align: 'center' });
+        doc.setFont('courier', 'bold');
+        doc.setFillColor(240, 240, 240);
+        doc.rect(15, finalY - 5, 160, 10, 'F');
+        doc.text(tableData[tableData.length - 1][0], 20, finalY);
+        doc.text(tableData[tableData.length - 1][1], 180, finalY, { align: 'right' });
+        addPdfSignature(doc);
+      }
     }
+  });
+  doc.save(`Vjay-Relova-Cash-Revenue-Report-${isYearly ? 'Yearly' : 'Monthly'}-${new Date().toISOString().slice(0, 10)}.pdf`);
+});
 
-    // Generated timestamp
-    doc.setFontSize(10);
-    doc.setTextColor(100, 100, 100);
-    doc.text('Generated on: ' + new Date().toLocaleString('en-PH', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-    }), 105, 44, { align: 'center' });
-}
-
-function renderStandardFooter(doc, generatedBy, margin, availableWidth) {
-    // Signature and Generated by info at bottom
-    const footerY = doc.internal.pageSize.height - 30;
-
-    doc.setFontSize(10);
-    doc.setTextColor(60, 60, 60);
-    doc.text('Generated by: ' + generatedBy, margin, footerY);
-
-    // Signature line
-    const sigY = footerY + 12;
-    const sigStart = margin + 30;
-    const sigEnd = margin + (availableWidth * 0.6);
-    doc.setDrawColor(120);
-    doc.setLineWidth(0.5);
-    doc.line(sigStart, sigY, sigEnd, sigY);
-    doc.setFontSize(10);
-    doc.text('Signature', sigStart, sigY + 8);
-
-    // Center contact footer
-    doc.setFontSize(9);
-    doc.setTextColor(100, 100, 100);
-    doc.setFont('courier', 'normal');
-    doc.text('For inquiries: Tel: (02) 1234-5678 • Mobile: 0917-123-4567 • Email: info@vjayrelova.com', 105, doc.internal.pageSize.height - 10, { align: 'center' });
-}
-
-// Modify exportProjectedIncome handler to use standard header/footer (keeps existing logic)
+// Projected Income Export
 document.getElementById('exportProjectedIncome').addEventListener('click', function () {
-    // Get the data based on current view
-    const isMonthly = document.getElementById('monthlyView').classList.contains('bg-blue-500');
-    const seriesData = isMonthly ? [...<?php echo json_encode($monthlyProjectedIncomeData); ?>] : [...<?php echo json_encode($yearlyProjectedIncomeData); ?>];
-    const categories = isMonthly ? [...<?php echo json_encode($monthLabels); ?>] : [...<?php echo json_encode($yearLabels); ?>];
-    
-    // Reverse the order of both arrays to show latest first
-    seriesData.reverse();
-    categories.reverse();
-
-    const tableData = [[isMonthly ? 'Month' : 'Year', 'Accrued Revenue (PHP)']];
-
-    categories.forEach((period, index) => {
-        const cleanPeriod = period.toString()
-            .replace(/±/g, '')
-            .replace(/[^a-zA-Z0-9ñÑ\s]/g, '')
-            .trim() || (isMonthly ? `Month ${index + 1}` : `Year ${index + 1}`);
-
-        let value = Number(seriesData[index]);
-        if (isNaN(value)) value = 0;
-
-        tableData.push([
-            cleanPeriod,
-            'PHP ' + value.toLocaleString('en-PH', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            })
-        ]);
-    });
-
-    // Calculate total
-    const total = seriesData.reduce((sum, val) => sum + (Number(val) || 0), 0);
+  const isMonthly = document.getElementById('monthlyView').classList.contains('bg-blue-500');
+  const seriesData = isMonthly ? [...<?php echo json_encode($monthlyProjectedIncomeData); ?>] : [...<?php echo json_encode($yearlyProjectedIncomeData); ?>];
+  const categories = isMonthly ? [...<?php echo json_encode($monthLabels); ?>] : [...<?php echo json_encode($yearLabels); ?>];
+  seriesData.reverse();
+  categories.reverse();
+  const tableData = [[isMonthly ? 'Month' : 'Year', 'Accrued Revenue (PHP)']];
+  categories.forEach((period, index) => {
+    const cleanPeriod = period.toString().replace(/±/g, '').replace(/[^a-zA-Z0-9ñÑ\s]/g, '').trim() || (isMonthly ? `Month ${index + 1}` : `Year ${index + 1}`);
+    let value = Number(seriesData[index]);
+    if (isNaN(value)) value = 0;
     tableData.push([
-        'TOTAL',
-        'PHP ' + total.toLocaleString('en-PH', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        })
+      cleanPeriod,
+      'PHP ' + value.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
     ]);
-
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({
-        orientation: 'portrait'
-    });
-
-    const isMonthly = document.getElementById('monthlyView').classList.contains('bg-blue-500');
-    renderStandardHeader(doc, 'ACCRUED REVENUE REPORT - ' + (isMonthly ? 'MONTHLY' : 'YEARLY'), '(If all payments have been settled)');
-
-    // Add table
-    doc.autoTable({
-        head: [tableData[0]],
-        body: tableData.slice(1, -1),
-        startY: 55,
-        theme: 'grid',
-        headStyles: { fillColor: [59, 130, 246], textColor: 255, fontStyle: 'bold', fontSize: 11, halign: 'center' },
-        columnStyles: { 0: { cellWidth: availableWidth * 0.4, halign: 'left', fontStyle: 'bold' }, 1: { cellWidth: availableWidth * 0.6, halign: 'right', minCellHeight: 10 } },
-        styles: { fontSize: 9, cellPadding: 3, overflow: 'linebreak', valign: 'middle', lineWidth: 0.1 },
-        margin: { left: margin, right: margin, top: 55 },
-        tableWidth: 'wrap',
-        didDrawPage: function (data) {
-            if (data.pageCount === data.pageNumber) {
-                const finalY = data.cursor.y + 10;
-                doc.setFontSize(12);
-                doc.setFont('courier', 'bold');
-                doc.setFillColor(240, 240, 240);
-                doc.rect(margin, finalY - 5, availableWidth, 10, 'F');
-                doc.text(tableData[tableData.length - 1][0], margin + 5, finalY);
-                doc.text(tableData[tableData.length - 1][1], pageWidth - margin - 5, finalY, { align: 'right' });
-
-                // Add standardized footer and signature
-                renderStandardFooter(doc, reportGeneratedBy, margin, availableWidth);
-            }
-        }
-    });
-
-    doc.save(`Vjay-Relova-Income-Report-${new Date().toISOString().slice(0, 10)}.pdf`);
-});
-
-// Modify exportPdfBtn to use standardized header/footer
-document.getElementById('exportPdfBtn').addEventListener('click', function() {
-    try {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF({ orientation: 'portrait' });
-
-        const isYearly = document.getElementById('yearlyViewBranch').classList.contains('bg-blue-500');
-        const currentData = isYearly ? yearlyData : monthlyData;
-        const timeframe = isYearly ? 'Yearly' : 'Monthly';
-
-        renderStandardHeader(doc, `${timeframe.toUpperCase()} BRANCH REVENUE REPORT`, '');
-
-        // Create table data
-        const headers = [isYearly ? 'Year' : 'Month', 'Pila Revenue', 'Paete Revenue'];
-        const body = [];
-        
-        // Add data rows
-        for (let i = 0; i < currentData.labels.length; i++) {
-          body.push([
-            currentData.labels[i],
-            `PHP ${parseFloat(currentData.pila[i] || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
-            `PHP ${parseFloat(currentData.paete[i] || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-          ]);
-        }
-
-        // Add totals row
-        const pilaTotal = currentData.pila.reduce((a, b) => a + (parseFloat(b) || 0), 0);
-        const paeteTotal = currentData.paete.reduce((a, b) => a + (parseFloat(b) || 0), 0);
-        body.push([
-          'TOTAL',
-          `PHP ${pilaTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
-          `PHP ${paeteTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-        ]);
-        
-        // Calculate page width and column widths
-        const pageWidth = doc.internal.pageSize.width;
-        const margin = 15;
-        const availableWidth = pageWidth - (2 * margin);
-        
-        // Add the table
-        doc.autoTable({
-            head: [headers],
-            body: body.slice(0, -1),
-            startY: 55,
-            theme: 'grid',
-            headStyles: { fillColor: [79, 70, 229], textColor: 255, fontStyle: 'bold', fontSize: 11, halign: 'center' },
-            columnStyles: { 0: { cellWidth: availableWidth * 0.4, halign: 'left', fontStyle: 'bold' }, 1: { cellWidth: availableWidth * 0.3, halign: 'right' }, 2: { cellWidth: availableWidth * 0.3, halign: 'right' } },
-            styles: { fontSize: 9, cellPadding: 3, overflow: 'linebreak', valign: 'middle', lineWidth: 0.1 },
-            margin: { left: margin, right: margin, top: 55 },
-            tableWidth: 'wrap',
-            didDrawPage: function (data) {
-                if (data.pageCount === data.pageNumber) {
-                    const finalY = data.cursor.y + 10;
-                    doc.setFontSize(12);
-                    doc.setFont('courier', 'bold');
-                    doc.setFillColor(240, 240, 240);
-                    doc.rect(margin, finalY - 5, availableWidth, 10, 'F');
-
-                    const totalsRow = body[body.length - 1];
-                    doc.text(totalsRow[0], margin + 5, finalY);
-                    doc.text(totalsRow[1], margin + availableWidth * 0.7, finalY, { align: 'right' });
-                    doc.text(totalsRow[2], pageWidth - margin - 5, finalY, { align: 'right' });
-
-                    // Add standardized footer and signature
-                    renderStandardFooter(doc, reportGeneratedBy, margin, availableWidth);
-                }
-            }
-        });
-
-        doc.save(`Vjay-Relova-Branch-Report-${timeframe}-${new Date().toISOString().slice(0, 10)}.pdf`);
-
-    } catch (error) {
-        console.error('PDF export failed:', error);
-        alert('Failed to generate PDF. Please check console for details.');
+  });
+  const total = seriesData.reduce((sum, val) => sum + (Number(val) || 0), 0);
+  tableData.push([
+    'TOTAL',
+    'PHP ' + total.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  ]);
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'portrait' });
+  addPdfHeaderFooter(doc, 'ACCRUED REVENUE REPORT', '(If all payments have been settled)', generatedBy);
+  // Set document metadata
+  doc.setProperties({
+      title: 'Vjay Relova Accrued Revenue Report',
+      subject: 'Financial Report',
+      author: 'Vjay Relova Funeral Services',
+      keywords: 'revenue, report, financial',
+      creator: 'Vjay Relova Web Application'
+  });
+  // Add header
+  doc.setFontSize(20);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(33, 37, 41);
+  doc.text('VJAY RELOVA FUNERAL SERVICES', 105, 20, { align: 'center' });
+  doc.setFontSize(16);
+  doc.text('ACCRUED REVENUE REPORT', 105, 30, { align: 'center' });
+  doc.setFontSize(10);
+  doc.setTextColor(100, 100, 100);
+  doc.text('Generated on: ' + new Date().toLocaleString('en-PH', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+  }), 105, 36, { align: 'center' });
+  doc.setFontSize(10);
+  doc.setTextColor(100, 100, 100);
+  doc.text('Generated by: ' + generatedBy, 105, 50, { align: 'center' });
+  // Calculate page width and column widths
+  const pageWidth = doc.internal.pageSize.width;
+  const margin = 15;
+  const availableWidth = pageWidth - (2 * margin);
+  
+  // Create table with adjusted settings
+  doc.autoTable({
+    head: [tableData[0]],
+    body: tableData.slice(1, -1),
+    startY: 60,
+    theme: 'grid',
+    headStyles: {
+      fillColor: [59, 130, 246], textColor: 255, fontStyle: 'bold', fontSize: 11, halign: 'center'
+    },
+    columnStyles: {
+      0: { cellWidth: 70, halign: 'left', fontStyle: 'bold' },
+      1: { cellWidth: 90, halign: 'right', minCellHeight: 10 }
+    },
+    styles: { fontSize: 9, cellPadding: 3, overflow: 'linebreak', valign: 'middle', lineWidth: 0.1 },
+    margin: { left: 15, right: 15, top: 60 },
+    tableWidth: 'wrap',
+    didDrawPage: function (data) {
+      if (data.pageCount === data.pageNumber) {
+        const finalY = data.cursor.y + 10;
+        doc.setFontSize(12);
+        doc.setFont('courier', 'bold');
+        doc.setFillColor(240, 240, 240);
+        doc.rect(15, finalY - 5, 160, 10, 'F');
+        doc.text(tableData[tableData.length - 1][0], 20, finalY);
+        doc.text(tableData[tableData.length - 1][1], 180, finalY, { align: 'right' });
+        addPdfSignature(doc);
+      }
     }
+  });
+  doc.save(`Vjay-Relova-Income-Report-${new Date().toISOString().slice(0, 10)}.pdf`);
 });
 
-// Modified exportTopSellingPackages to add standard header/footer
+// Branch Revenue Export
+document.getElementById('exportPdfBtn').addEventListener('click', function() {
+  try {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'portrait' });
+    const isYearly = document.getElementById('yearlyViewBranch').classList.contains('bg-blue-500');
+    const currentData = isYearly ? yearlyData : monthlyData;
+    const timeframe = isYearly ? 'Yearly' : 'Monthly';
+    addPdfHeaderFooter(doc, `${timeframe.toUpperCase()} BRANCH REVENUE REPORT`, '', generatedBy);
+    const headers = [isYearly ? 'Year' : 'Month', 'Pila Revenue', 'Paete Revenue'];
+    const body = [];
+    for (let i = 0; i < currentData.labels.length; i++) {
+      body.push([
+        currentData.labels[i],
+        `PHP ${parseFloat(currentData.pila[i] || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+        `PHP ${parseFloat(currentData.paete[i] || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+      ]);
+    }
+    const pilaTotal = currentData.pila.reduce((a, b) => a + (parseFloat(b) || 0), 0);
+    const paeteTotal = currentData.paete.reduce((a, b) => a + (parseFloat(b) || 0), 0);
+    body.push([
+      'TOTAL',
+      `PHP ${pilaTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+      `PHP ${paeteTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+    ]);
+    doc.autoTable({
+      head: [headers],
+      body: body.slice(0, -1),
+      startY: 60,
+      theme: 'grid',
+      headStyles: {
+        fillColor: [79, 70, 229], textColor: 255, fontStyle: 'bold', fontSize: 11, halign: 'center'
+      },
+      columnStyles: {
+        0: { cellWidth: 70, halign: 'left', fontStyle: 'bold' },
+        1: { cellWidth: 55, halign: 'right' },
+        2: { cellWidth: 55, halign: 'right' }
+      },
+      styles: { fontSize: 9, cellPadding: 3, overflow: 'linebreak', valign: 'middle', lineWidth: 0.1 },
+      margin: { left: 15, right: 15, top: 60 },
+      tableWidth: 'wrap',
+      didDrawPage: function (data) {
+        if (data.pageCount === data.pageNumber) {
+          const finalY = data.cursor.y + 10;
+          doc.setFontSize(12);
+          doc.setFont('courier', 'bold');
+          doc.setFillColor(240, 240, 240);
+          doc.rect(15, finalY - 5, 160, 10, 'F');
+          const totalsRow = body[body.length - 1];
+          doc.text(totalsRow[0], 20, finalY);
+          doc.text(totalsRow[1], 110, finalY, { align: 'right' });
+          doc.text(totalsRow[2], 180, finalY, { align: 'right' });
+          addPdfSignature(doc);
+        }
+      }
+    });
+    doc.save(`Vjay-Relova-Branch-Report-${timeframe}-${new Date().toISOString().slice(0, 10)}.pdf`);
+  } catch (error) {
+    console.error('PDF export failed:', error);
+    alert('Failed to generate PDF. Please check console for details.');
+  }
+});
+
+// Top Selling Packages Export
 document.getElementById('exportTopSellingPackages').addEventListener('click', function() {
   try {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ orientation: 'portrait' });
-
-    renderStandardHeader(doc, 'SERVICE PACKAGE SALES REPORT', '');
-
-    // Create the table data
+    addPdfHeaderFooter(doc, 'SERVICE PACKAGE SALES REPORT', '', generatedBy);
     const tableData = [];
-    
-    // Add headers
     tableData.push(['Service Package', 'Pila Branch', 'Paete Branch']);
-    
-    // Add rows
     services.forEach((service, index) => {
       tableData.push([
         service,
@@ -2498,327 +2417,66 @@ document.getElementById('exportTopSellingPackages').addEventListener('click', fu
         paeteData[index]
       ]);
     });
-
-    // Calculate page width and column widths
-    const pageWidth = doc.internal.pageSize.width;
-    const margin = 15;
-    const availableWidth = pageWidth - (2 * margin);
-    
-    // Add the table
     doc.autoTable({
-      startY: 55,
+      startY: 60,
       head: [tableData[0]],
       body: tableData.slice(1),
       theme: 'grid',
-      headStyles: { fillColor: [79, 70, 229], textColor: 255, fontStyle: 'bold', fontSize: 11, halign: 'center' },
-      alternateRowStyles: { fillColor: [249, 250, 251] },
-      styles: { cellPadding: 3, fontSize: 9, valign: 'middle', lineWidth: 0.1 },
-      columnStyles: { 0: { cellWidth: availableWidth * 0.6, halign: 'left' }, 1: { cellWidth: availableWidth * 0.2, halign: 'right' }, 2: { cellWidth: availableWidth * 0.2, halign: 'right' } },
-      margin: { left: margin, right: margin, top: 55 },
-      didDrawPage: function(data) {
-        // Add standardized footer and signature
-        renderStandardFooter(doc, reportGeneratedBy, margin, availableWidth);
-      }
-    });
-
-    doc.save(`Vjay-Relova-Service-Packages-Report-${new Date().toISOString().slice(0, 10)}.pdf`);
-
-  } catch (error) {
-    console.error('PDF export failed:', error);
-    alert('Failed to generate PDF. Please check console for details.');
-  }
-});
-</script>
-
-<script>
-  var branchServicesOptions = {
-    series: [
-        {
-            name: 'Pila Branch',
-            data: <?php echo json_encode($pilaData); ?>
-        },
-        {
-            name: 'Paete Branch',
-            data: <?php echo json_encode($paeteData); ?>
-        }
-    ],
-    chart: {
-        height: '100%',
-        width: '100%',
-        type: 'radar',
-        dropShadow: {
-            enabled: true,
-            blur: 1,
-            left: 1,
-            top: 1
-        },
-        toolbar: {
-            show: true,
-            tools: {
-                download: true,
-                selection: false,
-                zoom: false,
-                zoomin: false,
-                zoomout: false,
-                pan: false,
-                reset: true
-            },
-            export: {
-                csv: {
-                    filename: 'branch-services-comparison',
-                    headerCategory: 'Service',
-                    headerValue: 'Sales Count',
-                },
-                png: {
-                    filename: 'branch-services-comparison',
-                },
-                svg: {
-                    filename: 'branch-services-comparison',
-                }
-            }
-        }
-    },
-    colors: ['#4f46e5', '#10b981'],
-    labels: <?php echo json_encode($services); ?>,
-    markers: {
-        size: 5,
-        hover: {
-            size: 7
-        }
-    },
-    yaxis: {
-        show: false,
-        min: 0
-    },
-    fill: {
-        opacity: 0.2
-    },
-    stroke: {
-        width: 2
-    },
-    tooltip: {
-        y: {
-            formatter: function(val) {
-                return val + ' sales';
-            }
-        }
-    },
-    legend: {
-        position: 'bottom',
-        horizontalAlign: 'center'
-    },
-    plotOptions: {
-    radar: {
-      size: 140, // Adjust based on screen size
-      polygons: {
-        strokeColors: '#e8e8e8',
-        connectorColors: '#e8e8e8'
-      }
-    }
-  },
-  responsive: [{
-    breakpoint: 1200,
-    options: {
-      plotOptions: {
-        radar: {
-          size: 160
-        }
-      }
-    }
-  },
-  {
-    breakpoint: 992,
-    options: {
-      plotOptions: {
-        radar: {
-          size: 140
-        }
-      }
-    }
-  },
-  {
-    breakpoint: 768,
-    options: {
-      plotOptions: {
-        radar: {
-          size: 120
-        }
+      headStyles: {
+        fillColor: [79, 70, 229], textColor: 255, fontStyle: 'bold', fontSize: 11, halign: 'center'
       },
-      legend: {
-        position: 'bottom',
-        horizontalAlign: 'center'
-      }
-    }
-  }]
-};
-
-var branchServicesChart = new ApexCharts(document.querySelector("#branchServicesChart"), branchServicesOptions);
-branchServicesChart.render();
-
- const services = <?php echo json_encode($services); ?>;
-  const pilaData = <?php echo json_encode($pilaData); ?>;
-  const paeteData = <?php echo json_encode($paeteData); ?>;
-  
-  // Initialize jsPDF
-  const { jsPDF } = window.jspdf;
-
-  document.getElementById('exportTopSellingPackages').addEventListener('click', function() {
-  try {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({
-      orientation: 'portrait'
-    });
-
-    renderStandardHeader(doc, 'SERVICE PACKAGE SALES REPORT', '');
-
-    // Create the table data
-    const tableData = [];
-    
-    // Add headers
-    tableData.push(['Service Package', 'Pila Branch', 'Paete Branch']);
-    
-    // Add rows
-    services.forEach((service, index) => {
-      tableData.push([
-        service,
-        pilaData[index],
-        paeteData[index]
-      ]);
-    });
-
-    // Calculate page width and column widths
-    const pageWidth = doc.internal.pageSize.width;
-    const margin = 15;
-    const availableWidth = pageWidth - (2 * margin);
-    
-    // Add the table
-    doc.autoTable({
-      startY: 55,
-      head: [tableData[0]],
-      body: tableData.slice(1),
-      theme: 'grid',
-      headStyles: { fillColor: [79, 70, 229], textColor: 255, fontStyle: 'bold', fontSize: 11, halign: 'center' },
       alternateRowStyles: { fillColor: [249, 250, 251] },
       styles: { cellPadding: 3, fontSize: 9, valign: 'middle', lineWidth: 0.1 },
-      columnStyles: { 0: { cellWidth: availableWidth * 0.6, halign: 'left' }, 1: { cellWidth: availableWidth * 0.2, halign: 'right' }, 2: { cellWidth: availableWidth * 0.2, halign: 'right' } },
-      margin: { left: margin, right: margin, top: 55 },
+      columnStyles: {
+        0: { cellWidth: 70, halign: 'left' },
+        1: { cellWidth: 55, halign: 'right' },
+        2: { cellWidth: 55, halign: 'right' }
+      },
+      margin: { left: 15, right: 15, top: 60 },
       didDrawPage: function(data) {
-        // Add standardized footer and signature
-        renderStandardFooter(doc, reportGeneratedBy, margin, availableWidth);
+        addPdfSignature(doc);
       }
     });
-
     doc.save(`Vjay-Relova-Service-Packages-Report-${new Date().toISOString().slice(0, 10)}.pdf`);
-
   } catch (error) {
     console.error('PDF export failed:', error);
     alert('Failed to generate PDF. Please check console for details.');
   }
 });
-</script>
 
-<script>
-// Improved notification bell functionality
-document.getElementById('notification-bell').addEventListener('click', function(event) {
-  event.stopPropagation();
-  const dropdown = document.getElementById('notifications-dropdown');
-  
-  if (dropdown.classList.contains('hidden')) {
-    // Show dropdown with animation
-    dropdown.classList.remove('hidden');
-    setTimeout(() => {
-      dropdown.classList.remove('opacity-0', 'translate-y-2');
-    }, 10);
-  } else {
-    // Hide dropdown with animation
-    dropdown.classList.add('opacity-0', 'translate-y-2');
-    setTimeout(() => {
-      dropdown.classList.add('hidden');
-    }, 300);
+// Helper for consistent PDF header/footer
+function addPdfHeaderFooter(doc, title, subtitle, generatedBy) {
+  doc.setFontSize(20);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(33, 37, 41);
+  doc.text('VJAY RELOVA FUNERAL SERVICES', 105, 20, { align: 'center' });
+  doc.setFontSize(16);
+  doc.text(title, 105, 30, { align: 'center' });
+  if (subtitle) {
+    doc.setFontSize(12);
+    doc.setTextColor(59, 130, 246);
+    doc.text(subtitle, 105, 38, { align: 'center' });
   }
-  
-  // If showing notifications, mark as read (update counter)
-  if (!dropdown.classList.contains('hidden')) {
-    const notificationCounter = document.querySelector('#notification-bell > span');
-    
-    // Add a slight delay before animating the counter
-    setTimeout(() => {
-      notificationCounter.classList.add('scale-75', 'opacity-50');
-      
-      setTimeout(() => {
-        notificationCounter.textContent = '0';
-        notificationCounter.classList.add('scale-0');
-        
-        setTimeout(() => {
-          if (notificationCounter.textContent === '0') {
-            notificationCounter.classList.add('hidden');
-          }
-        }, 300);
-      }, 500);
-    }, 2000);
-  }
-});
-
-// Close notification dropdown when clicking outside
-document.addEventListener('click', function(event) {
-  const notificationsDropdown = document.getElementById('notifications-dropdown');
-  const notificationBell = document.getElementById('notification-bell');
-  
-  if (notificationsDropdown && notificationBell && !notificationBell.contains(event.target) && !notificationsDropdown.contains(event.target)) {
-    // Hide with animation
-    notificationsDropdown.classList.add('opacity-0', 'translate-y-2');
-    setTimeout(() => {
-      notificationsDropdown.classList.add('hidden');
-    }, 300);
-  }
-});
-
-// Add smooth transitions for notification counter badge
-document.querySelector('#notification-bell > span').classList.add('transition-all', 'duration-300');
-
-// Add animation to new notifications - subtle pulse effect
-document.addEventListener('DOMContentLoaded', function() {
-  const unreadIndicators = document.querySelectorAll('#notifications-dropdown .bg-blue-600, #notifications-dropdown .bg-yellow-600, #notifications-dropdown .bg-green-600');
-  
-  unreadIndicators.forEach(indicator => {
-    setInterval(() => {
-      indicator.classList.add('scale-125', 'opacity-70');
-      setTimeout(() => {
-        indicator.classList.remove('scale-125', 'opacity-70');
-      }, 500);
-    }, 3000);
-  });
-});
-</script>
-<script>
-function loadBranchData(timePeriod) {
-    // Show loading indicator
-    document.getElementById('branchLoadingIndicator').classList.remove('hidden');
-    
-    // Update active button styling
-    const buttons = document.querySelectorAll('[onclick^="loadBranchData"]');
-    buttons.forEach(button => {
-        if (button.getAttribute('onclick').includes(timePeriod)) {
-            button.classList.add('bg-sidebar-accent', 'text-white');
-            button.classList.remove('hover:bg-sidebar-hover');
-        } else {
-            button.classList.remove('bg-sidebar-accent', 'text-white');
-            button.classList.add('hover:bg-sidebar-hover');
-        }
-    });
-    
-    // AJAX call to fetch data for the selected time period
-    fetch(`dashboard/get_branch_data.php?period=${timePeriod}`)
-        .then(response => response.text())
-        .then(data => {
-            document.getElementById('branchTableBody').innerHTML = data;
-            document.getElementById('branchLoadingIndicator').classList.add('hidden');
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            document.getElementById('branchLoadingIndicator').classList.add('hidden');
-        });
+  doc.setFontSize(10);
+  doc.setTextColor(100, 100, 100);
+  doc.text('Generated on: ' + new Date().toLocaleString('en-PH', {
+    year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+  }), 105, 44, { align: 'center' });
+  doc.setFontSize(10);
+  doc.setTextColor(100, 100, 100);
+  doc.text('Generated by: ' + generatedBy, 105, 50, { align: 'center' });
 }
+function addPdfSignature(doc) {
+  const pageHeight = doc.internal.pageSize.height;
+  doc.setFontSize(11);
+  doc.setTextColor(33, 37, 41);
+  doc.text('Signature:', 20, pageHeight - 30);
+  doc.setLineWidth(0.5);
+  doc.line(40, pageHeight - 32, 120, pageHeight - 32);
+  doc.setFontSize(9);
+  doc.setTextColor(100, 100, 100);
+  doc.text('For inquiries: Tel: (02) 1234-5678 • Mobile: 0917-123-4567 • Email: info@vjayrelova.com',
+    105, pageHeight - 10, { align: 'center' });
+}
+const generatedBy = '<?php echo htmlspecialchars($first_name . " " . $last_name); ?>';
 </script>
-</body>
-</html>
