@@ -3635,6 +3635,42 @@ document.addEventListener('DOMContentLoaded', function() {
       preventConsecutiveSpaces(this);
     });
   }
+  
+  // Edit add-on modal input validation
+  const editAddonNameInput = document.getElementById('editAddonName');
+  if (editAddonNameInput) {
+    editAddonNameInput.addEventListener('keypress', function(e) {
+      validateSpaceInput(e, this);
+    });
+    
+    editAddonNameInput.addEventListener('input', function(e) {
+      preventConsecutiveSpaces(this);
+    });
+  }
+  
+  // Edit add-on description input validation
+  const editAddonDescInput = document.getElementById('editAddonDescription');
+  if (editAddonDescInput) {
+    editAddonDescInput.addEventListener('keypress', function(e) {
+      validateSpaceInput(e, this);
+    });
+    
+    editAddonDescInput.addEventListener('input', function(e) {
+      preventConsecutiveSpaces(this);
+    });
+  }
+  
+  // Edit icon search input validation
+  const editIconSearchInput = document.getElementById('editIconSearch');
+  if (editIconSearchInput) {
+    editIconSearchInput.addEventListener('keypress', function(e) {
+      validateSpaceInput(e, this);
+    });
+    
+    editIconSearchInput.addEventListener('input', function(e) {
+      preventConsecutiveSpaces(this);
+    });
+  }
 });
 
 // Function to validate space input
@@ -4023,17 +4059,7 @@ document.getElementById('updateAddonBtn').addEventListener('click', function() {
     
     // Validate price is a positive number
     const priceValue = parseFloat(addonPrice);
-    if (isNaN(priceValue)) {
-        Swal.fire({
-            title: 'Error!',
-            text: 'Price must be a valid number',
-            icon: 'error',
-            confirmButtonText: 'OK'
-        });
-        return;
-    }
-    
-    if (priceValue < 0) {
+    if (isNaN(priceValue) || priceValue < 0) {
         Swal.fire({
             title: 'Error!',
             text: 'Price must be a positive number',
