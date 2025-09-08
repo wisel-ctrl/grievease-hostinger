@@ -681,6 +681,79 @@ document.addEventListener('DOMContentLoaded', function() {
     setupFilterOptions(filterOptions, filterDropdown);
     setupFilterOptions(filterOptionsMobile, filterDropdownMobile);
 });
+
+
+// Add this function to validate search input
+function validateSearchInput(inputElement) {
+    if (!inputElement) return;
+    
+    inputElement.addEventListener('input', function() {
+        let value = this.value;
+        
+        // Don't allow consecutive spaces
+        if (/\s{2,}/.test(value)) {
+            this.value = value.replace(/\s{2,}/g, ' ');
+            return;
+        }
+        
+        // Don't allow space as first character
+        if (value.startsWith(' ')) {
+            this.value = value.substring(1);
+            return;
+        }
+        
+        // Only allow space after at least 2 characters
+        if (value.length < 2 && value.includes(' ')) {
+            this.value = value.replace(/\s/g, '');
+            return;
+        }
+    });
+    
+    // Prevent paste of content with invalid spacing
+    inputElement.addEventListener('paste', function(e) {
+        e.preventDefault();
+        const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+        
+        // Clean the pasted text
+        let cleanedText = pastedText;
+        
+        // Remove consecutive spaces
+        cleanedText = cleanedText.replace(/\s{2,}/g, ' ');
+        
+        // Remove leading space
+        if (cleanedText.startsWith(' ')) {
+            cleanedText = cleanedText.substring(1);
+        }
+        
+        // Remove spaces before 2 characters
+        if (cleanedText.length < 2 && cleanedText.includes(' ')) {
+            cleanedText = cleanedText.replace(/\s/g, '');
+        }
+        
+        document.execCommand('insertText', false, cleanedText);
+    });
+}
+
+// Apply validation to all search inputs
+document.addEventListener('DOMContentLoaded', function() {
+    // Customer search inputs
+    const customerSearchInput = document.getElementById('customerSearchInput');
+    const customerSearchInputMobile = document.getElementById('customerSearchInputMobile');
+    
+    // Employee search inputs
+    const searchInput = document.getElementById('searchInput');
+    const searchInputMobile = document.getElementById('searchInputMobile');
+    
+    // Archived accounts search input
+    const archivedAccountsSearch = document.getElementById('archivedAccountsSearch');
+    
+    // Apply validation to all search inputs
+    validateSearchInput(customerSearchInput);
+    validateSearchInput(customerSearchInputMobile);
+    validateSearchInput(searchInput);
+    validateSearchInput(searchInputMobile);
+    validateSearchInput(archivedAccountsSearch);
+});
 </script>
 
 
