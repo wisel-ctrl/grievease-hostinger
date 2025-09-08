@@ -531,8 +531,7 @@ for ($i = 4; $i >= 0; $i--) {
     $data = $result->fetch_assoc();
     
     $yearlyRevenueData[] = $data['revenue'] ?? 0;
-    $yearLabels[] = $year;
-  }
+}
 
 // Original monthly data query
 $monthlyRevenueData = [];
@@ -591,7 +590,6 @@ for ($i = 11; $i >= 0; $i--) {
     $data = $result->fetch_assoc();
     
     $monthlyRevenueData[] = $data['revenue'] ?? 0;
-    $monthLabels[] = $date->format('M Y');
 }
 
 ?>
@@ -730,9 +728,9 @@ for ($i = 4; $i >= 0; $i--) {
         SELECT amount_paid 
         FROM sales_tb 
         WHERE branch_id = 2 AND YEAR(get_timestamp) = ?
-
+        
         UNION ALL
-
+        
         -- 2. Direct custom sales from customsales_tb not referenced in analytics_tb
         SELECT amount_paid
         FROM customsales_tb
@@ -742,9 +740,9 @@ for ($i = 4; $i >= 0; $i--) {
             WHERE sales_type = 'custom'
             AND YEAR(sale_date) = ?
         )
-
+        
         UNION ALL
-
+        
         -- 3. Analytics records that don't reference existing sales or have NULL sales_id
         SELECT a.amount_paid
         FROM analytics_tb a
@@ -788,9 +786,9 @@ for ($i = 4; $i >= 0; $i--) {
         SELECT amount_paid 
         FROM sales_tb 
         WHERE branch_id = 1 AND YEAR(get_timestamp) = ?
-
+        
         UNION ALL
-
+        
         -- 2. Direct custom sales from customsales_tb not referenced in analytics_tb
         SELECT amount_paid
         FROM customsales_tb
@@ -800,9 +798,9 @@ for ($i = 4; $i >= 0; $i--) {
             WHERE sales_type = 'custom'
             AND YEAR(sale_date) = ?
         )
-
+        
         UNION ALL
-
+        
         -- 3. Analytics records that don't reference existing sales or have NULL sales_id
         SELECT a.amount_paid
         FROM analytics_tb a
@@ -1881,15 +1879,16 @@ function loadInventoryLogs(page = 1) {
                     
                     // Determine badge styling
                     const badgeStyles = {
-                        'Depleted': 'fa-exclamation-circle',
-                        'Low Stock': 'fa-exclamation-triangle',
-                        'Restocked': 'fa-boxes',
-                        'Added': 'fa-plus-circle',
-                        'Removed': 'fa-minus-circle',
-                        'Adjusted': 'fa-adjust'
+                        'Depleted': 'bg-red-100 text-red-600 border-red-200',
+                        'Low Stock': 'bg-yellow-100 text-yellow-600 border-yellow-200',
+                        'Restocked': 'bg-green-100 text-green-600 border-green-200',
+                        'Added': 'bg-green-100 text-green-600 border-green-200',
+                        'Removed': 'bg-orange-100 text-orange-600 border-orange-200',
+                        'Adjusted': 'bg-blue-100 text-blue-600 border-blue-200'
                     };
                     
-                    const badgeIcon = badgeStyles[log.activity_type] || 'fa-info-circle';
+                    const badgeClass = badgeStyles[log.activity_type] || 'bg-gray-100 text-gray-600 border-gray-200';
+                    const badgeIcon = getActivityIcon(log.activity_type);
                     
                     // Format date
                     const activityDate = new Date(log.activity_date);
@@ -2052,75 +2051,309 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
 <script>
-// --- Accrued Revenue Chart Toggle ---
-const projectedIncomeData = {
-  monthly: {
-    data: <?php echo json_encode($monthlyProjectedIncomeData); ?>,
-    labels: <?php echo json_encode($monthLabels); ?>
-  },
-  yearly: {
-    data: <?php echo json_encode($yearlyProjectedIncomeData); ?>,
-    labels: <?php echo json_encode($yearLabels); ?>
-  }
+const chartData = {
+    monthly: {
+        data: <?php echo json_encode($monthlyRevenueData); ?>,
+        labels: <?php echo json_encode($monthLabels); ?>
+    },
+    yearly: {
+        data: <?php echo json_encode($yearlyRevenueData); ?>,
+        labels: <?php echo json_encode($yearLabels); ?>
+    }
 };
-var projectedIncomeOptions = {
-  series: [{
-    name: "Projected Income",
-    data: projectedIncomeData.monthly.data
-  }],
-  chart: {
-    type: 'area',
-    height: '100%',
-    width: '100%',
-    animations: { enabled: true, easing: 'easeout', speed: 800 },
-    toolbar: { show: true, tools: { download: false, selection: true, zoom: true, zoomin: true, zoomout: true, pan: true, reset: true } }
-  },
-  colors: ['#3b82f6'],
-  dataLabels: { enabled: false },
-  stroke: { curve: 'smooth', width: 2 },
-  fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.7, opacityTo: 0.3 } },
-  xaxis: { categories: projectedIncomeData.monthly.labels },
-  yaxis: { title: { text: 'Projected Income (₱)' }, labels: { formatter: function(val) { return "₱" + val.toLocaleString() } } },
-  tooltip: { y: { formatter: function(val) { return "₱" + val.toLocaleString() } } },
-  title: { text: '(If all payments have been settled)', align: 'left', style: { fontSize: '14px', fontWeight: 'bold', color: '#333' } }
+
+// Initialize with monthly data by default
+var options = {
+    series: [{
+        name: "Revenue",
+        data: chartData.monthly.data
+    }],
+    chart: {
+        type: 'area',
+        height: '100%',
+        width: '100%',
+        animations: {
+            enabled: true,
+            easing: 'easeout',
+            speed: 800
+        },
+        toolbar: {
+            show: true,
+            tools: {
+                download: false,
+                selection: true,
+                zoom: true,
+                zoomin: true,
+                zoomout: true,
+                pan: true,
+                reset: true
+            }
+        }
+    },
+    colors: ['#4ade80'],
+    dataLabels: {
+        enabled: false
+    },
+    stroke: {
+        curve: 'smooth',
+        width: 2
+    },
+    fill: {
+        type: 'gradient',
+        gradient: {
+            shadeIntensity: 1,
+            opacityFrom: 0.7,
+            opacityTo: 0.3,
+        }
+    },
+    xaxis: {
+        categories: chartData.monthly.labels,
+    },
+    yaxis: {
+        labels: {
+            formatter: function(val) {
+                return "₱" + val.toLocaleString()
+            }
+        }
+    },
+    tooltip: {
+        y: {
+            formatter: function(val) {
+                return "₱" + val.toLocaleString()
+            }
+        }
+    }
 };
-var projectedIncomeChart = new ApexCharts(document.querySelector("#projectedIncomeChart"), projectedIncomeOptions);
-projectedIncomeChart.render();
 
-// Toggle between monthly and yearly for Accrued Revenue
-const monthlyViewBtn = document.getElementById('monthlyView');
-const yearlyViewBtn = document.getElementById('yearlyView');
-monthlyViewBtn.addEventListener('click', function() {
-  projectedIncomeChart.updateOptions({
-    series: [{ data: projectedIncomeData.monthly.data }],
-    xaxis: { categories: projectedIncomeData.monthly.labels }
-  });
-  this.classList.add('bg-blue-500', 'text-white');
-  this.classList.remove('text-gray-600', 'hover:text-gray-800');
-  yearlyViewBtn.classList.remove('bg-blue-500', 'text-white');
-  yearlyViewBtn.classList.add('text-gray-600', 'hover:text-gray-800');
-});
-yearlyViewBtn.addEventListener('click', function() {
-  projectedIncomeChart.updateOptions({
-    series: [{ data: projectedIncomeData.yearly.data }],
-    xaxis: { categories: projectedIncomeData.yearly.labels }
-  });
-  this.classList.add('bg-blue-500', 'text-white');
-  this.classList.remove('text-gray-600', 'hover:text-gray-800');
-  monthlyViewBtn.classList.remove('bg-blue-500', 'text-white');
-  monthlyViewBtn.classList.add('text-gray-600', 'hover:text-gray-800');
+var chart = new ApexCharts(document.querySelector("#revenueChart"), options);
+chart.render();
+
+// Toggle between monthly and yearly views without page refresh
+document.getElementById('cashMonthlyView').addEventListener('click', function() {
+    chart.updateOptions({
+        series: [{
+            data: chartData.monthly.data
+        }],
+        xaxis: {
+            categories: chartData.monthly.labels
+        }
+    });
+    
+    // Update button styles
+    this.classList.add('bg-[#4ade80]', 'text-white');
+    this.classList.remove('text-gray-600', 'hover:text-gray-800');
+    document.getElementById('cashYearlyView').classList.remove('bg-[#4ade80]', 'text-white');
+    document.getElementById('cashYearlyView').classList.add('text-gray-600', 'hover:text-gray-800');
 });
 
-// --- Accrued Revenue Export ---
+document.getElementById('cashYearlyView').addEventListener('click', function() {
+    chart.updateOptions({
+        series: [{
+            data: chartData.yearly.data
+        }],
+        xaxis: {
+            categories: chartData.yearly.labels
+        }
+    });
+    
+    // Update button styles
+    this.classList.add('bg-[#4ade80]', 'text-white');
+    this.classList.remove('text-gray-600', 'hover:text-gray-800');
+    document.getElementById('cashMonthlyView').classList.remove('bg-[#4ade80]', 'text-white');
+    document.getElementById('cashMonthlyView').classList.add('text-gray-600', 'hover:text-gray-800');
+});
+
+// Export PDF function
+document.getElementById('exportCashRevenue').addEventListener('click', function() {
+    const isYearly = document.getElementById('cashYearlyView').classList.contains('bg-[#4ade80]');
+    const currentData = isYearly ? chartData.yearly : chartData.monthly;
+    const categories = [...currentData.labels];
+    const revenues = [...currentData.data];
+    const tableData = [[isYearly ? 'Year' : 'Month', 'Revenue (PHP)']];
+    categories.forEach((category, index) => {
+        const cleanCategory = category.toString().replace(/±/g, '').replace(/[^a-zA-Z0-9ñÑ\s]/g, '').trim() || (isYearly ? `Year ${index + 1}` : `Month ${index + 1}`);
+        let value = Number(revenues[index]);
+        if (isNaN(value)) value = 0;
+        tableData.push([
+            cleanCategory,
+            'PHP ' + value.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+        ]);
+    });
+    const total = revenues.reduce((sum, val) => sum + (Number(val) || 0), 0);
+    tableData.push([
+        'TOTAL',
+        'PHP ' + total.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+    ]);
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'portrait' });
+    doc.setProperties({
+        title: 'Vjay Relova Cash Revenue Report',
+        subject: 'Financial Report',
+        author: 'Vjay Relova Funeral Services',
+        keywords: 'revenue, report, financial',
+        creator: 'Vjay Relova Web Application'
+    });
+    getPdfHeader(doc, 'CASH REVENUE REPORT - ' + (isYearly ? 'YEARLY' : 'MONTHLY'), '', generatedBy);
+    const pageWidth = doc.internal.pageSize.width;
+    const margin = 15;
+    const availableWidth = pageWidth - (2 * margin);
+    doc.autoTable({
+        head: [tableData[0]],
+        body: tableData.slice(1, -1),
+        startY: 60,
+        theme: 'grid',
+        headStyles: {
+            fillColor: [74, 222, 128],
+            textColor: 255,
+            fontStyle: 'bold',
+            fontSize: 11,
+            halign: 'center'
+        },
+        columnStyles: {
+            0: { cellWidth: availableWidth * 0.4, halign: 'left', fontStyle: 'bold' },
+            1: { cellWidth: availableWidth * 0.6, halign: 'right', minCellHeight: 10 }
+        },
+        styles: { fontSize: 9, cellPadding: 3, overflow: 'linebreak', valign: 'middle', lineWidth: 0.1 },
+        margin: { left: margin, right: margin, top: 60 },
+        tableWidth: 'wrap',
+        didDrawPage: function (data) {
+            if (data.pageCount === data.pageNumber) {
+                const finalY = data.cursor.y + 10;
+                doc.setFontSize(12);
+                doc.setFont('courier', 'bold');
+                doc.setFillColor(240, 240, 240);
+                doc.rect(margin, finalY - 5, availableWidth, 10, 'F');
+                doc.text(tableData[tableData.length - 1][0], margin + 5, finalY);
+                doc.text(tableData[tableData.length - 1][1], pageWidth - margin - 5, finalY, { align: 'right' });
+                getPdfFooter(doc);
+            }
+        }
+    });
+    doc.save(`Vjay-Relova-Cash-Revenue-Report-${isYearly ? 'Yearly' : 'Monthly'}-${new Date().toISOString().slice(0, 10)}.pdf`);
+});
+</script>
+
+<script>
+// Helper for consistent PDF UI
+function getPdfHeader(doc, title, subtitle, generatedBy) {
+  doc.setFontSize(20);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(33, 37, 41);
+  doc.text('VJAY RELOVA FUNERAL SERVICES', 105, 20, { align: 'center' });
+  doc.setFontSize(16);
+  doc.text(title, 105, 30, { align: 'center' });
+  doc.setFontSize(12);
+  doc.setTextColor(59, 130, 246);
+  doc.text(subtitle, 105, 38, { align: 'center' });
+  doc.setFontSize(10);
+  doc.setTextColor(100, 100, 100);
+  doc.text('Generated on: ' + new Date().toLocaleString('en-PH', {
+    year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+  }), 105, 44, { align: 'center' });
+  doc.text('Generated by: ' + generatedBy, 105, 50, { align: 'center' });
+}
+function getPdfFooter(doc) {
+  const pageWidth = doc.internal.pageSize.width;
+  const footerY = doc.internal.pageSize.height - 20;
+  doc.setFontSize(9);
+  doc.setTextColor(100, 100, 100);
+  doc.setFont('courier', 'normal');
+  doc.text('For inquiries: Tel: (02) 1234-5678 • Mobile: 0917-123-4567 • Email: info@vjayrelova.com',
+    105, footerY, { align: 'center' });
+  doc.setFontSize(11);
+  doc.setTextColor(33, 37, 41);
+  doc.setFont('helvetica', 'normal');
+  doc.text('Signature: ___________________________', 105, footerY + 10, { align: 'center' });
+}
+const generatedBy = <?php echo json_encode($first_name . ' ' . $last_name); ?>;
+// Cash Revenue Export
+document.getElementById('exportCashRevenue').addEventListener('click', function() {
+    const isYearly = document.getElementById('cashYearlyView').classList.contains('bg-[#4ade80]');
+    const currentData = isYearly ? chartData.yearly : chartData.monthly;
+    const categories = [...currentData.labels];
+    const revenues = [...currentData.data];
+    const tableData = [[isYearly ? 'Year' : 'Month', 'Revenue (PHP)']];
+    categories.forEach((category, index) => {
+        const cleanCategory = category.toString().replace(/±/g, '').replace(/[^a-zA-Z0-9ñÑ\s]/g, '').trim() || (isYearly ? `Year ${index + 1}` : `Month ${index + 1}`);
+        let value = Number(revenues[index]);
+        if (isNaN(value)) value = 0;
+        tableData.push([
+            cleanCategory,
+            'PHP ' + value.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+        ]);
+    });
+    const total = revenues.reduce((sum, val) => sum + (Number(val) || 0), 0);
+    tableData.push([
+        'TOTAL',
+        'PHP ' + total.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+    ]);
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'portrait' });
+    doc.setProperties({
+        title: 'Vjay Relova Cash Revenue Report',
+        subject: 'Financial Report',
+        author: 'Vjay Relova Funeral Services',
+        keywords: 'revenue, report, financial',
+        creator: 'Vjay Relova Web Application'
+    });
+    getPdfHeader(doc, 'CASH REVENUE REPORT - ' + (isYearly ? 'YEARLY' : 'MONTHLY'), '', generatedBy);
+    const pageWidth = doc.internal.pageSize.width;
+    const margin = 15;
+    const availableWidth = pageWidth - (2 * margin);
+    doc.autoTable({
+        head: [tableData[0]],
+        body: tableData.slice(1, -1),
+        startY: 60,
+        theme: 'grid',
+        headStyles: {
+            fillColor: [74, 222, 128],
+            textColor: 255,
+            fontStyle: 'bold',
+            fontSize: 11,
+            halign: 'center'
+        },
+        columnStyles: {
+            0: { cellWidth: availableWidth * 0.4, halign: 'left', fontStyle: 'bold' },
+            1: { cellWidth: availableWidth * 0.6, halign: 'right', minCellHeight: 10 }
+        },
+        styles: { fontSize: 9, cellPadding: 3, overflow: 'linebreak', valign: 'middle', lineWidth: 0.1 },
+        margin: { left: margin, right: margin, top: 60 },
+        tableWidth: 'wrap',
+        didDrawPage: function (data) {
+            if (data.pageCount === data.pageNumber) {
+                const finalY = data.cursor.y + 10;
+                doc.setFontSize(12);
+                doc.setFont('courier', 'bold');
+                doc.setFillColor(240, 240, 240);
+                doc.rect(margin, finalY - 5, availableWidth, 10, 'F');
+                doc.text(tableData[tableData.length - 1][0], margin + 5, finalY);
+                doc.text(tableData[tableData.length - 1][1], pageWidth - margin - 5, finalY, { align: 'right' });
+                getPdfFooter(doc);
+            }
+        }
+    });
+    doc.save(`Vjay-Relova-Cash-Revenue-Report-${isYearly ? 'Yearly' : 'Monthly'}-${new Date().toISOString().slice(0, 10)}.pdf`);
+});
+</script>
+
+<script>
+// Projected Income Export
 document.getElementById('exportProjectedIncome').addEventListener('click', function () {
-  const isMonthly = monthlyViewBtn.classList.contains('bg-blue-500');
-  const seriesData = isMonthly ? [...projectedIncomeData.monthly.data] : [...projectedIncomeData.yearly.data];
-  const categories = isMonthly ? [...projectedIncomeData.monthly.labels] : [...projectedIncomeData.yearly.labels];
+  const isMonthly = document.getElementById('monthlyView').classList.contains('bg-blue-500');
+  const seriesData = isMonthly ? [...<?php echo json_encode($monthlyProjectedIncomeData); ?>] : [...<?php echo json_encode($yearlyProjectedIncomeData); ?>];
+  const categories = isMonthly ? [...<?php echo json_encode($monthLabels); ?>] : [...<?php echo json_encode($yearLabels); ?>];
+  seriesData.reverse();
+  categories.reverse();
   const tableData = [[isMonthly ? 'Month' : 'Year', 'Accrued Revenue (PHP)']];
   categories.forEach((period, index) => {
-    const cleanPeriod = period.toString().replace(/±/g, '').replace(/[^a-zA-Z0-9ñÑ\s]/g, '').trim() || (isMonthly ? `Month ${index + 1}` : `Year ${index + 1}`);
+    const cleanPeriod = period.toString()
+      .replace(/±/g, '')
+      .replace(/[^a-zA-Z0-9ñÑ\s]/g, '')
+      .trim() || (isMonthly ? `Month ${index + 1}` : `Year ${index + 1}`);
+
     let value = Number(seriesData[index]);
     if (isNaN(value)) value = 0;
+
     tableData.push([
       cleanPeriod,
       'PHP ' + value.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
@@ -2140,111 +2373,371 @@ document.getElementById('exportProjectedIncome').addEventListener('click', funct
     keywords: 'revenue, report, financial',
     creator: 'Vjay Relova Web Application'
   });
+    text: '(If all payments have been settled)',
+    align: 'left',
+    style: {
+      fontSize: '14px',
+      fontWeight: 'bold',
+      color: '#333'
+    }
+  }
+};
+
+var projectedIncomeChart = new ApexCharts(document.querySelector("#projectedIncomeChart"), projectedIncomeOptions);
+projectedIncomeChart.render();
+
+// Toggle between monthly and yearly views
+document.getElementById('monthlyView').addEventListener('click', function() {
+  this.classList.add('bg-blue-500', 'text-white');
+  this.classList.remove('text-gray-600');
+  document.getElementById('yearlyView').classList.remove('bg-blue-500', 'text-white');
+  document.getElementById('yearlyView').classList.add('text-gray-600');
+  
+  projectedIncomeChart.updateOptions({
+    series: [{
+      data: <?php echo json_encode($monthlyProjectedIncomeData); ?>
+    }],
+    xaxis: {
+      categories: <?php echo json_encode($monthLabels); ?>
+    }
+  });
+});
+
+document.getElementById('yearlyView').addEventListener('click', function() {
+  this.classList.add('bg-blue-500', 'text-white');
+  this.classList.remove('text-gray-600');
+  document.getElementById('monthlyView').classList.remove('bg-blue-500', 'text-white');
+  document.getElementById('monthlyView').classList.add('text-gray-600');
+  
+  projectedIncomeChart.updateOptions({
+    series: [{
+      data: <?php echo json_encode($yearlyProjectedIncomeData); ?>
+    }],
+    xaxis: {
+      categories: <?php echo json_encode($yearLabels); ?>
+    }
+  });
+});
+
+// Update export functionality to handle both views
+document.getElementById('exportProjectedIncome').addEventListener('click', function () {
+  const isMonthly = document.getElementById('monthlyView').classList.contains('bg-blue-500');
+  const seriesData = isMonthly ? [...<?php echo json_encode($monthlyProjectedIncomeData); ?>] : [...<?php echo json_encode($yearlyProjectedIncomeData); ?>];
+  const categories = isMonthly ? [...<?php echo json_encode($monthLabels); ?>] : [...<?php echo json_encode($yearLabels); ?>];
+  
+  // Reverse the order of both arrays to show latest first
+  seriesData.reverse();
+  categories.reverse();
+
+  const tableData = [[isMonthly ? 'Month' : 'Year', 'Accrued Revenue (PHP)']];
+
+  categories.forEach((period, index) => {
+    const cleanPeriod = period.toString()
+      .replace(/±/g, '')
+      .replace(/[^a-zA-Z0-9ñÑ\s]/g, '')
+      .trim() || (isMonthly ? `Month ${index + 1}` : `Year ${index + 1}`);
+
+    let value = Number(seriesData[index]);
+    if (isNaN(value)) value = 0;
+
+    tableData.push([
+      cleanPeriod,
+      'PHP ' + value.toLocaleString('en-PH', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      })
+    ]);
+  });
+
+
+  const total = seriesData.reduce((sum, val) => sum + (Number(val) || 0), 0);
+  tableData.push([
+    'TOTAL',
+    'PHP ' + total.toLocaleString('en-PH', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    })
+  ]);
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({
+    orientation: 'portrait'
+  });
+
+  // Set document metadata
+  doc.setProperties({
+    title: 'Vjay Relova Accrued Revenue Report',
+    subject: 'Financial Report',
+    author: 'Vjay Relova Funeral Services',
+    keywords: 'revenue, report, financial',
+    creator: 'Vjay Relova Web Application'
+  });
+
+  // Add header
   doc.setFontSize(20);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(33, 37, 41);
   doc.text('VJAY RELOVA FUNERAL SERVICES', 105, 20, { align: 'center' });
+
   doc.setFontSize(16);
   doc.text('ACCRUED REVENUE REPORT', 105, 30, { align: 'center' });
+
   doc.setFontSize(10);
   doc.setTextColor(100, 100, 100);
-  doc.text('Generated on: ' + new Date().toLocaleString('en-PH', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }), 105, 36, { align: 'center' });
-  doc.setFontSize(11);
-  doc.setTextColor(33, 37, 41);
-  doc.text('Generated by: ' + adminName, 105, 42, { align: 'center' });
+  doc.text('Generated on: ' + new Date().toLocaleString('en-PH', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  }), 105, 36, { align: 'center' });
+
+  // Calculate page width and column widths
   const pageWidth = doc.internal.pageSize.width;
   const margin = 15;
   const availableWidth = pageWidth - (2 * margin);
+  
+  // Create table with adjusted settings
   doc.autoTable({
     head: [tableData[0]],
     body: tableData.slice(1, -1),
-    startY: 50,
+    startY: 45,
     theme: 'grid',
-    headStyles: { fillColor: [59, 130, 246], textColor: 255, fontStyle: 'bold', fontSize: 11, halign: 'center' },
-    columnStyles: { 0: { cellWidth: availableWidth * 0.4, halign: 'left', fontStyle: 'bold' }, 1: { cellWidth: availableWidth * 0.6, halign: 'right', minCellHeight: 10 } },
-    styles: { fontSize: 9, cellPadding: 3, overflow: 'linebreak', valign: 'middle', lineWidth: 0.1 },
-    margin: { left: margin, right: margin, top: 50 },
-    tableWidth: 'wrap',
+    headStyles: {
+      fillColor: [59, 130, 246],
+      textColor: 255,
+      fontStyle: 'bold',
+      fontSize: 11,
+      halign: 'center'
+    },
+    columnStyles: {
+      0: { 
+        cellWidth: availableWidth * 0.4,  // Increased width for Month column
+        halign: 'left',
+        fontStyle: 'bold'
+      },
+      1: { 
+        cellWidth: availableWidth * 0.6,  // Adjusted width for Amount column
+        halign: 'right',
+        minCellHeight: 10  // Ensure enough height for values
+      }
+    },
+    styles: {
+      fontSize: 9,  // Slightly smaller font to prevent overlap
+      cellPadding: 3,  // Reduced padding
+      overflow: 'linebreak',
+      valign: 'middle',
+      lineWidth: 0.1  // Thinner grid lines
+    },
+    margin: { 
+      left: margin,
+      right: margin,
+      top: 45
+    },
+    tableWidth: 'wrap',  // Let the table adjust its width
     didDrawPage: function (data) {
       if (data.pageCount === data.pageNumber) {
         const finalY = data.cursor.y + 10;
         doc.setFontSize(12);
         doc.setFont('courier', 'bold');
+        
+        // Draw total line with full width
         doc.setFillColor(240, 240, 240);
         doc.rect(margin, finalY - 5, availableWidth, 10, 'F');
+        
         doc.text(tableData[tableData.length - 1][0], margin + 5, finalY);
         doc.text(tableData[tableData.length - 1][1], pageWidth - margin - 5, finalY, { align: 'right' });
-        doc.setFontSize(11);
-        doc.setTextColor(33, 37, 41);
-        doc.text('Signature: ___________________________', 105, finalY + 15, { align: 'center' });
+
         const footerY = doc.internal.pageSize.height - 10;
         doc.setFontSize(9);
         doc.setTextColor(100, 100, 100);
         doc.setFont('courier', 'normal');
-        doc.text('For inquiries: Tel: (02) 1234-5678 • Mobile: 0917-123-4567 • Email: info@vjayrelova.com', 105, footerY, { align: 'center' });
+        doc.text('For inquiries: Tel: (02) 1234-5678 • Mobile: 0917-123-4567 • Email: info@vjayrelova.com',
+          105, footerY, { align: 'center' });
       }
     }
   });
-  doc.save(`Vjay-Relova-Income-Report-${isMonthly ? 'Monthly' : 'Yearly'}-${new Date().toISOString().slice(0, 10)}.pdf`);
-});
 
-// --- Revenue by Branch Chart Toggle ---
-const branchMonthlyData = {
+  doc.save(`Vjay-Relova-Income-Report-${new Date().toISOString().slice(0, 10)}.pdf`);
+});
+</script>
+<script>
+// Store the chart data in variables
+const monthlyData = {
   pila: <?php echo json_encode($pilaMonthlyRevenue); ?>,
   paete: <?php echo json_encode($paeteMonthlyRevenue); ?>,
   labels: <?php echo json_encode($monthLabels); ?>,
   title: "Monthly Revenue by Branch"
 };
-const branchYearlyData = {
+
+const yearlyData = {
   pila: <?php echo json_encode($pilaYearlyRevenue); ?>,
   paete: <?php echo json_encode($paeteYearlyRevenue); ?>,
   labels: <?php echo json_encode($yearLabels); ?>,
   title: "Yearly Revenue by Branch"
 };
+
+// Initialize the chart with monthly data
+var branchRevenueChart = new ApexCharts(document.querySelector("#branchRevenueChart"), getChartOptions(monthlyData));
+branchRevenueChart.render();
+
+// Toggle between monthly and yearly data
+document.getElementById('monthlyViewBranch').addEventListener('click', function() {
+  this.classList.add('bg-blue-500', 'text-white');
+  this.classList.remove('text-gray-600', 'hover:text-gray-800');
+  document.getElementById('yearlyViewBranch').classList.remove('bg-blue-500', 'text-white');
+  document.getElementById('yearlyViewBranch').classList.add('text-gray-600', 'hover:text-gray-800');
+  
+  branchRevenueChart.updateOptions(getChartOptions(monthlyData));
+});
+
+document.getElementById('yearlyViewBranch').addEventListener('click', function() {
+  this.classList.add('bg-blue-500', 'text-white');
+  this.classList.remove('text-gray-600', 'hover:text-gray-800');
+  document.getElementById('monthlyViewBranch').classList.remove('bg-blue-500', 'text-white');
+  document.getElementById('monthlyViewBranch').classList.add('text-gray-600', 'hover:text-gray-800');
+  
+  branchRevenueChart.updateOptions(getChartOptions(yearlyData));
+});
+
+// Function to generate chart options based on data
 function getChartOptions(data) {
   return {
     series: [
-      { name: 'Pila Branch', data: data.pila },
-      { name: 'Paete Branch', data: data.paete }
+      {
+        name: 'Pila Branch',
+        data: data.pila
+      },
+      {
+        name: 'Paete Branch',
+        data: data.paete
+      }
     ],
-    chart: { type: 'bar', height: '100%', width: '100%', stacked: false, toolbar: { show: true, tools: { download: false, selection: true, zoom: true, zoomin: true, zoomout: true, pan: true, reset: true } } },
-    plotOptions: { bar: { horizontal: false, columnWidth: '80%', endingShape: 'rounded', borderRadius: 4 } },
-    dataLabels: { enabled: false },
+    chart: {
+      type: 'bar',
+      height: '100%',
+      width: '100%',
+      stacked: false,
+      toolbar: {
+        show: true,
+        tools: {
+          download: false,
+          selection: true,
+          zoom: true,
+          zoomin: true,
+          zoomout: true,
+          pan: true,
+          reset: true
+        },
+        export: {
+          csv: {
+            filename: 'branch-revenue-comparison',
+            columnDelimiter: ',',
+            headerCategory: data.title.includes('Monthly') ? 'Month' : 'Year',
+            headerValue: 'Revenue (₱)',
+          },
+          png: {
+            filename: 'branch-revenue-comparison',
+          },
+          svg: {
+            filename: 'branch-revenue-comparison',
+          }
+        }
+      }
+    },
+    plotOptions: {
+      bar: {
+        horizontal: false,
+        columnWidth: '80%',
+        endingShape: 'rounded',
+        borderRadius: 4
+      },
+    },
+    dataLabels: {
+      enabled: false
+    },
     colors: ['#4f46e5', '#10b981'],
-    stroke: { show: true, width: 2, colors: ['transparent'] },
-    xaxis: { categories: data.labels, title: { text: data.title.includes('Monthly') ? 'Month' : 'Year' }, labels: { style: { fontSize: '12px', fontWeight: 500 }, rotate: -45, hideOverlappingLabels: true } },
-    yaxis: { title: { text: 'Revenue (₱)' }, labels: { formatter: function(val) { return "₱" + val.toLocaleString(); } } },
-    fill: { opacity: 1 },
-    tooltip: { y: { formatter: function(val) { return "₱" + val.toLocaleString(); } } },
-    legend: { position: 'top', horizontalAlign: 'center', offsetY: 0, markers: { width: 12, height: 12, radius: 12 } },
-    responsive: [{ breakpoint: 768, options: { chart: { height: 400 }, xaxis: { labels: { rotate: -45 } } } }],
-    title: { text: data.title, align: 'center', style: { fontSize: '16px', fontWeight: 'bold' } }
+    stroke: {
+      show: true,
+      width: 2,
+      colors: ['transparent']
+    },
+    xaxis: {
+      categories: data.labels,
+      title: {
+        text: data.title.includes('Monthly') ? 'Month' : 'Year'
+      },
+      labels: {
+        style: {
+          fontSize: '12px',
+          fontWeight: 500
+        },
+        rotate: -45,
+        hideOverlappingLabels: true
+      }
+    },
+    yaxis: {
+      title: {
+        text: 'Revenue (₱)'
+      },
+      labels: {
+        formatter: function(val) {
+          return "₱" + val.toLocaleString();
+        }
+      }
+    },
+    fill: {
+      opacity: 1
+    },
+    tooltip: {
+      y: {
+        formatter: function(val) {
+          return "₱" + val.toLocaleString();
+        }
+      }
+    },
+    legend: {
+      position: 'top',
+      horizontalAlign: 'center',
+      offsetY: 0,
+      markers: {
+        width: 12,
+        height: 12,
+        radius: 12,
+      }
+    },
+    responsive: [{
+      breakpoint: 768,
+      options: {
+        chart: {
+          height: 400
+        },
+        xaxis: {
+          labels: {
+            rotate: -45
+          }
+        }
+      }
+    }],
+    title: {
+      text: data.title,
+      align: 'center',
+      style: {
+        fontSize: '16px',
+        fontWeight: 'bold'
+      }
+    }
   };
 }
-var branchRevenueChart = new ApexCharts(document.querySelector("#branchRevenueChart"), getChartOptions(branchMonthlyData));
-branchRevenueChart.render();
-const monthlyViewBranchBtn = document.getElementById('monthlyViewBranch');
-const yearlyViewBranchBtn = document.getElementById('yearlyViewBranch');
-monthlyViewBranchBtn.addEventListener('click', function() {
-  branchRevenueChart.updateOptions(getChartOptions(branchMonthlyData));
-  this.classList.add('bg-blue-500', 'text-white');
-  this.classList.remove('text-gray-600', 'hover:text-gray-800');
-  yearlyViewBranchBtn.classList.remove('bg-blue-500', 'text-white');
-  yearlyViewBranchBtn.classList.add('text-gray-600', 'hover:text-gray-800');
-});
-yearlyViewBranchBtn.addEventListener('click', function() {
-  branchRevenueChart.updateOptions(getChartOptions(branchYearlyData));
-  this.classList.add('bg-blue-500', 'text-white');
-  this.classList.remove('text-gray-600', 'hover:text-gray-800');
-  monthlyViewBranchBtn.classList.remove('bg-blue-500', 'text-white');
-  monthlyViewBranchBtn.classList.add('text-gray-600', 'hover:text-gray-800');
-});
 
-// --- Branch Revenue Export ---
 document.getElementById('exportPdfBtn').addEventListener('click', function() {
   try {
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ orientation: 'portrait' });
+    const doc = new jsPDF({
+      orientation: 'portrait'
+    });
+
+    // Set document metadata
     doc.setProperties({
       title: 'Vjay Relova Branch Revenue Report',
       subject: 'Financial Report',
@@ -2252,23 +2745,36 @@ document.getElementById('exportPdfBtn').addEventListener('click', function() {
       keywords: 'revenue, report, financial, branch',
       creator: 'Vjay Relova Web Application'
     });
-    const isYearly = yearlyViewBranchBtn.classList.contains('bg-blue-500');
-    const currentData = isYearly ? branchYearlyData : branchMonthlyData;
+
+    // Get the current timeframe based on which button is active
+    const isYearly = document.getElementById('yearlyViewBranch').classList.contains('bg-blue-500');
+    const currentData = isYearly ? yearlyData : monthlyData;
     const timeframe = isYearly ? 'Yearly' : 'Monthly';
+
+    // Add header
     doc.setFontSize(20);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(33, 37, 41);
     doc.text('VJAY RELOVA FUNERAL SERVICES', 105, 20, { align: 'center' });
+
     doc.setFontSize(16);
     doc.text(`${timeframe.toUpperCase()} BRANCH REVENUE REPORT`, 105, 30, { align: 'center' });
+
     doc.setFontSize(10);
     doc.setTextColor(100, 100, 100);
-    doc.text('Generated on: ' + new Date().toLocaleString('en-PH', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }), 105, 36, { align: 'center' });
-    doc.setFontSize(11);
-    doc.setTextColor(33, 37, 41);
-    doc.text('Generated by: ' + adminName, 105, 42, { align: 'center' });
+    doc.text('Generated on: ' + new Date().toLocaleString('en-PH', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    }), 105, 36, { align: 'center' });
+
+    // Create table data
     const headers = [isYearly ? 'Year' : 'Month', 'Pila Revenue', 'Paete Revenue'];
     const body = [];
+    
+    // Add data rows
     for (let i = 0; i < currentData.labels.length; i++) {
       body.push([
         currentData.labels[i],
@@ -2276,6 +2782,8 @@ document.getElementById('exportPdfBtn').addEventListener('click', function() {
         `PHP ${parseFloat(currentData.paete[i] || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
       ]);
     }
+
+    // Add totals row
     const pilaTotal = currentData.pila.reduce((a, b) => a + (parseFloat(b) || 0), 0);
     const paeteTotal = currentData.paete.reduce((a, b) => a + (parseFloat(b) || 0), 0);
     body.push([
@@ -2283,43 +2791,228 @@ document.getElementById('exportPdfBtn').addEventListener('click', function() {
       `PHP ${pilaTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
       `PHP ${paeteTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
     ]);
+    
+    // Calculate page width and column widths
     const pageWidth = doc.internal.pageSize.width;
     const margin = 15;
     const availableWidth = pageWidth - (2 * margin);
+    
+    // Add table
     doc.autoTable({
       head: [headers],
-      body: body.slice(0, -1),
-      startY: 50,
+      body: body.slice(0, -1), // Exclude totals row from main body
+      startY: 45,
       theme: 'grid',
-      headStyles: { fillColor: [79, 70, 229], textColor: 255, fontStyle: 'bold', fontSize: 11, halign: 'center' },
-      alternateRowStyles: { fillColor: [249, 250, 251] },
-      styles: { cellPadding: 3, fontSize: 9, valign: 'middle', lineWidth: 0.1 },
-      columnStyles: { 0: { cellWidth: availableWidth * 0.4, halign: 'left' }, 1: { cellWidth: availableWidth * 0.3, halign: 'right' }, 2: { cellWidth: availableWidth * 0.3, halign: 'right' } },
-      margin: { left: margin, right: margin, top: 50 },
-      didDrawPage: function(data) {
-        const finalY = data.cursor.y + 10;
-        doc.setFontSize(11);
-        doc.setTextColor(33, 37, 41);
-        doc.text('Signature: ___________________________', 105, finalY + 15, { align: 'center' });
-        const footerY = doc.internal.pageSize.height - 10;
-        doc.setFontSize(9);
-        doc.setTextColor(100, 100, 100);
-        doc.setFont('courier', 'normal');
-        doc.text('For inquiries: Tel: (02) 1234-5678 • Mobile: 0917-123-4567 • Email: info@vjayrelova.com', 105, footerY, { align: 'center' });
+      headStyles: {
+        fillColor: [79, 70, 229],
+        textColor: 255,
+        fontStyle: 'bold',
+        fontSize: 11,
+        halign: 'center'
+      },
+      columnStyles: {
+        0: { 
+          cellWidth: availableWidth * 0.4,
+          halign: 'left',
+          fontStyle: 'bold'
+        },
+        1: { 
+          cellWidth: availableWidth * 0.3,
+          halign: 'right'
+        },
+        2: { 
+          cellWidth: availableWidth * 0.3,
+          halign: 'right'
+        }
+      },
+      styles: {
+        fontSize: 9,
+        cellPadding: 3,
+        overflow: 'linebreak',
+        valign: 'middle',
+        lineWidth: 0.1
+      },
+      margin: { 
+        left: margin,
+        right: margin,
+        top: 45
+      },
+      tableWidth: 'wrap',
+      didDrawPage: function (data) {
+        if (data.pageCount === data.pageNumber) {
+          const finalY = data.cursor.y + 10;
+          doc.setFontSize(12);
+          doc.setFont('courier', 'bold');
+          
+          // Draw total line with full width
+          doc.setFillColor(240, 240, 240);
+          doc.rect(margin, finalY - 5, availableWidth, 10, 'F');
+          
+          // Add totals row
+          const totalsRow = body[body.length - 1];
+          doc.text(totalsRow[0], margin + 5, finalY);
+          doc.text(totalsRow[1], margin + availableWidth * 0.7, finalY, { align: 'right' });
+          doc.text(totalsRow[2], pageWidth - margin - 5, finalY, { align: 'right' });
+
+          // Add footer
+          const footerY = doc.internal.pageSize.height - 10;
+          doc.setFontSize(9);
+          doc.setTextColor(100, 100, 100);
+          doc.setFont('courier', 'normal');
+          doc.text('For inquiries: Tel: (02) 1234-5678 • Mobile: 0917-123-4567 • Email: info@vjayrelova.com',
+            105, footerY, { align: 'center' });
+        }
       }
     });
+    
     doc.save(`Vjay-Relova-Branch-Report-${timeframe}-${new Date().toISOString().slice(0, 10)}.pdf`);
+    
   } catch (error) {
     console.error('PDF export failed:', error);
     alert('Failed to generate PDF. Please check console for details.');
   }
 });
+</script>
+<script>
+  var branchServicesOptions = {
+    series: [
+        {
+            name: 'Pila Branch',
+            data: <?php echo json_encode($pilaData); ?>
+        },
+        {
+            name: 'Paete Branch',
+            data: <?php echo json_encode($paeteData); ?>
+        }
+    ],
+    chart: {
+        height: '100%',
+        width: '100%',
+        type: 'radar',
+        dropShadow: {
+            enabled: true,
+            blur: 1,
+            left: 1,
+            top: 1
+        },
+        toolbar: {
+            show: true,
+            tools: {
+                download: true,
+                selection: false,
+                zoom: false,
+                zoomin: false,
+                zoomout: false,
+                pan: false,
+                reset: true
+            },
+            export: {
+                csv: {
+                    filename: 'branch-services-comparison',
+                    headerCategory: 'Service',
+                    headerValue: 'Sales Count',
+                },
+                png: {
+                    filename: 'branch-services-comparison',
+                },
+                svg: {
+                    filename: 'branch-services-comparison',
+                }
+            }
+        }
+    },
+    colors: ['#4f46e5', '#10b981'],
+    labels: <?php echo json_encode($services); ?>,
+    markers: {
+        size: 5,
+        hover: {
+            size: 7
+        }
+    },
+    yaxis: {
+        show: false,
+        min: 0
+    },
+    fill: {
+        opacity: 0.2
+    },
+    stroke: {
+        width: 2
+    },
+    tooltip: {
+        y: {
+            formatter: function(val) {
+                return val + ' sales';
+            }
+        }
+    },
+    legend: {
+        position: 'bottom',
+        horizontalAlign: 'center'
+    },
+    plotOptions: {
+    radar: {
+      size: 140, // Adjust based on screen size
+      polygons: {
+        strokeColors: '#e8e8e8',
+        connectorColors: '#e8e8e8'
+      }
+    }
+  },
+  responsive: [{
+    breakpoint: 1200,
+    options: {
+      plotOptions: {
+        radar: {
+          size: 160
+        }
+      }
+    }
+  },
+  {
+    breakpoint: 992,
+    options: {
+      plotOptions: {
+        radar: {
+          size: 140
+        }
+      }
+    }
+  },
+  {
+    breakpoint: 768,
+    options: {
+      plotOptions: {
+        radar: {
+          size: 120
+        }
+      },
+      legend: {
+        position: 'bottom',
+        horizontalAlign: 'center'
+      }
+    }
+  }]
+};
 
-// --- Top Selling Packages Export ---
-document.getElementById('exportTopSellingPackages').addEventListener('click', function() {
+var branchServicesChart = new ApexCharts(document.querySelector("#branchServicesChart"), branchServicesOptions);
+branchServicesChart.render();
+
+ const services = <?php echo json_encode($services); ?>;
+  const pilaData = <?php echo json_encode($pilaData); ?>;
+  const paeteData = <?php echo json_encode($paeteData); ?>;
+  
+  // Initialize jsPDF
+  const { jsPDF } = window.jspdf;
+
+  document.getElementById('exportTopSellingPackages').addEventListener('click', function() {
   try {
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ orientation: 'portrait' });
+    const doc = new jsPDF({
+      orientation: 'portrait'
+    });
+
+    // Set document metadata
     doc.setProperties({
       title: 'Vjay Relova Service Package Sales Report',
       subject: 'Sales Report',
@@ -2327,20 +3020,33 @@ document.getElementById('exportTopSellingPackages').addEventListener('click', fu
       keywords: 'sales, report, service, package',
       creator: 'Vjay Relova Web Application'
     });
+
+    // Add header
     doc.setFontSize(20);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(33, 37, 41);
     doc.text('VJAY RELOVA FUNERAL SERVICES', 105, 20, { align: 'center' });
+
     doc.setFontSize(16);
     doc.text('SERVICE PACKAGE SALES REPORT', 105, 30, { align: 'center' });
+
     doc.setFontSize(10);
     doc.setTextColor(100, 100, 100);
-    doc.text('Generated on: ' + new Date().toLocaleString('en-PH', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }), 105, 36, { align: 'center' });
-    doc.setFontSize(11);
-    doc.setTextColor(33, 37, 41);
-    doc.text('Generated by: ' + adminName, 105, 42, { align: 'center' });
+    doc.text('Generated on: ' + new Date().toLocaleString('en-PH', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    }), 105, 36, { align: 'center' });
+
+    // Create the table data
     const tableData = [];
+    
+    // Add headers
     tableData.push(['Service Package', 'Pila Branch', 'Paete Branch']);
+    
+    // Add rows
     services.forEach((service, index) => {
       tableData.push([
         service,
@@ -2348,86 +3054,72 @@ document.getElementById('exportTopSellingPackages').addEventListener('click', fu
         paeteData[index]
       ]);
     });
+
+    // Calculate page width and column widths
     const pageWidth = doc.internal.pageSize.width;
     const margin = 15;
     const availableWidth = pageWidth - (2 * margin);
+    
+    // Add the table
     doc.autoTable({
-      startY: 50,
+      startY: 45,
       head: [tableData[0]],
       body: tableData.slice(1),
       theme: 'grid',
-      headStyles: { fillColor: [79, 70, 229], textColor: 255, fontStyle: 'bold', fontSize: 11, halign: 'center' },
-      alternateRowStyles: { fillColor: [249, 250, 251] },
-      styles: { cellPadding: 3, fontSize: 9, valign: 'middle', lineWidth: 0.1 },
-      columnStyles: { 0: { cellWidth: availableWidth * 0.6, halign: 'left' }, 1: { cellWidth: availableWidth * 0.2, halign: 'right' }, 2: { cellWidth: availableWidth * 0.2, halign: 'right' } },
-      margin: { left: margin, right: margin, top: 50 },
+      headStyles: {
+        fillColor: [79, 70, 229],
+        textColor: 255,
+        fontStyle: 'bold',
+        fontSize: 11,
+        halign: 'center'
+      },
+      alternateRowStyles: {
+        fillColor: [249, 250, 251]
+      },
+      styles: {
+        cellPadding: 3,
+        fontSize: 9,
+        valign: 'middle',
+        lineWidth: 0.1
+      },
+      columnStyles: {
+        0: { 
+          cellWidth: availableWidth * 0.6,
+          halign: 'left'
+        },
+        1: { 
+          cellWidth: availableWidth * 0.2,
+          halign: 'right'
+        },
+        2: { 
+          cellWidth: availableWidth * 0.2,
+          halign: 'right'
+        }
+      },
+      margin: { 
+        left: margin,
+        right: margin,
+        top: 45
+      },
       didDrawPage: function(data) {
-        const finalY = data.cursor.y + 10;
-        doc.setFontSize(11);
-        doc.setTextColor(33, 37, 41);
-        doc.text('Signature: ___________________________', 105, finalY + 15, { align: 'center' });
+        // Add footer
         const footerY = doc.internal.pageSize.height - 10;
         doc.setFontSize(9);
         doc.setTextColor(100, 100, 100);
         doc.setFont('courier', 'normal');
-        doc.text('For inquiries: Tel: (02) 1234-5678 • Mobile: 0917-123-4567 • Email: info@vjayrelova.com', 105, footerY, { align: 'center' });
+        doc.text('For inquiries: Tel: (02) 1234-5678 • Mobile: 0917-123-4567 • Email: info@vjayrelova.com',
+          105, footerY, { align: 'center' });
       }
     });
+    
+    // Save the PDF
     doc.save(`Vjay-Relova-Service-Packages-Report-${new Date().toISOString().slice(0, 10)}.pdf`);
+    
   } catch (error) {
     console.error('PDF export failed:', error);
     alert('Failed to generate PDF. Please check console for details.');
   }
 });
-
-// --- Ensure Accrued Revenue Chart Renders ---
-var projectedIncomeOptions = {
-  series: [{
-    name: "Projected Income",
-    data: <?php echo json_encode($monthlyProjectedIncomeData); ?>
-  }],
-  chart: {
-    type: 'area',
-    height: '100%',
-    width: '100%',
-    animations: { enabled: true, easing: 'easeout', speed: 800 },
-    toolbar: { show: true, tools: { download: false, selection: true, zoom: true, zoomin: true, zoomout: true, pan: true, reset: true } }
-  },
-  colors: ['#3b82f6'],
-  dataLabels: { enabled: false },
-  stroke: { curve: 'smooth', width: 2 },
-  fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.7, opacityTo: 0.3 } },
-  xaxis: { categories: <?php echo json_encode($monthLabels); ?> },
-  yaxis: { title: { text: 'Projected Income (₱)' }, labels: { formatter: function(val) { return "₱" + val.toLocaleString() } } },
-  tooltip: { y: { formatter: function(val) { return "₱" + val.toLocaleString() } } },
-  title: { text: '(If all payments have been settled)', align: 'left', style: { fontSize: '14px', fontWeight: 'bold', color: '#333' } }
-};
-var projectedIncomeChart = new ApexCharts(document.querySelector("#projectedIncomeChart"), projectedIncomeOptions);
-projectedIncomeChart.render();
-
-// --- Ensure Revenue by Branch Chart Renders ---
-function getChartOptions(data) {
-  return {
-    series: [
-      { name: 'Pila Branch', data: data.pila },
-      { name: 'Paete Branch', data: data.paete }
-    ],
-    chart: { type: 'bar', height: '100%', width: '100%', stacked: false, toolbar: { show: true, tools: { download: false, selection: true, zoom: true, zoomin: true, zoomout: true, pan: true, reset: true } } },
-    plotOptions: { bar: { horizontal: false, columnWidth: '80%', endingShape: 'rounded', borderRadius: 4 } },
-    dataLabels: { enabled: false },
-    colors: ['#4f46e5', '#10b981'],
-    stroke: { show: true, width: 2, colors: ['transparent'] },
-    xaxis: { categories: data.labels, title: { text: data.title.includes('Monthly') ? 'Month' : 'Year' }, labels: { style: { fontSize: '12px', fontWeight: 500 }, rotate: -45, hideOverlappingLabels: true } },
-    yaxis: { title: { text: 'Revenue (₱)' }, labels: { formatter: function(val) { return "₱" + val.toLocaleString(); } } },
-    fill: { opacity: 1 },
-    tooltip: { y: { formatter: function(val) { return "₱" + val.toLocaleString(); } } },
-    legend: { position: 'top', horizontalAlign: 'center', offsetY: 0, markers: { width: 12, height: 12, radius: 12 } },
-    responsive: [{ breakpoint: 768, options: { chart: { height: 400 }, xaxis: { labels: { rotate: -45 } } } }],
-    title: { text: data.title, align: 'center', style: { fontSize: '16px', fontWeight: 'bold' } }
-  };
-}
-var branchRevenueChart = new ApexCharts(document.querySelector("#branchRevenueChart"), getChartOptions(branchMonthlyData));
-branchRevenueChart.render();
 </script>
 
 <script>
