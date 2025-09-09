@@ -87,6 +87,7 @@ function getBranches($conn) {
     
     if ($result->num_rows > 0) {
         while($row = $result->fetch_assoc()) {
+            $row['branch_name'] = ucfirst(strtolower($row['branch_name']));
             $branches[] = $row;
         }
     }
@@ -3241,6 +3242,8 @@ function startNewOrder() {
 }
   </script>
   <script src = 'tailwind.js'></script>
+  
+  
   
 </body>
 </html>
