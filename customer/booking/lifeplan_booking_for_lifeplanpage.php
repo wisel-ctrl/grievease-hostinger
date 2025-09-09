@@ -40,12 +40,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Process address
         $beneficiary_address = $_POST['deceasedAddress'] ?? '';
         
+        // Co-maker information
+        $comaker_fname = $_POST['comakerFirstName'];
+        $comaker_mname = $_POST['comakerMiddleName'] ?? '';
+        $comaker_lname = $_POST['comakerLastName'];
+        $comaker_suffix = $_POST['comakerSuffix'] ?? '';
+        $comaker_work = $_POST['comakerOccupation'];
+        $comaker_idtype = $_POST['comakerIdType'];
+        $comaker_idnumber = $_POST['comakerIdNumber'];
+        
+        // Process co-maker address
+        
+        $comaker_address = $_POST['comakerAddress'];
+        
         $phone = $_POST['contactNumber'];
         $with_cremate = isset($_POST['cremationOption']) && $_POST['cremationOption'] ? 'yes' : 'no';
         $reference_code = $_POST['referenceNumber'];
         
-        // Process payment receipt
+        // Process payment receipt and co-maker ID image
         $paymentPath = '';
+        $comakerIdImgPath = '';
         
         // Create uploads directory if it doesn't exist
         $uploadDir = 'uploads/';
@@ -53,11 +67,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             mkdir($uploadDir, 0777, true);
         }
         
+        // Process payment receipt
         if (isset($_FILES['gcashReceipt']) && $_FILES['gcashReceipt']['error'] === UPLOAD_ERR_OK) {
             $paymentExt = pathinfo($_FILES['gcashReceipt']['name'], PATHINFO_EXTENSION);
             $paymentName = 'payment_' . time() . '.' . $paymentExt;
             $paymentPath = $uploadDir . $paymentName;
             move_uploaded_file($_FILES['gcashReceipt']['tmp_name'], $paymentPath);
+        }
+        
+        // Process co-maker ID image
+        if (isset($_FILES['comakerIdImage']) && $_FILES['comakerIdImage']['error'] === UPLOAD_ERR_OK) {
+            $comakerIdExt = pathinfo($_FILES['comakerIdImage']['name'], PATHINFO_EXTENSION);
+            $comakerIdName = 'comaker_id_' . time() . '_' . rand(1000, 9999) . '.' . $comakerIdExt;
+            $comakerIdImgPath = $uploadDir . $comakerIdName;
+            move_uploaded_file($_FILES['comakerIdImage']['tmp_name'], $comakerIdImgPath);
         }
         
         // Insert into database
@@ -66,16 +89,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 service_id, branch_id, customer_id, payment_duration, package_price,
                 benefeciary_fname, benefeciary_mname, benefeciary_lname, benefeciary_suffix,
                 benefeciary_birth, benefeciary_address, phone, with_cremate, 
-                booking_status, reference_code, payment_url, relationship_to_client, initial_date
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?, ?)
+                booking_status, reference_code, payment_url, relationship_to_client, initial_date,
+                comaker_fname, comaker_mname, comaker_lname, comaker_suffix, comaker_address, 
+                comaker_work, comaker_idtype, comaker_idnumber, comaker_idimg
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ");
         $bookingDate = date('Y-m-d H:i:s');
         $stmt->bind_param(
-            "iiiidssssssssssss", 
+            "iiiidsssssssssssssssssssss", 
             $service_id, $branch_id, $customer_id, $payment_duration, $package_price,
             $beneficiary_fname, $beneficiary_mname, $beneficiary_lname, $beneficiary_suffix,
             $beneficiary_birth, $beneficiary_address, $phone, $with_cremate,
-            $reference_code, $paymentPath, $relationship_with_beneficiary, $bookingDate
+            $reference_code, $paymentPath, $relationship_with_beneficiary, $bookingDate,
+            $comaker_fname, $comaker_mname, $comaker_lname, $comaker_suffix, $comaker_address,
+            $comaker_work, $comaker_idtype, $comaker_idnumber, $comakerIdImgPath
         );
         
         if ($stmt->execute()) {
