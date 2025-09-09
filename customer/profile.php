@@ -3309,7 +3309,7 @@ function getSamplePaymentHistory(packageType) {
                         </div>
                     </div>
                     
-                    <?php if ($id_status !== 'valid'): ?>
+                    <?php if ($id_status !== 'valid' && $id_status !== 'no'): ?>
                     <!-- Document Uploads Section -->
                     <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
                         <h4 class="font-semibold text-gray-800 mb-4 flex items-center text-lg border-b pb-3">
