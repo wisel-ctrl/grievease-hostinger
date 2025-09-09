@@ -279,6 +279,37 @@
     
     <?php include 'admin_sidebar.php'; ?>
     
+    
+    <style>
+        #suffix-suggestions {
+            display: none;
+            position: absolute;
+            z-index: 50;
+            width: 100%;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+            margin-top: 0.25rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        
+        #suffix-suggestions div {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        #suffix-suggestions div:hover {
+            background-color: #f3f4f6;
+        }
+        
+        #suffix-suggestions .bg-sidebar-bg {
+            background-color: #f3f4f6;
+        }
+    </style>
+    
     <div id="main-content" class="p-4 sm:p-6 bg-gray-50 min-h-screen transition-all duration-300 ml-64 w-[calc(100%-16rem)] main-content">
         <!-- Mobile Hamburger Menu -->
         <button id="mobile-hamburger" class="lg:hidden p-3 bg-sidebar-bg rounded-xl shadow-card text-sidebar-text hover:text-sidebar-accent hover:bg-sidebar-hover transition-all duration-300 mb-4 sm:mb-6">
@@ -383,10 +414,14 @@
                         </div>
                         <div class="space-y-2">
                             <label for="suffix" class="block text-sidebar-text font-medium font-inter text-sm sm:text-base">Suffix</label>
-                            <input type="text" id="suffix" name="suffix"
-                                   pattern="[a-zA-Z\s'-]*"
-                                   class="w-full px-3 py-2 sm:px-4 sm:py-3 border border-sidebar-border rounded-xl focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-white text-sm sm:text-base"
-                                   value="<?php echo htmlspecialchars($admin['suffix']); ?>">
+                            <div class="relative">
+                                <input type="text" id="suffix" name="suffix" 
+                                       pattern="[a-zA-Z\s'-]*"
+                                       class="w-full px-3 py-2 sm:px-4 sm:py-3 border border-sidebar-border rounded-xl focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-white text-sm sm:text-base"
+                                       value="<?php echo htmlspecialchars($admin['suffix']); ?>"
+                                       autocomplete="off">
+                                <div id="suffix-suggestions" class="absolute z-10 w-full bg-white border border-sidebar-border rounded-xl mt-1 shadow-lg hidden max-h-60 overflow-y-auto"></div>
+                            </div>
                             <p id="suffix_error" class="text-red-500 text-xs sm:text-sm hidden"></p>
                         </div>
                         <div class="space-y-2">
@@ -1331,36 +1366,127 @@ function handleGCashPhoneNumberInput(event) {
     preventMultipleSpaces(event);
 }
 
-// Initialize suffix dropdown
-function initializeSuffixDropdown() {
+// Suffix suggestions functionality
+const suffixOptions = ["Jr", "Sr", "II", "III", "IV"]; // Removed empty string
+
+function setupSuffixTypeahead() {
     const suffixInput = document.getElementById('suffix');
-    if (suffixInput && suffixInput.tagName === 'INPUT') {
-        const suffixValue = suffixInput.value.trim();
-        const suffixContainer = suffixInput.parentElement;
+    const suggestionsContainer = document.getElementById('suffix-suggestions');
+    
+    if (!suffixInput || !suggestionsContainer) {
+        console.error('Could not find suffix input or suggestions container');
+        return;
+    }
+    
+    suffixInput.addEventListener('input', function() {
+        const value = this.value.trim();
+        suggestionsContainer.innerHTML = '';
         
-        const select = document.createElement('select');
-        select.id = 'suffix';
-        select.className = suffixInput.className;
-        select.innerHTML = `
-            <option value="">Select Suffix</option>
-            <option value="Jr">Jr</option>
-            <option value="Sr">Sr</option>
-            <option value="II">II</option>
-            <option value="III">III</option>
-            <option value="IV">IV</option>
-        `;
-        
-        if (suffixValue) {
-            select.value = suffixValue;
+        if (value === '') {
+            suggestionsContainer.style.display = 'none';
+            return;
         }
         
-        suffixContainer.replaceChild(select, suffixInput);
-    }
+        const filteredOptions = suffixOptions.filter(option => 
+            option.toLowerCase().includes(value.toLowerCase())
+        );
+        
+        if (filteredOptions.length === 0) {
+            suggestionsContainer.style.display = 'none';
+            return;
+        }
+        
+        filteredOptions.forEach(option => {
+            const div = document.createElement('div');
+            div.className = 'px-4 py-2 cursor-pointer hover:bg-sidebar-bg transition-colors duration-200';
+            div.textContent = option;
+            div.addEventListener('click', () => {
+                suffixInput.value = option;
+                suggestionsContainer.style.display = 'none';
+                validateName('suffix', false);
+            });
+            suggestionsContainer.appendChild(div);
+        });
+        
+        suggestionsContainer.style.display = 'block';
+    });
+    
+    // Hide suggestions when clicking outside
+    document.addEventListener('click', (e) => {
+        if (e.target !== suffixInput && !suggestionsContainer.contains(e.target)) {
+            suggestionsContainer.style.display = 'none';
+        }
+    });
+    
+    // Handle arrow keys navigation
+    suffixInput.addEventListener('keydown', function(e) {
+        const visibleSuggestions = suggestionsContainer.querySelectorAll('div');
+        if (visibleSuggestions.length === 0) return;
+        
+        const activeSuggestion = suggestionsContainer.querySelector('.bg-sidebar-bg');
+        let nextSuggestion;
+        
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            if (!activeSuggestion) {
+                nextSuggestion = visibleSuggestions[0];
+            } else {
+                const nextIndex = Array.from(visibleSuggestions).indexOf(activeSuggestion) + 1;
+                nextSuggestion = visibleSuggestions[nextIndex] || visibleSuggestions[0];
+            }
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            if (!activeSuggestion) {
+                nextSuggestion = visibleSuggestions[visibleSuggestions.length - 1];
+            } else {
+                const prevIndex = Array.from(visibleSuggestions).indexOf(activeSuggestion) - 1;
+                nextSuggestion = visibleSuggestions[prevIndex] || visibleSuggestions[visibleSuggestions.length - 1];
+            }
+        } else if (e.key === 'Enter' && activeSuggestion) {
+            e.preventDefault();
+            suffixInput.value = activeSuggestion.textContent;
+            suggestionsContainer.style.display = 'none';
+            validateName('suffix', false);
+            return;
+        } else if (e.key === 'Escape') {
+            suggestionsContainer.style.display = 'none';
+            return;
+        } else {
+            return; // Not a navigation key
+        }
+        
+        // Update active suggestion
+        if (activeSuggestion) {
+            activeSuggestion.classList.remove('bg-sidebar-bg');
+        }
+        if (nextSuggestion) {
+            nextSuggestion.classList.add('bg-sidebar-bg');
+        }
+    });
+    
+    // Show all options when input is focused and empty
+    suffixInput.addEventListener('focus', function() {
+        if (this.value.trim() === '') {
+            suggestionsContainer.innerHTML = '';
+            suffixOptions.forEach(option => {
+                const div = document.createElement('div');
+                div.className = 'px-4 py-2 cursor-pointer hover:bg-sidebar-bg transition-colors duration-200';
+                div.textContent = option;
+                div.addEventListener('click', () => {
+                    suffixInput.value = option;
+                    suggestionsContainer.style.display = 'none';
+                    validateName('suffix', false);
+                });
+                suggestionsContainer.appendChild(div);
+            });
+            suggestionsContainer.style.display = 'block';
+        }
+    });
 }
 
 // Add event listeners
 document.addEventListener('DOMContentLoaded', function() {
-    initializeSuffixDropdown();
+    setupSuffixTypeahead();
     
     // Name fields
     const nameFields = ['first_name', 'last_name', 'middle_name'];
@@ -1453,6 +1579,8 @@ document.getElementById('gcash-qr-form')?.addEventListener('submit', function(e)
     }
     // Continue with form submission if validation passes
 });
+
+
     </script>
 </body>
 </html>
