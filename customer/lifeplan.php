@@ -1076,7 +1076,7 @@ require_once '../db_connect.php'; // Database connection
                         
                         <!-- Address Section -->
                         <div class="mb-4">
-                            <input type="hidden" id="comakerAddress" value="">
+                            <input type="hidden" id="comakerAddress" name="comakerAddress">
                             <h4 class="text-sm font-medium text-navy mb-2">Address</h4>
                             
                             <!-- Region & Province (Side by side) -->
