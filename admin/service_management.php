@@ -1786,19 +1786,19 @@ window.addEventListener('popstate', function(event) {
     <!-- Modal Body -->
     <div class="px-6 py-5 max-h-[70vh] overflow-y-auto w-full">
       <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-        <table class="w-full text-sm text-left text-gray-500 table-fixed">
+        <table class="w-full text-sm text-left text-gray-500">
           <thead class="text-xs text-gray-700 uppercase bg-gray-50">
             <tr>
-              <th scope="col" class="w-1/6 px-6 py-3 text-left">
-                <div class="flex items-center justify-start">ID
+              <th scope="col" class="px-6 py-3">
+                <div class="flex items-center">ID
                 </div>
               </th>
-              <th scope="col" class="w-4/6 px-6 py-3 text-left">
-                <div class="flex items-center justify-start">Service Name
+              <th scope="col" class="px-6 py-3">
+                <div class="flex items-center">Service Name
                 </div>
               </th>
-              <th scope="col" class="w-1/6 px-6 py-3 text-right">
-                <div class="flex items-center justify-end">Actions
+              <th scope="col" class="px-6 py-3">
+                <div class="flex items-center">Actions
                 </div>
               </th>
             </tr>
@@ -2097,27 +2097,27 @@ window.addEventListener('popstate', function(event) {
     <!-- Modal Body -->
     <div class="px-6 py-5 max-h-[70vh] overflow-y-auto w-full">
       <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-        <table class="w-full text-sm text-left text-gray-500 table-fixed">
+        <table class="w-full text-sm text-left text-gray-500">
           <thead class="text-xs text-gray-700 uppercase bg-gray-50">
             <tr>
-              <th scope="col" class="w-1/6 px-6 py-3 text-left">
-                <div class="flex items-center justify-start">ID
+              <th scope="col" class="px-6 py-3">
+                <div class="flex items-center">ID
                 </div>
               </th>
-              <th scope="col" class="w-2/6 px-6 py-3 text-left">
-                <div class="flex items-center justify-start">Add-On Name
+              <th scope="col" class="px-6 py-3">
+                <div class="flex items-center">Add-On Name
                 </div>
               </th>
-              <th scope="col" class="w-1/6 px-6 py-3 text-center">
-                <div class="flex items-center justify-center">Price
+              <th scope="col" class="px-6 py-3">
+                <div class="flex items-center">Price
                 </div>
               </th>
-              <th scope="col" class="w-1/6 px-6 py-3 text-center">
-                <div class="flex items-center justify-center">Branch
+              <th scope="col" class="px-6 py-3">
+                <div class="flex items-center">Branch
                 </div>
               </th>
-              <th scope="col" class="w-1/6 px-6 py-3 text-right">
-                <div class="flex items-center justify-end">Actions
+              <th scope="col" class="px-6 py-3">
+                <div class="flex items-center">Actions
                 </div>
               </th>
             </tr>
