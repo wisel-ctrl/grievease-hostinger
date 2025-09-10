@@ -2470,9 +2470,9 @@ $total_lifeplan_pages = ceil($total_lifeplan_bookings / $lifeplan_bookings_per_p
           <input type="hidden" id="comakerMiddleName" name="comaker_mname">
           <input type="hidden" id="comakerLastName" name="comaker_lname">
           <input type="hidden" id="comakerSuffix" name="comaker_suffix">
-          <input type="hidden" id="comakerAddress" name="comaker_address">
-          <input type="hidden" id="comakerOccupation" name="comaker_work">
-          <input type="hidden" id="comakerIdType" name="comaker_idtype">
+          <input type="hidden" id="comaker_Address" name="comaker_address">
+          <input type="hidden" id="comaker_Occupation" name="comaker_work">
+          <input type="hidden" id="comaker_IdType" name="comaker_idtype">
           <input type="hidden" id="comakerIdNumber" name="comaker_idnumber">
           <input type="hidden" id="comakerIdImg" name="comaker_idimg">
           
@@ -4525,9 +4525,9 @@ function confirmLifeplanAccept() {
             document.getElementById('comakerMiddleName').value = data.comaker_mname || '';
             document.getElementById('comakerLastName').value = data.comaker_lname || '';
             document.getElementById('comakerSuffix').value = data.comaker_suffix || '';
-            document.getElementById('comakerAddress').value = data.comaker_address || '';
-            document.getElementById('comakerOccupation').value = data.comaker_work || '';
-            document.getElementById('comakerIdType').value = data.comaker_idtype || '';
+            document.getElementById('comaker_Address').value = data.comaker_address || '';
+            document.getElementById('comaker_Occupation').value = data.comaker_work || '';
+            document.getElementById('comaker_IdType').value = data.comaker_idtype || '';
             document.getElementById('comakerIdNumber').value = data.comaker_idnumber || '';
             document.getElementById('comakerIdImg').value = "../customer/booking/" + data.comaker_idimg || '';
 

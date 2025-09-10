@@ -178,39 +178,42 @@ function acceptLifeplan($conn) {
         $comaker_idnumber  = isset($_POST['comaker_idnumber']) ? trim($_POST['comaker_idnumber']) : '';
         $comaker_idimg     = isset($_POST['comaker_idimg']) ? trim($_POST['comaker_idimg']) : '';
 
-         $sourcePath = str_replace("../customer/booking", "../../customer/booking", $comaker_idimg);
+        $filepath_comakerimg = ''; // Initialize variable
+        
+        // Only process file if we have a source path
+        if (!empty($comaker_idimg)) {
+            $sourcePath = str_replace("../customer/booking", "../../customer/booking", $comaker_idimg);
 
-        // Step 2: Destination directory
-        $destinationDir = "../uploads/comaker_IDs/";
+            // Destination directory
+            $destinationDir = "../uploads/comaker_IDs/";
 
-        // Make sure the directory exists
-        if (!file_exists($destinationDir)) {
-            mkdir($destinationDir, 0777, true);
-        }
-
-        // Step 3: Create new filename
-        $timestamp = time();
-        $extension = pathinfo($sourcePath, PATHINFO_EXTENSION); // jpg, png, etc.
-        $safeFname = preg_replace('/[^A-Za-z0-9]/', '', $comaker_fname); // remove spaces/special chars
-        $safeLname = preg_replace('/[^A-Za-z0-9]/', '', $comaker_lname);
-
-        $newFilename = "valid_id_" . $safeFname . "_" . $safeLname . "_" . $timestamp . "." . $extension;
-
-        // Step 4: Full destination path
-        $destinationPath = $destinationDir . $newFilename;
-
-        // Step 5: Copy the file
-        if (file_exists($sourcePath)) {
-            if (copy($sourcePath, $destinationPath)) {
-                // Relative path for database
-                $filepath_comakerimg = "uploads/comaker_IDs/" . $newFilename;
-                echo "File copied successfully!<br>";
-                echo "New file path: " . $filepath_comakerimg;
-            } else {
-                echo "Error copying file.";
+            // Make sure the directory exists
+            if (!file_exists($destinationDir)) {
+                mkdir($destinationDir, 0777, true);
             }
-        } else {
-            echo "Source file not found: " . $sourcePath;
+
+            // Create new filename
+            $timestamp = time();
+            $extension = pathinfo($sourcePath, PATHINFO_EXTENSION); // jpg, png, etc.
+            $safeFname = preg_replace('/[^A-Za-z0-9]/', '', $comaker_fname); // remove spaces/special chars
+            $safeLname = preg_replace('/[^A-Za-z0-9]/', '', $comaker_lname);
+
+            $newFilename = "valid_id_" . $safeFname . "_" . $safeLname . "_" . $timestamp . "." . $extension;
+
+            // Full destination path
+            $destinationPath = $destinationDir . $newFilename;
+
+            // Copy the file
+            if (file_exists($sourcePath)) {
+                if (copy($sourcePath, $destinationPath)) {
+                    // Relative path for database
+                    $filepath_comakerimg = "uploads/comaker_IDs/" . $newFilename;
+                } else {
+                    throw new Exception("Error copying comaker ID file");
+                }
+            } else {
+                throw new Exception("Source file not found: " . $sourcePath);
+            }
         }
         
         $stmt->bind_param(
@@ -249,7 +252,7 @@ function acceptLifeplan($conn) {
             $comaker_work,
             $comaker_idtype,
             $comaker_idnumber,
-            $destinationPath
+            $filepath_comakerimg
         );
         
         $stmt->execute();
