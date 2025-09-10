@@ -137,11 +137,21 @@ function acceptLifeplan($conn) {
             amount_paid, 
             payment_method, 
             payment_status, 
-            balance
+            balance,
+            comaker_fname,
+            comaker_mname,
+            comaker_lname,
+            comaker_suffix,
+            comaker_address,
+            comaker_work,
+            comaker_idtype,
+            comaker_idnumber,
+            comaker_idimg
         ) VALUES (
             ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
             ?, ?, ?, ?, ?, ?, ?, ?, ?,
-            ?, ?, ?, ?, ?, ?, ? 
+            ?, ?, ?, ?, ?, ?, ?, 
+            ?, ?, ?, ?, ?, ?, ?, ?, ? 
         )";
         
         $stmt = $conn->prepare($insertQuery);
@@ -156,9 +166,55 @@ function acceptLifeplan($conn) {
         $beneficiarySuffix = $_POST['beneficiary_suffix'] ?? '';
         $beneficiaryBirth = !empty($_POST['beneficiary_birth']) ? date('Y-m-d', strtotime($_POST['beneficiary_birth'])) : null;
         $beneficiaryAddress = $_POST['beneficiary_address'] ?? '';
+
+        //comaker information
+        $comaker_fname     = isset($_POST['comaker_fname']) ? trim($_POST['comaker_fname']) : '';
+        $comaker_mname     = isset($_POST['comaker_mname']) ? trim($_POST['comaker_mname']) : '';
+        $comaker_lname     = isset($_POST['comaker_lname']) ? trim($_POST['comaker_lname']) : '';
+        $comaker_suffix    = isset($_POST['comaker_suffix']) ? trim($_POST['comaker_suffix']) : '';
+        $comaker_address   = isset($_POST['comaker_address']) ? trim($_POST['comaker_address']) : '';
+        $comaker_work      = isset($_POST['comaker_work']) ? trim($_POST['comaker_work']) : '';
+        $comaker_idtype    = isset($_POST['comaker_idtype']) ? trim($_POST['comaker_idtype']) : '';
+        $comaker_idnumber  = isset($_POST['comaker_idnumber']) ? trim($_POST['comaker_idnumber']) : '';
+        $comaker_idimg     = isset($_POST['comaker_idimg']) ? trim($_POST['comaker_idimg']) : '';
+
+         $sourcePath = str_replace("../customer/booking", "../../customer/booking", $comaker_idimg);
+
+        // Step 2: Destination directory
+        $destinationDir = "../uploads/comaker_IDs/";
+
+        // Make sure the directory exists
+        if (!file_exists($destinationDir)) {
+            mkdir($destinationDir, 0777, true);
+        }
+
+        // Step 3: Create new filename
+        $timestamp = time();
+        $extension = pathinfo($sourcePath, PATHINFO_EXTENSION); // jpg, png, etc.
+        $safeFname = preg_replace('/[^A-Za-z0-9]/', '', $comaker_fname); // remove spaces/special chars
+        $safeLname = preg_replace('/[^A-Za-z0-9]/', '', $comaker_lname);
+
+        $newFilename = "valid_id_" . $safeFname . "_" . $safeLname . "_" . $timestamp . "." . $extension;
+
+        // Step 4: Full destination path
+        $destinationPath = $destinationDir . $newFilename;
+
+        // Step 5: Copy the file
+        if (file_exists($sourcePath)) {
+            if (copy($sourcePath, $destinationPath)) {
+                // Relative path for database
+                $filepath_comakerimg = "uploads/comaker_IDs/" . $newFilename;
+                echo "File copied successfully!<br>";
+                echo "New file path: " . $filepath_comakerimg;
+            } else {
+                echo "Error copying file.";
+            }
+        } else {
+            echo "Source file not found: " . $sourcePath;
+        }
         
         $stmt->bind_param(
-            "iiissssssssssssssssddidssd", 
+            "iiissssssssssssssssddidssdsssssssss", 
             $customerId,
             $branchId,
             $serviceId,
@@ -184,7 +240,16 @@ function acceptLifeplan($conn) {
             $amountPaid,
             $paymentMethod,
             $paymentStatus,
-            $balance
+            $balance,
+            $comaker_fname,
+            $comaker_mname,
+            $comaker_lname,
+            $comaker_suffix,
+            $comaker_address,
+            $comaker_work,
+            $comaker_idtype,
+            $comaker_idnumber,
+            $destinationPath
         );
         
         $stmt->execute();

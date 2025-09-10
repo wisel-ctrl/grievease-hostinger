@@ -2464,6 +2464,17 @@ $total_lifeplan_pages = ceil($total_lifeplan_bookings / $lifeplan_bookings_per_p
           <input type="hidden" id="beneficiaryBirthdate" name="beneficiary_birth">
           <input type="hidden" id="beneficiaryAddressInput" name="beneficiary_address">
           <input type="hidden" id="relationshipWithClient" name="relationship_with_client">
+
+          <!-- Co Maker Information -->
+          <input type="hidden" id="comakerFirstName" name="comaker_fname">
+          <input type="hidden" id="comakerMiddleName" name="comaker_mname">
+          <input type="hidden" id="comakerLastName" name="comaker_lname">
+          <input type="hidden" id="comakerSuffix" name="comaker_suffix">
+          <input type="hidden" id="comakerAddress" name="comaker_address">
+          <input type="hidden" id="comakerOccupation" name="comaker_work">
+          <input type="hidden" id="comakerIdType" name="comaker_idtype">
+          <input type="hidden" id="comakerIdNumber" name="comaker_idnumber">
+          <input type="hidden" id="comakerIdImg" name="comaker_idimg">
           
           <!-- Plan Information -->
           <input type="hidden" id="lifeplanServiceId" name="service_id">
@@ -4508,6 +4519,17 @@ function confirmLifeplanAccept() {
 
             console.log("Relationship to Client:", data.relationship_to_client);
             document.getElementById('relationshipWithClient').value = data.relationship_to_client || '';
+
+            // Co-Maker's information
+            document.getElementById('comakerFirstName').value = data.comaker_fname || '';
+            document.getElementById('comakerMiddleName').value = data.comaker_mname || '';
+            document.getElementById('comakerLastName').value = data.comaker_lname || '';
+            document.getElementById('comakerSuffix').value = data.comaker_suffix || '';
+            document.getElementById('comakerAddress').value = data.comaker_address || '';
+            document.getElementById('comakerOccupation').value = data.comaker_work || '';
+            document.getElementById('comakerIdType').value = data.comaker_idtype || '';
+            document.getElementById('comakerIdNumber').value = data.comaker_idnumber || '';
+            document.getElementById('comakerIdImg').value = "../customer/booking/" + data.comaker_idimg || '';
 
             // Plan information
             console.log("Service ID:", data.service_id);
