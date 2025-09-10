@@ -32,10 +32,14 @@ try {
             lb.benefeciary_lname, ' ',
             COALESCE(lb.benefeciary_suffix, '')
         ) AS beneficiary_name,
-        lb.relationship_to_client,
-        lb.phone,
-        lb.benefeciary_address,
-        v.image_path
+        v.image_path,
+        -- Co-maker information
+        CONCAT(
+            lb.comaker_fname, ' ',
+            COALESCE(lb.comaker_mname, ''), ' ',
+            lb.comaker_lname, ' ',
+            COALESCE(lb.comaker_suffix, '')
+        ) AS comaker_fullname
     FROM lifeplan_booking_tb lb
     JOIN users u ON lb.customer_id = u.id
     LEFT JOIN services_tb s ON lb.service_id = s.service_id

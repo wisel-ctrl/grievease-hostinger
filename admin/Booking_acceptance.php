@@ -4242,6 +4242,11 @@ function openLifeplanDetails(lifeplanId) {
       document.getElementById('lifeplanPrice').textContent = "₱" + data.package_price_formatted;
       document.getElementById('lifeplanTerms').textContent = data.payment_duration ? data.payment_duration + " years" : "Not specified";
 
+      // Co-maker information
+      document.getElementById('comakerFullName').textContent = data.comaker_fullname || "Not provided";
+      document.getElementById('comakerOccupation').textContent = data.comaker_work || "Not provided";
+      document.getElementById('comakerIdType').textContent = data.comaker_idtype || "Not provided";
+      document.getElementById('comakerAddress').textContent = data.comaker_address || "Not provided";
 
       // Beneficiary information
       document.getElementById('beneficiaryFullName').textContent = data.beneficiary_name || "Not provided";
@@ -4294,49 +4299,94 @@ function openLifeplanDetails(lifeplanId) {
         validIdNotAvailable.classList.remove('hidden');
       }
 
-      // Handle Payment Proof Image - Updated for Lifeplan
-    const paymentProofImage = document.getElementById('lifeplanPaymentProofImage');
-    const modalPaymentProofImage = document.getElementById('modalLifeplanPaymentProofImage');
-    const paymentProofContainer = paymentProofImage.parentElement;
-    const modalPaymentProofContainer = modalPaymentProofImage.parentElement;
-    
-    if (data.payment_url && data.payment_url !== '') {
-      // Use relative path with ../ to navigate up and then to the customer/booking/uploads folder
-      const paymentProofPath = '../customer/booking/uploads/' + data.payment_url.replace(/^uploads\//, '');
-      console.log("Payment Proof Path:", paymentProofPath);
+      // Handle Co-Maker's Valid ID Image
+      const comakerIdAvailable = document.getElementById('comakerIdAvailable');
+      const comakerIdNotAvailable = document.getElementById('comakerIdNotAvailable');
+      const comakerIdImage = document.getElementById('comakerIdImage');
+
+      if (data.comaker_idimg && data.comaker_idimg !== '') {
+        // Use the same directory path as payment proof
+        const comakerIdPath = '../customer/booking/uploads/' + data.comaker_idimg.replace(/^uploads\//, '');
+        
+        comakerIdImage.onerror = function() {
+          console.error("Failed to load co-maker ID image:", comakerIdPath);
+          comakerIdAvailable.classList.add('hidden');
+          comakerIdNotAvailable.classList.remove('hidden');
+        };
+        
+        comakerIdImage.src = comakerIdPath;
+        comakerIdAvailable.classList.remove('hidden');
+        comakerIdNotAvailable.classList.add('hidden');
+      } else {
+        comakerIdAvailable.classList.add('hidden');
+        comakerIdNotAvailable.classList.remove('hidden');
+      }
+
+      // Handle Payment Proof Image
+      const paymentProofImage = document.getElementById('lifeplanPaymentProofImage');
+      const modalPaymentProofImage = document.getElementById('modalLifeplanPaymentProofImage');
+      const paymentProofContainer = paymentProofImage.parentElement;
+      const modalPaymentProofContainer = modalPaymentProofImage.parentElement;
       
-      // Set error handler before setting src for both images
-      const errorHandler = function() {
-        console.error("Failed to load payment proof image:", paymentProofPath);
-        // Create a placeholder instead of loading another image
+      if (data.payment_url && data.payment_url !== '') {
+        // Use relative path with ../ to navigate up and then to the customer/booking/uploads folder
+        const paymentProofPath = '../customer/booking/uploads/' + data.payment_url.replace(/^uploads\//, '');
+        console.log("Payment Proof Path:", paymentProofPath);
+        
+        // Set error handler before setting src for both images
+        const errorHandler = function() {
+          console.error("Failed to load payment proof image:", paymentProofPath);
+          // Create a placeholder instead of loading another image
+          const placeholderHTML = `
+            <div class="flex flex-col items-center justify-center py-8 px-4 bg-gray-50">
+              <i class="fas fa-exclamation-circle text-gray-400 text-3xl mb-2"></i>
+              <p class="text-gray-500 text-center">Image could not be loaded</p>
+            </div>`;
+          paymentProofContainer.innerHTML = placeholderHTML;
+          modalPaymentProofContainer.innerHTML = placeholderHTML;
+        };
+        
+        paymentProofImage.onerror = errorHandler;
+        modalPaymentProofImage.onerror = errorHandler;
+        
+        // Set the source for both images
+        paymentProofImage.src = paymentProofPath;
+        modalPaymentProofImage.src = paymentProofPath;
+        
+        // Initialize Tesseract OCR processing
+        processPaymentProofWithTesseract(paymentProofPath, 'lifeplan');
+      } else {
+        // Create a placeholder for when no payment proof exists
         const placeholderHTML = `
           <div class="flex flex-col items-center justify-center py-8 px-4 bg-gray-50">
             <i class="fas fa-exclamation-circle text-gray-400 text-3xl mb-2"></i>
-            <p class="text-gray-500 text-center">Image could not be loaded</p>
+            <p class="text-gray-500 text-center">No payment proof provided</p>
           </div>`;
         paymentProofContainer.innerHTML = placeholderHTML;
         modalPaymentProofContainer.innerHTML = placeholderHTML;
-      };
+      }
       
-      paymentProofImage.onerror = errorHandler;
-      modalPaymentProofImage.onerror = errorHandler;
+      // Show the modal
+      const modal = document.getElementById("lifeplanDetailsModal");
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+      document.body.classList.add("overflow-hidden");
       
-      // Set the source for both images
-      paymentProofImage.src = paymentProofPath;
-      modalPaymentProofImage.src = paymentProofPath;
-      
-      // Initialize Tesseract OCR processing
-      processPaymentProofWithTesseract(paymentProofPath, 'lifeplan');
-    } else {
-      // Create a placeholder for when no payment proof exists
-      const placeholderHTML = `
-        <div class="flex flex-col items-center justify-center py-8 px-4 bg-gray-50">
-          <i class="fas fa-exclamation-circle text-gray-400 text-3xl mb-2"></i>
-          <p class="text-gray-500 text-center">No payment proof provided</p>
-        </div>`;
-      paymentProofContainer.innerHTML = placeholderHTML;
-      modalPaymentProofContainer.innerHTML = placeholderHTML;
-    }
+      // Set the lifeplan ID for decline/accept actions
+      document.getElementById('lifeplanIdForDecline').value = data.lpbooking_id;
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to load lifeplan details. Please try again.',
+      });
+    });
+    
+    // Set up image viewer listeners for this modal
+  setupImageViewerListeners('lifeplanDetailsModal');
+}
 
   // Tesseract OCR processing function
   function processPaymentProofWithTesseract(imagePath, type = 'lifeplan') {
@@ -4381,28 +4431,6 @@ function openLifeplanDetails(lifeplanId) {
       extractionMessage.classList.add('text-red-600');
     });
   }
-            
-      // Show the modal
-      const modal = document.getElementById("lifeplanDetailsModal");
-      modal.classList.remove("hidden");
-      modal.classList.add("flex");
-      document.body.classList.add("overflow-hidden");
-      
-      // Set the lifeplan ID for decline/accept actions
-      document.getElementById('lifeplanIdForDecline').value = data.lpbooking_id;
-    })
-    .catch(error => {
-      console.error('Error:', error);
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Failed to load lifeplan details. Please try again.',
-      });
-    });
-    
-    // Set up image viewer listeners for this modal
-  setupImageViewerListeners('lifeplanDetailsModal');
-}
 
 function closeLifeplanModal() {
     const modal = document.getElementById("lifeplanDetailsModal");
