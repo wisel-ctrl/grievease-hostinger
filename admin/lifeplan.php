@@ -1021,65 +1021,195 @@ document.addEventListener('DOMContentLoaded', function() {
               </div>
             </div>
           </div>
-          <!-- Replace the existing beneficiary_address section with this: -->
-<div class="space-y-3 sm:space-y-4 mt-4">
-    <!-- Region and Province in same row -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
-        <!-- Region Dropdown -->
-        <div>
-            <label for="region" class="block text-xs font-medium text-gray-700 mb-1">Region</label>
-            <select id="region" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
-                <option value="">Select Region</option>
-                <!-- Regions will be populated via JavaScript -->
-            </select>
+          
+          <!-- Beneficiary Address Summary -->
+          <div class="mt-4">
+            <label class="block text-xs font-medium text-gray-700 mb-1">Address</label>
+            <div class="flex items-center">
+              <input type="text" id="benefeciary_address" name="benefeciary_address" class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg outline-none transition-all duration-200" readonly>
+              <button type="button" class="ml-2 text-sidebar-accent hover:text-darkgold text-sm font-medium transition-colors" onclick="toggleAddressSection('beneficiary')">
+                Change Address
+              </button>
+            </div>
+          </div>
+          
+          <!-- Beneficiary Address Details (Initially Hidden) -->
+          <div id="beneficiaryAddressSection" class="space-y-3 sm:space-y-4 mt-4 hidden">
+              <!-- Region and Province in same row -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+                  <!-- Region Dropdown -->
+                  <div>
+                      <label for="benefeciaryRegion" class="block text-xs font-medium text-gray-700 mb-1">Region</label>
+                      <select id="benefeciaryRegion" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+                          <option value="">Select Region</option>
+                          <!-- Regions will be populated via JavaScript -->
+                      </select>
+                  </div>
+                  
+                  <!-- Province Dropdown -->
+                  <div>
+                      <label for="benefeciaryProvince" class="block text-xs font-medium text-gray-700 mb-1">Province</label>
+                      <select id="benefeciaryProvince" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" disabled required>
+                          <option value="">Select Province</option>
+                      </select>
+                  </div>
+              </div>
+              
+              <!-- City/Municipality and Barangay in same row -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+                  <!-- City/Municipality Dropdown -->
+                  <div>
+                      <label for="benefeciaryCity" class="block text-xs font-medium text-gray-700 mb-1">City/Municipality</label>
+                      <select id="benefeciaryCity" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" disabled required>
+                          <option value="">Select City/Municipality</option>
+                      </select>
+                  </div>
+                  
+                  <!-- Barangay Dropdown -->
+                  <div>
+                      <label for="benefeciaryBarangay" class="block text-xs font-medium text-gray-700 mb-1">Barangay</label>
+                      <select id="benefeciaryBarangay" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" disabled required>
+                          <option value="">Select Barangay</option>
+                      </select>
+                  </div>
+              </div>
+              
+              <!-- Street and Zip Code in same row (zip code smaller) -->
+              <div class="grid grid-cols-1 md:grid-cols-[1fr_120px] gap-3 sm:gap-4">
+                  <!-- Street (Manual Input) -->
+                  <div>
+                      <label for="benefeciaryStreet" class="block text-xs font-medium text-gray-700 mb-1">Street/Building</label>
+                      <input type="text" id="benefeciaryStreet" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+                  </div>
+                  
+              </div>
+          </div>
         </div>
         
-        <!-- Province Dropdown -->
-        <div>
-            <label for="province" class="block text-xs font-medium text-gray-700 mb-1">Province</label>
-            <select id="province" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" disabled required>
-                <option value="">Select Province</option>
-            </select>
-        </div>
-    </div>
-    
-    <!-- City/Municipality and Barangay in same row -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
-        <!-- City/Municipality Dropdown -->
-        <div>
-            <label for="city" class="block text-xs font-medium text-gray-700 mb-1">City/Municipality</label>
-            <select id="city" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" disabled required>
-                <option value="">Select City/Municipality</option>
-            </select>
-        </div>
-        
-        <!-- Barangay Dropdown -->
-        <div>
-            <label for="barangay" class="block text-xs font-medium text-gray-700 mb-1">Barangay</label>
-            <select id="barangay" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" disabled required>
-                <option value="">Select Barangay</option>
-            </select>
-        </div>
-    </div>
-    
-    <!-- Street and Zip Code in same row (zip code smaller) -->
-    <div class="grid grid-cols-1 md:grid-cols-[1fr_120px] gap-3 sm:gap-4">
-        <!-- Street (Manual Input) -->
-        <div>
-            <label for="street" class="block text-xs font-medium text-gray-700 mb-1">Street/Building</label>
-            <input type="text" id="street" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
-        </div>
-        
-        <!-- Zip Code (Manual Input) -->
-        <div>
-            <label for="zip_code" class="block text-xs font-medium text-gray-700 mb-1">Zip Code</label>
-            <input type="text" id="zip_code" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" maxlength="4" required>
-        </div>
-    </div>
-    
-    <!-- Hidden field to store the full formatted address -->
-    <input type="hidden" id="benefeciary_address" name="benefeciary_address">
-</div>
+        <!-- Co-Maker Details -->
+        <div class="border-t pt-3 sm:pt-4 mt-3 sm:mt-4">
+          <h4 class="text-sm sm:text-md font-medium text-gray-700 mb-2 sm:mb-3">Co-Maker Information</h4>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+            <div>
+              <label for="comaker_fname" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">First Name</label>
+              <div class="relative">
+                <input type="text" id="comaker_fname" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              </div>
+            </div>
+            <div>
+              <label for="comaker_mname" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">Middle Name</label>
+              <div class="relative">
+                <input type="text" id="comaker_mname" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              </div>
+            </div>
+            <div>
+              <label for="comaker_lname" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">Last Name</label>
+              <div class="relative">
+                <input type="text" id="comaker_lname" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              </div>
+            </div>
+            <div>
+              <label for="comaker_suffix" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">Suffix</label>
+              <select id="comaker_suffix" name="comaker_suffix" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                <option value="">None</option>
+                <option value="Jr.">Jr.</option>
+                <option value="Sr.">Sr.</option>
+                <option value="I">I</option>
+                <option value="II">II</option>
+                <option value="III">III</option>
+                <option value="IV">IV</option>
+                <option value="V">V</option>
+              </select>
+            </div>
+            <div>
+              <label for="comaker_occupation" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">Occupation</label>
+              <div class="relative">
+                <input type="text" id="comaker_occupation" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              </div>
+            </div>
+            <div>
+              <label for="comaker_license_type" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">License Type</label>
+              <div class="relative">
+                <select id="comaker_license_type" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                  <option value="">Select License Type</option>
+                  <option value="Driver's License">Driver's License</option>
+                  <option value="Professional ID">Professional ID</option>
+                  <option value="Passport">Passport</option>
+                  <option value="UMID">UMID</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label for="comaker_license_number" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">License Number</label>
+              <div class="relative">
+                <input type="text" id="comaker_license_number" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              </div>
+            </div>
+          </div>
+          
+          <!-- Co-Maker Address Summary -->
+          <div class="mt-4">
+            <label class="block text-xs font-medium text-gray-700 mb-1">Address</label>
+            <div class="flex items-center">
+              <input type="text" id="comaker_address" name="comaker_address" class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg outline-none transition-all duration-200" readonly>
+              <button type="button" class="ml-2 text-sidebar-accent hover:text-darkgold text-sm font-medium transition-colors" onclick="toggleAddressSection('comaker')">
+                Change Address
+              </button>
+            </div>
+          </div>
+          
+          <!-- Co-Maker Address Details (Initially Hidden) -->
+          <div id="comakerAddressSection" class="space-y-3 sm:space-y-4 mt-4 hidden">
+              <!-- Region and Province in same row -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+                  <!-- Region Dropdown -->
+                  <div>
+                      <label for="comakerRegion" class="block text-xs font-medium text-gray-700 mb-1">Region</label>
+                      <select id="comakerRegion" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+                          <option value="">Select Region</option>
+                          <!-- Regions will be populated via JavaScript -->
+                      </select>
+                  </div>
+                  
+                  <!-- Province Dropdown -->
+                  <div>
+                      <label for="comakerProvince" class="block text-xs font-medium text-gray-700 mb-1">Province</label>
+                      <select id="comakerProvince" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" disabled required>
+                          <option value="">Select Province</option>
+                      </select>
+                  </div>
+              </div>
+              
+              <!-- City/Municipality and Barangay in same row -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+                  <!-- City/Municipality Dropdown -->
+                  <div>
+                      <label for="comakerCity" class="block text-xs font-medium text-gray-700 mb-1">City/Municipality</label>
+                      <select id="comakerCity" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" disabled required>
+                          <option value="">Select City/Municipality</option>
+                      </select>
+                  </div>
+                  
+                  <!-- Barangay Dropdown -->
+                  <div>
+                      <label for="comakerBarangay" class="block text-xs font-medium text-gray-700 mb-1">Barangay</label>
+                      <select id="comakerBarangay" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" disabled required>
+                          <option value="">Select Barangay</option>
+                      </select>
+                  </div>
+              </div>
+              
+              <!-- Street and Zip Code in same row (zip code smaller) -->
+              <div class="grid grid-cols-1 md:grid-cols-[1fr_120px] gap-3 sm:gap-4">
+                  <!-- Street (Manual Input) -->
+                  <div>
+                      <label for="comakerStreet" class="block text-xs font-medium text-gray-700 mb-1">Street/Building</label>
+                      <input type="text" id="comakerStreet" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+                  </div>
+                  
+              </div>
+          </div>
         </div>
         
         <!-- Plan Details -->
@@ -1127,15 +1257,23 @@ document.addEventListener('DOMContentLoaded', function() {
     
     <!-- Modal Footer --> 
     <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-    <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" id="cancelEditModal">
-  Cancel
-</button>
+      <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" id="cancelEditModal">
+        Cancel
+      </button>
       <button class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" id="saveLifePlan">
         Save Changes
       </button>
     </div>
   </div>
 </div>
+
+<script>
+// Function to toggle address section visibility
+function toggleAddressSection(type) {
+  const addressSection = document.getElementById(`${type}AddressSection`);
+  addressSection.classList.toggle('hidden');
+}
+</script>
 
 
   <script>
