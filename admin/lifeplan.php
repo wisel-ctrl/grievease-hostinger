@@ -1773,7 +1773,7 @@ window.addEventListener('click', function(event) {
     });
     
     // Save LifePlan changes
-    document.getElementById('saveLifePlan').addEventListener('click', function() {
+document.getElementById('saveLifePlan').addEventListener('click', function() {
     Swal.fire({
         title: 'Are you sure?',
         text: 'Do you want to save the changes to this LifePlan?',
@@ -1804,7 +1804,17 @@ window.addEventListener('click', function(event) {
             formData.append('benefeciary_dob', document.getElementById('benefeciary_dob').value);
             formData.append('benefeciary_address', document.getElementById('benefeciary_address').value);
             formData.append('relationship_to_client', document.getElementById('relationship_to_client').value);
-            
+
+            // Comaker fields
+            formData.append('comaker_fname', document.getElementById('comaker_fname').value);
+            formData.append('comaker_mname', document.getElementById('comaker_mname').value);
+            formData.append('comaker_lname', document.getElementById('comaker_lname').value);
+            formData.append('comaker_suffix', document.getElementById('comaker_suffix').value);
+            formData.append('comaker_occupation', document.getElementById('comaker_occupation').value);
+            formData.append('comaker_license_type', document.getElementById('comaker_license_type').value);
+            formData.append('comaker_license_number', document.getElementById('comaker_license_number').value);
+            formData.append('comaker_address', document.getElementById('comaker_address').value);
+
             // Plan fields
             formData.append('service_id', document.getElementById('service_id').value);
             formData.append('payment_duration', document.getElementById('payment_duration').value);
