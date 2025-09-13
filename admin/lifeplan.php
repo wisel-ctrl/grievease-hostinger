@@ -1908,7 +1908,7 @@ window.addEventListener('click', function(event) {
                     document.getElementById('comaker_suffix').value = data.comaker_suffix || '';
                     document.getElementById('comaker_address').value = data.comaker_address || '';
                     document.getElementById('comaker_occupation').value = data.comaker_work || '';
-                    document.getElementById('comaker_license_type').value = data.comaker_idtype || '';
+                    setSelectWithFallback('comaker_license_type', data.comaker_idtype);
                     document.getElementById('comaker_license_number').value = data.comaker_idnumber || '';
                     
                     // Populate plan fields
@@ -1940,42 +1940,6 @@ window.addEventListener('click', function(event) {
                         }
                     });
 
-                    function setSelectValue(selectId, value) {
-                        const select = document.getElementById(selectId);
-                        
-                        if (!value) {
-                            select.value = "";
-                            updateCurrentValue();
-                            return;
-                        }
-                        
-                        // Check if the value exists in options
-                        const optionExists = Array.from(select.options).some(option => option.value === value);
-                        
-                        if (optionExists) {
-                            select.value = value;
-                        } else {
-                            // Create a new option and select it
-                            const newOption = new Option(value, value);
-                            select.add(newOption);
-                            select.value = value;
-                            
-                            // Highlight that it's a custom value
-                            newOption.classList.add('text-blue-600', 'font-medium');
-                        }
-                        
-                        updateCurrentValue();
-                    }
-
-                    // Update the display of current value
-                    function updateCurrentValue() {
-                        const select = document.getElementById('comaker_license_type');
-                        document.getElementById('current-value').textContent = 
-                            select.value ? `"${select.value}"` : "No value selected";
-                    }
-
-                    // Initialize
-                    document.getElementById('comaker_license_type').addEventListener('change', updateCurrentValue);
                     
                     // Fetch and populate services dropdown
                     fetch('lifeplan_process/get_services.php?lifeplan_id=' + lifeplanId)
@@ -1999,6 +1963,34 @@ window.addEventListener('click', function(event) {
             });
     }
 });
+
+function setSelectWithFallback(selectId, value) {
+  const selectElement = document.getElementById(selectId);
+  if (!selectElement || value === null || value === undefined) return;
+  
+  // Check if the value exists in options
+  const optionExists = Array.from(selectElement.options).some(
+    option => option.value === value.toString()
+  );
+  
+  if (optionExists) {
+    selectElement.value = value;
+  } else if (value) {
+    // Add the missing option
+    const newOption = document.createElement('option');
+    newOption.value = value;
+    newOption.textContent = value;
+    newOption.selected = true;
+    
+    // Try to insert before "Other" option if it exists
+    const otherOption = selectElement.querySelector('option[value="Other"]');
+    if (otherOption) {
+      selectElement.insertBefore(newOption, otherOption);
+    } else {
+      selectElement.appendChild(newOption);
+    }
+  }
+}
 </script>
 
 
