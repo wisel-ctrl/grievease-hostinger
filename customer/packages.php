@@ -2827,6 +2827,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Calculate and update downpayment (30%)
         const downpayment = Math.floor(packagePrice * 0.3);
         document.getElementById('traditionalDownpayment').textContent = `₱${downpayment.toLocaleString()}`;
+        document.getElementById('traditionalSelectedPackagePrice').value = parseFloat(packagePrice) || 0;
         
         // Update amount due (same as downpayment)
         document.getElementById('traditionalAmountDue').textContent = `₱${downpayment.toLocaleString()}`;
