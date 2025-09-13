@@ -1938,6 +1938,30 @@ window.addEventListener('click', function(event) {
             });
     }
 });
+
+// Then capitalize the appropriate fields
+function capitalizeWords(str) {
+    if (!str || typeof str !== 'string') return str || '';
+    return str.toLowerCase()
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+}
+
+// Capitalize the required fields
+const fieldsToCapitalize = [
+    'benefeciary_fname', 'benefeciary_mname', 'benefeciary_lname',
+    'benefeciary_address', 'relationship_to_client',
+    'comaker_fname', 'comaker_mname', 'comaker_lname',
+    'comaker_address', 'comaker_occupation'
+];
+
+fieldsToCapitalize.forEach(fieldId => {
+    const element = document.getElementById(fieldId);
+    if (element) {
+        element.value = capitalizeWords(element.value);
+    }
+});
 </script>
 
 
