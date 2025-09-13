@@ -1901,6 +1901,15 @@ window.addEventListener('click', function(event) {
                     document.getElementById('benefeciary_dob').value = data.benefeciary_dob || '';
                     document.getElementById('benefeciary_address').value = data.benefeciary_address || '';
                     document.getElementById('relationship_to_client').value = data.relationship_to_client || '';
+
+                    document.getElementById('comaker_fname').value = data.comaker_fname || '';
+                    document.getElementById('comaker_mname').value = data.comaker_mname || '';
+                    document.getElementById('comaker_lname').value = data.comaker_lname || '';
+                    document.getElementById('comaker_suffix').value = data.comaker_suffix || '';
+                    document.getElementById('comaker_address').value = data.comaker_address || '';
+                    document.getElementById('comaker_occupation').value = data.comaker_work || '';
+                    document.getElementById('comaker_license_type').value = data.comaker_idtype || '';
+                    document.getElementById('comaker_license_number').value = data.comaker_idnumber || '';
                     
                     // Populate plan fields
                     document.getElementById('payment_duration').value = data.payment_duration || '';
