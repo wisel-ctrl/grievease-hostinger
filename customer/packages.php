@@ -2806,6 +2806,32 @@ document.addEventListener('DOMContentLoaded', function() {
         openTraditionalModal();
     });
 
+    document.getElementById('traditionalWithCremate').addEventListener('change', function() {
+        // Get the current package price (assuming it's stored in a variable or element)
+        // This will depend on how your package price is calculated
+        const packagePriceElement = document.getElementById('traditionalTotalPrice');
+        let packagePrice = parseInt(packagePriceElement.textContent.replace('₱', '').replace(/,/g, '') || 0);
+        
+        // If checkbox is checked, add 40000, otherwise subtract 40000
+        if (this.checked) {
+            packagePrice += 40000;
+        } else {
+            packagePrice -= 40000;
+            // Ensure price doesn't go negative
+            if (packagePrice < 0) packagePrice = 0;
+        }
+        
+        // Update the package total
+        packagePriceElement.textContent = `₱${packagePrice.toLocaleString()}`;
+        
+        // Calculate and update downpayment (30%)
+        const downpayment = Math.floor(packagePrice * 0.3);
+        document.getElementById('traditionalDownpayment').textContent = `₱${downpayment.toLocaleString()}`;
+        
+        // Update amount due (same as downpayment)
+        document.getElementById('traditionalAmountDue').textContent = `₱${downpayment.toLocaleString()}`;
+    });
+
     // Traditional Booking Form submission
     document.getElementById('traditionalBookingForm').addEventListener('submit', function(e) {
         e.preventDefault();
