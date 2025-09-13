@@ -1939,6 +1939,43 @@ window.addEventListener('click', function(event) {
                             element.value = capitalizeWords(element.value);
                         }
                     });
+
+                    function setSelectValue(selectId, value) {
+                        const select = document.getElementById(selectId);
+                        
+                        if (!value) {
+                            select.value = "";
+                            updateCurrentValue();
+                            return;
+                        }
+                        
+                        // Check if the value exists in options
+                        const optionExists = Array.from(select.options).some(option => option.value === value);
+                        
+                        if (optionExists) {
+                            select.value = value;
+                        } else {
+                            // Create a new option and select it
+                            const newOption = new Option(value, value);
+                            select.add(newOption);
+                            select.value = value;
+                            
+                            // Highlight that it's a custom value
+                            newOption.classList.add('text-blue-600', 'font-medium');
+                        }
+                        
+                        updateCurrentValue();
+                    }
+
+                    // Update the display of current value
+                    function updateCurrentValue() {
+                        const select = document.getElementById('comaker_license_type');
+                        document.getElementById('current-value').textContent = 
+                            select.value ? `"${select.value}"` : "No value selected";
+                    }
+
+                    // Initialize
+                    document.getElementById('comaker_license_type').addEventListener('change', updateCurrentValue);
                     
                     // Fetch and populate services dropdown
                     fetch('lifeplan_process/get_services.php?lifeplan_id=' + lifeplanId)
