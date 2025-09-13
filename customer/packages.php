@@ -1208,7 +1208,7 @@ function capitalizeWords(str) {
                         
                         <div class="mt-4">
                             <label for="traditionalDeceasedAddress" class="block text-sm font-medium text-navy mb-2">Street/Block/House Number <span class="text-red-500">*</span></label>
-                            <input type="text" id="traditionalDeceasedAddress" name="deceasedAddress" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" placeholder="e.g. 123 Main Street">
+                            <input type="text" id="traditionalDeceasedAddress" name="deceasedStreet" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" placeholder="e.g. 123 Main Street">
                         </div>
                         
                         <input type="hidden" id="deceasedAddress" name="deceasedAddress">
@@ -1636,6 +1636,42 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('traditionalDeceasedCity element not found for event listener');
     }
 });
+
+    function combineAddress() {
+        // Get the selected option text from each dropdown
+        const regionSelect = document.getElementById('traditionalDeceasedRegion');
+        const regionText = regionSelect.options[regionSelect.selectedIndex]?.text || '';
+        
+        const provinceSelect = document.getElementById('traditionalDeceasedProvince');
+        const provinceText = provinceSelect.options[provinceSelect.selectedIndex]?.text || '';
+        
+        const citySelect = document.getElementById('traditionalDeceasedCity');
+        const cityText = citySelect.options[citySelect.selectedIndex]?.text || '';
+        
+        const barangaySelect = document.getElementById('traditionalDeceasedBarangay');
+        const barangayText = barangaySelect.options[barangaySelect.selectedIndex]?.text || '';
+        
+        // Get the street address from the input field
+        const streetText = document.getElementById('traditionalDeceasedAddress').value || '';
+        
+        // Filter out any empty values and default selection texts
+        const addressParts = [
+            regionText !== 'Select Region' ? regionText : '',
+            provinceText !== 'Select Province' ? provinceText : '',
+            cityText !== 'Select City/Municipality' ? cityText : '',
+            barangayText !== 'Select Barangay' ? barangayText : '',
+            streetText
+        ].filter(part => part !== '');
+        
+        // Combine all parts with comma separation
+        const combinedAddress = addressParts.join(', ');
+        
+        // Set the value to the hidden input
+        document.getElementById('deceasedAddress').value = combinedAddress;
+        
+        return combinedAddress;
+    }
+
 
     function combineLifeplanAddress() {
         const region = document.getElementById('lifeplanHolderRegion');
