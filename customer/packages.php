@@ -1213,11 +1213,14 @@ function capitalizeWords(str) {
                         
                         <input type="hidden" id="deceasedAddress" name="deceasedAddress">
                         
-                        <div class="flex items-center mt-3 md:mt-4">
-                            <input type="checkbox" id="traditionalWithCremate" name="with_cremate" value="yes" class="h-4 w-4 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded">
-                            <label for="traditionalWithCremate" class="ml-2 block text-sm text-navy">
-                                Include cremation service
-                            </label>
+                        <div class="flex items-center mt-3 md:mt-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                            <input type="checkbox" id="traditionalWithCremate" name="with_cremate" value="40000" class="h-5 w-5 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded">
+                            <div class="ml-3">
+                                <label for="traditionalWithCremate" class="block text-sm font-medium text-navy">
+                                    Include Cremation Service
+                                </label>
+                                <p class="text-xs text-gray-500 mt-1">Cremation and urn for 40,000 pesos</p>
+                            </div>
                         </div>
                     </div>
 
@@ -2146,7 +2149,7 @@ function removeGcash() {
                     <input type="hidden" id="holderAddress" name="holderAddress">
                     
                     <div class="border-b border-gray-200 pb-4 mb-4">
-                        <h3 class="text-base md:text-lg font-hedvig text-navy mb-3 md:mb-4">Plan Holder Information</h3>
+                        <h3 class="text-base md:text-lg font-hedvig text-navy mb-3 md:mb-4">Beneficiary Information</h3>
                         
                         <!-- First Name & Middle Name (Side by side) -->
                         <div class="flex flex-wrap -mx-2 mb-3">
