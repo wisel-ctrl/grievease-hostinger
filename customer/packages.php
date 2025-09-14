@@ -3526,14 +3526,19 @@ document.getElementById('lifeplanServiceBtn').addEventListener('click', function
 
     // Handle comaker ID image upload
 function handleComakerIdUpload() {
+    console.log('handleComakerIdUpload triggered');
     const file = this.files[0];
+    console.log('Selected file:', file ? file.name : 'No file');
+    
     if (!file) {
+        console.log('No file selected, hiding preview');
         hideComakerIdPreview();
         return;
     }
 
     // Check if the file is an image
     if (!file.type.match('image.*')) {
+        console.log('Invalid file type:', file.type);
         Swal.fire({
             title: 'Invalid File Type',
             text: 'Please upload an image file (JPG, JPEG, PNG).',
@@ -3545,6 +3550,8 @@ function handleComakerIdUpload() {
         return;
     }
     
+    console.log('Valid image file detected');
+    
     // Update file name display
     const fileName = file.name;
     document.getElementById('comakerIdFileName').textContent = fileName.length > 20 ? 
@@ -3552,29 +3559,47 @@ function handleComakerIdUpload() {
     
     // Show preview container
     const previewContainer = document.getElementById('comakerIdPreviewContainer');
-    if (previewContainer) previewContainer.classList.remove('hidden');
+    if (previewContainer) {
+        previewContainer.classList.remove('hidden');
+        console.log('Preview container shown');
+    }
     
     // Show remove button
     const removeBtn = document.getElementById('removeComakerId');
-    if (removeBtn) removeBtn.classList.remove('hidden');
+    if (removeBtn) {
+        removeBtn.classList.remove('hidden');
+        console.log('Remove button shown');
+    }
     
     // Show image preview
     const imgPreview = document.getElementById('comakerIdImagePreview');
-    if (imgPreview) imgPreview.classList.remove('hidden');
+    if (imgPreview) {
+        imgPreview.classList.remove('hidden');
+        console.log('Image preview shown');
+    }
     
     // Create and display image preview
     const reader = new FileReader();
     reader.onload = function(e) {
+        console.log('FileReader loaded image successfully');
         const imgElement = document.getElementById('comakerIdImagePreviews');
         if (imgElement) {
             imgElement.src = e.target.result;
+            console.log('Image preview source updated');
         }
     };
+    
+    reader.onerror = function(error) {
+        console.error('FileReader error:', error);
+    };
+    
     reader.readAsDataURL(file);
+    console.log('FileReader started reading file');
 }
 
 // Hide comaker ID preview
 function hideComakerIdPreview() {
+    console.log('hideComakerIdPreview called');
     const previewContainer = document.getElementById('comakerIdPreviewContainer');
     const imgPreview = document.getElementById('comakerIdImagePreview');
     const removeBtn = document.getElementById('removeComakerId');
@@ -3586,31 +3611,44 @@ function hideComakerIdPreview() {
     if (removeBtn) removeBtn.classList.add('hidden');
     if (fileInput) fileInput.value = '';
     if (fileNameDisplay) fileNameDisplay.textContent = 'No file chosen';
+    
+    console.log('Preview hidden and inputs cleared');
 }
 
 // Remove comaker ID image
 function removeComakerId() {
+    console.log('removeComakerId button clicked');
     hideComakerIdPreview();
 }
 
 // Initialize comaker ID upload functionality
 function initComakerIdUpload() {
+    console.log('initComakerIdUpload called');
     const comakerIdInput = document.getElementById('comakerIdImage');
     const removeComakerIdBtn = document.getElementById('removeComakerId');
     
     if (comakerIdInput) {
+        console.log('Found comakerIdInput element');
         comakerIdInput.removeEventListener('change', handleComakerIdUpload);
         comakerIdInput.addEventListener('change', handleComakerIdUpload);
+        console.log('Event listener added to file input');
+    } else {
+        console.error('comakerIdInput element not found!');
     }
     
     if (removeComakerIdBtn) {
+        console.log('Found removeComakerIdBtn element');
         removeComakerIdBtn.removeEventListener('click', removeComakerId);
         removeComakerIdBtn.addEventListener('click', removeComakerId);
+        console.log('Event listener added to remove button');
+    } else {
+        console.error('removeComakerIdBtn element not found!');
     }
 }
 
 // Call this function when the page loads to initialize the event listeners
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOMContentLoaded - initializing comaker ID upload');
     initComakerIdUpload();
 });
 
