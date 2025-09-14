@@ -3626,6 +3626,11 @@ function hideLifeplanGcashPreview() {
     // Reset file input
     const fileInput = document.getElementById('lifeplanGcashReceipt');
     if (fileInput) fileInput.value = '';
+
+    const imagePreview = document.getElementById('lifeplanGcashImage');
+    if (imagePreview) {
+        imagePreview.src = ''; // This clears the uploaded image data
+    }
     
     // Reset file name display
     const fileNameDisplay = document.getElementById('lifeplanGcashFileName');
