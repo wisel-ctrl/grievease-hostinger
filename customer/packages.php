@@ -1214,7 +1214,7 @@ function capitalizeWords(str) {
                         <input type="hidden" id="deceasedAddress" name="deceasedAddress">
                         
                         <div class="flex items-center mt-3 md:mt-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
-                            <input type="checkbox" id="traditionalWithCremate" name="with_cremate" value="40000" class="h-5 w-5 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded">
+                            <input type="checkbox" id="traditionalWithCremate" name="with_cremate" value="yes" class="h-5 w-5 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded">
                             <div class="ml-3">
                                 <label for="traditionalWithCremate" class="block text-sm font-medium text-navy">
                                     Include Cremation Service
