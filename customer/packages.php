@@ -2264,6 +2264,152 @@ function removeGcash() {
                         </div>
                     </div>
 
+                    <!-- Co-Maker Information Section -->
+                    <div class="border-b border-gray-200 pb-4 mb-4">
+                        <h3 class="text-base md:text-lg font-hedvig text-navy mb-3 md:mb-4">Co-Maker Information</h3>
+                        
+                        <!-- First Name & Middle Name (Side by side) -->
+                        <div class="flex flex-wrap -mx-2 mb-3">
+                            <div class="w-full sm:w-1/2 px-2 mb-3 sm:mb-0">
+                                <label for="comakerFirstName" class="block text-sm font-medium text-navy mb-1">First Name <span class="text-red-500">*</span></label>
+                                <input type="text" id="comakerFirstName" name="comakerFirstName" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" pattern="[A-Za-z'-][A-Za-z'-]*( [A-Za-z'-]+)*" title="Please enter a valid name (letters only, no leading spaces, numbers or symbols)">
+                            </div>
+                            <div class="w-full sm:w-1/2 px-2">
+                                <label for="comakerMiddleName" class="block text-sm font-medium text-navy mb-1">Middle Name</label>
+                                <input type="text" id="comakerMiddleName" name="comakerMiddleName" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" pattern="[A-Za-z'-][A-Za-z'-]*( [A-Za-z'-]+)*" title="Please enter a valid name (letters only, no leading spaces, numbers or symbols)">
+                            </div>
+                        </div>
+                        
+                        <!-- Last Name & Suffix (Side by side) -->
+                        <div class="flex flex-wrap -mx-2 mb-3">
+                            <div class="w-full sm:w-3/4 px-2 mb-3 sm:mb-0">
+                                <label for="comakerLastName" class="block text-sm font-medium text-navy mb-1">Last Name <span class="text-red-500">*</span></label>
+                                <input type="text" id="comakerLastName" name="comakerLastName" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" pattern="[A-Za-z'-][A-Za-z'-]*( [A-Za-z'-]+)*" title="Please enter a valid name (letters only, no leading spaces, numbers or symbols)">
+                            </div>
+                            <div class="w-full sm:w-1/4 px-2">
+                                <label for="comakerSuffix" class="block text-sm font-medium text-navy mb-1">Suffix</label>
+                                <select id="comakerSuffix" name="comakerSuffix" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                    <option value="">None</option>
+                                    <option value="Jr.">Jr.</option>
+                                    <option value="Sr.">Sr.</option>
+                                    <option value="I">I</option>
+                                    <option value="II">II</option>
+                                    <option value="III">III</option>
+                                    <option value="IV">IV</option>
+                                    <option value="V">V</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="comakerOccupation" class="block text-sm font-medium text-navy mb-1">Occupation <span class="text-red-500">*</span></label>
+                            <input type="text" id="comakerOccupation" name="comakerOccupation" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" placeholder="e.g. Teacher, Engineer, etc.">
+                        </div>
+                        
+                        <!-- Co-Maker Address (Same structure as beneficiary address) -->
+                        <div class="flex flex-wrap -mx-2 mb-3">
+                            <div class="w-full sm:w-1/2 px-2 mb-3 sm:mb-0">
+                                <label for="comakerRegion" class="block text-sm font-medium text-navy mb-1">Region <span class="text-red-500">*</span></label>
+                                <select id="comakerRegion" name="comakerRegion" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" required>
+                                    <option value="">Select Region</option>
+                                    <!-- Regions will be populated by JavaScript -->
+                                </select>
+                            </div>
+                            <div class="w-full sm:w-1/2 px-2">
+                                <label for="comakerProvince" class="block text-sm font-medium text-navy mb-1">Province <span class="text-red-500">*</span></label>
+                                <select id="comakerProvince" name="comakerProvince" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" disabled required>
+                                    <option value="">Select Province</option>
+                                    <!-- Provinces will be populated by JavaScript based on selected region -->
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="flex flex-wrap -mx-2 mb-3">
+                            <div class="w-full sm:w-1/2 px-2 mb-3 sm:mb-0">
+                                <label for="comakerCity" class="block text-sm font-medium text-navy mb-1">City/Municipality <span class="text-red-500">*</span></label>
+                                <select id="comakerCity" name="comakerCity" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" disabled required>
+                                    <option value="">Select City/Municipality</option>
+                                    <!-- Cities will be populated by JavaScript based on selected province -->
+                                </select>
+                            </div>
+                            <div class="w-full sm:w-1/2 px-2">
+                                <label for="comakerBarangay" class="block text-sm font-medium text-navy mb-1">Barangay <span class="text-red-500">*</span></label>
+                                <select id="comakerBarangay" name="comakerBarangay" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" disabled required>
+                                    <option value="">Select Barangay</option>
+                                    <!-- Barangays will be populated by JavaScript based on selected city -->
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <label for="comakerStreet" class="block text-sm font-medium text-navy mb-2">Street/Block/House Number <span class="text-red-500">*</span></label>
+                            <input type="text" id="comakerStreet" name="comakerStreet" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" placeholder="e.g. 123 Main Street">
+                        </div>
+                        
+                        <!-- Co-Maker ID Information -->
+                        <div class="mt-4">
+                            <h4 class="text-sm font-medium text-navy mb-3">ID Information</h4>
+                            
+                            <div class="mb-3">
+                                <label for="comakerIdType" class="block text-sm font-medium text-navy mb-1">ID Type <span class="text-red-500">*</span></label>
+                                <select id="comakerIdType" name="comakerIdType" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                    <option value="">Select ID Type</option>
+                                    <option value="Passport">Passport</option>
+                                    <option value="Driver's License">Driver's License</option>
+                                    <option value="SSS ID">SSS ID</option>
+                                    <option value="GSIS ID">GSIS ID</option>
+                                    <option value="PhilHealth ID">PhilHealth ID</option>
+                                    <option value="TIN ID">TIN ID</option>
+                                    <option value="Postal ID">Postal ID</option>
+                                    <option value="Voter's ID">Voter's ID</option>
+                                    <option value="PRC ID">PRC ID</option>
+                                    <option value="UMID">Unified Multi-Purpose ID (UMID)</option>
+                                    <option value="Senior Citizen ID">Senior Citizen ID</option>
+                                    <option value="Company ID">Company ID</option>
+                                    <option value="School ID">School ID</option>
+                                    <option value="Other">Other Government-Issued ID</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="comakerIdNumber" class="block text-sm font-medium text-navy mb-1">ID Number <span class="text-red-500">*</span></label>
+                                <input type="text" id="comakerIdNumber" name="comakerIdNumber" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" placeholder="Enter ID Number">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="comakerIdImage" class="block text-sm font-medium text-navy mb-1">Upload ID Image <span class="text-red-500">*</span></label>
+                                <div class="border border-input-border bg-white rounded-lg p-3 focus-within:ring-2 focus-within:ring-yellow-600">
+                                    <!-- Upload Button and File Name -->
+                                    <div class="flex items-center mb-2">
+                                        <label for="comakerIdImage" class="flex-1 cursor-pointer">
+                                            <div class="flex items-center justify-center py-2 px-3 bg-gray-50 rounded hover:bg-gray-100 transition">
+                                                <i class="fas fa-id-card mr-2 text-blue-500"></i>
+                                                <span class="text-sm text-gray-600">Upload ID Image</span>
+                                            </div>
+                                        </label>
+                                        <span class="text-xs ml-2 text-gray-500" id="comakerIdFileName">No file chosen</span>
+                                    </div>
+                                    
+                                    <!-- Preview Container -->
+                                    <div id="comakerIdPreviewContainer" class="hidden mt-2 rounded-lg overflow-hidden border border-gray-200">
+                                        <!-- Image Preview -->
+                                        <div id="comakerIdImagePreview" class="hidden">
+                                            <img id="comakerIdImage" src="" alt="ID Preview" class="w-full h-auto max-h-48 object-contain">
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Remove Button -->
+                                    <button type="button" id="removeComakerId" class="text-xs text-red-600 hover:text-red-800 mt-2 hidden">
+                                        <i class="fas fa-trash-alt mr-1"></i> Remove file
+                                    </button>
+                                    
+                                    <input type="file" id="comakerIdImage" name="comakerIdImage" accept=".jpg,.jpeg,.png" class="hidden" required>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-1">Accepted formats: JPG, JPEG, PNG</p>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="border-b border-gray-200 pb-4 mb-4">
                         <h3 class="text-base md:text-lg font-hedvig text-navy mb-3 md:mb-4">Additional Services</h3>
                         
@@ -2271,10 +2417,10 @@ function removeGcash() {
                             <div class="flex items-center">
                                 <input type="checkbox" id="cremationOption" name="cremationOption" class="h-4 w-4 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded">
                                 <label for="cremationOption" class="ml-2 block text-sm text-navy">
-                                    Include Cremation Services
+                                    Include Cremation Services (+₱40,000)
                                 </label>
                             </div>
-                            <p class="text-xs text-gray-500 mt-1 ml-6">Select this option if you wish to include cremation services in your Lifeplan package.</p>
+                            <p class="text-xs text-gray-500 mt-1 ml-6">Select this option to include cremation services and an urn in your Lifeplan package. This adds ₱40,000 to the total price.</p>
                         </div>
                     </div>
 
