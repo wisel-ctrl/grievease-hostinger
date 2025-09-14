@@ -2824,6 +2824,59 @@ document.getElementById('removeLifeplanGcash').addEventListener('click', functio
     hideLifeplanGcashPreview();
 });
 
+function hideLifeplanGcashPreview() {
+    console.log('hideLifeplanGcashPreview called'); // Debug log
+    
+    // Hide all preview containers
+    const previewContainer = document.getElementById('lifeplanGcashPreviewContainer');
+    const imgPreviewContainer = document.getElementById('lifeplanGcashImagePreview');
+    const pdfPreview = document.getElementById('lifeplanGcashPdfPreview');
+    const removeBtn = document.getElementById('removeLifeplanGcash');
+    
+    if (previewContainer) {
+        console.log('Hiding preview container');
+        previewContainer.classList.add('hidden');
+    }
+    if (imgPreviewContainer) {
+        console.log('Hiding image preview container');
+        imgPreviewContainer.classList.add('hidden');
+    }
+    if (pdfPreview) {
+        console.log('Hiding PDF preview');
+        pdfPreview.classList.add('hidden');
+    }
+    if (removeBtn) {
+        console.log('Hiding remove button');
+        removeBtn.classList.add('hidden');
+    }
+    
+    // Reset the actual image element
+    const imageElement = document.getElementById('lifeplanGcashImage');
+    if (imageElement) {
+        console.log('Clearing image source');
+        imageElement.src = '';
+        imageElement.alt = '';
+        // Also remove any inline styles that might make it visible
+        imageElement.removeAttribute('style');
+    }
+    
+    // Reset file input
+    const fileInput = document.getElementById('lifeplanGcashReceipt');
+    if (fileInput) {
+        console.log('Clearing file input');
+        fileInput.value = '';
+    }
+    
+    // Reset file name display
+    const fileNameDisplay = document.getElementById('lifeplanGcashFileName');
+    if (fileNameDisplay) {
+        console.log('Resetting file name display');
+        fileNameDisplay.textContent = 'No file chosen';
+    }
+    
+    console.log('hideLifeplanGcashPreview completed');
+}
+
 
 // Mobile view navigation
 document.getElementById('continueToLifeplanFormBtn').addEventListener('click', function() {
