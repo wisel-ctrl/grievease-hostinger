@@ -59,19 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $deceased_lname = $_POST['deceasedLastName'];
     $deceased_suffix = $_POST['deceasedSuffix'] ?? '';
     
-    $deceased_address = '';
-        if (!empty($_POST['deceasedAddress'])) {
-            $addressData = json_decode($_POST['deceasedAddress'], true);
-            if (json_last_error() === JSON_ERROR_NONE) {
-                $deceased_address = implode(', ', array_filter([
-                    $addressData['street'] ?? '',
-                    $addressData['barangay'] ?? '',
-                    $addressData['city'] ?? '',
-                    $addressData['province'] ?? '',
-                    $addressData['region'] ?? ''
-                ]));
-            }
-        }
+    $deceased_address = $_POST['deceasedAddress'];
     $deceased_birth = !empty($_POST['dateOfBirth']) ? $_POST['dateOfBirth'] : null;
     $deceased_dodeath = $_POST['dateOfDeath'];
     $deceased_dateOfBurial = !empty($_POST['dateOfBurial']) ? $_POST['dateOfBurial'] : null;

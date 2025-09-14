@@ -1618,23 +1618,23 @@ document.addEventListener('DOMContentLoaded', function() {
     const provinceElement = document.getElementById('traditionalDeceasedProvince');
     const cityElement = document.getElementById('traditionalDeceasedCity');
     
-    if (regionElement) {
-        regionElement.addEventListener('change', updateTraditionalProvinces);
-    } else {
-        console.error('traditionalDeceasedRegion element not found for event listener');
-    }
+    document.getElementById('traditionalDeceasedRegion').addEventListener('change', function() {
+        updateTraditionalProvinces();
+        combineAddress();
+    });
     
-    if (provinceElement) {
-        provinceElement.addEventListener('change', updateTraditionalCities);
-    } else {
-        console.error('traditionalDeceasedProvince element not found for event listener');
-    }
+    document.getElementById('traditionalDeceasedProvince').addEventListener('change', function() {
+        updateTraditionalCities();
+        combineAddress();
+    });
     
-    if (cityElement) {
-        cityElement.addEventListener('change', updateTraditionalBarangays);
-    } else {
-        console.error('traditionalDeceasedCity element not found for event listener');
-    }
+    document.getElementById('traditionalDeceasedCity').addEventListener('change', function() {
+        updateTraditionalBarangays();
+        combineAddress();
+    });
+    
+    document.getElementById('traditionalDeceasedBarangay').addEventListener('change', combineAddress);
+    document.getElementById('traditionalDeceasedAddress').addEventListener('input', combineAddress);
 });
 
     function combineAddress() {
