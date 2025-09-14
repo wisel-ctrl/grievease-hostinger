@@ -2815,17 +2815,7 @@ document.getElementById('lifeplanGcashReceipt')?.addEventListener('change', func
     }
 });
 
-function hideLifeplanGcashPreview() {
-    document.getElementById('lifeplanGcashPreviewContainer')?.classList.add('hidden');
-    document.getElementById('lifeplanGcashImagePreview')?.classList.add('hidden');
-    document.getElementById('removeLifeplanGcash')?.classList.add('hidden');
-    document.getElementById('lifeplanGcashReceipt').value = '';
-    document.getElementById('lifeplanGcashFileName').textContent = 'No file chosen';
-}
 
-function removeLifeplanGcash() {
-    hideLifeplanGcashPreview();
-}
 
 // Remove button functionality for Lifeplan
 document.getElementById('removeLifeplanGcash').addEventListener('click', function() {
@@ -2833,14 +2823,6 @@ document.getElementById('removeLifeplanGcash').addEventListener('click', functio
     document.getElementById('lifeplanGcashFileName').textContent = 'No file chosen';
     hideLifeplanGcashPreview();
 });
-
-// Helper function for Lifeplan
-function hideLifeplanGcashPreview() {
-    document.getElementById('lifeplanGcashPreviewContainer').classList.add('hidden');
-    document.getElementById('lifeplanGcashImagePreview').classList.add('hidden');
-    document.getElementById('lifeplanGcashPdfPreview').classList.add('hidden');
-    document.getElementById('removeLifeplanGcash').classList.add('hidden');
-}
 
 
 // Mobile view navigation
@@ -3451,6 +3433,7 @@ document.getElementById('lifeplanServiceBtn').addEventListener('click', function
         
         // Reset file upload preview
         hideLifeplanGcashPreview();
+        handleComakerIdUpload();
         
         // Reset form fields
         document.getElementById('lifeplanBookingForm').reset();
