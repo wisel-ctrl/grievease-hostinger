@@ -3617,18 +3617,18 @@ function handleLifeplanGcashUpload() {
 }
 
 function hideLifeplanGcashPreview() {
-    const previewContainer = document.getElementById('lifeplanGcashPreviewContainer');
-    const imgPreview = document.getElementById('lifeplanGcashImagePreview');
-    const pdfPreview = document.getElementById('lifeplanGcashPdfPreview');
-    const removeBtn = document.getElementById('removeLifeplanGcash');
-    const fileInput = document.getElementById('lifeplanGcashReceipt');
-    const fileNameDisplay = document.getElementById('lifeplanGcashFileName');
+    // Hide preview containers
+    document.getElementById('lifeplanGcashPreviewContainer')?.classList.add('hidden');
+    document.getElementById('lifeplanGcashImagePreview')?.classList.add('hidden');
+    document.getElementById('lifeplanGcashPdfPreview')?.classList.add('hidden');
+    document.getElementById('removeLifeplanGcash')?.classList.add('hidden');
     
-    if (previewContainer) previewContainer.classList.add('hidden');
-    if (imgPreview) imgPreview.classList.add('hidden');
-    if (pdfPreview) pdfPreview.classList.add('hidden');
-    if (removeBtn) removeBtn.classList.add('hidden');
+    // Reset file input
+    const fileInput = document.getElementById('lifeplanGcashReceipt');
     if (fileInput) fileInput.value = '';
+    
+    // Reset file name display
+    const fileNameDisplay = document.getElementById('lifeplanGcashFileName');
     if (fileNameDisplay) fileNameDisplay.textContent = 'No file chosen';
 }
 
