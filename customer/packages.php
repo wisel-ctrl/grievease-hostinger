@@ -2448,8 +2448,8 @@ function removeGcash() {
                         
                         <div class="flex flex-wrap -mx-2 mb-3">
                             <div class="w-full sm:w-1/2 px-2 mb-3 sm:mb-0">
-                                <label for="comakerCity" class="block text-sm font-medium text-navy mb-1">City/Municipality <span class="text-red-500">*</span></label>
-                                <select id="comakerCity" name="comakerCity" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" disabled required>
+                                <label for="comakerMunicipality" class="block text-sm font-medium text-navy mb-1">City/Municipality <span class="text-red-500">*</span></label>
+                                <select id="comakerMunicipality" name="comakerMunicipality" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" disabled required>
                                     <option value="">Select City/Municipality</option>
                                     <!-- Cities will be populated by JavaScript based on selected province -->
                                 </select>
