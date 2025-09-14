@@ -3451,7 +3451,6 @@ document.getElementById('lifeplanServiceBtn').addEventListener('click', function
         
         // Reset file upload preview
         hideLifeplanGcashPreview();
-        setupComakerIdImageUpload();
         
         // Reset form fields
         document.getElementById('lifeplanBookingForm').reset();
@@ -3489,57 +3488,95 @@ document.getElementById('lifeplanServiceBtn').addEventListener('click', function
         document.getElementById('lifeplanModal').classList.remove('hidden');
     }
 
-document.addEventListener('DOMContentLoaded', setupComakerIdImageUpload);
+    // Handle comaker ID image upload
+function handleComakerIdUpload() {
+    const file = this.files[0];
+    if (!file) {
+        hideComakerIdPreview();
+        return;
+    }
 
-function setupComakerIdImageUpload() {
+    // Check if the file is an image
+    if (!file.type.match('image.*')) {
+        Swal.fire({
+            title: 'Invalid File Type',
+            text: 'Please upload an image file (JPG, JPEG, PNG).',
+            icon: 'error',
+            confirmButtonColor: '#d97706'
+        });
+        this.value = ''; // Clear the file input
+        hideComakerIdPreview();
+        return;
+    }
+    
+    // Update file name display
+    const fileName = file.name;
+    document.getElementById('comakerIdFileName').textContent = fileName.length > 20 ? 
+        fileName.substring(0, 17) + '...' : fileName;
+    
+    // Show preview container
+    const previewContainer = document.getElementById('comakerIdPreviewContainer');
+    if (previewContainer) previewContainer.classList.remove('hidden');
+    
+    // Show remove button
+    const removeBtn = document.getElementById('removeComakerId');
+    if (removeBtn) removeBtn.classList.remove('hidden');
+    
+    // Show image preview
+    const imgPreview = document.getElementById('comakerIdImagePreview');
+    if (imgPreview) imgPreview.classList.remove('hidden');
+    
+    // Create and display image preview
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const imgElement = document.getElementById('comakerIdImagePreviews');
+        if (imgElement) {
+            imgElement.src = e.target.result;
+        }
+    };
+    reader.readAsDataURL(file);
+}
+
+// Hide comaker ID preview
+function hideComakerIdPreview() {
+    const previewContainer = document.getElementById('comakerIdPreviewContainer');
+    const imgPreview = document.getElementById('comakerIdImagePreview');
+    const removeBtn = document.getElementById('removeComakerId');
+    const fileInput = document.getElementById('comakerIdImage');
+    const fileNameDisplay = document.getElementById('comakerIdFileName');
+    
+    if (previewContainer) previewContainer.classList.add('hidden');
+    if (imgPreview) imgPreview.classList.add('hidden');
+    if (removeBtn) removeBtn.classList.add('hidden');
+    if (fileInput) fileInput.value = '';
+    if (fileNameDisplay) fileNameDisplay.textContent = 'No file chosen';
+}
+
+// Remove comaker ID image
+function removeComakerId() {
+    hideComakerIdPreview();
+}
+
+// Initialize comaker ID upload functionality
+function initComakerIdUpload() {
     const comakerIdInput = document.getElementById('comakerIdImage');
-    const comakerIdFileName = document.getElementById('comakerIdFileName');
-    const comakerIdPreviewContainer = document.getElementById('comakerIdPreviewContainer');
-    const comakerIdImagePreview = document.getElementById('comakerIdImagePreviews');
-    const comakerIdImage = document.getElementById('comakerIdImagePreview');
     const removeComakerIdBtn = document.getElementById('removeComakerId');
-
+    
     if (comakerIdInput) {
-        // When a new file is selected
-        comakerIdInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            
-            if (file) {
-                // Update file name display
-                comakerIdFileName.textContent = file.name;
-                
-                // Check if file is an image
-                if (file.type.match('image.*')) {
-                    const reader = new FileReader();
-                    
-                    reader.onload = function(e) {
-                        // Show preview
-                        comakerIdImage.src = e.target.result;
-                        comakerIdImagePreview.classList.remove('hidden');
-                        comakerIdPreviewContainer.classList.remove('hidden');
-                        removeComakerIdBtn.classList.remove('hidden');
-                    }
-                    
-                    reader.readAsDataURL(file);
-                } else {
-                    // Not an image file
-                    alert('Please select an image file (JPG, JPEG, PNG)');
-                    comakerIdInput.value = '';
-                    comakerIdFileName.textContent = 'No file chosen';
-                }
-            }
-        });
-        
-        // Remove image functionality
-        removeComakerIdBtn.addEventListener('click', function() {
-            comakerIdInput.value = '';
-            comakerIdFileName.textContent = 'No file chosen';
-            comakerIdPreviewContainer.classList.add('hidden');
-            comakerIdImagePreview.classList.add('hidden');
-            removeComakerIdBtn.classList.add('hidden');
-        });
+        comakerIdInput.removeEventListener('change', handleComakerIdUpload);
+        comakerIdInput.addEventListener('change', handleComakerIdUpload);
+    }
+    
+    if (removeComakerIdBtn) {
+        removeComakerIdBtn.removeEventListener('click', removeComakerId);
+        removeComakerIdBtn.addEventListener('click', removeComakerId);
     }
 }
+
+// Call this function when the page loads to initialize the event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    initComakerIdUpload();
+});
 
 // Helper functions for lifeplan file uploads
 function handleLifeplanGcashUpload() {
