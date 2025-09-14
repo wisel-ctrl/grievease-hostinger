@@ -2394,7 +2394,7 @@ function removeGcash() {
                                     <div id="comakerIdPreviewContainer" class="hidden mt-2 rounded-lg overflow-hidden border border-gray-200">
                                         <!-- Image Preview -->
                                         <div id="comakerIdImagePreview" class="hidden">
-                                            <img id="comakerIdImagePreview" src="" alt="ID Preview" class="w-full h-auto max-h-48 object-contain">
+                                            <img id="comakerIdImagePreviews" src="" alt="ID Preview" class="w-full h-auto max-h-48 object-contain">
                                         </div>
                                     </div>
                                     
@@ -3494,7 +3494,7 @@ function setupComakerIdImageUpload() {
     const comakerIdFileName = document.getElementById('comakerIdFileName');
     const comakerIdPreviewContainer = document.getElementById('comakerIdPreviewContainer');
     const comakerIdImagePreview = document.getElementById('comakerIdImagePreview');
-    const comakerIdImage = document.getElementById('comakerIdImagePreview');
+    const comakerIdImage = document.getElementById('comakerIdImagePreviews');
     const removeComakerIdBtn = document.getElementById('removeComakerId');
 
     if (comakerIdInput) {
