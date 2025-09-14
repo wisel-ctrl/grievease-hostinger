@@ -3451,6 +3451,7 @@ document.getElementById('lifeplanServiceBtn').addEventListener('click', function
         
         // Reset file upload preview
         hideLifeplanGcashPreview();
+        setupComakerIdImageUpload();
         
         // Reset form fields
         document.getElementById('lifeplanBookingForm').reset();
@@ -3487,6 +3488,56 @@ document.getElementById('lifeplanServiceBtn').addEventListener('click', function
         // Show the modal
         document.getElementById('lifeplanModal').classList.remove('hidden');
     }
+
+function setupComakerIdImageUpload() {
+    const comakerIdInput = document.getElementById('comakerIdImage');
+    const comakerIdFileName = document.getElementById('comakerIdFileName');
+    const comakerIdPreviewContainer = document.getElementById('comakerIdPreviewContainer');
+    const comakerIdImagePreview = document.getElementById('comakerIdImagePreview');
+    const comakerIdImage = document.getElementById('comakerIdImage');
+    const removeComakerIdBtn = document.getElementById('removeComakerId');
+
+    if (comakerIdInput) {
+        // When a new file is selected
+        comakerIdInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            
+            if (file) {
+                // Update file name display
+                comakerIdFileName.textContent = file.name;
+                
+                // Check if file is an image
+                if (file.type.match('image.*')) {
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        // Show preview
+                        comakerIdImage.src = e.target.result;
+                        comakerIdImagePreview.classList.remove('hidden');
+                        comakerIdPreviewContainer.classList.remove('hidden');
+                        removeComakerIdBtn.classList.remove('hidden');
+                    }
+                    
+                    reader.readAsDataURL(file);
+                } else {
+                    // Not an image file
+                    alert('Please select an image file (JPG, JPEG, PNG)');
+                    comakerIdInput.value = '';
+                    comakerIdFileName.textContent = 'No file chosen';
+                }
+            }
+        });
+        
+        // Remove image functionality
+        removeComakerIdBtn.addEventListener('click', function() {
+            comakerIdInput.value = '';
+            comakerIdFileName.textContent = 'No file chosen';
+            comakerIdPreviewContainer.classList.add('hidden');
+            comakerIdImagePreview.classList.add('hidden');
+            removeComakerIdBtn.classList.add('hidden');
+        });
+    }
+}
 
 // Helper functions for lifeplan file uploads
 function handleLifeplanGcashUpload() {
@@ -4286,6 +4337,7 @@ document.getElementById('searchInput').addEventListener('paste', function(e) {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
+    setupComakerIdImageUpload();
     // Handle GCash QR selection for traditional modal
     const gcashQrOptions = document.querySelectorAll('#gcashQrContainer .gcash-qr-option');
     const selectedGcashQrInput = document.getElementById('selectedGcashQr');
