@@ -3488,6 +3488,8 @@ document.getElementById('lifeplanServiceBtn').addEventListener('click', function
         // Show the modal
         document.getElementById('lifeplanModal').classList.remove('hidden');
     }
+    
+document.addEventListener('DOMContentLoaded', setupComakerIdImageUpload);
 
 function setupComakerIdImageUpload() {
     const comakerIdInput = document.getElementById('comakerIdImage');
