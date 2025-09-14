@@ -3152,6 +3152,31 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('traditionalAmountDue').textContent = `₱${downpayment.toLocaleString()}`;
     });
 
+    document.getElementById('cremationOption').addEventListener('change', function() {
+        // Get the current package price
+        const packagePriceElement = document.getElementById('lifeplanTotalPrice');
+        let packagePrice = parseInt(packagePriceElement.textContent.replace('₱', '').replace(/,/g, '') || 0);
+        
+        // If checkbox is checked, add 40000, otherwise subtract 40000
+        if (this.checked) {
+            packagePrice += 40000;
+        } else {
+            packagePrice -= 40000;
+            // Ensure price doesn't go negative
+            if (packagePrice < 0) packagePrice = 0;
+        }
+        
+        // Update the package total
+        packagePriceElement.textContent = `₱${packagePrice.toLocaleString()}`;
+        
+        // Update hidden input field
+        document.getElementById('lifeplanSelectedPackagePrice').value = parseFloat(packagePrice) || 0;
+        
+        // Calculate and update monthly payment (assuming 5 years = 60 months)
+        const monthlyPayment = Math.floor(packagePrice / 60);
+        document.getElementById('lifeplanMonthlyPayment').textContent = `₱${monthlyPayment.toLocaleString()}`;
+    });
+
     // Traditional Booking Form submission
     document.getElementById('traditionalBookingForm').addEventListener('submit', function(e) {
         e.preventDefault();
