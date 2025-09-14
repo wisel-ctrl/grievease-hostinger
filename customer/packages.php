@@ -1939,7 +1939,7 @@ document.querySelector('form').addEventListener('submit', function(e) {
 
 <!-- Add this script at the end -->
 <script>
-
+const validationStatus = '<?php echo $validationStatus; ?>';
     // Disable buttons if not validated
 if (validationStatus !== 'valid') {
     document.querySelectorAll('.selectPackageBtn').forEach(btn => {
