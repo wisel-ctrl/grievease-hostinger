@@ -2467,6 +2467,8 @@ function removeGcash() {
                             <label for="comakerStreet" class="block text-sm font-medium text-navy mb-2">Street/Block/House Number <span class="text-red-500">*</span></label>
                             <input type="text" id="comakerStreet" name="comakerStreet" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" placeholder="e.g. 123 Main Street">
                         </div>
+
+                        <input type="hidden" id="comakerAddress" name="comakerAddress">
                         
                         <!-- Co-Maker ID Information -->
                         <div class="mt-4">
@@ -4572,6 +4574,164 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+<script>
+// Comaker Address handling functions
+function fetchComakerRegions() {
+    fetch('address/get_regions.php')
+        .then(response => response.json())
+        .then(data => {
+            const regionSelect = document.getElementById('comakerRegion');
+            regionSelect.innerHTML = '<option value="">Select Region</option>';
+            
+            data.forEach(region => {
+                const option = document.createElement('option');
+                option.value = region.region_id;
+                option.textContent = region.region_name;
+                regionSelect.appendChild(option);
+            });
+        })
+        .catch(error => console.error('Error fetching regions for comaker:', error));
+}
 
+function fetchComakerProvinces(regionId) {
+    const provinceSelect = document.getElementById('comakerProvince');
+    provinceSelect.innerHTML = '<option value="">Select Province/City</option>';
+    provinceSelect.disabled = true;
+    
+    if (!regionId) return;
+    
+    fetch(`address/get_provinces.php?region_id=${regionId}`)
+        .then(response => response.json())
+        .then(data => {
+            provinceSelect.innerHTML = '<option value="">Select Province/City</option>';
+            
+            data.forEach(province => {
+                const option = document.createElement('option');
+                option.value = province.province_id;
+                option.textContent = province.province_name;
+                provinceSelect.appendChild(option);
+            });
+            
+            provinceSelect.disabled = false;
+        })
+        .catch(error => console.error('Error fetching provinces for comaker:', error));
+}
+
+function fetchComakerMunicipalities(provinceId) {
+    const municipalitySelect = document.getElementById('comakerMunicipality');
+    municipalitySelect.innerHTML = '<option value="">Select Municipality</option>';
+    municipalitySelect.disabled = true;
+    
+    if (!provinceId) return;
+    
+    fetch(`address/get_cities.php?province_id=${provinceId}`)
+        .then(response => response.json())
+        .then(data => {
+            municipalitySelect.innerHTML = '<option value="">Select Municipality</option>';
+            
+            data.forEach(municipality => {
+                const option = document.createElement('option');
+                option.value = municipality.municipality_id;
+                option.textContent = municipality.municipality_name;
+                municipalitySelect.appendChild(option);
+            });
+            
+            municipalitySelect.disabled = false;
+        })
+        .catch(error => console.error('Error fetching municipalities for comaker:', error));
+}
+
+function fetchComakerBarangays(municipalityId) {
+    const barangaySelect = document.getElementById('comakerBarangay');
+    barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+    barangaySelect.disabled = true;
+    
+    if (!municipalityId) return;
+    
+    fetch(`address/get_barangays.php?city_id=${municipalityId}`)
+        .then(response => response.json())
+        .then(data => {
+            barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+            
+            data.forEach(barangay => {
+                const option = document.createElement('option');
+                option.value = barangay.barangay_id;
+                option.textContent = barangay.barangay_name;
+                barangaySelect.appendChild(option);
+            });
+            
+            barangaySelect.disabled = false;
+        })
+        .catch(error => console.error('Error fetching barangays for comaker:', error));
+}
+
+function updateComakerCombinedAddress() {
+    const regionSelect = document.getElementById('comakerRegion');
+    const provinceSelect = document.getElementById('comakerProvince');
+    const municipalitySelect = document.getElementById('comakerMunicipality');
+    const barangaySelect = document.getElementById('comakerBarangay');
+    const streetAddress = document.getElementById('comakerStreet').value;
+    
+    // Get the TEXT values of the selected options, not the IDs
+    const region = regionSelect.options[regionSelect.selectedIndex]?.text || '';
+    const province = provinceSelect.options[provinceSelect.selectedIndex]?.text || '';
+    const municipality = municipalitySelect.options[municipalitySelect.selectedIndex]?.text || '';
+    const barangay = barangaySelect.options[barangaySelect.selectedIndex]?.text || '';
+    
+    // Create an array of non-empty address components
+    const addressParts = [];
+    if (streetAddress) addressParts.push(streetAddress);
+    if (barangay) addressParts.push(barangay);
+    if (municipality) addressParts.push(municipality);
+    if (province) addressParts.push(province);
+    if (region) addressParts.push(region);
+    
+    // Join the parts with commas
+    const combinedAddress = addressParts.join(', ');
+    document.getElementById('comakerAddress').value = combinedAddress;
+}
+
+// Initialize comaker address dropdowns when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+    fetchComakerRegions();
+    
+    // Set up event listeners for cascading dropdowns
+    document.getElementById('comakerRegion').addEventListener('change', function() {
+        fetchComakerProvinces(this.value);
+        document.getElementById('comakerProvince').value = '';
+        document.getElementById('comakerMunicipality').value = '';
+        document.getElementById('comakerBarangay').value = '';
+        document.getElementById('comakerMunicipality').disabled = true;
+        document.getElementById('comakerBarangay').disabled = true;
+        updateComakerCombinedAddress();
+    });
+    
+    document.getElementById('comakerProvince').addEventListener('change', function() {
+        fetchComakerMunicipalities(this.value);
+        document.getElementById('comakerMunicipality').value = '';
+        document.getElementById('comakerBarangay').value = '';
+        document.getElementById('comakerBarangay').disabled = true;
+        updateComakerCombinedAddress();
+    });
+    
+    document.getElementById('comakerMunicipality').addEventListener('change', function() {
+        fetchComakerBarangays(this.value);
+        document.getElementById('comakerBarangay').value = '';
+        updateComakerCombinedAddress();
+    });
+    
+    document.getElementById('comakerBarangay').addEventListener('change', updateComakerCombinedAddress);
+    document.getElementById('comakerStreet').addEventListener('input', updateComakerCombinedAddress);
+    
+    // Also update combined address when form is submitted
+    const form = document.getElementById('lifeplanBookingForm');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            updateComakerCombinedAddress();
+            // Continue with form submission
+        });
+    }
+});
+</script>
 </body>
 </html>

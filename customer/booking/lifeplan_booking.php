@@ -40,6 +40,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $address['province'] ?? '',
             $address['region'] ?? ''
         ]));
+
+        // Co-maker information
+        $comaker_fname = $_POST['comakerFirstName'];
+        $comaker_mname = $_POST['comakerMiddleName'] ?? '';
+        $comaker_lname = $_POST['comakerLastName'];
+        $comaker_suffix = $_POST['comakerSuffix'] ?? '';
+        $comaker_work = $_POST['comakerOccupation'];
+        $comaker_idtype = $_POST['comakerIdType'];
+        $comaker_idnumber = $_POST['comakerIdNumber'];
+        
+        // Process co-maker address
+        
+        $comaker_address = $_POST['comakerAddress'];
         
         $phone = $_POST['contactNumber'];
         $with_cremate = isset($_POST['cremationOption']) ? 'yes' : 'no';
@@ -59,6 +72,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $paymentName = 'payment_' . time() . '.' . $paymentExt;
             $paymentPath = $uploadDir . $paymentName;
             move_uploaded_file($_FILES['gcashReceipt']['tmp_name'], $paymentPath);
+        }
+
+        // Process co-maker ID image
+        if (isset($_FILES['comakerIdImage']) && $_FILES['comakerIdImage']['error'] === UPLOAD_ERR_OK) {
+            $comakerIdExt = pathinfo($_FILES['comakerIdImage']['name'], PATHINFO_EXTENSION);
+            $comakerIdName = 'comaker_id_' . time() . '_' . rand(1000, 9999) . '.' . $comakerIdExt;
+            $comakerIdImgPath = $uploadDir . $comakerIdName;
+            move_uploaded_file($_FILES['comakerIdImage']['tmp_name'], $comakerIdImgPath);
         }
 
         $bookingDate = date('Y-m-d H:i:s');
