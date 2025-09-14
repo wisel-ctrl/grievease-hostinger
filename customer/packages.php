@@ -1920,26 +1920,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
-// Add this function to combine address components
-function combineAddress() {
-    const region = document.getElementById('traditionalDeceasedRegion');
-    const province = document.getElementById('traditionalDeceasedProvince');
-    const city = document.getElementById('traditionalDeceasedCity');
-    const barangay = document.getElementById('traditionalDeceasedBarangay');
-    const street = document.getElementById('traditionalDeceasedStreet');
-    
-    // Create an address object
-    const address = {
-        region: region.options[region.selectedIndex]?.text || '',
-        province: province.options[province.selectedIndex]?.text || '',
-        city: city.options[city.selectedIndex]?.text || '',
-        barangay: barangay.options[barangay.selectedIndex]?.text || '',
-        street: street.value || ''
-    };
-    
-    // Convert to JSON string and store in a hidden input
-    return JSON.stringify(address);
-}
 
 // Add this to your form submission handler
 document.querySelector('form').addEventListener('submit', function(e) {
