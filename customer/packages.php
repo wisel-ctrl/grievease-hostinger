@@ -1585,6 +1585,9 @@ function updateTraditionalBarangays() {
 // Initialize the dropdowns when the page loads
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM Content Loaded');
+
+    console.log('DOMContentLoaded - initializing comaker ID upload');
+    initComakerIdUpload();
     
     // Load regions via AJAX
     fetch('address/get_regions.php')
@@ -3646,11 +3649,6 @@ function initComakerIdUpload() {
     }
 }
 
-// Call this function when the page loads to initialize the event listeners
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOMContentLoaded - initializing comaker ID upload');
-    initComakerIdUpload();
-});
 
 // Helper functions for lifeplan file uploads
 function handleLifeplanGcashUpload() {
