@@ -3488,15 +3488,15 @@ document.getElementById('lifeplanServiceBtn').addEventListener('click', function
         // Show the modal
         document.getElementById('lifeplanModal').classList.remove('hidden');
     }
-    
+
 document.addEventListener('DOMContentLoaded', setupComakerIdImageUpload);
 
 function setupComakerIdImageUpload() {
     const comakerIdInput = document.getElementById('comakerIdImage');
     const comakerIdFileName = document.getElementById('comakerIdFileName');
     const comakerIdPreviewContainer = document.getElementById('comakerIdPreviewContainer');
-    const comakerIdImagePreview = document.getElementById('comakerIdImagePreview');
-    const comakerIdImage = document.getElementById('comakerIdImagePreviews');
+    const comakerIdImagePreview = document.getElementById('comakerIdImagePreviews');
+    const comakerIdImage = document.getElementById('comakerIdImagePreview');
     const removeComakerIdBtn = document.getElementById('removeComakerId');
 
     if (comakerIdInput) {
