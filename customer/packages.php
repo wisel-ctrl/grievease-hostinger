@@ -4337,7 +4337,6 @@ document.getElementById('searchInput').addEventListener('paste', function(e) {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
-    setupComakerIdImageUpload();
     // Handle GCash QR selection for traditional modal
     const gcashQrOptions = document.querySelectorAll('#gcashQrContainer .gcash-qr-option');
     const selectedGcashQrInput = document.getElementById('selectedGcashQr');
