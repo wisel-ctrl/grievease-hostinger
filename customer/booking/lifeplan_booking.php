@@ -90,17 +90,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 service_id, branch_id, customer_id, payment_duration, package_price,
                 benefeciary_fname, benefeciary_mname, benefeciary_lname, benefeciary_suffix,
                 benefeciary_birth, benefeciary_address, phone, with_cremate, 
-                booking_status, reference_code, payment_url, relationship_to_client,
-                initial_date
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?, ?)
+                booking_status, reference_code, payment_url, relationship_to_client, initial_date,
+                comaker_fname, comaker_mname, comaker_lname, comaker_suffix, comaker_address, 
+                comaker_work, comaker_idtype, comaker_idnumber, comaker_idimg
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ");
         
         $stmt->bind_param(
-            "iiiidssssssssssss", 
+            "iiiidsssssssssssssssssssss", 
             $service_id, $branch_id, $customer_id, $payment_duration, $package_price,
             $beneficiary_fname, $beneficiary_mname, $beneficiary_lname, $beneficiary_suffix,
             $beneficiary_birth, $beneficiary_address, $phone, $with_cremate,
-            $reference_code, $paymentPath, $relationship_with_beneficiary, $bookingDate
+            $reference_code, $paymentPath, $relationship_with_beneficiary, $bookingDate,
+            $comaker_fname, $comaker_mname, $comaker_lname, $comaker_suffix, $comaker_address,
+            $comaker_work, $comaker_idtype, $comaker_idnumber, $comakerIdImgPath
         );
         
         if ($stmt->execute()) {
