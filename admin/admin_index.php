@@ -1206,7 +1206,7 @@ function time_elapsed_string($datetime, $full = false) {
   <!-- Analytics Cards -->
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
   <!-- Services This Month Card -->
-  <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
+  <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden cursor-pointer" onclick="window.location.href='history.php'">
     <!-- Card header with brighter gradient background -->
     <div class="bg-gradient-to-r from-blue-100 to-blue-200 px-4 sm:px-6 py-3 sm:py-4">
       <div class="flex items-center justify-between mb-1">
@@ -1231,7 +1231,7 @@ function time_elapsed_string($datetime, $full = false) {
   </div>
   
   <!-- Revenue Card -->
-  <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
+  <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden cursor-pointer" onclick="window.location.href='reports_dashboard.php'">
     <!-- Card header with brighter gradient background -->
     <div class="bg-gradient-to-r from-green-100 to-green-200 px-4 sm:px-6 py-3 sm:py-4">
       <div class="flex items-center justify-between mb-1">
@@ -1256,7 +1256,7 @@ function time_elapsed_string($datetime, $full = false) {
   </div>
   
   <!-- Pending Services Card -->
-  <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
+  <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden cursor-pointer" onclick="window.location.href='history.php'">
     <!-- Card header with brighter gradient background -->
     <div class="bg-gradient-to-r from-orange-100 to-orange-200 px-4 sm:px-6 py-3 sm:py-4">
       <div class="flex items-center justify-between mb-1">
@@ -1281,7 +1281,7 @@ function time_elapsed_string($datetime, $full = false) {
   </div>
   
   <!-- Completed Services Card -->
-  <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
+  <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden cursor-pointer" onclick="window.location.href='history.php'">
     <!-- Card header with brighter gradient background -->
     <div class="bg-gradient-to-r from-purple-100 to-purple-200 px-4 sm:px-6 py-3 sm:py-4">
       <div class="flex items-center justify-between mb-1">
