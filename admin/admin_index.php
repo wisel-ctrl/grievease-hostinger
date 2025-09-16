@@ -1008,16 +1008,81 @@ foreach ($serviceData as $service => $branches) {
         </button>
         
         <!-- Improved Notification Dropdown -->
-        <div id="notifications-dropdown" class="absolute right-0 mt-3 w-96 bg-white rounded-lg shadow-card border border-sidebar-border z-50 hidden transform transition-all duration-300 opacity-0 translate-y-2" style="max-height: 85vh;">
+        <div id="notifications-dropdown" class="absolute right-0 mt-3 w-96 sm:w-80 md:w-96 lg:w-96 xl:w-96 bg-white rounded-lg shadow-card border border-sidebar-border z-50 hidden transform transition-all duration-300 opacity-0 translate-y-2" style="max-height: 85vh; min-width: 280px; max-width: calc(100vw - 2rem);">
+            <style>
+                @media (max-width: 640px) {
+                    #notifications-dropdown {
+                        position: fixed !important;
+                        right: 1rem !important;
+                        left: 1rem !important;
+                        width: auto !important;
+                        max-width: none !important;
+                        margin-top: 0.5rem !important;
+                        max-height: 80vh !important;
+                    }
+                    
+                    /* Improve touch targets on mobile */
+                    #notifications-dropdown a {
+                        min-height: 44px !important;
+                    }
+                    
+                    /* Better scrolling on mobile */
+                    #notifications-dropdown .max-h-\[60vh\] {
+                        max-height: 60vh !important;
+                        -webkit-overflow-scrolling: touch;
+                    }
+                }
+                
+                @media (max-width: 480px) {
+                    #notifications-dropdown {
+                        right: 0.5rem !important;
+                        left: 0.5rem !important;
+                        margin-top: 0.25rem !important;
+                        max-height: 75vh !important;
+                    }
+                    
+                    /* Smaller max height for very small screens */
+                    #notifications-dropdown .max-h-\[60vh\] {
+                        max-height: 50vh !important;
+                    }
+                }
+                
+                /* Add line-clamp utility for text truncation */
+                .line-clamp-2 {
+                    display: -webkit-box;
+                    -webkit-line-clamp: 2;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                }
+                
+                /* Custom scrollbar for better mobile experience */
+                .scrollbar-thin::-webkit-scrollbar {
+                    width: 4px;
+                }
+                
+                .scrollbar-thin::-webkit-scrollbar-track {
+                    background: #f1f1f1;
+                    border-radius: 2px;
+                }
+                
+                .scrollbar-thin::-webkit-scrollbar-thumb {
+                    background: #c1c1c1;
+                    border-radius: 2px;
+                }
+                
+                .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+                    background: #a8a8a8;
+                }
+            </style>
             <!-- Notifications Header with improved styling -->
-            <div class="px-5 py-4 border-b border-sidebar-border flex justify-between items-center bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
+            <div class="px-3 sm:px-5 py-3 sm:py-4 border-b border-sidebar-border flex justify-between items-center bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
                 <div class="flex items-center">
-                    <div class="w-8 h-8 rounded-full bg-sidebar-accent bg-opacity-10 text-sidebar-accent flex items-center justify-center mr-3">
-                        <i class="fas fa-bell"></i>
+                    <div class="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-sidebar-accent bg-opacity-10 text-sidebar-accent flex items-center justify-center mr-2 sm:mr-3">
+                        <i class="fas fa-bell text-xs sm:text-sm"></i>
                     </div>
-                    <h3 class="font-medium text-sidebar-text">Notifications</h3>
+                    <h3 class="font-medium text-sidebar-text text-sm sm:text-base">Notifications</h3>
                     <?php if ($totalPending > 0): ?>
-                    <span class="ml-2 bg-error text-white text-xs rounded-full h-5 w-5 flex items-center justify-center"><?php echo $totalPending; ?></span>
+                    <span class="ml-2 bg-error text-white text-xs rounded-full h-4 w-4 sm:h-5 sm:w-5 flex items-center justify-center text-xs"><?php echo $totalPending; ?></span>
                     <?php endif; ?>
                 </div>
             </div>
@@ -1044,17 +1109,17 @@ foreach ($serviceData as $service => $branches) {
                             $title = 'New ID validation request';
                         }
                         ?>
-                        <a href="<?php echo $notification['link_base']; ?>" class="block px-5 py-4 border-b border-sidebar-border hover:bg-sidebar-hover transition-all duration-300 flex items-start relative">
+                        <a href="<?php echo $notification['link_base']; ?>" class="block px-3 sm:px-5 py-3 sm:py-4 border-b border-sidebar-border hover:bg-sidebar-hover transition-all duration-300 flex items-start relative">
                             <div class="absolute left-0 top-0 bottom-0 w-1 bg-<?php echo $color; ?>-500 rounded-r"></div>
-                            <div class="flex-shrink-0 bg-<?php echo $color; ?>-100 rounded-full p-2.5 mr-4">
-                                <i class="<?php echo $icon; ?> text-<?php echo $color; ?>-600"></i>
+                            <div class="flex-shrink-0 bg-<?php echo $color; ?>-100 rounded-full p-1.5 sm:p-2.5 mr-2 sm:mr-4">
+                                <i class="<?php echo $icon; ?> text-<?php echo $color; ?>-600 text-xs sm:text-sm"></i>
                             </div>
-                            <div class="flex-grow">
+                            <div class="flex-grow min-w-0">
                                 <div class="flex justify-between items-start">
-                                    <p class="text-sm font-semibold text-sidebar-text"><?php echo $title; ?></p>
-                                    <span class="h-2.5 w-2.5 bg-<?php echo $color; ?>-600 rounded-full block flex-shrink-0 ml-2 mt-1"></span>
+                                    <p class="text-xs sm:text-sm font-semibold text-sidebar-text pr-2 truncate"><?php echo $title; ?></p>
+                                    <span class="h-2 w-2 sm:h-2.5 sm:w-2.5 bg-<?php echo $color; ?>-600 rounded-full block flex-shrink-0 ml-1 sm:ml-2 mt-0.5 sm:mt-1"></span>
                                 </div>
-                                <p class="text-sm text-gray-600 mt-1">
+                                <p class="text-xs sm:text-sm text-gray-600 mt-1 line-clamp-2 break-words">
                                     <?php 
                                     if ($notification['notification_type'] === 'id_validation') {
                                         echo 'ID image uploaded and awaiting validation';
@@ -1063,9 +1128,9 @@ foreach ($serviceData as $service => $branches) {
                                     }
                                     ?>
                                 </p>
-                                <div class="flex items-center mt-2 text-xs text-gray-400">
-                                    <i class="far fa-clock mr-1.5"></i>
-                                    <span><?php echo $timeAgo; ?></span>
+                                <div class="flex items-center mt-1 sm:mt-2 text-xs text-gray-400">
+                                    <i class="far fa-clock mr-1 sm:mr-1.5 text-xs"></i>
+                                    <span class="text-xs"><?php echo $timeAgo; ?></span>
                                 </div>
                             </div>
                         </a>
@@ -1073,9 +1138,9 @@ foreach ($serviceData as $service => $branches) {
                     }
                 } else {
                     ?>
-                    <div class="px-5 py-4 text-center text-gray-500">
-                        <i class="fas fa-check-circle text-green-500 text-2xl mb-2"></i>
-                        <p>No pending notifications</p>
+                    <div class="px-3 sm:px-5 py-3 sm:py-4 text-center text-gray-500">
+                        <i class="fas fa-check-circle text-green-500 text-xl sm:text-2xl mb-2"></i>
+                        <p class="text-sm sm:text-base">No pending notifications</p>
                     </div>
                     <?php
                 }
@@ -1083,8 +1148,8 @@ foreach ($serviceData as $service => $branches) {
             </div>
             
             <!-- Notifications Footer with improved styling -->
-            <div class="px-5 py-3 text-center border-t border-sidebar-border bg-gradient-to-r from-gray-50 to-white rounded-b-lg">
-                <a href="notification.php" class="text-sm text-sidebar-accent hover:text-darkgold transition-colors font-medium inline-flex items-center">
+            <div class="px-3 sm:px-5 py-2 sm:py-3 text-center border-t border-sidebar-border bg-gradient-to-r from-gray-50 to-white rounded-b-lg">
+                <a href="notification.php" class="text-xs sm:text-sm text-sidebar-accent hover:text-darkgold transition-colors font-medium inline-flex items-center">
                     View all notifications
                     <i class="fas fa-chevron-right ml-1 text-xs"></i>
                 </a>
