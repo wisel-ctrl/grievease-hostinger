@@ -894,34 +894,100 @@ foreach ($serviceData as $service => $branches) {
   
 </head>
 <style>
-  /* Add this to your stylesheet */
-.bg-gray-100 .bg-blue-500 {
-  transition: all 0.3s ease;
-}
+  /* Responsive Design Styles */
+  .bg-gray-100 .bg-blue-500 {
+    transition: all 0.3s ease;
+  }
 
-.bg-gray-100 .text-gray-600:hover {
-  color: #4b5563;
-}
+  .bg-gray-100 .text-gray-600:hover {
+    color: #4b5563;
+  }
+
+  /* Mobile-first responsive utilities */
+  @media (max-width: 768px) {
+    .mobile-hide {
+      display: none !important;
+    }
+    
+    .mobile-full-width {
+      width: 100% !important;
+      margin-left: 0 !important;
+    }
+    
+    .mobile-padding {
+      padding: 1rem !important;
+    }
+    
+    .mobile-text-sm {
+      font-size: 0.875rem !important;
+    }
+    
+    .mobile-grid-1 {
+      grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+    }
+    
+    .mobile-grid-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .sm-hide {
+      display: none !important;
+    }
+    
+    .sm-text-xs {
+      font-size: 0.75rem !important;
+    }
+    
+    .sm-p-2 {
+      padding: 0.5rem !important;
+    }
+  }
+
+  /* Ensure charts are responsive */
+  .chart-container {
+    width: 100%;
+    height: auto;
+    min-height: 250px;
+  }
+
+  /* Responsive table scrolling */
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Mobile sidebar adjustments */
+  @media (max-width: 1024px) {
+    .main-content {
+      margin-left: 0 !important;
+      width: 100% !important;
+    }
+  }
 </style>
 <body class="flex bg-gray-50">
 
 <?php include 'admin_sidebar.php'; ?>
 
 <!-- Main Content -->
-  <div id="main-content" class="p-6 bg-gray-50 min-h-screen transition-all duration-300 ml-64 w-[calc(100%-16rem)] main-content">
+  <div id="main-content" class="p-3 sm:p-4 lg:p-6 bg-gray-50 min-h-screen transition-all duration-300 lg:ml-64 lg:w-[calc(100%-16rem)] main-content w-full">
     <!-- Header with breadcrumb and welcome message -->
-    <div class="flex justify-between items-center mb-6 bg-white p-5 rounded-lg shadow-sidebar">
-      <div>
-        <h1 class="text-2xl font-bold text-sidebar-text">Dashboard</h1>
-        <p class="text-sm text-gray-500">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 lg:mb-6 bg-white p-3 sm:p-4 lg:p-5 rounded-lg shadow-sidebar gap-3 sm:gap-0">
+      <div class="w-full sm:w-auto">
+        <h1 class="text-xl sm:text-2xl font-bold text-sidebar-text">Dashboard</h1>
+        <p class="text-xs sm:text-sm text-gray-500">
       Welcome back, 
-      <span class="hidden md:inline">
+      <span class="hidden sm:inline">
           <?php echo htmlspecialchars($first_name . ' ' . $last_name); ?>
+      </span>
+      <span class="sm:hidden">
+          <?php echo htmlspecialchars($first_name); ?>
       </span>
   </p>
 
     </div>
-<div class="flex space-x-3">
+<div class="flex space-x-2 sm:space-x-3 w-full sm:w-auto justify-end">
     <!-- Notification Bell Button with improved styling -->
     <div class="relative">
         <?php
@@ -1000,15 +1066,15 @@ foreach ($serviceData as $service => $branches) {
         $totalPending = count($allNotifications);
         ?>
         
-        <button id="notification-bell" class="p-2 rounded-full bg-white border border-sidebar-border shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300 relative">
-            <i class="fas fa-bell"></i>
+        <button id="notification-bell" class="p-1.5 sm:p-2 rounded-full bg-white border border-sidebar-border shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300 relative">
+            <i class="fas fa-bell text-sm sm:text-base"></i>
             <?php if ($totalPending > 0): ?>
-            <span class="absolute -top-1 -right-1 bg-error text-white text-xs rounded-full h-5 w-5 flex items-center justify-center transform transition-all duration-300 scale-100 origin-center shadow-sm"><?php echo $totalPending; ?></span>
+            <span class="absolute -top-1 -right-1 bg-error text-white text-xs rounded-full h-4 w-4 sm:h-5 sm:w-5 flex items-center justify-center transform transition-all duration-300 scale-100 origin-center shadow-sm text-xs"><?php echo $totalPending; ?></span>
             <?php endif; ?>
         </button>
         
         <!-- Improved Notification Dropdown -->
-        <div id="notifications-dropdown" class="absolute right-0 mt-3 w-96 bg-white rounded-lg shadow-card border border-sidebar-border z-50 hidden transform transition-all duration-300 opacity-0 translate-y-2" style="max-height: 85vh;">
+        <div id="notifications-dropdown" class="absolute right-0 mt-3 w-80 sm:w-96 bg-white rounded-lg shadow-card border border-sidebar-border z-50 hidden transform transition-all duration-300 opacity-0 translate-y-2" style="max-height: 85vh;">
             <!-- Notifications Header with improved styling -->
             <div class="px-5 py-4 border-b border-sidebar-border flex justify-between items-center bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
                 <div class="flex items-center">
@@ -1094,7 +1160,6 @@ foreach ($serviceData as $service => $branches) {
 </div>
 <?php
 // Function to calculate time ago
-// Function to calculate time ago
 function time_elapsed_string($datetime, $full = false) {
     $now = new DateTime;
     $ago = new DateTime($datetime);
@@ -1139,28 +1204,28 @@ function time_elapsed_string($datetime, $full = false) {
   </div>
 
   <!-- Analytics Cards -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-6 lg:mb-8">
   <!-- Services This Month Card -->
   <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
     <!-- Card header with brighter gradient background -->
-    <div class="bg-gradient-to-r from-blue-100 to-blue-200 px-6 py-4">
+    <div class="bg-gradient-to-r from-blue-100 to-blue-200 px-3 sm:px-4 lg:px-6 py-3 sm:py-4">
       <div class="flex items-center justify-between mb-1">
-        <h3 class="text-sm font-medium text-gray-700">Services This Month</h3>
-        <div class="w-10 h-10 rounded-full bg-white/90 text-slate-600 flex items-center justify-center">
-          <i class="fas fa-calendar-alt"></i>
+        <h3 class="text-xs sm:text-sm font-medium text-gray-700">Services This Month</h3>
+        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/90 text-slate-600 flex items-center justify-center">
+          <i class="fas fa-calendar-alt text-sm sm:text-base"></i>
         </div>
       </div>
       <div class="flex items-end">
-       <span class="text-2xl md:text-3xl font-bold text-gray-800"><?php echo $servicesCount; ?></span>
+       <span class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800"><?php echo $servicesCount; ?></span>
       </div>
     </div>
     
     <!-- Card footer with change indicator -->
-    <div class="px-6 py-3 bg-white border-t border-gray-100">
+    <div class="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 bg-white border-t border-gray-100">
       <div class="flex items-center text-emerald-600">
-        <i class="fas fa-arrow-up mr-1.5 text-xs"></i>
+        <i class="fas fa-arrow-up mr-1 sm:mr-1.5 text-xs"></i>
         <span class="font-medium text-xs"><?php echo number_format(abs($servicesChange), 1); ?>% </span>
-        <span class="text-xs text-gray-500 ml-1">from last month</span>
+        <span class="text-xs text-gray-500 ml-1 hidden sm:inline">from last month</span>
       </div>
     </div>
   </div>
@@ -1168,24 +1233,24 @@ function time_elapsed_string($datetime, $full = false) {
   <!-- Revenue Card -->
   <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
     <!-- Card header with brighter gradient background -->
-    <div class="bg-gradient-to-r from-green-100 to-green-200 px-6 py-4">
+    <div class="bg-gradient-to-r from-green-100 to-green-200 px-3 sm:px-4 lg:px-6 py-3 sm:py-4">
       <div class="flex items-center justify-between mb-1">
-        <h3 class="text-sm font-medium text-gray-700">Revenue</h3>
-        <div class="w-10 h-10 rounded-full bg-white/90 text-green-600 flex items-center justify-center">
-          <i class="fas fa-peso-sign"></i>
+        <h3 class="text-xs sm:text-sm font-medium text-gray-700">Revenue</h3>
+        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/90 text-green-600 flex items-center justify-center">
+          <i class="fas fa-peso-sign text-sm sm:text-base"></i>
         </div>
       </div>
       <div class="flex items-end">
-      <span class="text-2xl md:text-3xl font-bold text-gray-800">₱<?php echo $formattedRevenue; ?></span>
+      <span class="text-lg sm:text-2xl lg:text-3xl font-bold text-gray-800">₱<?php echo $formattedRevenue; ?></span>
       </div>
     </div>
     
     <!-- Card footer with change indicator -->
-    <div class="px-6 py-3 bg-white border-t border-gray-100">
+    <div class="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 bg-white border-t border-gray-100">
       <div class="flex items-center text-emerald-600">
-        <i class="fas fa-arrow-up mr-1.5 text-xs"></i>
+        <i class="fas fa-arrow-up mr-1 sm:mr-1.5 text-xs"></i>
         <span class="font-medium text-xs"><?php echo number_format(abs($revenueChange), 1); ?>% </span>
-        <span class="text-xs text-gray-500 ml-1">from last month</span>
+        <span class="text-xs text-gray-500 ml-1 hidden sm:inline">from last month</span>
       </div>
     </div>
   </div>
@@ -1193,24 +1258,24 @@ function time_elapsed_string($datetime, $full = false) {
   <!-- Pending Services Card -->
   <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
     <!-- Card header with brighter gradient background -->
-    <div class="bg-gradient-to-r from-orange-100 to-orange-200 px-6 py-4">
+    <div class="bg-gradient-to-r from-orange-100 to-orange-200 px-3 sm:px-4 lg:px-6 py-3 sm:py-4">
       <div class="flex items-center justify-between mb-1">
-        <h3 class="text-sm font-medium text-gray-700">Pending Services</h3>
-        <div class="w-10 h-10 rounded-full bg-white/90 text-orange-600 flex items-center justify-center">
-          <i class="fas fa-tasks"></i>
+        <h3 class="text-xs sm:text-sm font-medium text-gray-700">Pending Services</h3>
+        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/90 text-orange-600 flex items-center justify-center">
+          <i class="fas fa-tasks text-sm sm:text-base"></i>
         </div>
       </div>
       <div class="flex items-end">
-        <span class="text-2xl md:text-3xl font-bold text-gray-800"><?php echo $pendingCount; ?></span>
+        <span class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800"><?php echo $pendingCount; ?></span>
       </div>
     </div>
     
     <!-- Card footer with change indicator -->
-    <div class="px-6 py-3 bg-white border-t border-gray-100">
+    <div class="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 bg-white border-t border-gray-100">
       <div class="flex items-center text-rose-600">
-        <i class="fas fa-arrow-down mr-1.5 text-xs"></i>
+        <i class="fas fa-arrow-down mr-1 sm:mr-1.5 text-xs"></i>
         <span class="font-medium text-xs"><?php echo number_format(abs($pendingChange), 1); ?>% </span>
-        <span class="text-xs text-gray-500 ml-1">from last month</span>
+        <span class="text-xs text-gray-500 ml-1 hidden sm:inline">from last month</span>
       </div>
     </div>
   </div>
@@ -1218,93 +1283,93 @@ function time_elapsed_string($datetime, $full = false) {
   <!-- Completed Services Card -->
   <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
     <!-- Card header with brighter gradient background -->
-    <div class="bg-gradient-to-r from-purple-100 to-purple-200 px-6 py-4">
+    <div class="bg-gradient-to-r from-purple-100 to-purple-200 px-3 sm:px-4 lg:px-6 py-3 sm:py-4">
       <div class="flex items-center justify-between mb-1">
-        <h3 class="text-sm font-medium text-gray-700">Completed Services</h3>
-        <div class="w-10 h-10 rounded-full bg-white/90 text-purple-600 flex items-center justify-center">
-          <i class="fas fa-clipboard-check"></i>
+        <h3 class="text-xs sm:text-sm font-medium text-gray-700">Completed Services</h3>
+        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/90 text-purple-600 flex items-center justify-center">
+          <i class="fas fa-clipboard-check text-sm sm:text-base"></i>
         </div>
       </div>
       <div class="flex items-end">
-        <span class="text-2xl md:text-3xl font-bold text-gray-800"><?php echo $completedCount; ?></span>
+        <span class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800"><?php echo $completedCount; ?></span>
       </div>
     </div>
     
     <!-- Card footer with change indicator -->
-    <div class="px-6 py-3 bg-white border-t border-gray-100">
+    <div class="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 bg-white border-t border-gray-100">
       <div class="flex items-center text-emerald-600">
-        <i class="fas fa-arrow-up mr-1.5 text-xs"></i>
+        <i class="fas fa-arrow-up mr-1 sm:mr-1.5 text-xs"></i>
         <span class="font-medium text-xs"><?php echo number_format(abs($completedChange), 1); ?>% </span>
-        <span class="text-xs text-gray-500 ml-1">from last month</span>
+        <span class="text-xs text-gray-500 ml-1 hidden sm:inline">from last month</span>
       </div>
     </div>
   </div>
 </div>
 
  <!-- Branch Comparison -->
- <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+ <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 mb-6 lg:mb-8">
   <!-- Pila Branch Card -->
   <div class="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-200">
     <!-- Card header with subdued gradient background -->
-    <div class="bg-gradient-to-r from-gray-100 to-slate-500 p-5 border-b border-gray-200">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center space-x-3">
-          <div class="w-10 h-10 rounded-full bg-white/90 text-slate-700 flex items-center justify-center shadow-sm">
-            <i class="fas fa-building"></i>
+    <div class="bg-gradient-to-r from-gray-100 to-slate-500 p-3 sm:p-4 lg:p-5 border-b border-gray-200">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
+        <div class="flex items-center space-x-2 sm:space-x-3">
+          <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/90 text-slate-700 flex items-center justify-center shadow-sm">
+            <i class="fas fa-building text-sm sm:text-base"></i>
           </div>
-          <h3 class="text-lg font-semibold text-gray-800">Pila Branch</h3>
+          <h3 class="text-base sm:text-lg font-semibold text-gray-800">Pila Branch</h3>
         </div>
-        <span class="px-3 py-1 text-xs font-medium bg-slate-100 text-slate-700 rounded-full">Main Branch</span>
+        <span class="px-2 sm:px-3 py-1 text-xs font-medium bg-slate-100 text-slate-700 rounded-full">Main Branch</span>
       </div>
     </div>
     
     <!-- Card content -->
-    <div class="p-6">
-      <div class="grid grid-cols-2 gap-6">
+    <div class="p-3 sm:p-4 lg:p-6">
+      <div class="grid grid-cols-2 gap-3 sm:gap-4 lg:gap-6">
         <!-- Revenue -->
-        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-          <div class="flex items-center mb-1 text-gray-600 text-sm">
-            <i class="fas fa-chart-line mr-2"></i>
+        <div class="bg-gray-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-gray-200">
+          <div class="flex items-center mb-1 text-gray-600 text-xs sm:text-sm">
+            <i class="fas fa-chart-line mr-1 sm:mr-2 text-xs sm:text-sm"></i>
             <span>Revenue</span>
           </div>
-          <div class="text-xl font-bold text-gray-800">₱<?php echo number_format($pilaMetrics['revenue'], 2); ?></div>
-          <div class="mt-2 text-xs text-gray-500">
+          <div class="text-sm sm:text-lg lg:text-xl font-bold text-gray-800">₱<?php echo number_format($pilaMetrics['revenue'], 2); ?></div>
+          <div class="mt-1 sm:mt-2 text-xs text-gray-500">
   Current month
 </div>
         </div>
         
         <!-- Profit -->
-        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-          <div class="flex items-center mb-1 text-gray-600 text-sm">
-            <i class="fas fa-wallet mr-2"></i>
+        <div class="bg-gray-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-gray-200">
+          <div class="flex items-center mb-1 text-gray-600 text-xs sm:text-sm">
+            <i class="fas fa-wallet mr-1 sm:mr-2 text-xs sm:text-sm"></i>
             <span>Profit</span>
           </div>
-          <div class="text-xl font-bold text-gray-800">₱<?php echo number_format($pilaMetrics['profit'], 2); ?></div>
-          <div class="mt-2 text-xs text-gray-500">
+          <div class="text-sm sm:text-lg lg:text-xl font-bold text-gray-800">₱<?php echo number_format($pilaMetrics['profit'], 2); ?></div>
+          <div class="mt-1 sm:mt-2 text-xs text-gray-500">
   Current month
 </div>
         </div>
         
         <!-- Margin -->
-        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-          <div class="flex items-center mb-1 text-gray-600 text-sm">
-            <i class="fas fa-percentage mr-2"></i>
+        <div class="bg-gray-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-gray-200">
+          <div class="flex items-center mb-1 text-gray-600 text-xs sm:text-sm">
+            <i class="fas fa-percentage mr-1 sm:mr-2 text-xs sm:text-sm"></i>
             <span>Margin</span>
           </div>
-          <div class="text-xl font-bold text-gray-800"><?php echo number_format($pilaMetrics['margin'], 1); ?>%</div>
-          <div class="mt-2 text-xs text-gray-500">
+          <div class="text-sm sm:text-lg lg:text-xl font-bold text-gray-800"><?php echo number_format($pilaMetrics['margin'], 1); ?>%</div>
+          <div class="mt-1 sm:mt-2 text-xs text-gray-500">
   Current month
 </div>
         </div>
         
         <!-- Customers -->
-        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-          <div class="flex items-center mb-1 text-gray-600 text-sm">
-            <i class="fas fa-users mr-2"></i>
+        <div class="bg-gray-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-gray-200">
+          <div class="flex items-center mb-1 text-gray-600 text-xs sm:text-sm">
+            <i class="fas fa-users mr-1 sm:mr-2 text-xs sm:text-sm"></i>
             <span>Customers</span>
           </div>
-          <div class="text-xl font-bold text-gray-800"><?php echo $pilaMetrics['customers']; ?></div>
-          <div class="mt-2 text-xs text-gray-500">
+          <div class="text-sm sm:text-lg lg:text-xl font-bold text-gray-800"><?php echo $pilaMetrics['customers']; ?></div>
+          <div class="mt-1 sm:mt-2 text-xs text-gray-500">
   Current month
 </div>
         </div>
@@ -1315,65 +1380,65 @@ function time_elapsed_string($datetime, $full = false) {
   <!-- Paete Branch Card -->
   <div class="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-200">
     <!-- Card header with subdued gradient background -->
-    <div class="bg-gradient-to-r from-gray-100 to-slate-500 p-5 border-b border-gray-200">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center space-x-3">
-          <div class="w-10 h-10 rounded-full bg-white/90 text-slate-700 flex items-center justify-center shadow-sm">
-            <i class="fas fa-store"></i>
+    <div class="bg-gradient-to-r from-gray-100 to-slate-500 p-3 sm:p-4 lg:p-5 border-b border-gray-200">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
+        <div class="flex items-center space-x-2 sm:space-x-3">
+          <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/90 text-slate-700 flex items-center justify-center shadow-sm">
+            <i class="fas fa-store text-sm sm:text-base"></i>
           </div>
-          <h3 class="text-lg font-semibold text-gray-800">Paete Branch</h3>
+          <h3 class="text-base sm:text-lg font-semibold text-gray-800">Paete Branch</h3>
         </div>
-        <span class="px-3 py-1 text-xs font-medium bg-slate-100 text-slate-700 rounded-full">Secondary Branch</span>
+        <span class="px-2 sm:px-3 py-1 text-xs font-medium bg-slate-100 text-slate-700 rounded-full">Secondary Branch</span>
       </div>
     </div>
     
     <!-- Card content -->
-    <div class="p-6">
-      <div class="grid grid-cols-2 gap-6">
+    <div class="p-3 sm:p-4 lg:p-6">
+      <div class="grid grid-cols-2 gap-3 sm:gap-4 lg:gap-6">
         <!-- Revenue -->
-        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-          <div class="flex items-center mb-1 text-gray-600 text-sm">
-            <i class="fas fa-chart-line mr-2"></i>
+        <div class="bg-gray-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-gray-200">
+          <div class="flex items-center mb-1 text-gray-600 text-xs sm:text-sm">
+            <i class="fas fa-chart-line mr-1 sm:mr-2 text-xs sm:text-sm"></i>
             <span>Revenue</span>
           </div>
-          <div class="text-xl font-bold text-gray-800">₱<?php echo number_format($paeteMetrics['revenue'], 2); ?></div>
-          <div class="mt-2 text-xs text-gray-500">
+          <div class="text-sm sm:text-lg lg:text-xl font-bold text-gray-800">₱<?php echo number_format($paeteMetrics['revenue'], 2); ?></div>
+          <div class="mt-1 sm:mt-2 text-xs text-gray-500">
   Current month
 </div>
         </div>
         
         <!-- Profit -->
-        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-          <div class="flex items-center mb-1 text-gray-600 text-sm">
-            <i class="fas fa-wallet mr-2"></i>
+        <div class="bg-gray-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-gray-200">
+          <div class="flex items-center mb-1 text-gray-600 text-xs sm:text-sm">
+            <i class="fas fa-wallet mr-1 sm:mr-2 text-xs sm:text-sm"></i>
             <span>Profit</span>
           </div>
-          <div class="text-xl font-bold text-gray-800">₱<?php echo number_format($paeteMetrics['profit'], 2); ?></div>
-          <div class="mt-2 text-xs text-gray-500">
+          <div class="text-sm sm:text-lg lg:text-xl font-bold text-gray-800">₱<?php echo number_format($paeteMetrics['profit'], 2); ?></div>
+          <div class="mt-1 sm:mt-2 text-xs text-gray-500">
   Current month
 </div>
         </div>
         
         <!-- Margin -->
-        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-          <div class="flex items-center mb-1 text-gray-600 text-sm">
-            <i class="fas fa-percentage mr-2"></i>
+        <div class="bg-gray-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-gray-200">
+          <div class="flex items-center mb-1 text-gray-600 text-xs sm:text-sm">
+            <i class="fas fa-percentage mr-1 sm:mr-2 text-xs sm:text-sm"></i>
             <span>Margin</span>
           </div>
-          <div class="text-xl font-bold text-gray-800"><?php echo number_format($paeteMetrics['margin'], 1); ?>%</div>
-          <div class="mt-2 text-xs text-gray-500">
+          <div class="text-sm sm:text-lg lg:text-xl font-bold text-gray-800"><?php echo number_format($paeteMetrics['margin'], 1); ?>%</div>
+          <div class="mt-1 sm:mt-2 text-xs text-gray-500">
   Current month
 </div>
         </div>
         
         <!-- Customers -->
-        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-          <div class="flex items-center mb-1 text-gray-600 text-sm">
-            <i class="fas fa-users mr-2"></i>
+        <div class="bg-gray-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-gray-200">
+          <div class="flex items-center mb-1 text-gray-600 text-xs sm:text-sm">
+            <i class="fas fa-users mr-1 sm:mr-2 text-xs sm:text-sm"></i>
             <span>Customers</span>
           </div>
-          <div class="text-xl font-bold text-gray-800"><?php echo $paeteMetrics['customers']; ?></div>
-          <div class="mt-2 text-xs text-gray-500">
+          <div class="text-sm sm:text-lg lg:text-xl font-bold text-gray-800"><?php echo $paeteMetrics['customers']; ?></div>
+          <div class="mt-1 sm:mt-2 text-xs text-gray-500">
   Current month
 </div>
         </div>
@@ -1384,64 +1449,64 @@ function time_elapsed_string($datetime, $full = false) {
 
 
   <!-- Charts -->
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
+<div class="grid grid-cols-1 xl:grid-cols-2 gap-4 lg:gap-6 mb-6 lg:mb-8">
   <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 w-full">
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-4 sm:p-5 border-b border-sidebar-border">
-      <div class="flex items-center justify-between w-full">
-        <h3 class="font-medium text-sidebar-text">Accrued Revenue</h3>
-        <div class="flex items-center gap-2">
-          <div class="flex items-center bg-gray-100 rounded-full p-1">
-            <button id="monthlyView" class="px-3 py-1 rounded-full text-sm font-medium bg-blue-500 text-white">
+    <div class="flex flex-col gap-3 p-3 sm:p-4 lg:p-5 border-b border-sidebar-border">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <h3 class="font-medium text-sidebar-text text-sm sm:text-base">Accrued Revenue</h3>
+        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
+          <div class="flex items-center bg-gray-100 rounded-full p-1 w-full sm:w-auto">
+            <button id="monthlyView" class="px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium bg-blue-500 text-white flex-1 sm:flex-none">
               Monthly
             </button>
-            <button id="yearlyView" class="px-3 py-1 rounded-full text-sm font-medium text-gray-600 hover:text-gray-800">
+            <button id="yearlyView" class="px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium text-gray-600 hover:text-gray-800 flex-1 sm:flex-none">
               Yearly
             </button>
           </div>
-          <button id="exportProjectedIncome" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm flex items-center gap-1">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <button id="exportProjectedIncome" class="bg-blue-500 hover:bg-blue-600 text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm flex items-center gap-1 w-full sm:w-auto justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
               <polyline points="7 10 12 15 17 10"></polyline>
               <line x1="12" y1="15" x2="12" y2="3"></line>
             </svg>
-            Export
+            <span class="hidden sm:inline">Export</span>
           </button>
         </div>
       </div>
     </div>
-    <div class="p-4 sm:p-5">
-      <div class="w-full h-48 md:h-64">
+    <div class="p-3 sm:p-4 lg:p-5">
+      <div class="w-full h-48 sm:h-56 lg:h-64 chart-container">
         <div id="projectedIncomeChart" style="width: 100%; height: 100%;"></div>
       </div>
     </div>
   </div>
   
   <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 w-full">
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-4 sm:p-5 border-b border-sidebar-border">
-      <div class="flex items-center justify-between w-full">
-        <h3 class="font-medium text-sidebar-text">Cash Revenue</h3>
-        <div class="flex items-center gap-2">
-          <div class="flex items-center bg-gray-100 rounded-full p-1">
-            <button id="cashMonthlyView" class="px-3 py-1 rounded-full text-sm font-medium <?php echo (!isset($_GET['view']) || $_GET['view'] !== 'yearly') ? 'bg-[#4ade80] text-white' : 'text-gray-600 hover:text-gray-800' ?>">
+    <div class="flex flex-col gap-3 p-3 sm:p-4 lg:p-5 border-b border-sidebar-border">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <h3 class="font-medium text-sidebar-text text-sm sm:text-base">Cash Revenue</h3>
+        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
+          <div class="flex items-center bg-gray-100 rounded-full p-1 w-full sm:w-auto">
+            <button id="cashMonthlyView" class="px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium <?php echo (!isset($_GET['view']) || $_GET['view'] !== 'yearly') ? 'bg-[#4ade80] text-white' : 'text-gray-600 hover:text-gray-800' ?> flex-1 sm:flex-none">
               Monthly
             </button>
-            <button id="cashYearlyView" class="px-3 py-1 rounded-full text-sm font-medium <?php echo (isset($_GET['view']) && $_GET['view'] === 'yearly') ? 'bg-[#4ade80] text-white' : 'text-gray-600 hover:text-gray-800' ?>">
+            <button id="cashYearlyView" class="px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium <?php echo (isset($_GET['view']) && $_GET['view'] === 'yearly') ? 'bg-[#4ade80] text-white' : 'text-gray-600 hover:text-gray-800' ?> flex-1 sm:flex-none">
               Yearly
             </button>
           </div>
-          <button id="exportCashRevenue" class="bg-[#4ade80] hover:bg-[#3bc973] text-white px-3 py-1 rounded text-sm flex items-center gap-1">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <button id="exportCashRevenue" class="bg-[#4ade80] hover:bg-[#3bc973] text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm flex items-center gap-1 w-full sm:w-auto justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
               <polyline points="7 10 12 15 17 10"></polyline>
               <line x1="12" y1="15" x2="12" y2="3"></line>
             </svg>
-            Export
+            <span class="hidden sm:inline">Export</span>
           </button>
         </div>
       </div>
     </div>
     <div class="p-4 sm:p-5">
-      <div class="w-full h-48 md:h-64">
+      <div class="w-full h-48 sm:h-56 lg:h-64 chart-container">
         <div id="revenueChart" style="width: 100%; height: 100%;"></div>
       </div>
     </div>
@@ -1449,86 +1514,85 @@ function time_elapsed_string($datetime, $full = false) {
 </div>
 
 <!-- Branch Comparison Charts -->
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
+<div class="grid grid-cols-1 xl:grid-cols-2 gap-4 lg:gap-6 mb-6 lg:mb-8">
   <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 w-full">
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-4 sm:p-5 border-b border-sidebar-border">
-      <div class="flex items-center justify-between w-full">
-        <h3 class="font-medium text-sidebar-text">Revenue by Branch</h3>
-        <div class="flex items-center gap-2">
-          <div class="flex items-center bg-gray-100 rounded-full p-1">
-            <button id="monthlyViewBranch" class="px-3 py-1 rounded-full text-sm font-medium bg-blue-500 text-white">
+    <div class="flex flex-col gap-3 p-3 sm:p-4 lg:p-5 border-b border-sidebar-border">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <h3 class="font-medium text-sidebar-text text-sm sm:text-base">Revenue by Branch</h3>
+        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
+          <div class="flex items-center bg-gray-100 rounded-full p-1 w-full sm:w-auto">
+            <button id="monthlyViewBranch" class="px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium bg-blue-500 text-white flex-1 sm:flex-none">
               Monthly
             </button>
-            <button id="yearlyViewBranch" class="px-3 py-1 rounded-full text-sm font-medium text-gray-600 hover:text-gray-800">
+            <button id="yearlyViewBranch" class="px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium text-gray-600 hover:text-gray-800 flex-1 sm:flex-none">
               Yearly
             </button>
           </div>
-          <button id="exportPdfBtn" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm flex items-center gap-1">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <button id="exportPdfBtn" class="bg-blue-500 hover:bg-blue-600 text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm flex items-center gap-1 w-full sm:w-auto justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
               <polyline points="7 10 12 15 17 10"></polyline>
               <line x1="12" y1="15" x2="12" y2="3"></line>
             </svg>
-            Export
+            <span class="hidden sm:inline">Export</span>
           </button>
         </div>
       </div>
     </div>
-    <div class="p-4 sm:p-5">
-      <div class="w-full" style="min-height: 300px; height: 60vh; max-height: 500px;">
+    <div class="p-3 sm:p-4 lg:p-5">
+      <div class="w-full chart-container" style="min-height: 250px; height: 50vh; max-height: 400px;">
         <div id="branchRevenueChart" style="width: 100%; height: 100%;"></div>
       </div>
     </div>
   </div>
   
   <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 w-full">
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-4 sm:p-5 border-b border-sidebar-border">
-      <h3 class="font-medium text-sidebar-text">Top Selling Packages</h3>
-      <button id="exportTopSellingPackages" class="bg-[#4ade80] hover:bg-[#3bc973] text-white px-3 py-1 rounded text-sm flex items-center gap-1">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-              <polyline points="7 10 12 15 17 10"></polyline>
-              <line x1="12" y1="15" x2="12" y2="3"></line>
-            </svg>
-            Export
-          </button>
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-3 sm:p-4 lg:p-5 border-b border-sidebar-border">
+      <h3 class="font-medium text-sidebar-text text-sm sm:text-base">Pila Branch Revenue</h3>
+      <button id="exportPilaBranchRevenue" class="bg-blue-500 hover:bg-blue-600 text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm flex items-center gap-1 w-full sm:w-auto justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        <span class="hidden sm:inline">Export</span>
+      </button>
     </div>
-    <div class="p-4 sm:p-5">
-      <div class="w-full" style="min-height: 300px; height: 60vh; max-height: 500px;">
-        <div id="branchServicesChart" style="width: 100%; height: 100%;"></div>
+    <div class="p-3 sm:p-4 lg:p-5">
+      <div class="w-full chart-container" style="min-height: 250px; height: 50vh; max-height: 400px;">
+        <div id="pilaBranchChart" style="width: 100%; height: 100%;"></div>
       </div>
     </div>
-</div>
+  </div>
 </div>
   
   <!-- Branch Statistics -->
 <div class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden">
     <!-- Header Section - Made responsive with better stacking -->
-    <div class="bg-sidebar-hover p-4 border-b border-sidebar-border">
+    <div class="bg-sidebar-hover p-3 sm:p-4 border-b border-sidebar-border">
         <!-- Desktop layout for big screens - Title on left, controls on right -->
-        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <!-- Title and Counter -->
-            <div class="flex items-center gap-3 mb-4 lg:mb-0">
-                <h4 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Branch Performance</h4>
+            <div class="flex items-center gap-3">
+                <h4 class="text-base sm:text-lg font-bold text-sidebar-text">Branch Performance</h4>
             </div>
             
             <!-- Time Period Toggle Buttons -->
-            <div class="flex items-center gap-2">
-             
-              <div class="inline-flex rounded-md shadow-sm" role="group">
+            <div class="flex items-center gap-2 w-full sm:w-auto">
+              <div class="inline-flex rounded-md shadow-sm w-full sm:w-auto" role="group">
                 <button type="button" onclick="loadBranchData('week')" 
-                        class="px-3 py-1.5 text-sm font-medium rounded-l-lg border border-sidebar-border focus:z-10 focus:ring-2 focus:ring-sidebar-accent 
-                              hover:bg-sidebar-hover">
+                        class="px-2 sm:px-3 py-1.5 text-xs sm:text-sm font-medium rounded-l-lg border border-sidebar-border focus:z-10 focus:ring-2 focus:ring-sidebar-accent 
+                              hover:bg-sidebar-hover flex-1 sm:flex-none">
                   This Week
                 </button>
                 <button type="button" onclick="loadBranchData('month')" 
-                        class="px-3 py-1.5 text-sm font-medium border-t border-b border-sidebar-border focus:z-10 focus:ring-2 focus:ring-sidebar-accent 
-                              bg-sidebar-accent text-white">
+                        class="px-2 sm:px-3 py-1.5 text-xs sm:text-sm font-medium border-t border-b border-sidebar-border focus:z-10 focus:ring-2 focus:ring-sidebar-accent 
+                              bg-sidebar-accent text-white flex-1 sm:flex-none">
                   This Month
                 </button>
                 <button type="button" onclick="loadBranchData('year')" 
-                        class="px-3 py-1.5 text-sm font-medium rounded-r-lg border border-sidebar-border focus:z-10 focus:ring-2 focus:ring-sidebar-accent 
-                              hover:bg-sidebar-hover">
+                        class="px-2 sm:px-3 py-1.5 text-xs sm:text-sm font-medium rounded-r-lg border border-sidebar-border focus:z-10 focus:ring-2 focus:ring-sidebar-accent 
+                              hover:bg-sidebar-hover flex-1 sm:flex-none">
                   This Year
                 </button>
               </div>
@@ -1548,39 +1612,39 @@ function time_elapsed_string($datetime, $full = false) {
             <table class="w-full">
                 <thead>
                     <tr class="bg-gray-50 border-b border-sidebar-border">
-                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(0)">
-                            <div class="flex items-center gap-1.5">
-                                <i class="fas fa-building text-sidebar-accent"></i> Branch
+                        <th class="px-2 sm:px-4 py-2 sm:py-3.5 text-left text-xs sm:text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(0)">
+                            <div class="flex items-center gap-1 sm:gap-1.5">
+                                <i class="fas fa-building text-sidebar-accent text-xs sm:text-sm"></i> <span class="hidden sm:inline">Branch</span><span class="sm:hidden">Br.</span>
                             </div>
                         </th>
-                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(1)">
-                            <div class="flex items-center gap-1.5">
-                                <i class="fas fa-clipboard-list text-sidebar-accent"></i> Services
+                        <th class="px-2 sm:px-4 py-2 sm:py-3.5 text-left text-xs sm:text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(1)">
+                            <div class="flex items-center gap-1 sm:gap-1.5">
+                                <i class="fas fa-clipboard-list text-sidebar-accent text-xs sm:text-sm"></i> <span class="hidden sm:inline">Services</span><span class="sm:hidden">Svc.</span>
                             </div>
                         </th>
-                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(2)">
-                            <div class="flex items-center gap-1.5">
-                                <i class="fas fa-dollar-sign text-sidebar-accent"></i> Revenue
+                        <th class="px-2 sm:px-4 py-2 sm:py-3.5 text-left text-xs sm:text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(2)">
+                            <div class="flex items-center gap-1 sm:gap-1.5">
+                                <i class="fas fa-dollar-sign text-sidebar-accent text-xs sm:text-sm"></i> <span class="hidden sm:inline">Revenue</span><span class="sm:hidden">Rev.</span>
                             </div>
                         </th>
-                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(3)">
-                            <div class="flex items-center gap-1.5">
-                                <i class="fas fa-credit-card text-sidebar-accent"></i> Expenses
+                        <th class="px-2 sm:px-4 py-2 sm:py-3.5 text-left text-xs sm:text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(3)">
+                            <div class="flex items-center gap-1 sm:gap-1.5">
+                                <i class="fas fa-credit-card text-sidebar-accent text-xs sm:text-sm"></i> <span class="hidden sm:inline">Expenses</span><span class="sm:hidden">Exp.</span>
                             </div>
                         </th>
-                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(3)">
-                            <div class="flex items-center gap-1.5">
-                                <i class="fas fa-coins text-sidebar-accent"></i> Capital
+                        <th class="px-2 sm:px-4 py-2 sm:py-3.5 text-left text-xs sm:text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(3)">
+                            <div class="flex items-center gap-1 sm:gap-1.5">
+                                <i class="fas fa-coins text-sidebar-accent text-xs sm:text-sm"></i> <span class="hidden sm:inline">Capital</span><span class="sm:hidden">Cap.</span>
                             </div>
                         </th>
-                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(4)">
-                            <div class="flex items-center gap-1.5">
-                                <i class="fas fa-chart-line text-sidebar-accent"></i> Profit
+                        <th class="px-2 sm:px-4 py-2 sm:py-3.5 text-left text-xs sm:text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(4)">
+                            <div class="flex items-center gap-1 sm:gap-1.5">
+                                <i class="fas fa-chart-line text-sidebar-accent text-xs sm:text-sm"></i> <span class="hidden sm:inline">Profit</span><span class="sm:hidden">Prof.</span>
                             </div>
                         </th>
-                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(5)">
-                            <div class="flex items-center gap-1.5">
-                                <i class="fas fa-percentage text-sidebar-accent"></i> Growth
+                        <th class="px-2 sm:px-4 py-2 sm:py-3.5 text-left text-xs sm:text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(5)">
+                            <div class="flex items-center gap-1 sm:gap-1.5">
+                                <i class="fas fa-percentage text-sidebar-accent text-xs sm:text-sm"></i> <span class="hidden sm:inline">Growth</span><span class="sm:hidden">Gr.</span>
                             </div>
                         </th>
                     </tr>
@@ -1678,22 +1742,22 @@ function time_elapsed_string($datetime, $full = false) {
                         // $marginIcon = $margin >= 0 ? 'fa-arrow-up' : 'fa-arrow-down';
                         ?>
                         <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
-                            <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">
+                            <td class="px-2 sm:px-4 py-2 sm:py-3.5 text-xs sm:text-sm text-sidebar-text font-medium">
                                 <div class="flex items-center">
-                                    <i class="fas fa-store mr-2 text-sidebar-accent"></i>
+                                    <i class="fas fa-store mr-1 sm:mr-2 text-sidebar-accent text-xs sm:text-sm"></i>
                                     <div>
                                         <div class="branch-name"><?php echo $branchName; ?></div>
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo $serviceCount; ?></td>
-                            <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱<?php echo $formattedRevenue; ?></td>
-                            <td class="px-4 py-3.5 text-sm text-sidebar-text">₱<?php echo $formattedExpenses; ?></td>
-                            <td class="px-4 py-3.5 text-sm text-sidebar-text">₱<?php echo $formattedCapital; ?></td>
-                            <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱<?php echo $formattedProfit; ?></td>
-                            <td class="px-4 py-3.5 text-sm">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <?php echo $profitClass; ?> border">
-                                    <i class="fas <?php echo $profitIcon; ?> mr-1"></i> <?php echo $formattedMargin; ?>%
+                            <td class="px-2 sm:px-4 py-2 sm:py-3.5 text-xs sm:text-sm text-sidebar-text"><?php echo $serviceCount; ?></td>
+                            <td class="px-2 sm:px-4 py-2 sm:py-3.5 text-xs sm:text-sm font-medium text-sidebar-text"><span class="hidden sm:inline">₱</span><?php echo $formattedRevenue; ?></td>
+                            <td class="px-2 sm:px-4 py-2 sm:py-3.5 text-xs sm:text-sm text-sidebar-text"><span class="hidden sm:inline">₱</span><?php echo $formattedExpenses; ?></td>
+                            <td class="px-2 sm:px-4 py-2 sm:py-3.5 text-xs sm:text-sm text-sidebar-text"><span class="hidden sm:inline">₱</span><?php echo $formattedCapital; ?></td>
+                            <td class="px-2 sm:px-4 py-2 sm:py-3.5 text-xs sm:text-sm font-medium text-sidebar-text"><span class="hidden sm:inline">₱</span><?php echo $formattedProfit; ?></td>
+                            <td class="px-2 sm:px-4 py-2 sm:py-3.5 text-xs sm:text-sm">
+                                <span class="inline-flex items-center px-1.5 sm:px-2.5 py-0.5 rounded-full text-xs font-medium <?php echo $profitClass; ?> border">
+                                    <i class="fas <?php echo $profitIcon; ?> mr-1 text-xs"></i> <?php echo $formattedMargin; ?>%
                                 </span>
                             </td>
                         </tr>
@@ -1702,7 +1766,7 @@ function time_elapsed_string($datetime, $full = false) {
                 } else {
                     ?>
                     <tr>
-                        <td colspan="7" class="px-4 py-3.5 text-sm text-center text-sidebar-text">No branch data available for the current month.</td>
+                        <td colspan="7" class="px-2 sm:px-4 py-2 sm:py-3.5 text-xs sm:text-sm text-center text-sidebar-text">No branch data available for the current month.</td>
                     </tr>
                     <?php
                 }
@@ -1736,38 +1800,23 @@ function time_elapsed_string($datetime, $full = false) {
   <!-- Recent Inventory Activity -->
 <div class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden">
   <!-- Header Section - Made responsive with better stacking -->
-  <div class="bg-sidebar-hover p-4 border-b border-sidebar-border">
+  <div class="bg-sidebar-hover p-3 sm:p-4 border-b border-sidebar-border">
     <!-- Desktop layout for big screens - Title on left, controls on right -->
-    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
       <!-- Title and Counter -->
-      <div class="flex items-center gap-3 mb-4 lg:mb-0">
-        <h3 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Recent Inventory Activity</h3>
+      <div class="flex items-center gap-3">
+        <h3 class="text-base sm:text-lg font-bold text-sidebar-text">Recent Inventory Activity</h3>
         
-        <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+        <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-2 sm:px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
           18
         </span>
       </div>
       
-      <!-- Controls for big screens - aligned right -->
-      <div class="hidden lg:flex items-center gap-3">
-
-        <!-- Manage Inventory Button -->
-        <a href="inventory_management.php">
-          <button class="px-4 py-2 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap">
-            <i class="fas fa-box"></i> <span>Manage Inventory</span>
-          </button>
-        </a>
-      </div>
-    </div>
-    
-    <!-- Mobile/Tablet Controls - Only visible on smaller screens -->
-    <div class="lg:hidden w-full mt-4">
-
-      <!-- Second row: Manage Inventory Button - Full width -->
-      <div class="w-full">
-        <a href="inventory_management.php" class="w-full block">
-          <button class="px-4 py-2.5 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap w-full justify-center">
-            <i class="fas fa-box"></i> <span>Manage Inventory</span>
+      <!-- Manage Inventory Button -->
+      <div class="w-full sm:w-auto">
+        <a href="inventory_management.php" class="w-full sm:w-auto block">
+          <button class="px-3 sm:px-4 py-2 bg-sidebar-accent text-white rounded-lg text-xs sm:text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm w-full sm:w-auto justify-center">
+            <i class="fas fa-box text-xs sm:text-sm"></i> <span>Manage Inventory</span>
           </button>
         </a>
       </div>
@@ -1785,34 +1834,34 @@ function time_elapsed_string($datetime, $full = false) {
       <table class="w-full">
         <thead>
           <tr class="bg-gray-50 border-b border-sidebar-border">
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(0)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-box text-sidebar-accent"></i> Item
+            <th class="px-2 sm:px-4 py-2 sm:py-3.5 text-left text-xs sm:text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(0)">
+              <div class="flex items-center gap-1 sm:gap-1.5">
+                <i class="fas fa-box text-sidebar-accent text-xs sm:text-sm"></i> <span class="hidden sm:inline">Item</span><span class="sm:hidden">Item</span>
               </div>
             </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(1)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-barcode text-sidebar-accent"></i> SKU
+            <th class="px-2 sm:px-4 py-2 sm:py-3.5 text-left text-xs sm:text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(1)">
+              <div class="flex items-center gap-1 sm:gap-1.5">
+                <i class="fas fa-barcode text-sidebar-accent text-xs sm:text-sm"></i> <span class="hidden sm:inline">SKU</span><span class="sm:hidden">ID</span>
               </div>
             </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(2)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-chart-line text-sidebar-accent"></i> Activity
+            <th class="px-2 sm:px-4 py-2 sm:py-3.5 text-left text-xs sm:text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(2)">
+              <div class="flex items-center gap-1 sm:gap-1.5">
+                <i class="fas fa-chart-line text-sidebar-accent text-xs sm:text-sm"></i> <span class="hidden sm:inline">Activity</span><span class="sm:hidden">Act.</span>
               </div>
             </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(3)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-calendar-alt text-sidebar-accent"></i> Date
+            <th class="px-2 sm:px-4 py-2 sm:py-3.5 text-left text-xs sm:text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(3)">
+              <div class="flex items-center gap-1 sm:gap-1.5">
+                <i class="fas fa-calendar-alt text-sidebar-accent text-xs sm:text-sm"></i> <span class="hidden sm:inline">Date</span><span class="sm:hidden">Date</span>
               </div>
             </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(4)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-cubes text-sidebar-accent"></i> Quantity
+            <th class="px-2 sm:px-4 py-2 sm:py-3.5 text-left text-xs sm:text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(4)">
+              <div class="flex items-center gap-1 sm:gap-1.5">
+                <i class="fas fa-cubes text-sidebar-accent text-xs sm:text-sm"></i> <span class="hidden sm:inline">Quantity</span><span class="sm:hidden">Qty</span>
               </div>
             </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(5)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-building text-sidebar-accent"></i> Branch
+            <th class="px-2 sm:px-4 py-2 sm:py-3.5 text-left text-xs sm:text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(5)">
+              <div class="flex items-center gap-1 sm:gap-1.5">
+                <i class="fas fa-building text-sidebar-accent text-xs sm:text-sm"></i> <span class="hidden sm:inline">Branch</span><span class="sm:hidden">Br.</span>
               </div>
             </th>
           </tr>
@@ -1825,20 +1874,20 @@ function time_elapsed_string($datetime, $full = false) {
   </div>
   
   <!-- Pagination Footer -->
-  <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
-    <div id="inventoryPaginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
+  <div class="sticky bottom-0 left-0 right-0 px-3 sm:px-4 py-2 sm:py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-4">
+    <div id="inventoryPaginationInfo" class="text-xs sm:text-sm text-gray-500 text-center sm:text-left">
     </div>
-    <div class="flex space-x-2" id="paginationControls">
-      <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 cursor-not-allowed" disabled>&laquo;</button>
-      <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm bg-sidebar-accent text-white">1</button>
-      <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&raquo;</button>
+    <div class="flex space-x-1 sm:space-x-2" id="paginationControls">
+      <button class="px-2 sm:px-3.5 py-1 sm:py-1.5 border border-sidebar-border rounded text-xs sm:text-sm hover:bg-sidebar-hover opacity-50 cursor-not-allowed" disabled>&laquo;</button>
+      <button class="px-2 sm:px-3.5 py-1 sm:py-1.5 border border-sidebar-border rounded text-xs sm:text-sm bg-sidebar-accent text-white">1</button>
+      <button class="px-2 sm:px-3.5 py-1 sm:py-1.5 border border-sidebar-border rounded text-xs sm:text-sm hover:bg-sidebar-hover">&raquo;</button>
     </div>
   </div>
 
 </div>
             
   <!-- Footer -->
-  <footer class="bg-white rounded-lg shadow-sidebar border border-sidebar-border p-4 text-center text-sm text-gray-500 mt-8">
+  <footer class="bg-white rounded-lg shadow-sidebar border border-sidebar-border p-3 sm:p-4 text-center text-xs sm:text-sm text-gray-500 mt-6 sm:mt-8">
     <p>© 2025 GrievEase.</p>
   </footer>
 </div>
@@ -1901,28 +1950,18 @@ function loadInventoryLogs(page = 1) {
                         day: 'numeric',
                         hour: '2-digit',
                         minute: '2-digit'
-                    });
-                    
-                    // Format quantity
-                    const quantityDisplay = formatQuantityChange(log.quantity_change, log.old_quantity, log.new_quantity);
-
-                    row.innerHTML = `
-                        <td class="px-4 py-3.5 text-sm text-sidebar-text">${log.item_name}</td>
-                        <td class="px-4 py-3.5 text-sm text-sidebar-text">
-                            <span class="inline-block bg-gray-100 rounded-full px-2 py-1 text-xs font-medium">
-                                ID: ${log.inventory_id}
                             </span>
                         </td>
-                        <td class="px-4 py-3.5 text-sm">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${badgeClass} border">
-                                <i class="fas ${badgeIcon} mr-1"></i> ${log.activity_type}
+                        <td class="px-2 sm:px-4 py-2 sm:py-3.5 text-xs sm:text-sm">
+                            <span class="inline-flex items-center px-1.5 sm:px-2.5 py-0.5 rounded-full text-xs font-medium border ${badgeClass}">
+                                <i class="fas ${badgeIcon} mr-1 text-xs"></i> <span class="hidden sm:inline">${log.activity_type}</span><span class="sm:hidden">${log.activity_type.substring(0, 3)}</span>
                             </span>
                         </td>
-                        <td class="px-4 py-3.5 text-sm text-sidebar-text">${formattedDate}</td>
-                        <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">
+                        <td class="px-2 sm:px-4 py-2 sm:py-3.5 text-xs sm:text-sm text-sidebar-text">${formattedDate}</td>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3.5 text-xs sm:text-sm font-medium text-sidebar-text">
                             ${quantityDisplay}
                         </td>
-                        <td class="px-4 py-3.5 text-sm text-sidebar-text">${branchName || 'N/A'}</td>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3.5 text-xs sm:text-sm text-sidebar-text">${branchName || 'N/A'}</td>
                     `;
                     tableBody.appendChild(row);
                 });
