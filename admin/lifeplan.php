@@ -2692,7 +2692,7 @@ function updateBeneficiaryCombinedAddress() {
     // Join the parts with commas
     const combinedAddress = addressParts.join(', ');
     // Assuming you have a hidden field for the beneficiary address
-    document.getElementById('beneficiaryAddress').value = combinedAddress;
+    document.getElementById('benefeciary_address').value = combinedAddress;
 }
 
 // Initialize beneficiary address dropdowns when the page loads
