@@ -1008,9 +1008,9 @@ foreach ($serviceData as $service => $branches) {
         </button>
         
         <!-- Improved Notification Dropdown -->
-        <div id="notifications-dropdown" class="absolute right-0 mt-3 w-96 bg-white rounded-lg shadow-card border border-sidebar-border z-50 hidden transform transition-all duration-300 opacity-0 translate-y-2" style="max-height: 85vh;">
+        <div id="notifications-dropdown" class="absolute right-0 mt-3 w-80 sm:w-96 bg-white rounded-lg shadow-card border border-sidebar-border z-50 hidden transform transition-all duration-300 opacity-0 translate-y-2" style="max-height: 85vh; max-width: calc(100vw - 2rem);">
             <!-- Notifications Header with improved styling -->
-            <div class="px-5 py-4 border-b border-sidebar-border flex justify-between items-center bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
+            <div class="px-3 sm:px-5 py-4 border-b border-sidebar-border flex justify-between items-center bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
                 <div class="flex items-center">
                     <div class="w-8 h-8 rounded-full bg-sidebar-accent bg-opacity-10 text-sidebar-accent flex items-center justify-center mr-3">
                         <i class="fas fa-bell"></i>
@@ -1044,9 +1044,9 @@ foreach ($serviceData as $service => $branches) {
                             $title = 'New ID validation request';
                         }
                         ?>
-                        <a href="<?php echo $notification['link_base']; ?>" class="block px-5 py-4 border-b border-sidebar-border hover:bg-sidebar-hover transition-all duration-300 flex items-start relative">
+                        <a href="<?php echo $notification['link_base']; ?>" class="block px-3 sm:px-5 py-4 border-b border-sidebar-border hover:bg-sidebar-hover transition-all duration-300 flex items-start relative">
                             <div class="absolute left-0 top-0 bottom-0 w-1 bg-<?php echo $color; ?>-500 rounded-r"></div>
-                            <div class="flex-shrink-0 bg-<?php echo $color; ?>-100 rounded-full p-2.5 mr-4">
+                            <div class="flex-shrink-0 bg-<?php echo $color; ?>-100 rounded-full p-2 sm:p-2.5 mr-3 sm:mr-4">
                                 <i class="<?php echo $icon; ?> text-<?php echo $color; ?>-600"></i>
                             </div>
                             <div class="flex-grow">
@@ -1083,7 +1083,7 @@ foreach ($serviceData as $service => $branches) {
             </div>
             
             <!-- Notifications Footer with improved styling -->
-            <div class="px-5 py-3 text-center border-t border-sidebar-border bg-gradient-to-r from-gray-50 to-white rounded-b-lg">
+            <div class="px-3 sm:px-5 py-3 text-center border-t border-sidebar-border bg-gradient-to-r from-gray-50 to-white rounded-b-lg">
                 <a href="notification.php" class="text-sm text-sidebar-accent hover:text-darkgold transition-colors font-medium inline-flex items-center">
                     View all notifications
                     <i class="fas fa-chevron-right ml-1 text-xs"></i>
@@ -1139,28 +1139,29 @@ function time_elapsed_string($datetime, $full = false) {
   </div>
 
   <!-- Analytics Cards -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
   <!-- Services This Month Card -->
   <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
     <!-- Card header with brighter gradient background -->
-    <div class="bg-gradient-to-r from-blue-100 to-blue-200 px-6 py-4">
+    <div class="bg-gradient-to-r from-blue-100 to-blue-200 px-4 sm:px-6 py-3 sm:py-4">
       <div class="flex items-center justify-between mb-1">
-        <h3 class="text-sm font-medium text-gray-700">Services This Month</h3>
-        <div class="w-10 h-10 rounded-full bg-white/90 text-slate-600 flex items-center justify-center">
-          <i class="fas fa-calendar-alt"></i>
+        <h3 class="text-xs sm:text-sm font-medium text-gray-700">Services This Month</h3>
+        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/90 text-slate-600 flex items-center justify-center">
+          <i class="fas fa-calendar-alt text-sm sm:text-base"></i>
         </div>
       </div>
       <div class="flex items-end">
-       <span class="text-2xl md:text-3xl font-bold text-gray-800"><?php echo $servicesCount; ?></span>
+       <span class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800"><?php echo $servicesCount; ?></span>
       </div>
     </div>
     
     <!-- Card footer with change indicator -->
-    <div class="px-6 py-3 bg-white border-t border-gray-100">
+    <div class="px-4 sm:px-6 py-2 sm:py-3 bg-white border-t border-gray-100">
       <div class="flex items-center text-emerald-600">
-        <i class="fas fa-arrow-up mr-1.5 text-xs"></i>
+        <i class="fas fa-arrow-up mr-1 sm:mr-1.5 text-xs"></i>
         <span class="font-medium text-xs"><?php echo number_format(abs($servicesChange), 1); ?>% </span>
-        <span class="text-xs text-gray-500 ml-1">from last month</span>
+        <span class="text-xs text-gray-500 ml-1 hidden sm:inline">from last month</span>
+        <span class="text-xs text-gray-500 ml-1 sm:hidden">vs last</span>
       </div>
     </div>
   </div>
@@ -1168,20 +1169,20 @@ function time_elapsed_string($datetime, $full = false) {
   <!-- Revenue Card -->
   <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
     <!-- Card header with brighter gradient background -->
-    <div class="bg-gradient-to-r from-green-100 to-green-200 px-6 py-4">
+    <div class="bg-gradient-to-r from-green-100 to-green-200 px-4 sm:px-6 py-3 sm:py-4">
       <div class="flex items-center justify-between mb-1">
-        <h3 class="text-sm font-medium text-gray-700">Revenue</h3>
-        <div class="w-10 h-10 rounded-full bg-white/90 text-green-600 flex items-center justify-center">
-          <i class="fas fa-peso-sign"></i>
+        <h3 class="text-xs sm:text-sm font-medium text-gray-700">Revenue</h3>
+        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/90 text-green-600 flex items-center justify-center">
+          <i class="fas fa-peso-sign text-sm sm:text-base"></i>
         </div>
       </div>
       <div class="flex items-end">
-      <span class="text-2xl md:text-3xl font-bold text-gray-800">₱<?php echo $formattedRevenue; ?></span>
+      <span class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800">₱<?php echo $formattedRevenue; ?></span>
       </div>
     </div>
     
     <!-- Card footer with change indicator -->
-    <div class="px-6 py-3 bg-white border-t border-gray-100">
+    <div class="px-4 sm:px-6 py-2 sm:py-3 bg-white border-t border-gray-100">
       <div class="flex items-center text-emerald-600">
         <i class="fas fa-arrow-up mr-1.5 text-xs"></i>
         <span class="font-medium text-xs"><?php echo number_format(abs($revenueChange), 1); ?>% </span>
@@ -1193,20 +1194,20 @@ function time_elapsed_string($datetime, $full = false) {
   <!-- Pending Services Card -->
   <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
     <!-- Card header with brighter gradient background -->
-    <div class="bg-gradient-to-r from-orange-100 to-orange-200 px-6 py-4">
+    <div class="bg-gradient-to-r from-orange-100 to-orange-200 px-4 sm:px-6 py-3 sm:py-4">
       <div class="flex items-center justify-between mb-1">
-        <h3 class="text-sm font-medium text-gray-700">Pending Services</h3>
-        <div class="w-10 h-10 rounded-full bg-white/90 text-orange-600 flex items-center justify-center">
-          <i class="fas fa-tasks"></i>
+        <h3 class="text-xs sm:text-sm font-medium text-gray-700">Pending Services</h3>
+        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/90 text-orange-600 flex items-center justify-center">
+          <i class="fas fa-tasks text-sm sm:text-base"></i>
         </div>
       </div>
       <div class="flex items-end">
-        <span class="text-2xl md:text-3xl font-bold text-gray-800"><?php echo $pendingCount; ?></span>
+        <span class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800"><?php echo $pendingCount; ?></span>
       </div>
     </div>
     
     <!-- Card footer with change indicator -->
-    <div class="px-6 py-3 bg-white border-t border-gray-100">
+    <div class="px-4 sm:px-6 py-2 sm:py-3 bg-white border-t border-gray-100">
       <div class="flex items-center text-rose-600">
         <i class="fas fa-arrow-down mr-1.5 text-xs"></i>
         <span class="font-medium text-xs"><?php echo number_format(abs($pendingChange), 1); ?>% </span>
@@ -1218,20 +1219,20 @@ function time_elapsed_string($datetime, $full = false) {
   <!-- Completed Services Card -->
   <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
     <!-- Card header with brighter gradient background -->
-    <div class="bg-gradient-to-r from-purple-100 to-purple-200 px-6 py-4">
+    <div class="bg-gradient-to-r from-purple-100 to-purple-200 px-4 sm:px-6 py-3 sm:py-4">
       <div class="flex items-center justify-between mb-1">
-        <h3 class="text-sm font-medium text-gray-700">Completed Services</h3>
-        <div class="w-10 h-10 rounded-full bg-white/90 text-purple-600 flex items-center justify-center">
-          <i class="fas fa-clipboard-check"></i>
+        <h3 class="text-xs sm:text-sm font-medium text-gray-700">Completed Services</h3>
+        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/90 text-purple-600 flex items-center justify-center">
+          <i class="fas fa-clipboard-check text-sm sm:text-base"></i>
         </div>
       </div>
       <div class="flex items-end">
-        <span class="text-2xl md:text-3xl font-bold text-gray-800"><?php echo $completedCount; ?></span>
+        <span class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800"><?php echo $completedCount; ?></span>
       </div>
     </div>
     
     <!-- Card footer with change indicator -->
-    <div class="px-6 py-3 bg-white border-t border-gray-100">
+    <div class="px-4 sm:px-6 py-2 sm:py-3 bg-white border-t border-gray-100">
       <div class="flex items-center text-emerald-600">
         <i class="fas fa-arrow-up mr-1.5 text-xs"></i>
         <span class="font-medium text-xs"><?php echo number_format(abs($completedChange), 1); ?>% </span>
@@ -1242,68 +1243,68 @@ function time_elapsed_string($datetime, $full = false) {
 </div>
 
  <!-- Branch Comparison -->
- <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+ <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 mb-8">
   <!-- Pila Branch Card -->
   <div class="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-200">
     <!-- Card header with subdued gradient background -->
-    <div class="bg-gradient-to-r from-gray-100 to-slate-500 p-5 border-b border-gray-200">
-      <div class="flex items-center justify-between">
+    <div class="bg-gradient-to-r from-gray-100 to-slate-500 p-4 sm:p-5 border-b border-gray-200">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div class="flex items-center space-x-3">
-          <div class="w-10 h-10 rounded-full bg-white/90 text-slate-700 flex items-center justify-center shadow-sm">
-            <i class="fas fa-building"></i>
+          <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/90 text-slate-700 flex items-center justify-center shadow-sm">
+            <i class="fas fa-building text-sm sm:text-base"></i>
           </div>
-          <h3 class="text-lg font-semibold text-gray-800">Pila Branch</h3>
+          <h3 class="text-base sm:text-lg font-semibold text-gray-800">Pila Branch</h3>
         </div>
-        <span class="px-3 py-1 text-xs font-medium bg-slate-100 text-slate-700 rounded-full">Main Branch</span>
+        <span class="px-2 sm:px-3 py-1 text-xs font-medium bg-slate-100 text-slate-700 rounded-full self-start sm:self-auto">Main Branch</span>
       </div>
     </div>
     
     <!-- Card content -->
-    <div class="p-6">
-      <div class="grid grid-cols-2 gap-6">
+    <div class="p-4 sm:p-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
         <!-- Revenue -->
-        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-          <div class="flex items-center mb-1 text-gray-600 text-sm">
+        <div class="bg-gray-50 rounded-lg p-3 sm:p-4 border border-gray-200">
+          <div class="flex items-center mb-1 text-gray-600 text-xs sm:text-sm">
             <i class="fas fa-chart-line mr-2"></i>
             <span>Revenue</span>
           </div>
-          <div class="text-xl font-bold text-gray-800">₱<?php echo number_format($pilaMetrics['revenue'], 2); ?></div>
+          <div class="text-lg sm:text-xl font-bold text-gray-800">₱<?php echo number_format($pilaMetrics['revenue'], 2); ?></div>
           <div class="mt-2 text-xs text-gray-500">
   Current month
 </div>
         </div>
         
         <!-- Profit -->
-        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-          <div class="flex items-center mb-1 text-gray-600 text-sm">
+        <div class="bg-gray-50 rounded-lg p-3 sm:p-4 border border-gray-200">
+          <div class="flex items-center mb-1 text-gray-600 text-xs sm:text-sm">
             <i class="fas fa-wallet mr-2"></i>
             <span>Profit</span>
           </div>
-          <div class="text-xl font-bold text-gray-800">₱<?php echo number_format($pilaMetrics['profit'], 2); ?></div>
+          <div class="text-lg sm:text-xl font-bold text-gray-800">₱<?php echo number_format($pilaMetrics['profit'], 2); ?></div>
           <div class="mt-2 text-xs text-gray-500">
   Current month
 </div>
         </div>
         
         <!-- Margin -->
-        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-          <div class="flex items-center mb-1 text-gray-600 text-sm">
+        <div class="bg-gray-50 rounded-lg p-3 sm:p-4 border border-gray-200">
+          <div class="flex items-center mb-1 text-gray-600 text-xs sm:text-sm">
             <i class="fas fa-percentage mr-2"></i>
             <span>Margin</span>
           </div>
-          <div class="text-xl font-bold text-gray-800"><?php echo number_format($pilaMetrics['margin'], 1); ?>%</div>
+          <div class="text-lg sm:text-xl font-bold text-gray-800"><?php echo number_format($pilaMetrics['margin'], 1); ?>%</div>
           <div class="mt-2 text-xs text-gray-500">
   Current month
 </div>
         </div>
         
         <!-- Customers -->
-        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-          <div class="flex items-center mb-1 text-gray-600 text-sm">
+        <div class="bg-gray-50 rounded-lg p-3 sm:p-4 border border-gray-200">
+          <div class="flex items-center mb-1 text-gray-600 text-xs sm:text-sm">
             <i class="fas fa-users mr-2"></i>
             <span>Customers</span>
           </div>
-          <div class="text-xl font-bold text-gray-800"><?php echo $pilaMetrics['customers']; ?></div>
+          <div class="text-lg sm:text-xl font-bold text-gray-800"><?php echo $pilaMetrics['customers']; ?></div>
           <div class="mt-2 text-xs text-gray-500">
   Current month
 </div>
@@ -1315,64 +1316,64 @@ function time_elapsed_string($datetime, $full = false) {
   <!-- Paete Branch Card -->
   <div class="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-200">
     <!-- Card header with subdued gradient background -->
-    <div class="bg-gradient-to-r from-gray-100 to-slate-500 p-5 border-b border-gray-200">
-      <div class="flex items-center justify-between">
+    <div class="bg-gradient-to-r from-gray-100 to-slate-500 p-4 sm:p-5 border-b border-gray-200">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div class="flex items-center space-x-3">
-          <div class="w-10 h-10 rounded-full bg-white/90 text-slate-700 flex items-center justify-center shadow-sm">
-            <i class="fas fa-store"></i>
+          <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/90 text-slate-700 flex items-center justify-center shadow-sm">
+            <i class="fas fa-store text-sm sm:text-base"></i>
           </div>
-          <h3 class="text-lg font-semibold text-gray-800">Paete Branch</h3>
+          <h3 class="text-base sm:text-lg font-semibold text-gray-800">Paete Branch</h3>
         </div>
-        <span class="px-3 py-1 text-xs font-medium bg-slate-100 text-slate-700 rounded-full">Secondary Branch</span>
+        <span class="px-2 sm:px-3 py-1 text-xs font-medium bg-slate-100 text-slate-700 rounded-full self-start sm:self-auto">Secondary Branch</span>
       </div>
     </div>
     
     <!-- Card content -->
-    <div class="p-6">
-      <div class="grid grid-cols-2 gap-6">
+    <div class="p-4 sm:p-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
         <!-- Revenue -->
-        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-          <div class="flex items-center mb-1 text-gray-600 text-sm">
+        <div class="bg-gray-50 rounded-lg p-3 sm:p-4 border border-gray-200">
+          <div class="flex items-center mb-1 text-gray-600 text-xs sm:text-sm">
             <i class="fas fa-chart-line mr-2"></i>
             <span>Revenue</span>
           </div>
-          <div class="text-xl font-bold text-gray-800">₱<?php echo number_format($paeteMetrics['revenue'], 2); ?></div>
+          <div class="text-lg sm:text-xl font-bold text-gray-800">₱<?php echo number_format($paeteMetrics['revenue'], 2); ?></div>
           <div class="mt-2 text-xs text-gray-500">
   Current month
 </div>
         </div>
         
         <!-- Profit -->
-        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-          <div class="flex items-center mb-1 text-gray-600 text-sm">
+        <div class="bg-gray-50 rounded-lg p-3 sm:p-4 border border-gray-200">
+          <div class="flex items-center mb-1 text-gray-600 text-xs sm:text-sm">
             <i class="fas fa-wallet mr-2"></i>
             <span>Profit</span>
           </div>
-          <div class="text-xl font-bold text-gray-800">₱<?php echo number_format($paeteMetrics['profit'], 2); ?></div>
+          <div class="text-lg sm:text-xl font-bold text-gray-800">₱<?php echo number_format($paeteMetrics['profit'], 2); ?></div>
           <div class="mt-2 text-xs text-gray-500">
   Current month
 </div>
         </div>
         
         <!-- Margin -->
-        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-          <div class="flex items-center mb-1 text-gray-600 text-sm">
+        <div class="bg-gray-50 rounded-lg p-3 sm:p-4 border border-gray-200">
+          <div class="flex items-center mb-1 text-gray-600 text-xs sm:text-sm">
             <i class="fas fa-percentage mr-2"></i>
             <span>Margin</span>
           </div>
-          <div class="text-xl font-bold text-gray-800"><?php echo number_format($paeteMetrics['margin'], 1); ?>%</div>
+          <div class="text-lg sm:text-xl font-bold text-gray-800"><?php echo number_format($paeteMetrics['margin'], 1); ?>%</div>
           <div class="mt-2 text-xs text-gray-500">
   Current month
 </div>
         </div>
         
         <!-- Customers -->
-        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-          <div class="flex items-center mb-1 text-gray-600 text-sm">
+        <div class="bg-gray-50 rounded-lg p-3 sm:p-4 border border-gray-200">
+          <div class="flex items-center mb-1 text-gray-600 text-xs sm:text-sm">
             <i class="fas fa-users mr-2"></i>
             <span>Customers</span>
           </div>
-          <div class="text-xl font-bold text-gray-800"><?php echo $paeteMetrics['customers']; ?></div>
+          <div class="text-lg sm:text-xl font-bold text-gray-800"><?php echo $paeteMetrics['customers']; ?></div>
           <div class="mt-2 text-xs text-gray-500">
   Current month
 </div>
@@ -1387,30 +1388,30 @@ function time_elapsed_string($datetime, $full = false) {
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
   <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 w-full">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-4 sm:p-5 border-b border-sidebar-border">
-      <div class="flex items-center justify-between w-full">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <h3 class="font-medium text-sidebar-text">Accrued Revenue</h3>
-        <div class="flex items-center gap-2">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2">
           <div class="flex items-center bg-gray-100 rounded-full p-1">
-            <button id="monthlyView" class="px-3 py-1 rounded-full text-sm font-medium bg-blue-500 text-white">
+            <button id="monthlyView" class="px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium bg-blue-500 text-white">
               Monthly
             </button>
-            <button id="yearlyView" class="px-3 py-1 rounded-full text-sm font-medium text-gray-600 hover:text-gray-800">
+            <button id="yearlyView" class="px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium text-gray-600 hover:text-gray-800">
               Yearly
             </button>
           </div>
-          <button id="exportProjectedIncome" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm flex items-center gap-1">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <button id="exportProjectedIncome" class="bg-blue-500 hover:bg-blue-600 text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm flex items-center gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
               <polyline points="7 10 12 15 17 10"></polyline>
               <line x1="12" y1="15" x2="12" y2="3"></line>
             </svg>
-            Export
+            <span class="hidden sm:inline">Export</span>
           </button>
         </div>
       </div>
     </div>
     <div class="p-4 sm:p-5">
-      <div class="w-full h-48 md:h-64">
+      <div class="w-full h-48 sm:h-56 md:h-64">
         <div id="projectedIncomeChart" style="width: 100%; height: 100%;"></div>
       </div>
     </div>
@@ -1418,30 +1419,30 @@ function time_elapsed_string($datetime, $full = false) {
   
   <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 w-full">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-4 sm:p-5 border-b border-sidebar-border">
-      <div class="flex items-center justify-between w-full">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <h3 class="font-medium text-sidebar-text">Cash Revenue</h3>
-        <div class="flex items-center gap-2">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2">
           <div class="flex items-center bg-gray-100 rounded-full p-1">
-            <button id="cashMonthlyView" class="px-3 py-1 rounded-full text-sm font-medium <?php echo (!isset($_GET['view']) || $_GET['view'] !== 'yearly') ? 'bg-[#4ade80] text-white' : 'text-gray-600 hover:text-gray-800' ?>">
+            <button id="cashMonthlyView" class="px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium <?php echo (!isset($_GET['view']) || $_GET['view'] !== 'yearly') ? 'bg-[#4ade80] text-white' : 'text-gray-600 hover:text-gray-800' ?>">
               Monthly
             </button>
-            <button id="cashYearlyView" class="px-3 py-1 rounded-full text-sm font-medium <?php echo (isset($_GET['view']) && $_GET['view'] === 'yearly') ? 'bg-[#4ade80] text-white' : 'text-gray-600 hover:text-gray-800' ?>">
+            <button id="cashYearlyView" class="px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium <?php echo (isset($_GET['view']) && $_GET['view'] === 'yearly') ? 'bg-[#4ade80] text-white' : 'text-gray-600 hover:text-gray-800' ?>">
               Yearly
             </button>
           </div>
-          <button id="exportCashRevenue" class="bg-[#4ade80] hover:bg-[#3bc973] text-white px-3 py-1 rounded text-sm flex items-center gap-1">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <button id="exportCashRevenue" class="bg-[#4ade80] hover:bg-[#3bc973] text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm flex items-center gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
               <polyline points="7 10 12 15 17 10"></polyline>
               <line x1="12" y1="15" x2="12" y2="3"></line>
             </svg>
-            Export
+            <span class="hidden sm:inline">Export</span>
           </button>
         </div>
       </div>
     </div>
     <div class="p-4 sm:p-5">
-      <div class="w-full h-48 md:h-64">
+      <div class="w-full h-48 sm:h-56 md:h-64">
         <div id="revenueChart" style="width: 100%; height: 100%;"></div>
       </div>
     </div>
@@ -1452,30 +1453,30 @@ function time_elapsed_string($datetime, $full = false) {
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
   <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 w-full">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-4 sm:p-5 border-b border-sidebar-border">
-      <div class="flex items-center justify-between w-full">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <h3 class="font-medium text-sidebar-text">Revenue by Branch</h3>
-        <div class="flex items-center gap-2">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2">
           <div class="flex items-center bg-gray-100 rounded-full p-1">
-            <button id="monthlyViewBranch" class="px-3 py-1 rounded-full text-sm font-medium bg-blue-500 text-white">
+            <button id="monthlyViewBranch" class="px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium bg-blue-500 text-white">
               Monthly
             </button>
-            <button id="yearlyViewBranch" class="px-3 py-1 rounded-full text-sm font-medium text-gray-600 hover:text-gray-800">
+            <button id="yearlyViewBranch" class="px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium text-gray-600 hover:text-gray-800">
               Yearly
             </button>
           </div>
-          <button id="exportPdfBtn" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm flex items-center gap-1">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <button id="exportPdfBtn" class="bg-blue-500 hover:bg-blue-600 text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm flex items-center gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
               <polyline points="7 10 12 15 17 10"></polyline>
               <line x1="12" y1="15" x2="12" y2="3"></line>
             </svg>
-            Export
+            <span class="hidden sm:inline">Export</span>
           </button>
         </div>
       </div>
     </div>
     <div class="p-4 sm:p-5">
-      <div class="w-full" style="min-height: 300px; height: 60vh; max-height: 500px;">
+      <div class="w-full" style="min-height: 250px; height: 50vh; max-height: 400px;">
         <div id="branchRevenueChart" style="width: 100%; height: 100%;"></div>
       </div>
     </div>
@@ -1484,13 +1485,13 @@ function time_elapsed_string($datetime, $full = false) {
   <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 w-full">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-4 sm:p-5 border-b border-sidebar-border">
       <h3 class="font-medium text-sidebar-text">Top Selling Packages</h3>
-      <button id="exportTopSellingPackages" class="bg-[#4ade80] hover:bg-[#3bc973] text-white px-3 py-1 rounded text-sm flex items-center gap-1">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <button id="exportTopSellingPackages" class="bg-[#4ade80] hover:bg-[#3bc973] text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm flex items-center gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
               <polyline points="7 10 12 15 17 10"></polyline>
               <line x1="12" y1="15" x2="12" y2="3"></line>
             </svg>
-            Export
+            <span class="hidden sm:inline">Export</span>
           </button>
     </div>
     <div class="p-4 sm:p-5">
