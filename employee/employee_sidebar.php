@@ -5,7 +5,7 @@
       <i class="fas fa-bars"></i>
     </button>
     <!-- <img src="../Landing_Page/Landing_images/logo.png" alt="GrievEase Logo" class="h-10 w-auto mr-3"> -->
-    <div class="text-2xl font-cinzel font-bold text-sidebar-accent">GrievEase</div>
+    <div id="logo-text" class="text-2xl font-cinzel font-bold text-sidebar-accent">GrievEase</div>
   </div>
     
     <!-- User Profile -->
@@ -100,6 +100,7 @@
         <h5 class="text-xs font-medium text-sidebar-accent uppercase tracking-wider">Communication</h5>
       </div>
       <ul class="list-none p-0 mb-6">
+        <li>
           <a href="employee_chat.php" class="sidebar-link flex items-center px-5 py-3 text-sidebar-text opacity-80 hover:opacity-100 no-underline transition-all duration-300 hover:bg-sidebar-hover">
             <i class="fas fa-comments w-5 text-center mr-3 text-sidebar-accent"></i>
             <span>Chats</span>

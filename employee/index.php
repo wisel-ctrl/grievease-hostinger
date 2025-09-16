@@ -304,10 +304,6 @@ $ongoing_services = $ongoing_data['ongoing_count'];
 
   <!-- Main Content -->
 <div id="main-content" class="lg:ml-64 p-3 sm:p-4 lg:p-6 bg-gray-50 min-h-screen transition-all duration-300 main-content">
-  <!-- Mobile hamburger menu -->
-  <div class="hamburger-menu lg:hidden mb-4" id="hamburger-menu">
-    <i class="fas fa-bars text-gray-600"></i>
-  </div>
   <!-- Header with breadcrumb and welcome message -->
   <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 bg-white p-4 sm:p-5 rounded-lg shadow-sidebar mobile-header">
     <div class="mb-2 sm:mb-0">
@@ -505,49 +501,6 @@ $ongoing_services = $ongoing_data['ongoing_count'];
 
   <script src="sidebar.js"></script>
   <script src="tailwind.js"></script>
-<script>
-// Mobile hamburger menu functionality
-document.addEventListener('DOMContentLoaded', function() {
-    const hamburgerMenu = document.getElementById('hamburger-menu');
-    const sidebar = document.getElementById('sidebar');
-    const sidebarOverlay = document.getElementById('sidebar-overlay');
-    
-    // Toggle sidebar on hamburger click
-    if (hamburgerMenu) {
-        hamburgerMenu.addEventListener('click', function() {
-            sidebar.classList.toggle('show');
-            sidebarOverlay.classList.toggle('show');
-        });
-    }
-    
-    // Close sidebar when clicking overlay
-    if (sidebarOverlay) {
-        sidebarOverlay.addEventListener('click', function() {
-            sidebar.classList.remove('show');
-            sidebarOverlay.classList.remove('show');
-        });
-    }
-    
-    // Close sidebar when clicking a link (mobile only)
-    const sidebarLinks = sidebar.querySelectorAll('a');
-    sidebarLinks.forEach(link => {
-        link.addEventListener('click', function() {
-            if (window.innerWidth <= 1023) {
-                sidebar.classList.remove('show');
-                sidebarOverlay.classList.remove('show');
-            }
-        });
-    });
-    
-    // Handle window resize
-    window.addEventListener('resize', function() {
-        if (window.innerWidth > 1023) {
-            sidebar.classList.remove('show');
-            sidebarOverlay.classList.remove('show');
-        }
-    });
-});
-</script>
 <script>
     // Revenue Toggle Functionality
   document.getElementById('revenue-toggle').addEventListener('click', function() {
