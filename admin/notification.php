@@ -243,7 +243,7 @@ function time_elapsed_string($datetime, $full = false) {
                         <i class="fas fa-arrow-left" aria-hidden="true"></i>
                     </button>
                     <div>
-                        <h1 class="text-2xl font-semibold text-sidebar-text font-playfair">Notifications</h1>
+                        <h1 class="text-2xl font-semibold text-sidebar-text">Notifications</h1>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
