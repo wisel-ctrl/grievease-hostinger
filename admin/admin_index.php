@@ -1204,26 +1204,26 @@ function time_elapsed_string($datetime, $full = false) {
   </div>
 
   <!-- Analytics Cards -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
   <!-- Services This Month Card -->
   <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
     <!-- Card header with brighter gradient background -->
-    <div class="bg-gradient-to-r from-blue-100 to-blue-200 px-6 py-4">
+    <div class="bg-gradient-to-r from-blue-100 to-blue-200 px-4 sm:px-6 py-3 sm:py-4">
       <div class="flex items-center justify-between mb-1">
-        <h3 class="text-sm font-medium text-gray-700">Services This Month</h3>
-        <div class="w-10 h-10 rounded-full bg-white/90 text-slate-600 flex items-center justify-center">
-          <i class="fas fa-calendar-alt"></i>
+        <h3 class="text-xs sm:text-sm font-medium text-gray-700 leading-tight">Services This Month</h3>
+        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/90 text-slate-600 flex items-center justify-center">
+          <i class="fas fa-calendar-alt text-sm sm:text-base"></i>
         </div>
       </div>
       <div class="flex items-end">
-       <span class="text-2xl md:text-3xl font-bold text-gray-800"><?php echo $servicesCount; ?></span>
+       <span class="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800"><?php echo $servicesCount; ?></span>
       </div>
     </div>
     
     <!-- Card footer with change indicator -->
-    <div class="px-6 py-3 bg-white border-t border-gray-100">
+    <div class="px-4 sm:px-6 py-2 sm:py-3 bg-white border-t border-gray-100">
       <div class="flex items-center text-emerald-600">
-        <i class="fas fa-arrow-up mr-1.5 text-xs"></i>
+        <i class="fas fa-arrow-up mr-1 sm:mr-1.5 text-xs"></i>
         <span class="font-medium text-xs"><?php echo number_format(abs($servicesChange), 1); ?>% </span>
         <span class="text-xs text-gray-500 ml-1">from last month</span>
       </div>
@@ -1233,22 +1233,22 @@ function time_elapsed_string($datetime, $full = false) {
   <!-- Revenue Card -->
   <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
     <!-- Card header with brighter gradient background -->
-    <div class="bg-gradient-to-r from-green-100 to-green-200 px-6 py-4">
+    <div class="bg-gradient-to-r from-green-100 to-green-200 px-4 sm:px-6 py-3 sm:py-4">
       <div class="flex items-center justify-between mb-1">
-        <h3 class="text-sm font-medium text-gray-700">Revenue</h3>
-        <div class="w-10 h-10 rounded-full bg-white/90 text-green-600 flex items-center justify-center">
-          <i class="fas fa-peso-sign"></i>
+        <h3 class="text-xs sm:text-sm font-medium text-gray-700 leading-tight">Revenue</h3>
+        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/90 text-green-600 flex items-center justify-center">
+          <i class="fas fa-peso-sign text-sm sm:text-base"></i>
         </div>
       </div>
       <div class="flex items-end">
-      <span class="text-2xl md:text-3xl font-bold text-gray-800">₱<?php echo $formattedRevenue; ?></span>
+      <span class="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800">₱<?php echo $formattedRevenue; ?></span>
       </div>
     </div>
     
     <!-- Card footer with change indicator -->
-    <div class="px-6 py-3 bg-white border-t border-gray-100">
+    <div class="px-4 sm:px-6 py-2 sm:py-3 bg-white border-t border-gray-100">
       <div class="flex items-center text-emerald-600">
-        <i class="fas fa-arrow-up mr-1.5 text-xs"></i>
+        <i class="fas fa-arrow-up mr-1 sm:mr-1.5 text-xs"></i>
         <span class="font-medium text-xs"><?php echo number_format(abs($revenueChange), 1); ?>% </span>
         <span class="text-xs text-gray-500 ml-1">from last month</span>
       </div>
@@ -1258,22 +1258,22 @@ function time_elapsed_string($datetime, $full = false) {
   <!-- Pending Services Card -->
   <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
     <!-- Card header with brighter gradient background -->
-    <div class="bg-gradient-to-r from-orange-100 to-orange-200 px-6 py-4">
+    <div class="bg-gradient-to-r from-orange-100 to-orange-200 px-4 sm:px-6 py-3 sm:py-4">
       <div class="flex items-center justify-between mb-1">
-        <h3 class="text-sm font-medium text-gray-700">Pending Services</h3>
-        <div class="w-10 h-10 rounded-full bg-white/90 text-orange-600 flex items-center justify-center">
-          <i class="fas fa-tasks"></i>
+        <h3 class="text-xs sm:text-sm font-medium text-gray-700 leading-tight">Pending Services</h3>
+        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/90 text-orange-600 flex items-center justify-center">
+          <i class="fas fa-tasks text-sm sm:text-base"></i>
         </div>
       </div>
       <div class="flex items-end">
-        <span class="text-2xl md:text-3xl font-bold text-gray-800"><?php echo $pendingCount; ?></span>
+        <span class="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800"><?php echo $pendingCount; ?></span>
       </div>
     </div>
     
     <!-- Card footer with change indicator -->
-    <div class="px-6 py-3 bg-white border-t border-gray-100">
+    <div class="px-4 sm:px-6 py-2 sm:py-3 bg-white border-t border-gray-100">
       <div class="flex items-center text-rose-600">
-        <i class="fas fa-arrow-down mr-1.5 text-xs"></i>
+        <i class="fas fa-arrow-down mr-1 sm:mr-1.5 text-xs"></i>
         <span class="font-medium text-xs"><?php echo number_format(abs($pendingChange), 1); ?>% </span>
         <span class="text-xs text-gray-500 ml-1">from last month</span>
       </div>
@@ -1283,22 +1283,22 @@ function time_elapsed_string($datetime, $full = false) {
   <!-- Completed Services Card -->
   <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
     <!-- Card header with brighter gradient background -->
-    <div class="bg-gradient-to-r from-purple-100 to-purple-200 px-6 py-4">
+    <div class="bg-gradient-to-r from-purple-100 to-purple-200 px-4 sm:px-6 py-3 sm:py-4">
       <div class="flex items-center justify-between mb-1">
-        <h3 class="text-sm font-medium text-gray-700">Completed Services</h3>
-        <div class="w-10 h-10 rounded-full bg-white/90 text-purple-600 flex items-center justify-center">
-          <i class="fas fa-clipboard-check"></i>
+        <h3 class="text-xs sm:text-sm font-medium text-gray-700 leading-tight">Completed Services</h3>
+        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/90 text-purple-600 flex items-center justify-center">
+          <i class="fas fa-clipboard-check text-sm sm:text-base"></i>
         </div>
       </div>
       <div class="flex items-end">
-        <span class="text-2xl md:text-3xl font-bold text-gray-800"><?php echo $completedCount; ?></span>
+        <span class="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800"><?php echo $completedCount; ?></span>
       </div>
     </div>
     
     <!-- Card footer with change indicator -->
-    <div class="px-6 py-3 bg-white border-t border-gray-100">
+    <div class="px-4 sm:px-6 py-2 sm:py-3 bg-white border-t border-gray-100">
       <div class="flex items-center text-emerald-600">
-        <i class="fas fa-arrow-up mr-1.5 text-xs"></i>
+        <i class="fas fa-arrow-up mr-1 sm:mr-1.5 text-xs"></i>
         <span class="font-medium text-xs"><?php echo number_format(abs($completedChange), 1); ?>% </span>
         <span class="text-xs text-gray-500 ml-1">from last month</span>
       </div>
@@ -1307,69 +1307,69 @@ function time_elapsed_string($datetime, $full = false) {
 </div>
 
  <!-- Branch Comparison -->
- <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+ <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 md:gap-8 mb-8">
   <!-- Pila Branch Card -->
   <div class="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-200">
     <!-- Card header with subdued gradient background -->
-    <div class="bg-gradient-to-r from-gray-100 to-slate-500 p-5 border-b border-gray-200">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center space-x-3">
-          <div class="w-10 h-10 rounded-full bg-white/90 text-slate-700 flex items-center justify-center shadow-sm">
-            <i class="fas fa-building"></i>
+    <div class="bg-gradient-to-r from-gray-100 to-slate-500 p-3 sm:p-4 md:p-5 border-b border-gray-200">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
+        <div class="flex items-center space-x-2 sm:space-x-3">
+          <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/90 text-slate-700 flex items-center justify-center shadow-sm">
+            <i class="fas fa-building text-sm sm:text-base"></i>
           </div>
-          <h3 class="text-lg font-semibold text-gray-800">Pila Branch</h3>
+          <h3 class="text-base sm:text-lg font-semibold text-gray-800">Pila Branch</h3>
         </div>
-        <span class="px-3 py-1 text-xs font-medium bg-slate-100 text-slate-700 rounded-full">Main Branch</span>
+        <span class="px-2 sm:px-3 py-1 text-xs font-medium bg-slate-100 text-slate-700 rounded-full">Main Branch</span>
       </div>
     </div>
     
     <!-- Card content -->
-    <div class="p-6">
-      <div class="grid grid-cols-2 gap-6">
+    <div class="p-3 sm:p-4 md:p-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 md:gap-6">
         <!-- Revenue -->
-        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-          <div class="flex items-center mb-1 text-gray-600 text-sm">
-            <i class="fas fa-chart-line mr-2"></i>
+        <div class="bg-gray-50 rounded-lg p-3 sm:p-4 border border-gray-200">
+          <div class="flex items-center mb-1 text-gray-600 text-xs sm:text-sm">
+            <i class="fas fa-chart-line mr-1 sm:mr-2 text-xs sm:text-sm"></i>
             <span>Revenue</span>
           </div>
-          <div class="text-xl font-bold text-gray-800">₱<?php echo number_format($pilaMetrics['revenue'], 2); ?></div>
-          <div class="mt-2 text-xs text-gray-500">
+          <div class="text-lg sm:text-xl font-bold text-gray-800 break-all">₱<?php echo number_format($pilaMetrics['revenue'], 2); ?></div>
+          <div class="mt-1 sm:mt-2 text-xs text-gray-500">
   Current month
 </div>
         </div>
         
         <!-- Profit -->
-        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-          <div class="flex items-center mb-1 text-gray-600 text-sm">
-            <i class="fas fa-wallet mr-2"></i>
+        <div class="bg-gray-50 rounded-lg p-3 sm:p-4 border border-gray-200">
+          <div class="flex items-center mb-1 text-gray-600 text-xs sm:text-sm">
+            <i class="fas fa-wallet mr-1 sm:mr-2 text-xs sm:text-sm"></i>
             <span>Profit</span>
           </div>
-          <div class="text-xl font-bold text-gray-800">₱<?php echo number_format($pilaMetrics['profit'], 2); ?></div>
-          <div class="mt-2 text-xs text-gray-500">
+          <div class="text-lg sm:text-xl font-bold text-gray-800 break-all">₱<?php echo number_format($pilaMetrics['profit'], 2); ?></div>
+          <div class="mt-1 sm:mt-2 text-xs text-gray-500">
   Current month
 </div>
         </div>
         
         <!-- Margin -->
-        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-          <div class="flex items-center mb-1 text-gray-600 text-sm">
-            <i class="fas fa-percentage mr-2"></i>
+        <div class="bg-gray-50 rounded-lg p-3 sm:p-4 border border-gray-200">
+          <div class="flex items-center mb-1 text-gray-600 text-xs sm:text-sm">
+            <i class="fas fa-percentage mr-1 sm:mr-2 text-xs sm:text-sm"></i>
             <span>Margin</span>
           </div>
-          <div class="text-xl font-bold text-gray-800"><?php echo number_format($pilaMetrics['margin'], 1); ?>%</div>
-          <div class="mt-2 text-xs text-gray-500">
+          <div class="text-lg sm:text-xl font-bold text-gray-800"><?php echo number_format($pilaMetrics['margin'], 1); ?>%</div>
+          <div class="mt-1 sm:mt-2 text-xs text-gray-500">
   Current month
 </div>
         </div>
         
         <!-- Customers -->
-        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-          <div class="flex items-center mb-1 text-gray-600 text-sm">
-            <i class="fas fa-users mr-2"></i>
+        <div class="bg-gray-50 rounded-lg p-3 sm:p-4 border border-gray-200">
+          <div class="flex items-center mb-1 text-gray-600 text-xs sm:text-sm">
+            <i class="fas fa-users mr-1 sm:mr-2 text-xs sm:text-sm"></i>
             <span>Customers</span>
           </div>
-          <div class="text-xl font-bold text-gray-800"><?php echo $pilaMetrics['customers']; ?></div>
-          <div class="mt-2 text-xs text-gray-500">
+          <div class="text-lg sm:text-xl font-bold text-gray-800"><?php echo $pilaMetrics['customers']; ?></div>
+          <div class="mt-1 sm:mt-2 text-xs text-gray-500">
   Current month
 </div>
         </div>
@@ -1380,65 +1380,65 @@ function time_elapsed_string($datetime, $full = false) {
   <!-- Paete Branch Card -->
   <div class="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-200">
     <!-- Card header with subdued gradient background -->
-    <div class="bg-gradient-to-r from-gray-100 to-slate-500 p-5 border-b border-gray-200">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center space-x-3">
-          <div class="w-10 h-10 rounded-full bg-white/90 text-slate-700 flex items-center justify-center shadow-sm">
-            <i class="fas fa-store"></i>
+    <div class="bg-gradient-to-r from-gray-100 to-slate-500 p-3 sm:p-4 md:p-5 border-b border-gray-200">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
+        <div class="flex items-center space-x-2 sm:space-x-3">
+          <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/90 text-slate-700 flex items-center justify-center shadow-sm">
+            <i class="fas fa-store text-sm sm:text-base"></i>
           </div>
-          <h3 class="text-lg font-semibold text-gray-800">Paete Branch</h3>
+          <h3 class="text-base sm:text-lg font-semibold text-gray-800">Paete Branch</h3>
         </div>
-        <span class="px-3 py-1 text-xs font-medium bg-slate-100 text-slate-700 rounded-full">Secondary Branch</span>
+        <span class="px-2 sm:px-3 py-1 text-xs font-medium bg-slate-100 text-slate-700 rounded-full">Secondary Branch</span>
       </div>
     </div>
     
     <!-- Card content -->
-    <div class="p-6">
-      <div class="grid grid-cols-2 gap-6">
+    <div class="p-3 sm:p-4 md:p-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 md:gap-6">
         <!-- Revenue -->
-        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-          <div class="flex items-center mb-1 text-gray-600 text-sm">
-            <i class="fas fa-chart-line mr-2"></i>
+        <div class="bg-gray-50 rounded-lg p-3 sm:p-4 border border-gray-200">
+          <div class="flex items-center mb-1 text-gray-600 text-xs sm:text-sm">
+            <i class="fas fa-chart-line mr-1 sm:mr-2 text-xs sm:text-sm"></i>
             <span>Revenue</span>
           </div>
-          <div class="text-xl font-bold text-gray-800">₱<?php echo number_format($paeteMetrics['revenue'], 2); ?></div>
-          <div class="mt-2 text-xs text-gray-500">
+          <div class="text-lg sm:text-xl font-bold text-gray-800 break-all">₱<?php echo number_format($paeteMetrics['revenue'], 2); ?></div>
+          <div class="mt-1 sm:mt-2 text-xs text-gray-500">
   Current month
 </div>
         </div>
         
         <!-- Profit -->
-        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-          <div class="flex items-center mb-1 text-gray-600 text-sm">
-            <i class="fas fa-wallet mr-2"></i>
+        <div class="bg-gray-50 rounded-lg p-3 sm:p-4 border border-gray-200">
+          <div class="flex items-center mb-1 text-gray-600 text-xs sm:text-sm">
+            <i class="fas fa-wallet mr-1 sm:mr-2 text-xs sm:text-sm"></i>
             <span>Profit</span>
           </div>
-          <div class="text-xl font-bold text-gray-800">₱<?php echo number_format($paeteMetrics['profit'], 2); ?></div>
-          <div class="mt-2 text-xs text-gray-500">
+          <div class="text-lg sm:text-xl font-bold text-gray-800 break-all">₱<?php echo number_format($paeteMetrics['profit'], 2); ?></div>
+          <div class="mt-1 sm:mt-2 text-xs text-gray-500">
   Current month
 </div>
         </div>
         
         <!-- Margin -->
-        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-          <div class="flex items-center mb-1 text-gray-600 text-sm">
-            <i class="fas fa-percentage mr-2"></i>
+        <div class="bg-gray-50 rounded-lg p-3 sm:p-4 border border-gray-200">
+          <div class="flex items-center mb-1 text-gray-600 text-xs sm:text-sm">
+            <i class="fas fa-percentage mr-1 sm:mr-2 text-xs sm:text-sm"></i>
             <span>Margin</span>
           </div>
-          <div class="text-xl font-bold text-gray-800"><?php echo number_format($paeteMetrics['margin'], 1); ?>%</div>
-          <div class="mt-2 text-xs text-gray-500">
+          <div class="text-lg sm:text-xl font-bold text-gray-800"><?php echo number_format($paeteMetrics['margin'], 1); ?>%</div>
+          <div class="mt-1 sm:mt-2 text-xs text-gray-500">
   Current month
 </div>
         </div>
         
         <!-- Customers -->
-        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-          <div class="flex items-center mb-1 text-gray-600 text-sm">
-            <i class="fas fa-users mr-2"></i>
+        <div class="bg-gray-50 rounded-lg p-3 sm:p-4 border border-gray-200">
+          <div class="flex items-center mb-1 text-gray-600 text-xs sm:text-sm">
+            <i class="fas fa-users mr-1 sm:mr-2 text-xs sm:text-sm"></i>
             <span>Customers</span>
           </div>
-          <div class="text-xl font-bold text-gray-800"><?php echo $paeteMetrics['customers']; ?></div>
-          <div class="mt-2 text-xs text-gray-500">
+          <div class="text-lg sm:text-xl font-bold text-gray-800"><?php echo $paeteMetrics['customers']; ?></div>
+          <div class="mt-1 sm:mt-2 text-xs text-gray-500">
   Current month
 </div>
         </div>
