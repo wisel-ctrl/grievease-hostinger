@@ -30,8 +30,27 @@ $message = $conn->real_escape_string($data['message']);
 $conn->begin_transaction();
 
 try {
-    // Generate a unique chat ID
-    $chatId = uniqid('chat_', true);
+    // Generate a unique chat ID with retry mechanism
+    $maxRetries = 5;
+    $chatId = null;
+    
+    for ($i = 0; $i < $maxRetries; $i++) {
+        $chatId = uniqid('chat_', true) . '_' . mt_rand(1000, 9999);
+        
+        // Check if this chatId already exists
+        $check_query = "SELECT chatId FROM chat_messages WHERE chatId = '$chatId' LIMIT 1";
+        $check_result = $conn->query($check_query);
+        
+        if ($check_result->num_rows == 0) {
+            break; // Unique ID found
+        }
+        
+        if ($i == $maxRetries - 1) {
+            throw new Exception('Unable to generate unique chat ID after ' . $maxRetries . ' attempts');
+        }
+        
+        usleep(1000); // Wait 1ms before retry
+    }
     
     // Insert the message into chat_messages
     $message_query = "
@@ -39,7 +58,9 @@ try {
         VALUES ('$chatId', '$admin_id', '$message', 'read', '$chatRoomId', 'text')
     ";
     
-    $conn->query($message_query);
+    if (!$conn->query($message_query)) {
+        throw new Exception('Failed to insert message: ' . $conn->error);
+    }
     
     // Add entries to chat_recepients for both sender and receiver
     $recipient_query_sender = "
