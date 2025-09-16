@@ -78,20 +78,20 @@ header("Pragma: no-cache");
 <?php include 'admin_sidebar.php'; ?>
   
   <!-- Main Content -->
-  <div id="main-content" class="p-3 sm:p-6 bg-gray-50 min-h-screen transition-all duration-300 ml-0 lg:ml-64 w-full lg:w-[calc(100%-16rem)] main-content">
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 bg-white p-4 rounded-lg shadow gap-4 sm:gap-0">
-      <h1 class="text-xl sm:text-2xl font-bold text-gray-800">Customer Messages</h1>
-      <div class="flex flex-wrap gap-2 w-full sm:w-auto">
-        <div class="relative flex-1 sm:flex-none">
-          <input type="text" id="customer-search" placeholder="Search customers..." class="w-full sm:w-auto px-4 py-2 pl-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+  <div id="main-content" class="p-6 bg-gray-50 min-h-screen transition-all duration-300 ml-64 w-[calc(100%-16rem)] main-content">
+    <div class="flex justify-between items-center mb-6 bg-white p-4 rounded-lg shadow">
+      <h1 class="text-2xl font-bold text-gray-800">Customer Messages</h1>
+      <div class="flex gap-2">
+        <div class="relative">
+          <input type="text" id="customer-search" placeholder="Search customers..." class="px-4 py-2 pl-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent">
           <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
         </div>
-        <button id="refresh-messages" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-md flex items-center gap-2 whitespace-nowrap">
-          <i class="fas fa-sync-alt"></i> <span class="hidden sm:inline">Refresh</span>
+        <button id="refresh-messages" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-md flex items-center gap-2">
+          <i class="fas fa-sync-alt"></i> Refresh
         </button>
         <div class="relative">
-          <button id="filter-dropdown-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-md flex items-center gap-2 whitespace-nowrap">
-            <i class="fas fa-filter"></i> <span class="hidden sm:inline">Filter</span>
+          <button id="filter-dropdown-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-md flex items-center gap-2">
+            <i class="fas fa-filter"></i> Filter
           </button>
           <div id="filter-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
             <div class="py-1">
@@ -110,9 +110,9 @@ header("Pragma: no-cache");
     <div class="bg-white rounded-lg shadow-md overflow-hidden">
       <!-- Messages Header -->
       <div class="border-b border-gray-200 bg-gray-50 p-4">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0">
-          <h2 class="text-base sm:text-lg font-semibold text-gray-800">Incoming Customer Messages</h2>
-          <div class="text-xs sm:text-sm text-gray-500">Showing <span id="message-count" class="font-medium">0</span> messages</div>
+        <div class="flex justify-between items-center">
+          <h2 class="text-lg font-semibold text-gray-800">Incoming Customer Messages</h2>
+          <div class="text-sm text-gray-500">Showing <span id="message-count" class="font-medium">0</span> messages</div>
         </div>
       </div>
       
@@ -144,27 +144,27 @@ header("Pragma: no-cache");
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-4xl mx-2 sm:mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-4xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
     <!-- Close Button -->
-    <button type="button" id="close-modal" class="absolute top-3 right-3 sm:top-4 sm:right-4 text-white hover:text-sidebar-accent transition-colors z-20">
-      <i class="fas fa-times text-lg"></i>
+    <button type="button" id="close-modal" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors">
+      <i class="fas fa-times"></i>
     </button>
     
     <!-- Modal Header -->
-    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
-      <div class="pr-8">
-        <h3 class="text-lg sm:text-xl font-bold text-white flex items-center" id="modal-customer-name">Customer Name</h3>
-        <p class="text-xs sm:text-sm text-white text-opacity-80" id="modal-message-date">Date</p>
+    <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <div>
+        <h3 class="text-xl font-bold text-white flex items-center" id="modal-customer-name">Customer Name</h3>
+        <p class="text-sm text-white text-opacity-80" id="modal-message-date">Date</p>
       </div>
     </div>
     
     <!-- Modal Body - Conversation -->
-    <div class="px-4 sm:px-6 py-4 sm:py-5 overflow-y-auto flex-grow" id="modal-conversation">
+    <div class="px-6 py-5 overflow-y-auto flex-grow" id="modal-conversation">
       <!-- Conversation messages will be loaded here -->
     </div>
     
     <!-- Modal Footer - Reply Form -->
-    <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col gap-3 border-t border-gray-200 sticky bottom-0 bg-white">
+    <div class="px-6 py-4 flex flex-col gap-3 border-t border-gray-200 sticky bottom-0 bg-white">
       <div class="flex gap-3">
         <button class="text-sidebar-accent hover:text-darkgold transition-colors" title="Attach File">
           <i class="fas fa-paperclip"></i>
@@ -176,12 +176,11 @@ header("Pragma: no-cache");
           <i class="fas fa-font"></i>
         </button>
       </div>
-      <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
-        <textarea id="reply-input" class="flex-1 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200 min-h-[80px] sm:min-h-[40px]" placeholder="Type your reply..."></textarea>
-        <button class="px-4 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center whitespace-nowrap" id="send-reply">
+      <div class="flex gap-4">
+        <textarea id="reply-input" class="flex-1 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Type your reply..."></textarea>
+        <button class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" id="send-reply">
           <i class="fas fa-paper-plane mr-2"></i>
-          <span class="hidden sm:inline">Send</span>
-          <span class="sm:hidden">Send</span>
+          Send
         </button>
       </div>
     </div>
@@ -339,32 +338,29 @@ header("Pragma: no-cache");
                 const isUnread = conversation.status === 'sent' && conversation.receiver === '<?php echo $_SESSION["user_id"]; ?>';
                 
                 const messageItem = document.createElement('div');
-                messageItem.className = `message-item p-3 sm:p-4 hover:bg-gray-50 cursor-pointer ${isUnread ? 'message-new' : 'message-read'}`;
+                messageItem.className = `message-item p-4 hover:bg-gray-50 cursor-pointer ${isUnread ? 'message-new' : 'message-read'}`;
                 messageItem.dataset.chatRoomId = conversation.chatRoomId;
                 messageItem.dataset.receiverId = conversation.sender;
                 
                 messageItem.innerHTML = `
                     <div class="flex items-start">
-                        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-yellow-600 flex items-center justify-center text-white mr-2 sm:mr-3 flex-shrink-0">
+                        <div class="w-10 h-10 rounded-full bg-yellow-600 flex items-center justify-center text-white mr-3">
                             ${conversation.sender_profile_picture ? 
-                                `<img src="${conversation.sender_profile_picture}" alt="${conversation.sender_name}" class="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover">` : 
-                                `<span class="text-xs sm:text-sm">${conversation.sender_name?.charAt(0).toUpperCase() ?? ''}</span>`}
+                                `<img src="${conversation.sender_profile_picture}" alt="${conversation.sender_name}" class="w-10 h-10 rounded-full object-cover">` : 
+                                `<span>${conversation.sender_name?.charAt(0).toUpperCase() ?? ''}</span>`}
                         </div>
                         <div class="flex-1 min-w-0">
-                            <div class="flex justify-between items-start gap-2">
-                            <h4 class="text-sm font-medium text-gray-900 truncate flex-1">
+                            <div class="flex justify-between items-start">
+                            <h4 class="text-sm font-medium text-gray-900 truncate">
                               ${conversation.sender_name?.charAt(0)?.toUpperCase() + conversation.sender_name?.slice(1)?.toLowerCase() ?? 'Unknown'}
                             </h4>
-                            <span class="text-xs text-gray-500 whitespace-nowrap">${formattedDate}</span>
-                            </div>
-                            <p class="text-sm text-gray-600 truncate pr-2">${conversation.message}</p>
-                            <div class="flex items-center justify-between mt-1 gap-2">
-                                <span class="text-xs text-gray-500 truncate flex-1">${conversation.sender_email}</span>
-                                <div class="flex items-center gap-1 flex-shrink-0">
-                                    ${isUnread ? '<span class="w-2 h-2 bg-teal-500 rounded-full"></span>' : ''}
-                                    ${conversation.unread_count > 0 ? 
-                                        `<span class="bg-teal-500 text-white text-xs px-2 py-0.5 rounded-full">${conversation.unread_count}</span>` : ''}
-                                </div>
+                            <span class="text-xs text-gray-500">${formattedDate}</span>                            </div>
+                            <p class="text-sm text-gray-600 truncate">${conversation.message}</p>
+                            <div class="flex items-center mt-1">
+                                <span class="text-xs text-gray-500">${conversation.sender_email}</span>
+                                ${isUnread ? '<span class="ml-2 w-2 h-2 bg-teal-500 rounded-full"></span>' : ''}
+                                ${conversation.unread_count > 0 ? 
+                                    `<span class="ml-auto bg-teal-500 text-white text-xs px-2 py-0.5 rounded-full">${conversation.unread_count}</span>` : ''}
                             </div>
                         </div>
                     </div>
@@ -444,11 +440,11 @@ header("Pragma: no-cache");
                 const formattedTime = formatTime(messageDate);
                 
                 const messageElement = document.createElement('div');
-                messageElement.className = `mb-4 ${isAdmin ? 'pl-6 sm:pl-12' : 'pr-6 sm:pr-12'}`;
+                messageElement.className = `mb-4 ${isAdmin ? 'pl-12' : 'pr-12'}`;
                 
                 messageElement.innerHTML = `
                     <div class="flex ${isAdmin ? 'justify-end' : 'justify-start'}">
-                        <div class="rounded-lg py-2 px-3 sm:px-4 max-w-[85%] sm:max-w-[75%] ${isAdmin ? 'bg-sidebar-accent text-white' : 'bg-gray-100 text-gray-800'}">
+                        <div class="rounded-lg py-2 px-4 max-w-[75%] ${isAdmin ? 'bg-sidebar-accent text-white' : 'bg-gray-100 text-gray-800'}">
                             <div class="text-sm whitespace-pre-wrap">${message.message}</div>
                             <div class="text-xs mt-1 opacity-70 ${isAdmin ? 'text-gray-200' : 'text-gray-500'}">${formattedTime}</div>
                         </div>
