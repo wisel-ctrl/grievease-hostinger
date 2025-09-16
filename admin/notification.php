@@ -370,8 +370,10 @@ function time_elapsed_string($datetime, $full = false) {
                         type="text" 
                         placeholder="Search notifications..." 
                         class="w-full pl-10 pr-4 py-2 border border-input-border rounded-lg text-sm bg-sidebar-bg text-sidebar-text focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-sidebar-accent transition-all duration-200"
-                        oninput="searchNotifications(this.value)"
+                        oninput="handleSearchInput(this)"
+                        onkeydown="validateSearchInput(event, this)"
                         aria-label="Search notifications"
+                        id="search-input"
                     >
                 </div>
                 <div class="flex items-center space-x-2">
@@ -727,6 +729,48 @@ function time_elapsed_string($datetime, $full = false) {
         function sortNotifications(sortType) {
             currentSort = sortType;
             applyFilters();
+        }
+
+        // Validate search input to prevent multiple spaces and require 2+ chars before space
+        function validateSearchInput(event, input) {
+            const key = event.key;
+            const currentValue = input.value;
+            const cursorPosition = input.selectionStart;
+            
+            // If space key is pressed
+            if (key === ' ') {
+                // Don't allow space if less than 2 characters
+                if (currentValue.length < 2) {
+                    event.preventDefault();
+                    return false;
+                }
+                
+                // Don't allow consecutive spaces
+                if (cursorPosition > 0 && currentValue[cursorPosition - 1] === ' ') {
+                    event.preventDefault();
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+
+        // Handle search input with validation
+        function handleSearchInput(input) {
+            let value = input.value;
+            
+            // Remove multiple consecutive spaces
+            value = value.replace(/\s{2,}/g, ' ');
+            
+            // If value changed, update input
+            if (value !== input.value) {
+                const cursorPosition = input.selectionStart;
+                input.value = value;
+                // Restore cursor position
+                input.setSelectionRange(cursorPosition - 1, cursorPosition - 1);
+            }
+            
+            searchNotifications(value);
         }
 
         // Search notifications
