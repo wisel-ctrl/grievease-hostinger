@@ -25,8 +25,8 @@ $query = "SELECT b.booking_id, b.booking_date, b.status,
           JOIN users u ON b.customerID = u.id
           WHERE b.service_id IS NULL"; // Assuming custom bookings have NULL service_id
 
-// Add search conditions if provided
-if (!empty($search)) {
+// Add search conditions if provided (trim whitespace and check if not empty)
+if (!empty($search) && trim($search) !== '') {
     $query .= " AND (CONCAT(u.first_name, ' ', u.last_name) LIKE ? OR b.booking_id LIKE ?)";
     $searchParam = "%$search%";
 }
@@ -60,12 +60,12 @@ $countQuery = "SELECT COUNT(*) as total FROM booking_tb b
                JOIN users u ON b.customerID = u.id
                WHERE b.service_id IS NULL";
 
-if (!empty($search)) {
+if (!empty($search) && trim($search) !== '') {
     $countQuery .= " AND (CONCAT(u.first_name, ' ', u.last_name) LIKE ? OR b.booking_id LIKE ?)";
 }
 
 $stmt = $conn->prepare($countQuery);
-if (!empty($search)) {
+if (!empty($search) && trim($search) !== '') {
     $stmt->bind_param("ss", $searchParam, $searchParam);
 }
 $stmt->execute();
@@ -77,7 +77,7 @@ $total_pages = ceil($total_bookings / $bookings_per_page);
 $query .= " LIMIT ?, ?";
 $stmt = $conn->prepare($query);
 
-if (!empty($search)) {
+if (!empty($search) && trim($search) !== '') {
     $stmt->bind_param("ssii", $searchParam, $searchParam, $offset, $bookings_per_page);
 } else {
     $stmt->bind_param("ii", $offset, $bookings_per_page);
