@@ -636,25 +636,26 @@ document.addEventListener('DOMContentLoaded', function() {
     filterDropdown.addEventListener('click', function(e) {
         e.stopPropagation();
     });
-    
-    filterDropdownMobile.addEventListener('click', function(e) {
-        e.stopPropagation();
-    });
 
     // Search functionality with debounce for both desktop and mobile
     function setupSearchInput(inputElement) {
         let searchTimeout;
         inputElement.addEventListener('input', function() {
-            currentSearch = this.value;
+            const trimmedValue = this.value.trim();
+            currentSearch = trimmedValue;
             currentPage = 1; // Reset to first page when searching
             
             // Clear previous timeout
             clearTimeout(searchTimeout);
             
-            // Set new timeout to reduce unnecessary API calls
-            searchTimeout = setTimeout(() => {
-                fetchCustomerAccounts();
-            }, 300); // 300ms delay
+            // Only trigger search if there's actual content or if clearing the search
+            // This prevents searches when only spaces are entered
+            if (trimmedValue.length > 0 || this.value === '') {
+                // Set new timeout to reduce unnecessary API calls
+                searchTimeout = setTimeout(() => {
+                    fetchCustomerAccounts();
+                }, 300); // 300ms delay
+            }
         });
     }
     
