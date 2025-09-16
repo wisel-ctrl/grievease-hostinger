@@ -1325,7 +1325,7 @@ function time_elapsed_string($datetime, $full = false) {
     
     <!-- Card content -->
     <div class="p-3 sm:p-4 md:p-6">
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 md:gap-6">
+      <div class="grid grid-cols-2 gap-3 sm:gap-4 md:gap-6">
         <!-- Revenue -->
         <div class="bg-gray-50 rounded-lg p-3 sm:p-4 border border-gray-200">
           <div class="flex items-center mb-1 text-gray-600 text-xs sm:text-sm">
@@ -1394,7 +1394,7 @@ function time_elapsed_string($datetime, $full = false) {
     
     <!-- Card content -->
     <div class="p-3 sm:p-4 md:p-6">
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 md:gap-6">
+      <div class="grid grid-cols-2 gap-3 sm:gap-4 md:gap-6">
         <!-- Revenue -->
         <div class="bg-gray-50 rounded-lg p-3 sm:p-4 border border-gray-200">
           <div class="flex items-center mb-1 text-gray-600 text-xs sm:text-sm">
