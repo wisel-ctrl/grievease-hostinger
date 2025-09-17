@@ -395,7 +395,8 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
     <div class="px-4 sm:px-6 pt-4 pb-2 border-b border-gray-200">
       <div class="relative">
         <input type="text" id="archivedItemsSearch" placeholder="Search archived items..." 
-               class="w-full pl-10 pr-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+               class="w-full pl-10 pr-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+               oninput="validateSearchInput(this)" onpaste="handleSearchPaste(this)">
         <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
           <i class="fas fa-search text-gray-400"></i>
         </div>
@@ -860,7 +861,8 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
         <div class="relative">
           <input type="text" id="inventorySearch" 
                 placeholder="Search inventory..." 
-                class="pl-9 pr-8 py-2 border border-sidebar-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+                class="pl-9 pr-8 py-2 border border-sidebar-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent"
+                oninput="validateSearchInput(this)" onpaste="handleSearchPaste(this)">
           <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
               <i class="fas fa-search text-gray-400"></i>
           </div>
@@ -947,7 +949,8 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
         <div class="relative flex-grow">
           <input type="text" id="inventorySearch" 
                   placeholder="Search inventory..." 
-                  class="pl-9 pr-8 py-2.5 w-full border border-sidebar-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+                  class="pl-9 pr-8 py-2.5 w-full border border-sidebar-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent"
+                  oninput="validateSearchInput(this)" onpaste="handleSearchPaste(this)">
           <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
               <i class="fas fa-search text-gray-400"></i>
           </div>
@@ -1588,10 +1591,41 @@ document.addEventListener('click', function(e) {
 //Unarchived functions
 
 
-// Debounce function to limit search execution frequency
+// Search input validation function
+function validateSearchInput(input) {
+    let value = input.value;
+    let cursorPosition = input.selectionStart;
+    
+    // Remove multiple consecutive spaces
+    let cleanedValue = value.replace(/\s{2,}/g, ' ');
+    
+    // Check if user is trying to add a space before having at least 2 characters
+    if (cleanedValue.length < 2 && cleanedValue.includes(' ')) {
+        // Remove the space if there are less than 2 characters
+        cleanedValue = cleanedValue.replace(/\s/g, '');
+    }
+    
+    // Only update if the value actually changed
+    if (value !== cleanedValue) {
+        input.value = cleanedValue;
+        // Restore cursor position, adjusting for removed characters
+        let newCursorPosition = cursorPosition - (value.length - cleanedValue.length);
+        input.setSelectionRange(newCursorPosition, newCursorPosition);
+    }
+}
+
+// Handle paste events for search inputs
+function handleSearchPaste(input) {
+    // Use setTimeout to allow the paste to complete first
+    setTimeout(() => {
+        validateSearchInput(input);
+    }, 0);
+}
+
+// Debounce function to limit API calls
 function debounce(func, wait) {
     let timeout;
-    return function(...args) {
+    return function executedFunction(...args) {
         clearTimeout(timeout);
         timeout = setTimeout(() => func.apply(this, args), wait);
     };
