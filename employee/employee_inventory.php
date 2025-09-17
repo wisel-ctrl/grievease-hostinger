@@ -276,7 +276,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
     
     /* Blur effect for sidebar when modal is open */
     .sidebar-blurred {
-      filter: blur(2px);
+      filter: blur(4px) brightness(0.7);
       transition: filter 0.3s ease;
     }
     
