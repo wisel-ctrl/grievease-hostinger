@@ -372,7 +372,18 @@ $user_id = $_SESSION['user_id'];
         </label>
         <div class="relative">
             <input type="email" id="customerEmail" name="customerEmail" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="example@email.com" required
-                   oninput="validateEmail(this); checkEmailAvailability(this.value)">
+                   oninput="let value = this.value;
+                            // Remove any spaces immediately
+                            let cleanedValue = value.replace(/\s/g, '');
+                            this.value = cleanedValue;
+                            validateEmail(this); 
+                            checkEmailAvailability(this.value);"
+                   onkeydown="if (event.key === ' ') event.preventDefault();"
+                   onpaste="const text = event.clipboardData.getData('text/plain').replace(/\s/g, '');
+                            event.preventDefault();
+                            this.value = text;
+                            validateEmail(this); 
+                            checkEmailAvailability(this.value);">
             <span id="emailAvailability" class="availability-indicator hidden">
                 <i class="fas fa-check-circle text-green-500"></i> Available
             </span>
