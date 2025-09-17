@@ -199,35 +199,54 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   }
   
-  // Create mobile menu button if it doesn't exist
+  // Force create mobile menu button
   let mobileMenuBtn = document.getElementById('mobile-hamburger');
   
-  // Only create the mobile button if it doesn't exist
-  if (!mobileMenuBtn) {
-    mobileMenuBtn = document.createElement('button');
-    mobileMenuBtn.id = 'mobile-hamburger';
-    mobileMenuBtn.innerHTML = '<i class="fas fa-bars"></i>';
-    
-    // Set inline styles to ensure visibility
-    mobileMenuBtn.style.cssText = `
-      position: fixed;
-      top: 1rem;
-      left: 1rem;
-      z-index: 9999;
-      padding: 0.5rem;
-      background-color: white;
-      border-radius: 0.5rem;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-      color: #4B5563;
-      border: none;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      display: ${window.innerWidth < 768 ? 'block' : 'none'};
-    `;
-    
-    document.body.appendChild(mobileMenuBtn);
-    mobileMenuBtn.addEventListener('click', toggleMobileSidebar);
+  // Remove existing mobile button if it exists
+  if (mobileMenuBtn) {
+    mobileMenuBtn.remove();
   }
+  
+  // Always create a new mobile button
+  mobileMenuBtn = document.createElement('button');
+  mobileMenuBtn.id = 'mobile-hamburger';
+  mobileMenuBtn.innerHTML = '<i class="fas fa-bars"></i>';
+  
+  // Set inline styles to ensure visibility
+  mobileMenuBtn.style.cssText = `
+    position: fixed !important;
+    top: 1rem !important;
+    left: 1rem !important;
+    z-index: 9999 !important;
+    padding: 0.75rem !important;
+    background-color: white !important;
+    border-radius: 0.5rem !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+    color: #4B5563 !important;
+    border: 1px solid #E5E7EB !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    font-size: 1rem !important;
+    width: 3rem !important;
+    height: 3rem !important;
+    display: ${window.innerWidth < 768 ? 'flex' : 'none'} !important;
+    align-items: center !important;
+    justify-content: center !important;
+  `;
+  
+  // Add hover effect
+  mobileMenuBtn.addEventListener('mouseenter', function() {
+    this.style.backgroundColor = '#F3F4F6';
+  });
+  
+  mobileMenuBtn.addEventListener('mouseleave', function() {
+    this.style.backgroundColor = 'white';
+  });
+  
+  document.body.appendChild(mobileMenuBtn);
+  mobileMenuBtn.addEventListener('click', toggleMobileSidebar);
+  
+  console.log('Mobile hamburger menu created:', mobileMenuBtn);
   
   // Initialize the sidebar state
   const sidebar = document.getElementById("sidebar");
@@ -241,9 +260,9 @@ document.addEventListener("DOMContentLoaded", function() {
     
     // Show the mobile hamburger and hide the in-sidebar one
     if (mobileMenuBtn) {
-      mobileMenuBtn.style.display = "block";
-      mobileMenuBtn.style.visibility = "visible";
-      mobileMenuBtn.style.opacity = "1";
+      mobileMenuBtn.style.display = "flex !important";
+      mobileMenuBtn.style.visibility = "visible !important";
+      mobileMenuBtn.style.opacity = "1 !important";
     }
     if (hamburgerMenu) {
       hamburgerMenu.style.display = "none";
@@ -367,9 +386,9 @@ window.addEventListener('resize', function() {
     // Mobile view: Show mobile hamburger, hide sidebar hamburger
     if (hamburgerMenu) hamburgerMenu.style.display = "none";
     if (mobileMenuBtn) {
-      mobileMenuBtn.style.display = "block";
-      mobileMenuBtn.style.visibility = "visible";
-      mobileMenuBtn.style.opacity = "1";
+      mobileMenuBtn.style.display = "flex !important";
+      mobileMenuBtn.style.visibility = "visible !important";
+      mobileMenuBtn.style.opacity = "1 !important";
     }
     
     // Ensure sidebar is hidden initially on mobile
@@ -381,9 +400,9 @@ window.addEventListener('resize', function() {
     // Desktop view: Hide mobile hamburger, show sidebar hamburger
     if (hamburgerMenu) hamburgerMenu.style.display = "block";
     if (mobileMenuBtn) {
-      mobileMenuBtn.style.display = "none";
-      mobileMenuBtn.style.visibility = "hidden";
-      mobileMenuBtn.style.opacity = "0";
+      mobileMenuBtn.style.display = "none !important";
+      mobileMenuBtn.style.visibility = "hidden !important";
+      mobileMenuBtn.style.opacity = "0 !important";
     }
     
     // Ensure sidebar is visible initially on desktop
