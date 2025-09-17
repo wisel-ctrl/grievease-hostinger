@@ -295,11 +295,6 @@ $user_id = $_SESSION['user_id'];
     <div class="flex-1">
       <h1 class="text-xl sm:text-2xl font-bold text-sidebar-text">Customer Account Management</h1>
     </div>
-    <div class="flex space-x-2 sm:space-x-3">
-      <button class="mobile-touch-target p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
-        <i class="fas fa-bell text-sm sm:text-base"></i>
-      </button>
-    </div>
   </div>
 
   <!-- Mode Selector -->
