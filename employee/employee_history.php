@@ -5186,43 +5186,63 @@ function loadOngoingServices(page) {
         }
     };
     xhr.onerror = function() {
+        hideLoadingIndicator();
+        console.error('Request failed');
+    };
+    xhr.send();
+}
 // Function to update pagination controls
 function updatePaginationControls(currentPage, totalPages) {
     let paginationHTML = '';
     
     // First page button
-    if (currentPage > 1) {
-        paginationHTML += `<a href="#" onclick="goToPage(1)" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">«</a>`;
-    } else {
-        paginationHTML += `<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">«</button>`;
-    }
+    paginationHTML += `<button onclick="goToPage(1)" class="px-3 py-1 ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
+        «
+    </button>`;
     
     // Previous page button
-    if (currentPage > 1) {
-        paginationHTML += `<a href="#" onclick="goToPage(${currentPage - 1})" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">‹</a>`;
-    } else {
-        paginationHTML += `<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">‹</button>`;
-    }
+    paginationHTML += `<button onclick="goToPage(${currentPage - 1})" class="px-3 py-1 ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
+        ‹
+    </button>`;
     
     // Page numbers
-    for (let i = 1; i <= totalPages; i++) {
-        const activeClass = (i === currentPage) ? 'bg-sidebar-accent text-white' : '';
-        paginationHTML += `<a href="#" onclick="goToPage(${i})" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover ${activeClass}">${i}</a>`;
+    const maxVisiblePages = 5;
+    let startPage, endPage;
+    
+    if (totalPages <= maxVisiblePages) {
+        startPage = 1;
+        endPage = totalPages;
+    } else {
+        const maxPagesBeforeCurrent = Math.floor(maxVisiblePages / 2);
+        const maxPagesAfterCurrent = Math.ceil(maxVisiblePages / 2) - 1;
+        
+        if (currentPage <= maxPagesBeforeCurrent) {
+            startPage = 1;
+            endPage = maxVisiblePages;
+        } else if (currentPage + maxPagesAfterCurrent >= totalPages) {
+            startPage = totalPages - maxVisiblePages + 1;
+            endPage = totalPages;
+        } else {
+            startPage = currentPage - maxPagesBeforeCurrent;
+            endPage = currentPage + maxPagesAfterCurrent;
+        }
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+        paginationHTML += `<button onclick="goToPage(${i})" class="px-3 py-1 ${i === currentPage ? 'bg-sidebar-accent text-white' : 'bg-gray-200 text-gray-700 hover:bg-darkgold hover:text-white'} rounded-md">
+            ${i}
+        </button>`;
     }
     
     // Next page button
-    if (currentPage < totalPages) {
-        paginationHTML += `<a href="#" onclick="goToPage(${currentPage + 1})" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">›</a>`;
-    } else {
-        paginationHTML += `<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">›</button>`;
-    }
+    paginationHTML += `<button onclick="goToPage(${currentPage + 1})" class="px-3 py-1 ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
+        ›
+    </button>`;
     
     // Last page button
-    if (currentPage < totalPages) {
-        paginationHTML += `<a href="#" onclick="goToPage(${totalPages})" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">»</a>`;
-    } else {
-        paginationHTML += `<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">»</button>`;
-    }
+    paginationHTML += `<button onclick="goToPage(${totalPages})" class="px-3 py-1 ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
+        »
+    </button>`;
     
     document.getElementById('paginationControls').innerHTML = paginationHTML;
 }
@@ -5312,38 +5332,53 @@ function updateFullyPaidPaginationControls(currentPage, totalPages) {
     let paginationHTML = '';
     
     // First page button
-    if (currentPage > 1) {
-        paginationHTML += `<a href="#" onclick="goToFullyPaidPage(1)" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">«</a>`;
-    } else {
-        paginationHTML += `<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">«</button>`;
-    }
+    paginationHTML += `<button onclick="goToFullyPaidPage(1)" class="px-3 py-1 ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
+        «
+    </button>`;
     
     // Previous page button
-    if (currentPage > 1) {
-        paginationHTML += `<a href="#" onclick="goToFullyPaidPage(${currentPage - 1})" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">‹</a>`;
-    } else {
-        paginationHTML += `<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">‹</button>`;
-    }
+    paginationHTML += `<button onclick="goToFullyPaidPage(${currentPage - 1})" class="px-3 py-1 ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
+        ‹
+    </button>`;
     
     // Page numbers
-    for (let i = 1; i <= totalPages; i++) {
-        const activeClass = (i === currentPage) ? 'bg-sidebar-accent text-white' : '';
-        paginationHTML += `<a href="#" onclick="goToFullyPaidPage(${i})" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover ${activeClass}">${i}</a>`;
+    const maxVisiblePages = 5;
+    let startPage, endPage;
+    
+    if (totalPages <= maxVisiblePages) {
+        startPage = 1;
+        endPage = totalPages;
+    } else {
+        const maxPagesBeforeCurrent = Math.floor(maxVisiblePages / 2);
+        const maxPagesAfterCurrent = Math.ceil(maxVisiblePages / 2) - 1;
+        
+        if (currentPage <= maxPagesBeforeCurrent) {
+            startPage = 1;
+            endPage = maxVisiblePages;
+        } else if (currentPage + maxPagesAfterCurrent >= totalPages) {
+            startPage = totalPages - maxVisiblePages + 1;
+            endPage = totalPages;
+        } else {
+            startPage = currentPage - maxPagesBeforeCurrent;
+            endPage = currentPage + maxPagesAfterCurrent;
+        }
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+        paginationHTML += `<button onclick="goToFullyPaidPage(${i})" class="px-3 py-1 ${i === currentPage ? 'bg-sidebar-accent text-white' : 'bg-gray-200 text-gray-700 hover:bg-darkgold hover:text-white'} rounded-md">
+            ${i}
+        </button>`;
     }
     
     // Next page button
-    if (currentPage < totalPages) {
-        paginationHTML += `<a href="#" onclick="goToFullyPaidPage(${currentPage + 1})" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">›</a>`;
-    } else {
-        paginationHTML += `<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">›</button>`;
-    }
+    paginationHTML += `<button onclick="goToFullyPaidPage(${currentPage + 1})" class="px-3 py-1 ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
+        ›
+    </button>`;
     
     // Last page button
-    if (currentPage < totalPages) {
-        paginationHTML += `<a href="#" onclick="goToFullyPaidPage(${totalPages})" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">»</a>`;
-    } else {
-        paginationHTML += `<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">»</button>`;
-    }
+    paginationHTML += `<button onclick="goToFullyPaidPage(${totalPages})" class="px-3 py-1 ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
+        »
+    </button>`;
     
     document.getElementById('paginationControlsFullyPaid').innerHTML = paginationHTML;
 }
@@ -5425,38 +5460,53 @@ function updateOutstandingPaginationControls(currentPage, totalPages) {
     let paginationHTML = '';
     
     // First page button
-    if (currentPage > 1) {
-        paginationHTML += `<a href="#" onclick="goToOutstandingPage(1)" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">«</a>`;
-    } else {
-        paginationHTML += `<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">«</button>`;
-    }
+    paginationHTML += `<button onclick="goToOutstandingPage(1)" class="px-3 py-1 ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
+        «
+    </button>`;
     
     // Previous page button
-    if (currentPage > 1) {
-        paginationHTML += `<a href="#" onclick="goToOutstandingPage(${currentPage - 1})" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">‹</a>`;
-    } else {
-        paginationHTML += `<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">‹</button>`;
-    }
+    paginationHTML += `<button onclick="goToOutstandingPage(${currentPage - 1})" class="px-3 py-1 ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
+        ‹
+    </button>`;
     
     // Page numbers
-    for (let i = 1; i <= totalPages; i++) {
-        const activeClass = (i === currentPage) ? 'bg-sidebar-accent text-white' : '';
-        paginationHTML += `<a href="#" onclick="goToOutstandingPage(${i})" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover ${activeClass}">${i}</a>`;
+    const maxVisiblePages = 5;
+    let startPage, endPage;
+    
+    if (totalPages <= maxVisiblePages) {
+        startPage = 1;
+        endPage = totalPages;
+    } else {
+        const maxPagesBeforeCurrent = Math.floor(maxVisiblePages / 2);
+        const maxPagesAfterCurrent = Math.ceil(maxVisiblePages / 2) - 1;
+        
+        if (currentPage <= maxPagesBeforeCurrent) {
+            startPage = 1;
+            endPage = maxVisiblePages;
+        } else if (currentPage + maxPagesAfterCurrent >= totalPages) {
+            startPage = totalPages - maxVisiblePages + 1;
+            endPage = totalPages;
+        } else {
+            startPage = currentPage - maxPagesBeforeCurrent;
+            endPage = currentPage + maxPagesAfterCurrent;
+        }
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+        paginationHTML += `<button onclick="goToOutstandingPage(${i})" class="px-3 py-1 ${i === currentPage ? 'bg-sidebar-accent text-white' : 'bg-gray-200 text-gray-700 hover:bg-darkgold hover:text-white'} rounded-md">
+            ${i}
+        </button>`;
     }
     
     // Next page button
-    if (currentPage < totalPages) {
-        paginationHTML += `<a href="#" onclick="goToOutstandingPage(${currentPage + 1})" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">›</a>`;
-    } else {
-        paginationHTML += `<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">›</button>`;
-    }
+    paginationHTML += `<button onclick="goToOutstandingPage(${currentPage + 1})" class="px-3 py-1 ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
+        ›
+    </button>`;
     
     // Last page button
-    if (currentPage < totalPages) {
-        paginationHTML += `<a href="#" onclick="goToOutstandingPage(${totalPages})" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">»</a>`;
-    } else {
-        paginationHTML += `<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">»</button>`;
-    }
+    paginationHTML += `<button onclick="goToOutstandingPage(${totalPages})" class="px-3 py-1 ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
+        »
+    </button>`;
     
     document.getElementById('paginationOutstandingControls').innerHTML = paginationHTML;
 }
@@ -5546,38 +5596,53 @@ function updateCustomPaginationControls(currentPage, totalPages) {
     let paginationHTML = '';
     
     // First page button
-    if (currentPage > 1) {
-        paginationHTML += `<a href="#" onclick="goToCustomPage(1)" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">«</a>`;
-    } else {
-        paginationHTML += `<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">«</button>`;
-    }
+    paginationHTML += `<button onclick="goToCustomPage(1)" class="px-3 py-1 ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
+        «
+    </button>`;
     
     // Previous page button
-    if (currentPage > 1) {
-        paginationHTML += `<a href="#" onclick="goToCustomPage(${currentPage - 1})" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">‹</a>`;
-    } else {
-        paginationHTML += `<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">‹</button>`;
-    }
+    paginationHTML += `<button onclick="goToCustomPage(${currentPage - 1})" class="px-3 py-1 ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
+        ‹
+    </button>`;
     
     // Page numbers
-    for (let i = 1; i <= totalPages; i++) {
-        const activeClass = (i === currentPage) ? 'bg-sidebar-accent text-white' : '';
-        paginationHTML += `<a href="#" onclick="goToCustomPage(${i})" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover ${activeClass}">${i}</a>`;
+    const maxVisiblePages = 5;
+    let startPage, endPage;
+    
+    if (totalPages <= maxVisiblePages) {
+        startPage = 1;
+        endPage = totalPages;
+    } else {
+        const maxPagesBeforeCurrent = Math.floor(maxVisiblePages / 2);
+        const maxPagesAfterCurrent = Math.ceil(maxVisiblePages / 2) - 1;
+        
+        if (currentPage <= maxPagesBeforeCurrent) {
+            startPage = 1;
+            endPage = maxVisiblePages;
+        } else if (currentPage + maxPagesAfterCurrent >= totalPages) {
+            startPage = totalPages - maxVisiblePages + 1;
+            endPage = totalPages;
+        } else {
+            startPage = currentPage - maxPagesBeforeCurrent;
+            endPage = currentPage + maxPagesAfterCurrent;
+        }
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+        paginationHTML += `<button onclick="goToCustomPage(${i})" class="px-3 py-1 ${i === currentPage ? 'bg-sidebar-accent text-white' : 'bg-gray-200 text-gray-700 hover:bg-darkgold hover:text-white'} rounded-md">
+            ${i}
+        </button>`;
     }
     
     // Next page button
-    if (currentPage < totalPages) {
-        paginationHTML += `<a href="#" onclick="goToCustomPage(${currentPage + 1})" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">›</a>`;
-    } else {
-        paginationHTML += `<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">›</button>`;
-    }
+    paginationHTML += `<button onclick="goToCustomPage(${currentPage + 1})" class="px-3 py-1 ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
+        ›
+    </button>`;
     
     // Last page button
-    if (currentPage < totalPages) {
-        paginationHTML += `<a href="#" onclick="goToCustomPage(${totalPages})" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">»</a>`;
-    } else {
-        paginationHTML += `<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">»</button>`;
-    }
+    paginationHTML += `<button onclick="goToCustomPage(${totalPages})" class="px-3 py-1 ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
+        »
+    </button>`;
     
     document.getElementById('customPaginationControls').innerHTML = paginationHTML;
 }
@@ -5681,38 +5746,53 @@ function updateCustomFullyPaidPaginationControls(currentPage, totalPages) {
     let paginationHTML = '';
     
     // First page button
-    if (currentPage > 1) {
-        paginationHTML += `<a href="#" onclick="goToCustomFullyPaidPage(1)" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">«</a>`;
-    } else {
-        paginationHTML += `<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">«</button>`;
-    }
+    paginationHTML += `<button onclick="goToCustomFullyPaidPage(1)" class="px-3 py-1 ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
+        «
+    </button>`;
     
     // Previous page button
-    if (currentPage > 1) {
-        paginationHTML += `<a href="#" onclick="goToCustomFullyPaidPage(${currentPage - 1})" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">‹</a>`;
-    } else {
-        paginationHTML += `<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">‹</button>`;
-    }
+    paginationHTML += `<button onclick="goToCustomFullyPaidPage(${currentPage - 1})" class="px-3 py-1 ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
+        ‹
+    </button>`;
     
     // Page numbers
-    for (let i = 1; i <= totalPages; i++) {
-        const activeClass = (i === currentPage) ? 'bg-sidebar-accent text-white' : '';
-        paginationHTML += `<a href="#" onclick="goToCustomFullyPaidPage(${i})" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover ${activeClass}">${i}</a>`;
+    const maxVisiblePages = 5;
+    let startPage, endPage;
+    
+    if (totalPages <= maxVisiblePages) {
+        startPage = 1;
+        endPage = totalPages;
+    } else {
+        const maxPagesBeforeCurrent = Math.floor(maxVisiblePages / 2);
+        const maxPagesAfterCurrent = Math.ceil(maxVisiblePages / 2) - 1;
+        
+        if (currentPage <= maxPagesBeforeCurrent) {
+            startPage = 1;
+            endPage = maxVisiblePages;
+        } else if (currentPage + maxPagesAfterCurrent >= totalPages) {
+            startPage = totalPages - maxVisiblePages + 1;
+            endPage = totalPages;
+        } else {
+            startPage = currentPage - maxPagesBeforeCurrent;
+            endPage = currentPage + maxPagesAfterCurrent;
+        }
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+        paginationHTML += `<button onclick="goToCustomFullyPaidPage(${i})" class="px-3 py-1 ${i === currentPage ? 'bg-sidebar-accent text-white' : 'bg-gray-200 text-gray-700 hover:bg-darkgold hover:text-white'} rounded-md">
+            ${i}
+        </button>`;
     }
     
     // Next page button
-    if (currentPage < totalPages) {
-        paginationHTML += `<a href="#" onclick="goToCustomFullyPaidPage(${currentPage + 1})" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">›</a>`;
-    } else {
-        paginationHTML += `<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">›</button>`;
-    }
+    paginationHTML += `<button onclick="goToCustomFullyPaidPage(${currentPage + 1})" class="px-3 py-1 ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
+        ›
+    </button>`;
     
     // Last page button
-    if (currentPage < totalPages) {
-        paginationHTML += `<a href="#" onclick="goToCustomFullyPaidPage(${totalPages})" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">»</a>`;
-    } else {
-        paginationHTML += `<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">»</button>`;
-    }
+    paginationHTML += `<button onclick="goToCustomFullyPaidPage(${totalPages})" class="px-3 py-1 ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
+        »
+    </button>`;
     
     document.getElementById('customFullyPaidPaginationControls').innerHTML = paginationHTML;
 }
@@ -5793,38 +5873,53 @@ function updateCustomOutstandingPaginationControls(currentPage, totalPages) {
     let paginationHTML = '';
     
     // First page button
-    if (currentPage > 1) {
-        paginationHTML += `<a href="#" onclick="goToCustomOutstandingPage(1)" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">«</a>`;
-    } else {
-        paginationHTML += `<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">«</button>`;
-    }
+    paginationHTML += `<button onclick="goToCustomOutstandingPage(1)" class="px-3 py-1 ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
+        «
+    </button>`;
     
     // Previous page button
-    if (currentPage > 1) {
-        paginationHTML += `<a href="#" onclick="goToCustomOutstandingPage(${currentPage - 1})" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">‹</a>`;
-    } else {
-        paginationHTML += `<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">‹</button>`;
-    }
+    paginationHTML += `<button onclick="goToCustomOutstandingPage(${currentPage - 1})" class="px-3 py-1 ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
+        ‹
+    </button>`;
     
     // Page numbers
-    for (let i = 1; i <= totalPages; i++) {
-        const activeClass = (i === currentPage) ? 'bg-sidebar-accent text-white' : '';
-        paginationHTML += `<a href="#" onclick="goToCustomOutstandingPage(${i})" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover ${activeClass}">${i}</a>`;
+    const maxVisiblePages = 5;
+    let startPage, endPage;
+    
+    if (totalPages <= maxVisiblePages) {
+        startPage = 1;
+        endPage = totalPages;
+    } else {
+        const maxPagesBeforeCurrent = Math.floor(maxVisiblePages / 2);
+        const maxPagesAfterCurrent = Math.ceil(maxVisiblePages / 2) - 1;
+        
+        if (currentPage <= maxPagesBeforeCurrent) {
+            startPage = 1;
+            endPage = maxVisiblePages;
+        } else if (currentPage + maxPagesAfterCurrent >= totalPages) {
+            startPage = totalPages - maxVisiblePages + 1;
+            endPage = totalPages;
+        } else {
+            startPage = currentPage - maxPagesBeforeCurrent;
+            endPage = currentPage + maxPagesAfterCurrent;
+        }
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+        paginationHTML += `<button onclick="goToCustomOutstandingPage(${i})" class="px-3 py-1 ${i === currentPage ? 'bg-sidebar-accent text-white' : 'bg-gray-200 text-gray-700 hover:bg-darkgold hover:text-white'} rounded-md">
+            ${i}
+        </button>`;
     }
     
     // Next page button
-    if (currentPage < totalPages) {
-        paginationHTML += `<a href="#" onclick="goToCustomOutstandingPage(${currentPage + 1})" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">›</a>`;
-    } else {
-        paginationHTML += `<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">›</button>`;
-    }
+    paginationHTML += `<button onclick="goToCustomOutstandingPage(${currentPage + 1})" class="px-3 py-1 ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
+        ›
+    </button>`;
     
     // Last page button
-    if (currentPage < totalPages) {
-        paginationHTML += `<a href="#" onclick="goToCustomOutstandingPage(${totalPages})" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">»</a>`;
-    } else {
-        paginationHTML += `<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">»</button>`;
-    }
+    paginationHTML += `<button onclick="goToCustomOutstandingPage(${totalPages})" class="px-3 py-1 ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
+        »
+    </button>`;
     
     document.getElementById('customOutstandingPaginationControls').innerHTML = paginationHTML;
 }
