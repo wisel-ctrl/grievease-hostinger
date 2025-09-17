@@ -2142,9 +2142,9 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Set default dates - Date of Death:', today, 'Burial Date:', today);
         
         // Fetch LifePlan data and populate hidden inputs
-        console.log('Fetching LifePlan data from:', `lifeplan_process/get_lifeplan.php?id=${currentLifeplanId}`);
+        console.log('Fetching LifePlan data from:', `lifeplan_process/get_lifeplan_for_convert.php?id=${currentLifeplanId}`);
         
-        fetch(`lifeplan_process/get_lifeplan.php?id=${currentLifeplanId}`)
+        fetch(`lifeplan_process/get_lifeplan_for_convert.php?id=${currentLifeplanId}`)
             .then(response => {
                 console.log('Received response from server, parsing JSON...');
                 return response.json();
