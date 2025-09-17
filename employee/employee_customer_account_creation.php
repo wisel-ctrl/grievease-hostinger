@@ -595,12 +595,12 @@ function validateBirthdate() {
   <!-- Manage Customer Accounts Section -->
 <div id="manageAccountSection">
     <div class="bg-white rounded-lg shadow-sidebar p-4 sm:p-5 mb-4 sm:mb-6 border border-sidebar-border hover:shadow-card transition-all duration-300">
-        <div class="mb-4 sm:mb-5 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-0">
+        <div class="mb-4 sm:mb-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
             <h3 class="text-lg font-semibold text-sidebar-text flex-shrink-0">Customer Accounts</h3>
-            <div class="w-full sm:ml-auto flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
-                <div id="searchContainer" class="relative flex-1 sm:flex-none sm:w-64">
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
+                <div id="searchContainer" class="relative sm:w-64">
                     <input type="text" id="searchCustomer" placeholder="Search customers..." 
-                           class="mobile-touch-target p-2 sm:p-2 border border-sidebar-border rounded-md text-sm text-sidebar-text focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent w-full"
+                           class="mobile-touch-target p-2 border border-sidebar-border rounded-md text-sm text-sidebar-text focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent w-full"
                            oninput="let value = this.value;
                                     // Remove multiple consecutive spaces
                                     let cleanedValue = value.replace(/\s+/g, ' ');
@@ -630,7 +630,7 @@ function validateBirthdate() {
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
-                <button id="viewArchivedBtn" onclick="viewArchivedAccounts()" class="mobile-touch-target bg-yellow-600 text-white border-none py-2 px-3 sm:px-4 rounded-md cursor-pointer hover:bg-darkgold transition-all duration-300 text-sm sm:text-base whitespace-nowrap">
+                <button id="viewArchivedBtn" onclick="viewArchivedAccounts()" class="mobile-touch-target bg-yellow-600 text-white border-none py-2 px-3 sm:px-4 rounded-md cursor-pointer hover:bg-darkgold transition-all duration-300 text-sm sm:text-base whitespace-nowrap flex-shrink-0">
                     <i class="fas fa-archive mr-1 sm:mr-2"></i><span class="hidden sm:inline">Archived</span><span class="sm:hidden">Archive</span>
                 </button>
             </div>
