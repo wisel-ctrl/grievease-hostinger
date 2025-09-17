@@ -190,6 +190,64 @@ $user_id = $_SESSION['user_id'];
         max-height: calc(100vh - 2rem);
         overflow-y: auto;
       }
+      
+      /* Ensure mobile hamburger is visible and functional */
+      #mobile-hamburger {
+        display: block !important;
+        position: fixed;
+        top: 1rem;
+        left: 1rem;
+        z-index: 60;
+        background: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        padding: 0.5rem;
+        color: #4B5563;
+        transition: all 0.3s ease;
+      }
+      
+      #mobile-hamburger:hover {
+        color: #1F2937;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      }
+      
+      /* Hide sidebar hamburger on mobile */
+      #hamburger-menu {
+        display: none !important;
+      }
+      
+      /* Mobile sidebar positioning */
+      #sidebar {
+        position: fixed !important;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: 16rem !important;
+        z-index: 50;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+      }
+      
+      #sidebar.translate-x-0 {
+        transform: translateX(0) !important;
+      }
+      
+      #sidebar.-translate-x-full {
+        transform: translateX(-100%) !important;
+      }
+      
+      /* Mobile overlay */
+      #mobile-overlay {
+        position: fixed;
+        inset: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 40;
+        transition: opacity 0.3s ease;
+      }
+      
+      #mobile-overlay.hidden {
+        display: none;
+      }
     }
     
     /* Tablet responsive styles */
@@ -197,6 +255,29 @@ $user_id = $_SESSION['user_id'];
       .main-content {
         margin-left: 16rem;
         width: calc(100% - 16rem);
+      }
+      
+      /* Hide mobile hamburger on tablet and desktop */
+      #mobile-hamburger {
+        display: none !important;
+      }
+      
+      /* Show sidebar hamburger on tablet and desktop */
+      #hamburger-menu {
+        display: block !important;
+      }
+    }
+    
+    /* Desktop responsive styles */
+    @media (min-width: 1025px) {
+      /* Hide mobile hamburger on desktop */
+      #mobile-hamburger {
+        display: none !important;
+      }
+      
+      /* Show sidebar hamburger on desktop */
+      #hamburger-menu {
+        display: block !important;
       }
     }
 
@@ -2670,6 +2751,109 @@ function unarchiveAccount(userId) {
 
 
   </script>
+  
+  <!-- Mobile Hamburger Menu Functionality -->
+  <script>
+  // Ensure mobile hamburger menu works properly
+  document.addEventListener('DOMContentLoaded', function() {
+    // Function to handle mobile menu toggle
+    function initializeMobileMenu() {
+      const mobileHamburger = document.getElementById('mobile-hamburger');
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('mobile-overlay');
+      
+      if (mobileHamburger && sidebar) {
+        // Remove any existing event listeners to prevent duplicates
+        mobileHamburger.removeEventListener('click', toggleMobileSidebarMenu);
+        mobileHamburger.addEventListener('click', toggleMobileSidebarMenu);
+        
+        console.log('Mobile hamburger menu initialized');
+      }
+      
+      // Close sidebar when clicking overlay
+      if (overlay) {
+        overlay.removeEventListener('click', closeMobileSidebar);
+        overlay.addEventListener('click', closeMobileSidebar);
+      }
+      
+      // Close sidebar when clicking outside on mobile
+      document.addEventListener('click', function(event) {
+        if (window.innerWidth <= 768) {
+          const sidebar = document.getElementById('sidebar');
+          const mobileHamburger = document.getElementById('mobile-hamburger');
+          
+          if (sidebar && mobileHamburger && 
+              !sidebar.contains(event.target) && 
+              !mobileHamburger.contains(event.target) &&
+              !sidebar.classList.contains('-translate-x-full')) {
+            closeMobileSidebar();
+          }
+        }
+      });
+    }
+    
+    function toggleMobileSidebarMenu() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('mobile-overlay');
+      
+      if (!sidebar) return;
+      
+      if (sidebar.classList.contains('-translate-x-full')) {
+        // Show sidebar
+        sidebar.classList.remove('-translate-x-full');
+        sidebar.classList.add('translate-x-0');
+        if (overlay) {
+          overlay.classList.remove('hidden');
+        }
+        console.log('Mobile sidebar opened');
+      } else {
+        // Hide sidebar
+        closeMobileSidebar();
+      }
+    }
+    
+    function closeMobileSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('mobile-overlay');
+      
+      if (sidebar) {
+        sidebar.classList.add('-translate-x-full');
+        sidebar.classList.remove('translate-x-0');
+      }
+      if (overlay) {
+        overlay.classList.add('hidden');
+      }
+      console.log('Mobile sidebar closed');
+    }
+    
+    // Initialize mobile menu
+    initializeMobileMenu();
+    
+    // Handle window resize
+    window.addEventListener('resize', function() {
+      if (window.innerWidth > 768) {
+        // Desktop: ensure sidebar is visible and overlay is hidden
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('mobile-overlay');
+        
+        if (sidebar) {
+          sidebar.classList.remove('-translate-x-full');
+          sidebar.classList.add('translate-x-0');
+        }
+        if (overlay) {
+          overlay.classList.add('hidden');
+        }
+      } else {
+        // Mobile: ensure sidebar is hidden initially
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar && !sidebar.classList.contains('-translate-x-full')) {
+          closeMobileSidebar();
+        }
+      }
+    });
+  });
+  </script>
+  
   <script src="sidebar.js"></script>
   <script src="tailwind.js"></script>
 </body>
