@@ -398,7 +398,7 @@ $ongoing_services = $ongoing_data['ongoing_count'];
                                 <i class="fas fa-calendar text-sidebar-accent"></i> Date
                             </div>
                         </th>
-                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(3)">
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap max-w-48" onclick="sortTable(3)">
                             <div class="flex items-center gap-1.5">
                                 <i class="fas fa-map-marker-alt text-sidebar-accent"></i> Location
                             </div>
@@ -435,7 +435,7 @@ $ongoing_services = $ongoing_data['ongoing_count'];
                     echo '<td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">' . htmlspecialchars($booking['full_name']) . '</td>';
                     echo '<td class="px-4 py-3.5 text-sm text-sidebar-text">' . htmlspecialchars($booking['service_name']) . '</td>';
                     echo '<td class="px-4 py-3.5 text-sm text-sidebar-text">' . date('M j, Y', strtotime($booking['booking_date'])) . '</td>';
-                    echo '<td class="px-4 py-3.5 text-sm text-sidebar-text">' . htmlspecialchars($booking['deceased_address']) . '</td>';
+                    echo '<td class="px-4 py-3.5 text-sm text-sidebar-text max-w-48 truncate" title="' . htmlspecialchars($booking['deceased_address']) . '">' . htmlspecialchars($booking['deceased_address']) . '</td>';
                     echo '<td class="px-4 py-3.5 text-sm">';
                     echo '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-600 border border-yellow-200">';
                     echo '<i class="fas fa-clock mr-1"></i> Pending';
