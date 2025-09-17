@@ -553,7 +553,31 @@ function validateBirthdate() {
                 <div id="searchContainer" class="relative">
                     <input type="text" id="searchCustomer" placeholder="Search customers..." 
                            class="p-2 border border-sidebar-border rounded-md text-sm text-sidebar-text focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent w-full"
-                           oninput="searchCustomers()">
+                           oninput="let value = this.value;
+                                    // Remove multiple consecutive spaces
+                                    let cleanedValue = value.replace(/\s+/g, ' ');
+                                    // Don't allow space unless there are at least 2 characters
+                                    if (cleanedValue.length === 1 && cleanedValue === ' ') {
+                                        cleanedValue = '';
+                                    }
+                                    // Don't allow space at the beginning
+                                    if (cleanedValue.startsWith(' ')) {
+                                        cleanedValue = cleanedValue.substring(1);
+                                    }
+                                    this.value = cleanedValue;
+                                    searchCustomers();"
+                           onkeydown="if (event.key === ' ' && this.value.length < 2) event.preventDefault();"
+                           onpaste="const text = event.clipboardData.getData('text/plain').replace(/\s+/g, ' ');
+                                    event.preventDefault();
+                                    let cleanedText = text;
+                                    if (cleanedText.startsWith(' ')) {
+                                        cleanedText = cleanedText.substring(1);
+                                    }
+                                    if (this.value.length < 2 && cleanedText.startsWith(' ')) {
+                                        cleanedText = cleanedText.replace(/^\s+/, '');
+                                    }
+                                    this.value = cleanedText;
+                                    searchCustomers();">
                     <button id="clearSearchBtn" onclick="clearSearch()" class="absolute right-2 top-2 text-gray-400 hover:text-gray-600 hidden">
                         <i class="fas fa-times"></i>
                     </button>
@@ -2380,7 +2404,32 @@ function viewArchivedAccounts() {
           <i class="fas fa-search text-gray-400"></i>
         </div>
         <input type="text" id="archivedAccountsSearch" placeholder="Search archived accounts..." 
-          class="w-full pl-10 pr-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+          class="w-full pl-10 pr-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+          oninput="let value = this.value;
+                   // Remove multiple consecutive spaces
+                   let cleanedValue = value.replace(/\s+/g, ' ');
+                   // Don't allow space unless there are at least 2 characters
+                   if (cleanedValue.length === 1 && cleanedValue === ' ') {
+                       cleanedValue = '';
+                   }
+                   // Don't allow space at the beginning
+                   if (cleanedValue.startsWith(' ')) {
+                       cleanedValue = cleanedValue.substring(1);
+                   }
+                   this.value = cleanedValue;
+                   filterArchivedAccounts();"
+          onkeydown="if (event.key === ' ' && this.value.length < 2) event.preventDefault();"
+          onpaste="const text = event.clipboardData.getData('text/plain').replace(/\s+/g, ' ');
+                   event.preventDefault();
+                   let cleanedText = text;
+                   if (cleanedText.startsWith(' ')) {
+                       cleanedText = cleanedText.substring(1);
+                   }
+                   if (this.value.length < 2 && cleanedText.startsWith(' ')) {
+                       cleanedText = cleanedText.replace(/^\s+/, '');
+                   }
+                   this.value = cleanedText;
+                   filterArchivedAccounts();">
       </div>
     </div>
     
