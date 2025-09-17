@@ -290,22 +290,28 @@ $servicesJson = json_encode($allServices);
 .w-\[calc\(100\%-4rem\)\] {
   width: calc(100% - 4rem);
 }
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+  
+  #main-content {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+}
   </style>
 </head>
 <body class="flex bg-gray-50">
-  <!-- Mobile hamburger menu button (add this line) -->
-  <button id="mobile-hamburger" class="fixed top-4 left-4 z-50 p-2 bg-white rounded-lg shadow-md text-gray-600 hover:text-gray-900 md:hidden transition-all duration-300">
-    <i class="fas fa-bars"></i>
-  </button>
-
-  <!-- Mobile overlay (add this line) -->
-  <div id="mobile-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden md:hidden transition-opacity duration-300"></div>
 
   <!-- Modify the sidebar structure to include a dedicated space for the hamburger menu -->
 <?php include 'employee_sidebar.php'; ?>
 
   <!-- Main Content -->
-  <div id="main-content" class="ml-64 p-6 bg-gray-50 min-h-screen transition-all duration-300 main-content">
+  <div id="main-content" class="ml-64 w-[calc(100%-16rem)] p-4 sm:p-6 bg-gray-50 min-h-screen transition-all duration-300 main-content">
   <!-- Header with breadcrumb and welcome message -->
   <div class="flex justify-between items-center mb-6 bg-white p-5 rounded-lg shadow-sidebar">
     <div>
