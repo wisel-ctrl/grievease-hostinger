@@ -2654,7 +2654,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // Add this to your existing JavaScript for the receipt modal
 document.addEventListener('DOMContentLoaded', function() {
     // Beneficiary name fields validation (first, middle, last names, suffix)
-    const beneficiaryNameFields = ['benefeciary_fname', 'benefeciary_mname', 'benefeciary_lname', 'benefeciary_suffix'];
+    const beneficiaryNameFields = ['benefeciary_fname', 'benefeciary_mname', 'benefeciary_lname'];
     beneficiaryNameFields.forEach(fieldId => {
         const field = document.getElementById(fieldId);
         if (field) {
