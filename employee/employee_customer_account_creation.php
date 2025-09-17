@@ -2698,15 +2698,45 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Sidebar classes before:', sidebar.className);
         
         if (sidebar.classList.contains("-translate-x-full")) {
-          // Show sidebar
+          // Show sidebar with full UI
           sidebar.classList.remove("-translate-x-full");
           sidebar.classList.add("translate-x-0");
           sidebar.classList.remove("w-16");
           sidebar.classList.add("w-64");
+          
+          // Show all text in navigation links
+          document.querySelectorAll(".sidebar-link span").forEach(el => {
+            el.classList.remove("hidden");
+          });
+          
+          // Show menu section headers
+          document.querySelectorAll(".menu-header").forEach(el => {
+            el.classList.remove("hidden");
+          });
+          
+          // Show logo and title in the header
+          const headerElements = document.querySelectorAll("#sidebar > div:first-child > *");
+          headerElements.forEach(el => {
+            el.classList.remove("hidden");
+          });
+          
+          // Show user profile text
+          const userProfileText = document.querySelectorAll("#sidebar > div:nth-child(2) > div");
+          userProfileText.forEach(el => {
+            el.classList.remove("hidden");
+          });
+          
+          // Restore original navigation link styling
+          document.querySelectorAll(".sidebar-link").forEach(el => {
+            el.classList.remove("justify-center");
+            el.classList.remove("px-0");
+            el.classList.add("px-5");
+          });
+          
           if (overlay) {
             overlay.classList.remove("hidden");
           }
-          console.log('Showing sidebar');
+          console.log('Showing sidebar with full UI');
         } else {
           // Hide sidebar
           sidebar.classList.remove("translate-x-0");
@@ -2728,6 +2758,36 @@ document.addEventListener('DOMContentLoaded', function() {
         sidebar.classList.remove('translate-x-0');
         sidebar.classList.add('w-64');
         sidebar.classList.remove('w-16');
+        
+        // Ensure all sidebar elements are visible (not collapsed)
+        // Show all text in navigation links
+        document.querySelectorAll(".sidebar-link span").forEach(el => {
+          el.classList.remove("hidden");
+        });
+        
+        // Show menu section headers
+        document.querySelectorAll(".menu-header").forEach(el => {
+          el.classList.remove("hidden");
+        });
+        
+        // Show logo and title in the header
+        const headerElements = document.querySelectorAll("#sidebar > div:first-child > *");
+        headerElements.forEach(el => {
+          el.classList.remove("hidden");
+        });
+        
+        // Show user profile text
+        const userProfileText = document.querySelectorAll("#sidebar > div:nth-child(2) > div");
+        userProfileText.forEach(el => {
+          el.classList.remove("hidden");
+        });
+        
+        // Restore original navigation link styling
+        document.querySelectorAll(".sidebar-link").forEach(el => {
+          el.classList.remove("justify-center");
+          el.classList.remove("px-0");
+          el.classList.add("px-5");
+        });
       }
       if (overlay) {
         overlay.classList.add('hidden');
