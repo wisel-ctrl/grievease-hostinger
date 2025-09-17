@@ -69,29 +69,29 @@ function generateInventoryRow($row) {
     }
 
     $html = '<tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">';
-    $html .= '<td class="p-4 text-sm text-sidebar-text font-medium">#INV-' . str_pad($row["inventory_id"], 3, '0', STR_PAD_LEFT) . '</td>';
-    $html .= '<td class="p-4 text-sm text-sidebar-text">' . htmlspecialchars($row["item_name"]) . '</td>';
-    $html .= '<td class="p-4 text-sm text-sidebar-text">';
-    $html .= '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">';
+    $html .= '<td class="px-3 sm:px-4 py-3 sm:py-4 text-xs sm:text-sm text-sidebar-text font-medium">#INV-' . str_pad($row["inventory_id"], 3, '0', STR_PAD_LEFT) . '</td>';
+    $html .= '<td class="px-3 sm:px-4 py-3 sm:py-4 text-xs sm:text-sm text-sidebar-text">' . htmlspecialchars($row["item_name"]) . '</td>';
+    $html .= '<td class="px-3 sm:px-4 py-3 sm:py-4 text-xs sm:text-sm text-sidebar-text">';
+    $html .= '<span class="inline-flex items-center px-2 sm:px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">';
     $html .= htmlspecialchars($row["category"]) . '</span>';
     $html .= '</td>';
     
     // Enhanced quantity cell with visual indicators and proper padding
-    $html .= '<td class="p-0 text-sm">';
-    $html .= '<div class="' . $quantityClass . ' px-3 py-2 rounded-lg flex items-center justify-center">';
+    $html .= '<td class="p-0 text-xs sm:text-sm">';
+    $html .= '<div class="' . $quantityClass . ' px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg flex items-center justify-center mx-2 sm:mx-3">';
     $html .= $stockIcon . $quantityText;
     $html .= '</div>';
     $html .= '</td>';
     
-    $html .= '<td class="p-4 text-sm font-medium text-sidebar-text" data-sort-value="' . $row["price"] . '">₱' . number_format($row["price"], 2) . '</td>';
-    $html .= '<td class="p-4 text-sm font-medium text-sidebar-text" data-sort-value="' . $row["total_value"] . '">₱' . number_format($row["total_value"], 2) . '</td>';
-    $html .= '<td class="p-4 text-sm">';
-    $html .= '<div class="flex space-x-2">';
-    $html .= '<button class="p-1.5 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-all edit-btn" data-id="' . $row['inventory_id'] . '">';
-    $html .= '<i class="fas fa-edit"></i>';
+    $html .= '<td class="px-3 sm:px-4 py-3 sm:py-4 text-xs sm:text-sm font-medium text-sidebar-text" data-sort-value="' . $row["price"] . '">₱' . number_format($row["price"], 2) . '</td>';
+    $html .= '<td class="px-3 sm:px-4 py-3 sm:py-4 text-xs sm:text-sm font-medium text-sidebar-text" data-sort-value="' . $row["total_value"] . '">₱' . number_format($row["total_value"], 2) . '</td>';
+    $html .= '<td class="px-3 sm:px-4 py-3 sm:py-4 text-xs sm:text-sm">';
+    $html .= '<div class="flex space-x-1 sm:space-x-2">';
+    $html .= '<button class="p-1 sm:p-1.5 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-all edit-btn" data-id="' . $row['inventory_id'] . '">';
+    $html .= '<i class="fas fa-edit text-xs sm:text-sm"></i>';
     $html .= '</button>';
-    $html .= '<button class="p-1.5 bg-red-100 text-red-600 rounded hover:bg-red-200 transition-all archive-btn" data-id="' . $row['inventory_id'] . '" data-name="' . htmlspecialchars($row['item_name']) . '">';
-    $html .= '<i class="fas fa-archive"></i>';
+    $html .= '<button class="p-1 sm:p-1.5 bg-red-100 text-red-600 rounded hover:bg-red-200 transition-all archive-btn" data-id="' . $row['inventory_id'] . '" data-name="' . htmlspecialchars($row['item_name']) . '">';
+    $html .= '<i class="fas fa-archive text-xs sm:text-sm"></i>';
     $html .= '</button>';
     $html .= '</div>';
     $html .= '</td>';
@@ -368,6 +368,63 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
     .quantity-high {
       background-color: #f0fdf4; /* emerald-50 */
       color: #064e3b; /* emerald-900 */
+    }
+    
+    /* Mobile-specific responsive utilities */
+    @media (max-width: 640px) {
+      /* Touch-friendly targets */
+      .touch-target {
+        min-height: 44px;
+        min-width: 44px;
+      }
+      
+      /* Mobile table improvements */
+      .mobile-table-scroll {
+        -webkit-overflow-scrolling: touch;
+      }
+      
+      /* Mobile modal improvements */
+      .mobile-modal {
+        margin: 0.5rem;
+        max-height: calc(100vh - 1rem);
+      }
+      
+      /* Mobile form spacing */
+      .mobile-form-spacing {
+        padding: 0.75rem;
+      }
+      
+      /* Mobile button improvements */
+      .mobile-button {
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+      }
+      
+      /* Mobile text improvements */
+      .mobile-text-sm {
+        font-size: 0.75rem;
+        line-height: 1rem;
+      }
+    }
+    
+    /* Tablet-specific improvements */
+    @media (min-width: 641px) and (max-width: 1024px) {
+      .tablet-spacing {
+        padding: 1rem;
+      }
+    }
+    
+    /* Enhanced scrollbar for mobile */
+    @media (max-width: 768px) {
+      .scrollbar-thin::-webkit-scrollbar {
+        width: 2px;
+        height: 2px;
+      }
+      
+      .scrollbar-thin::-webkit-scrollbar-thumb {
+        background: rgba(202, 138, 4, 0.8);
+        border-radius: 2px;
+      }
     }
   </style>
 </head>
@@ -694,16 +751,16 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
 <?php include 'employee_sidebar.php'; ?>
 
 <!-- Main Content -->
-  <div id="main-content" class="ml-64 p-6 bg-gray-50 min-h-screen transition-all duration-300 main-content">
+  <div id="main-content" class="ml-64 w-[calc(100%-16rem)] p-4 sm:p-6 bg-gray-50 min-h-screen transition-all duration-300 main-content">
     <!-- Header with breadcrumb and welcome message -->
-    <div class="flex justify-between items-center mb-6 bg-white p-5 rounded-lg shadow-sidebar">
+    <div class="flex justify-between items-center mb-4 sm:mb-6 bg-white p-4 sm:p-5 rounded-lg shadow-sidebar">
       <div>
-        <h1 class="text-2xl font-bold text-sidebar-text">View Inventory</h1>
+        <h1 class="text-xl sm:text-2xl font-bold text-sidebar-text">View Inventory</h1>
       </div>
     </div>
 
     <!-- Inventory Overview Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
         <?php
         // Get total items count
         $totalItemsQuery = "SELECT COUNT(*) as total_items FROM inventory_tb WHERE branch_id = ? AND status = 1";
@@ -815,20 +872,20 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
         
         <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
             <!-- Card header with brighter gradient background -->
-            <div class="bg-gradient-to-r from-<?php echo $card['color']; ?>-100 to-<?php echo $card['color']; ?>-200 px-6 py-4">
+            <div class="bg-gradient-to-r from-<?php echo $card['color']; ?>-100 to-<?php echo $card['color']; ?>-200 px-4 sm:px-6 py-3 sm:py-4">
                 <div class="flex items-center justify-between mb-1">
-                    <h3 class="text-sm font-medium text-gray-700"><?php echo $card['title']; ?></h3>
-                    <div class="w-10 h-10 rounded-full bg-white/90 text-<?php echo $card['color']; ?>-600 flex items-center justify-center">
-                        <i class="fas fa-<?php echo $card['icon']; ?>"></i>
+                    <h3 class="text-xs sm:text-sm font-medium text-gray-700"><?php echo $card['title']; ?></h3>
+                    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/90 text-<?php echo $card['color']; ?>-600 flex items-center justify-center">
+                        <i class="fas fa-<?php echo $card['icon']; ?> text-sm sm:text-base"></i>
                     </div>
                 </div>
                 <div class="flex items-end">
-                    <span class="text-2xl md:text-3xl font-bold text-gray-800"><?php echo $card['prefix'] . $card['value'] . $suffix; ?></span>
+                    <span class="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800"><?php echo $card['prefix'] . $card['value'] . $suffix; ?></span>
                 </div>
             </div>
             
             <!-- Card footer with change indicator -->
-            <div class="px-6 py-3 bg-white border-t border-gray-100">
+            <div class="px-4 sm:px-6 py-2 sm:py-3 bg-white border-t border-gray-100">
                 <div class="flex items-center <?php echo $changeColorClass; ?>">
                     <i class="fas fa-arrow-<?php echo $isPositive ? 'up' : 'down'; ?> mr-1.5 text-xs"></i>
                     <span class="font-medium text-xs"><?php echo $changeValue; ?>% </span>
@@ -841,27 +898,27 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
     </div>
 
     <!-- Inventory Table -->
-<div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
+<div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 mb-6 sm:mb-8">
   <!-- Branch Header with Search and Filters -->
-  <div class="bg-sidebar-hover p-4 border-b border-sidebar-border">
+  <div class="bg-sidebar-hover p-3 sm:p-4 border-b border-sidebar-border">
     <!-- Desktop layout for big screens - Title on left, controls on right -->
     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
       <!-- Title and Counter -->
-      <div class="flex items-center gap-3 mb-4 lg:mb-0">
-        <h3 class="font-medium text-sidebar-text">Inventory Items</h3>
+      <div class="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4 lg:mb-0">
+        <h3 class="text-sm sm:text-base font-medium text-sidebar-text">Inventory Items</h3>
         
-        <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+        <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-2 sm:px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
           <?php echo $totalItems . ($totalItems != 1 ? "" : ""); ?>
         </span>
       </div>
       
       <!-- Controls for big screens - aligned right -->
-      <div class="hidden lg:flex items-center gap-3">
+      <div class="hidden lg:flex items-center gap-2 sm:gap-3">
         <!-- Search Input -->
         <div class="relative">
           <input type="text" id="inventorySearch" 
                 placeholder="Search inventory..." 
-                class="pl-9 pr-8 py-2 border border-sidebar-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent"
+                class="pl-9 pr-8 py-2 border border-sidebar-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent w-48 xl:w-64"
                 oninput="validateSearchInput(this)" onpaste="handleSearchPaste(this)">
           <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
               <i class="fas fa-search text-gray-400"></i>
@@ -873,9 +930,9 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
 
         <!-- Filter Dropdown -->
         <div class="relative filter-dropdown">
-          <button id="filterButton_mobile<?php echo $branch_id; ?>" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover">
+          <button id="filterButton_mobile<?php echo $branch_id; ?>" class="px-2 sm:px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-1 sm:gap-2 hover:bg-sidebar-hover">
             <i class="fas fa-filter text-sidebar-accent"></i>
-            <span>Filters</span>
+            <span class="hidden sm:inline">Filters</span>
             <span id="filterIndicator_mobile<?php echo $branch_id; ?>" class="hidden h-2 w-2 bg-sidebar-accent rounded-full"></span>
           </button>
           
@@ -928,28 +985,30 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
         </div>
 
         <!-- Archive Button -->
-        <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover whitespace-nowrap"
+        <button class="px-2 sm:px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-1 sm:gap-2 hover:bg-sidebar-hover whitespace-nowrap"
                 onclick="openArchivedModal()">
           <i class="fas fa-archive text-sidebar-accent"></i>
-          <span>Archived</span>
+          <span class="hidden sm:inline">Archived</span>
         </button>
 
         <!-- Add Item Button -->
-        <button class="px-4 py-2 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap"
-                onclick="openAddInventoryModal()"> Add Item
+        <button class="px-3 sm:px-4 py-2 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-1 sm:gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap"
+                onclick="openAddInventoryModal()">
+          <i class="fas fa-plus"></i>
+          <span class="hidden sm:inline">Add Item</span>
         </button>
       </div>
     </div>
     
     <!-- Mobile/Tablet Controls - Only visible on smaller screens -->
-    <div class="lg:hidden w-full mt-4">
+    <div class="lg:hidden w-full mt-3 sm:mt-4">
       <!-- First row: Search bar with filter and archive icons on the right -->
-      <div class="flex items-center w-full gap-3 mb-4">
+      <div class="flex items-center w-full gap-2 sm:gap-3 mb-3 sm:mb-4">
         <!-- Search Input - Takes most of the space -->
         <div class="relative flex-grow">
           <input type="text" id="inventorySearch" 
                   placeholder="Search inventory..." 
-                  class="pl-9 pr-8 py-2.5 w-full border border-sidebar-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent"
+                  class="pl-9 pr-8 py-2 sm:py-2.5 w-full border border-sidebar-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent"
                   oninput="validateSearchInput(this)" onpaste="handleSearchPaste(this)">
           <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
               <i class="fas fa-search text-gray-400"></i>
@@ -960,12 +1019,12 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
         </div>
 
         <!-- Icon-only buttons for filter and archive -->
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2 sm:gap-3">
           <!-- Filter Icon Button -->
           <div class="relative filter-dropdown">
-            <button id="filterButton_<?php echo $branch_id; ?>" class="w-10 h-10 flex items-center justify-center text-sidebar-accent">
-              <i class="fas fa-filter text-xl"></i>
-              <span id="filterIndicator_<?php echo $branch_id; ?>" class="hidden absolute top-1 right-1 h-2 w-2 bg-sidebar-accent rounded-full"></span>
+            <button id="filterButton_<?php echo $branch_id; ?>" class="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-sidebar-accent border border-gray-300 rounded-lg hover:bg-sidebar-hover">
+              <i class="fas fa-filter text-lg sm:text-xl"></i>
+              <span id="filterIndicator_<?php echo $branch_id; ?>" class="hidden absolute top-0 right-0 h-2 w-2 bg-sidebar-accent rounded-full"></span>
             </button>
             
             <!-- Filter Window - Positioned below the icon -->
@@ -1017,16 +1076,18 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
           </div>
 
           <!-- Archive Icon Button -->
-          <button class="w-10 h-10 flex items-center justify-center text-sidebar-accent" onclick="openArchivedModal()">
-            <i class="fas fa-archive text-xl"></i>
+          <button class="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-sidebar-accent border border-gray-300 rounded-lg hover:bg-sidebar-hover" onclick="openArchivedModal()">
+            <i class="fas fa-archive text-lg sm:text-xl"></i>
           </button>
         </div>
       </div>
 
       <!-- Second row: Add Item Button - Full width -->
       <div class="w-full">
-        <button class="px-4 py-2.5 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap w-full justify-center" 
-                onclick="openAddInventoryModal()"> Add Item
+        <button class="px-4 py-2 sm:py-2.5 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap w-full justify-center" 
+                onclick="openAddInventoryModal()">
+          <i class="fas fa-plus"></i>
+          <span>Add Item</span>
         </button>
       </div>
     </div>
@@ -1040,42 +1101,52 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
 
     <!-- Responsive Table with improved spacing and horizontal scroll for small screens -->
     <div class="min-w-full">
-      <table class="w-full">
+      <table class="w-full min-w-[800px]">
         <thead>
           <tr class="bg-gray-50 border-b border-sidebar-border">
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(<?php echo $branch_id; ?>, 0)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-hashtag text-sidebar-accent"></i> ID 
+            <th class="px-3 sm:px-4 py-3 sm:py-3.5 text-left text-xs sm:text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(<?php echo $branch_id; ?>, 0)">
+              <div class="flex items-center gap-1 sm:gap-1.5">
+                <i class="fas fa-hashtag text-sidebar-accent text-xs sm:text-sm"></i> 
+                <span class="hidden sm:inline">ID</span>
+                <span class="sm:hidden">#</span>
               </div>
             </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(<?php echo $branch_id; ?>, 1)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-box text-sidebar-accent"></i> Item Name 
+            <th class="px-3 sm:px-4 py-3 sm:py-3.5 text-left text-xs sm:text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(<?php echo $branch_id; ?>, 1)">
+              <div class="flex items-center gap-1 sm:gap-1.5">
+                <i class="fas fa-box text-sidebar-accent text-xs sm:text-sm"></i> 
+                <span>Item Name</span>
               </div>
             </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(<?php echo $branch_id; ?>, 2)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-th-list text-sidebar-accent"></i> Category 
+            <th class="px-3 sm:px-4 py-3 sm:py-3.5 text-left text-xs sm:text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(<?php echo $branch_id; ?>, 2)">
+              <div class="flex items-center gap-1 sm:gap-1.5">
+                <i class="fas fa-th-list text-sidebar-accent text-xs sm:text-sm"></i> 
+                <span>Category</span>
               </div>
             </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(<?php echo $branch_id; ?>, 3)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-cubes text-sidebar-accent"></i> Quantity 
+            <th class="px-3 sm:px-4 py-3 sm:py-3.5 text-left text-xs sm:text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(<?php echo $branch_id; ?>, 3)">
+              <div class="flex items-center gap-1 sm:gap-1.5">
+                <i class="fas fa-cubes text-sidebar-accent text-xs sm:text-sm"></i> 
+                <span>Qty</span>
               </div>
             </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(<?php echo $branch_id; ?>, 4)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-tag text-sidebar-accent"></i> Unit Price 
+            <th class="px-3 sm:px-4 py-3 sm:py-3.5 text-left text-xs sm:text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(<?php echo $branch_id; ?>, 4)">
+              <div class="flex items-center gap-1 sm:gap-1.5">
+                <i class="fas fa-tag text-sidebar-accent text-xs sm:text-sm"></i> 
+                <span class="hidden sm:inline">Unit Price</span>
+                <span class="sm:hidden">Price</span>
               </div>
             </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(<?php echo $branch_id; ?>, 5)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-peso-sign text-sidebar-accent"></i> Total Value 
+            <th class="px-3 sm:px-4 py-3 sm:py-3.5 text-left text-xs sm:text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(<?php echo $branch_id; ?>, 5)">
+              <div class="flex items-center gap-1 sm:gap-1.5">
+                <i class="fas fa-peso-sign text-sidebar-accent text-xs sm:text-sm"></i> 
+                <span class="hidden sm:inline">Total Value</span>
+                <span class="sm:hidden">Total</span>
               </div>
             </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-cogs text-sidebar-accent"></i> Actions
+            <th class="px-3 sm:px-4 py-3 sm:py-3.5 text-left text-xs sm:text-sm font-medium text-sidebar-text whitespace-nowrap">
+              <div class="flex items-center gap-1 sm:gap-1.5">
+                <i class="fas fa-cogs text-sidebar-accent text-xs sm:text-sm"></i> 
+                <span>Actions</span>
               </div>
             </th>
           </tr>
@@ -1088,11 +1159,11 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
   </div>
   
   <!-- Sticky Pagination Footer with improved spacing -->
-  <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
-    <div id="paginationInfo_<?php echo $branch_id; ?>" class="text-sm text-gray-500 text-center sm:text-left">
+  <div class="sticky bottom-0 left-0 right-0 px-3 sm:px-4 py-3 sm:py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-4">
+    <div id="paginationInfo_<?php echo $branch_id; ?>" class="text-xs sm:text-sm text-gray-500 text-center sm:text-left">
       <!-- Will be updated via AJAX -->
     </div>
-    <div id="paginationLinks_<?php echo $branch_id; ?>" class="flex space-x-2">
+    <div id="paginationLinks_<?php echo $branch_id; ?>" class="flex space-x-1 sm:space-x-2 overflow-x-auto scrollbar-thin">
       <!-- Will be updated via AJAX -->
     </div>
   </div>
