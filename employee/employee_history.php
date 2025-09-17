@@ -380,16 +380,15 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
           $stmt->close();
           ?>
 
-          <div class="flex justify-between items-center p-4">
-              <div>
-                <p class="text-sm text-gray-600" id="paginationInfo">
-                  Loading records...
-                </p>
-              </div>
-              <div class="flex space-x-2" id="paginationControls">
-                <!-- Pagination buttons will be loaded here -->
-              </div>
+          <!-- Sticky Pagination Footer with improved spacing -->
+          <div class="sticky bottom-0 left-0 right-0 px-3 sm:px-4 py-3 sm:py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-4">
+            <div id="paginationInfo" class="text-xs sm:text-sm text-gray-500 text-center sm:text-left">
+              Loading records...
             </div>
+            <div id="paginationControls" class="flex space-x-1 sm:space-x-2 overflow-x-auto scrollbar-thin">
+              <!-- Pagination buttons will be loaded here -->
+            </div>
+          </div>
         </div>
       </div>
       
@@ -532,16 +531,15 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
           $stmt->close();
           ?>
 
-          <div class="flex justify-between items-center p-4">
-              <div>
-                <p class="text-sm text-gray-600" id="paginationInfoFullyPaid">
-                  Loading records...
-                </p>
-              </div>
-              <div class="flex space-x-2" id="paginationControlsFullyPaid">
-                <!-- Pagination buttons will be loaded here -->
-              </div>
+          <!-- Sticky Pagination Footer with improved spacing -->
+          <div class="sticky bottom-0 left-0 right-0 px-3 sm:px-4 py-3 sm:py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-4">
+            <div id="paginationInfoFullyPaid" class="text-xs sm:text-sm text-gray-500 text-center sm:text-left">
+              Loading records...
             </div>
+            <div id="paginationControlsFullyPaid" class="flex space-x-1 sm:space-x-2 overflow-x-auto scrollbar-thin">
+              <!-- Pagination buttons will be loaded here -->
+            </div>
+          </div>
           </div>
         </div>
         
@@ -684,16 +682,15 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
           $stmt->close();
           ?>
 
-          <div class="flex justify-between items-center p-4">
-            <div>
-                <p class="text-sm text-gray-600" id="paginationOutstandingInfo">
-                    Loading records...
-                </p>
+          <!-- Sticky Pagination Footer with improved spacing -->
+          <div class="sticky bottom-0 left-0 right-0 px-3 sm:px-4 py-3 sm:py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-4">
+            <div id="paginationOutstandingInfo" class="text-xs sm:text-sm text-gray-500 text-center sm:text-left">
+              Loading records...
             </div>
-            <div class="flex space-x-2" id="paginationOutstandingControls">
-                <!-- Pagination buttons will be loaded here -->
+            <div id="paginationOutstandingControls" class="flex space-x-1 sm:space-x-2 overflow-x-auto scrollbar-thin">
+              <!-- Pagination buttons will be loaded here -->
             </div>
-        </div>
+          </div>
         </div>
       </div>
     
@@ -874,16 +871,15 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
           $totalPagesCustomOngoing = ceil($totalRecordsCustomOngoing / $recordsPerPage);
           $stmt->close();
           ?>
-          <div class="flex justify-between items-center p-4">
-              <div>
-                <p class="text-sm text-gray-600" id="customPaginationInfo">
-                  Loading records...
-                </p>
-              </div>
-              <div class="flex space-x-2" id="customPaginationControls">
-                <!-- Pagination buttons will be loaded here -->
-              </div>
+          <!-- Sticky Pagination Footer with improved spacing -->
+          <div class="sticky bottom-0 left-0 right-0 px-3 sm:px-4 py-3 sm:py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-4">
+            <div id="customPaginationInfo" class="text-xs sm:text-sm text-gray-500 text-center sm:text-left">
+              Loading records...
             </div>
+            <div id="customPaginationControls" class="flex space-x-1 sm:space-x-2 overflow-x-auto scrollbar-thin">
+              <!-- Pagination buttons will be loaded here -->
+            </div>
+          </div>
         </div>
       </div>
 
@@ -1024,16 +1020,15 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
           $stmt->close();
           ?>
 
-          <div class="flex justify-between items-center p-4">
-              <div>
-                <p class="text-sm text-gray-600" id="customFullyPaidPaginationInfo">
-                  Loading records...
-                </p>
-              </div>
-              <div class="flex space-x-2" id="customFullyPaidPaginationControls">
-                <!-- Pagination buttons will be loaded here -->
-              </div>
+          <!-- Sticky Pagination Footer with improved spacing -->
+          <div class="sticky bottom-0 left-0 right-0 px-3 sm:px-4 py-3 sm:py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-4">
+            <div id="customFullyPaidPaginationInfo" class="text-xs sm:text-sm text-gray-500 text-center sm:text-left">
+              Loading records...
             </div>
+            <div id="customFullyPaidPaginationControls" class="flex space-x-1 sm:space-x-2 overflow-x-auto scrollbar-thin">
+              <!-- Pagination buttons will be loaded here -->
+            </div>
+          </div>
         </div>
       </div>
 
@@ -1184,16 +1179,15 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
           $stmt->close();
           ?>
 
-          <div class="flex justify-between items-center p-4">
-            <div>
-                <p class="text-sm text-gray-600" id="customOutstandingPaginationInfo">
-                    Loading records...
-                </p>
+          <!-- Sticky Pagination Footer with improved spacing -->
+          <div class="sticky bottom-0 left-0 right-0 px-3 sm:px-4 py-3 sm:py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-4">
+            <div id="customOutstandingPaginationInfo" class="text-xs sm:text-sm text-gray-500 text-center sm:text-left">
+              Loading records...
             </div>
-            <div class="flex space-x-2" id="customOutstandingPaginationControls">
-                <!-- Pagination buttons will be loaded here -->
+            <div id="customOutstandingPaginationControls" class="flex space-x-1 sm:space-x-2 overflow-x-auto scrollbar-thin">
+              <!-- Pagination buttons will be loaded here -->
             </div>
-        </div>
+          </div>
         </div>
       </div>
 
@@ -5161,14 +5155,18 @@ function updatePaginationControls(currentPage, totalPages) {
     let paginationHTML = '';
     
     // First page button
-    paginationHTML += `<button onclick="goToPage(1)" class="px-3 py-1 ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
-        «
-    </button>`;
+    if (currentPage > 1) {
+        paginationHTML += `<a href="#" onclick="goToPage(1)" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">«</a>`;
+    } else {
+        paginationHTML += `<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">«</button>`;
+    }
     
     // Previous page button
-    paginationHTML += `<button onclick="goToPage(${currentPage - 1})" class="px-3 py-1 ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
-        ‹
-    </button>`;
+    if (currentPage > 1) {
+        paginationHTML += `<a href="#" onclick="goToPage(${currentPage - 1})" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">‹</a>`;
+    } else {
+        paginationHTML += `<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">‹</button>`;
+    }
     
     // Page numbers
     const maxVisiblePages = 5;
@@ -5194,20 +5192,23 @@ function updatePaginationControls(currentPage, totalPages) {
     }
     
     for (let i = startPage; i <= endPage; i++) {
-        paginationHTML += `<button onclick="goToPage(${i})" class="px-3 py-1 ${i === currentPage ? 'bg-sidebar-accent text-white' : 'bg-gray-200 text-gray-700 hover:bg-darkgold hover:text-white'} rounded-md">
-            ${i}
-        </button>`;
+        const activeClass = (i === currentPage) ? 'bg-sidebar-accent text-white' : '';
+        paginationHTML += `<a href="#" onclick="goToPage(${i})" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover ${activeClass}">${i}</a>`;
     }
     
     // Next page button
-    paginationHTML += `<button onclick="goToPage(${currentPage + 1})" class="px-3 py-1 ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
-        ›
-    </button>`;
+    if (currentPage < totalPages) {
+        paginationHTML += `<a href="#" onclick="goToPage(${currentPage + 1})" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">›</a>`;
+    } else {
+        paginationHTML += `<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">›</button>`;
+    }
     
     // Last page button
-    paginationHTML += `<button onclick="goToPage(${totalPages})" class="px-3 py-1 ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
-        »
-    </button>`;
+    if (currentPage < totalPages) {
+        paginationHTML += `<a href="#" onclick="goToPage(${totalPages})" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">»</a>`;
+    } else {
+        paginationHTML += `<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">»</button>`;
+    }
     
     document.getElementById('paginationControls').innerHTML = paginationHTML;
 }
@@ -5297,14 +5298,18 @@ function updateFullyPaidPaginationControls(currentPage, totalPages) {
     let paginationHTML = '';
     
     // First page button
-    paginationHTML += `<button onclick="goToFullyPaidPage(1)" class="px-3 py-1 ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
-        «
-    </button>`;
+    if (currentPage > 1) {
+        paginationHTML += `<a href="#" onclick="goToFullyPaidPage(1)" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">«</a>`;
+    } else {
+        paginationHTML += `<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">«</button>`;
+    }
     
     // Previous page button
-    paginationHTML += `<button onclick="goToFullyPaidPage(${currentPage - 1})" class="px-3 py-1 ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
-        ‹
-    </button>`;
+    if (currentPage > 1) {
+        paginationHTML += `<a href="#" onclick="goToFullyPaidPage(${currentPage - 1})" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">‹</a>`;
+    } else {
+        paginationHTML += `<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">‹</button>`;
+    }
     
     // Page numbers
     const maxVisiblePages = 5;
@@ -5330,20 +5335,23 @@ function updateFullyPaidPaginationControls(currentPage, totalPages) {
     }
     
     for (let i = startPage; i <= endPage; i++) {
-        paginationHTML += `<button onclick="goToFullyPaidPage(${i})" class="px-3 py-1 ${i === currentPage ? 'bg-sidebar-accent text-white' : 'bg-gray-200 text-gray-700 hover:bg-darkgold hover:text-white'} rounded-md">
-            ${i}
-        </button>`;
+        const activeClass = (i === currentPage) ? 'bg-sidebar-accent text-white' : '';
+        paginationHTML += `<a href="#" onclick="goToFullyPaidPage(${i})" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover ${activeClass}">${i}</a>`;
     }
     
     // Next page button
-    paginationHTML += `<button onclick="goToFullyPaidPage(${currentPage + 1})" class="px-3 py-1 ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
-        ›
-    </button>`;
+    if (currentPage < totalPages) {
+        paginationHTML += `<a href="#" onclick="goToFullyPaidPage(${currentPage + 1})" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">›</a>`;
+    } else {
+        paginationHTML += `<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">›</button>`;
+    }
     
     // Last page button
-    paginationHTML += `<button onclick="goToFullyPaidPage(${totalPages})" class="px-3 py-1 ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
-        »
-    </button>`;
+    if (currentPage < totalPages) {
+        paginationHTML += `<a href="#" onclick="goToFullyPaidPage(${totalPages})" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">»</a>`;
+    } else {
+        paginationHTML += `<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">»</button>`;
+    }
     
     document.getElementById('paginationControlsFullyPaid').innerHTML = paginationHTML;
 }
@@ -5425,14 +5433,18 @@ function updateOutstandingPaginationControls(currentPage, totalPages) {
     let paginationHTML = '';
     
     // First page button
-    paginationHTML += `<button onclick="goToOutstandingPage(1)" class="px-3 py-1 ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
-        «
-    </button>`;
+    if (currentPage > 1) {
+        paginationHTML += `<a href="#" onclick="goToOutstandingPage(1)" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">«</a>`;
+    } else {
+        paginationHTML += `<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">«</button>`;
+    }
     
     // Previous page button
-    paginationHTML += `<button onclick="goToOutstandingPage(${currentPage - 1})" class="px-3 py-1 ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
-        ‹
-    </button>`;
+    if (currentPage > 1) {
+        paginationHTML += `<a href="#" onclick="goToOutstandingPage(${currentPage - 1})" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">‹</a>`;
+    } else {
+        paginationHTML += `<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">‹</button>`;
+    }
     
     // Page numbers
     const maxVisiblePages = 5;
@@ -5458,20 +5470,23 @@ function updateOutstandingPaginationControls(currentPage, totalPages) {
     }
     
     for (let i = startPage; i <= endPage; i++) {
-        paginationHTML += `<button onclick="goToOutstandingPage(${i})" class="px-3 py-1 ${i === currentPage ? 'bg-sidebar-accent text-white' : 'bg-gray-200 text-gray-700 hover:bg-darkgold hover:text-white'} rounded-md">
-            ${i}
-        </button>`;
+        const activeClass = (i === currentPage) ? 'bg-sidebar-accent text-white' : '';
+        paginationHTML += `<a href="#" onclick="goToOutstandingPage(${i})" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover ${activeClass}">${i}</a>`;
     }
     
     // Next page button
-    paginationHTML += `<button onclick="goToOutstandingPage(${currentPage + 1})" class="px-3 py-1 ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
-        ›
-    </button>`;
+    if (currentPage < totalPages) {
+        paginationHTML += `<a href="#" onclick="goToOutstandingPage(${currentPage + 1})" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">›</a>`;
+    } else {
+        paginationHTML += `<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">›</button>`;
+    }
     
     // Last page button
-    paginationHTML += `<button onclick="goToOutstandingPage(${totalPages})" class="px-3 py-1 ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
-        »
-    </button>`;
+    if (currentPage < totalPages) {
+        paginationHTML += `<a href="#" onclick="goToOutstandingPage(${totalPages})" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">»</a>`;
+    } else {
+        paginationHTML += `<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">»</button>`;
+    }
     
     document.getElementById('paginationOutstandingControls').innerHTML = paginationHTML;
 }
@@ -5561,14 +5576,18 @@ function updateCustomPaginationControls(currentPage, totalPages) {
     let paginationHTML = '';
     
     // First page button
-    paginationHTML += `<button onclick="goToCustomPage(1)" class="px-3 py-1 ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
-        «
-    </button>`;
+    if (currentPage > 1) {
+        paginationHTML += `<a href="#" onclick="goToCustomPage(1)" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">«</a>`;
+    } else {
+        paginationHTML += `<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">«</button>`;
+    }
     
     // Previous page button
-    paginationHTML += `<button onclick="goToCustomPage(${currentPage - 1})" class="px-3 py-1 ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
-        ‹
-    </button>`;
+    if (currentPage > 1) {
+        paginationHTML += `<a href="#" onclick="goToCustomPage(${currentPage - 1})" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">‹</a>`;
+    } else {
+        paginationHTML += `<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">‹</button>`;
+    }
     
     // Page numbers
     const maxVisiblePages = 5;
@@ -5594,20 +5613,23 @@ function updateCustomPaginationControls(currentPage, totalPages) {
     }
     
     for (let i = startPage; i <= endPage; i++) {
-        paginationHTML += `<button onclick="goToCustomPage(${i})" class="px-3 py-1 ${i === currentPage ? 'bg-sidebar-accent text-white' : 'bg-gray-200 text-gray-700 hover:bg-darkgold hover:text-white'} rounded-md">
-            ${i}
-        </button>`;
+        const activeClass = (i === currentPage) ? 'bg-sidebar-accent text-white' : '';
+        paginationHTML += `<a href="#" onclick="goToCustomPage(${i})" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover ${activeClass}">${i}</a>`;
     }
     
     // Next page button
-    paginationHTML += `<button onclick="goToCustomPage(${currentPage + 1})" class="px-3 py-1 ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
-        ›
-    </button>`;
+    if (currentPage < totalPages) {
+        paginationHTML += `<a href="#" onclick="goToCustomPage(${currentPage + 1})" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">›</a>`;
+    } else {
+        paginationHTML += `<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">›</button>`;
+    }
     
     // Last page button
-    paginationHTML += `<button onclick="goToCustomPage(${totalPages})" class="px-3 py-1 ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-sidebar-accent text-white hover:bg-darkgold'} rounded-md">
-        »
-    </button>`;
+    if (currentPage < totalPages) {
+        paginationHTML += `<a href="#" onclick="goToCustomPage(${totalPages})" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">»</a>`;
+    } else {
+        paginationHTML += `<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">»</button>`;
+    }
     
     document.getElementById('customPaginationControls').innerHTML = paginationHTML;
 }
