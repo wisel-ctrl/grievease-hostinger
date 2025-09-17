@@ -1398,7 +1398,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <span class="text-green-600">${formatPrice(log.installment_amount)}</span>
                             </div>
                             <div class="text-sm text-gray-500">${formattedDate}</div>
-                            <div class="text-sm mt-1">New Balance: ₱${formatPrice(log.new_balance)}</div>
+                            <div class="text-sm mt-1">New Balance: ${formatPrice(log.new_balance)}</div>
                             <div class="text-sm mt-1 text-gray-600">Paid by: ${customerName}</div>
                         </div>
                     `;
