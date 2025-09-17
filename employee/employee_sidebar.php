@@ -316,3 +316,5 @@ if (isset($_SESSION['user_id'])) {
       </div>
     </div>
   </nav>
+
+  <script src="sidebar.js"></script>
