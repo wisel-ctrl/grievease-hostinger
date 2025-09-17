@@ -206,13 +206,27 @@ document.addEventListener("DOMContentLoaded", function() {
   if (!mobileMenuBtn) {
     mobileMenuBtn = document.createElement('button');
     mobileMenuBtn.id = 'mobile-hamburger';
-    mobileMenuBtn.className = 'fixed top-4 left-4 z-50 p-2 bg-white rounded-lg shadow-md text-gray-600 hover:text-gray-900 md:hidden transition-all duration-300';
     mobileMenuBtn.innerHTML = '<i class="fas fa-bars"></i>';
-    document.body.appendChild(mobileMenuBtn);
     
+    // Set inline styles to ensure visibility
+    mobileMenuBtn.style.cssText = `
+      position: fixed;
+      top: 1rem;
+      left: 1rem;
+      z-index: 9999;
+      padding: 0.5rem;
+      background-color: white;
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      color: #4B5563;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: ${window.innerWidth < 768 ? 'block' : 'none'};
+    `;
+    
+    document.body.appendChild(mobileMenuBtn);
     mobileMenuBtn.addEventListener('click', toggleMobileSidebar);
-    // Only show mobile hamburger on small screens
-    mobileMenuBtn.style.display = window.innerWidth < 768 ? "block" : "none";
   }
   
   // Initialize the sidebar state
@@ -228,6 +242,8 @@ document.addEventListener("DOMContentLoaded", function() {
     // Show the mobile hamburger and hide the in-sidebar one
     if (mobileMenuBtn) {
       mobileMenuBtn.style.display = "block";
+      mobileMenuBtn.style.visibility = "visible";
+      mobileMenuBtn.style.opacity = "1";
     }
     if (hamburgerMenu) {
       hamburgerMenu.style.display = "none";
@@ -240,6 +256,8 @@ document.addEventListener("DOMContentLoaded", function() {
     // Hide mobile hamburger and show the in-sidebar one
     if (mobileMenuBtn) {
       mobileMenuBtn.style.display = "none";
+      mobileMenuBtn.style.visibility = "hidden";
+      mobileMenuBtn.style.opacity = "0";
     }
     if (hamburgerMenu) {
       hamburgerMenu.style.display = "block";
@@ -348,7 +366,11 @@ window.addEventListener('resize', function() {
   if (window.innerWidth < 768) {
     // Mobile view: Show mobile hamburger, hide sidebar hamburger
     if (hamburgerMenu) hamburgerMenu.style.display = "none";
-    if (mobileMenuBtn) mobileMenuBtn.style.display = "block";
+    if (mobileMenuBtn) {
+      mobileMenuBtn.style.display = "block";
+      mobileMenuBtn.style.visibility = "visible";
+      mobileMenuBtn.style.opacity = "1";
+    }
     
     // Ensure sidebar is hidden initially on mobile
     if (sidebar) {
@@ -358,7 +380,11 @@ window.addEventListener('resize', function() {
   } else {
     // Desktop view: Hide mobile hamburger, show sidebar hamburger
     if (hamburgerMenu) hamburgerMenu.style.display = "block";
-    if (mobileMenuBtn) mobileMenuBtn.style.display = "none";
+    if (mobileMenuBtn) {
+      mobileMenuBtn.style.display = "none";
+      mobileMenuBtn.style.visibility = "hidden";
+      mobileMenuBtn.style.opacity = "0";
+    }
     
     // Ensure sidebar is visible initially on desktop
     if (sidebar) {
