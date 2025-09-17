@@ -1719,16 +1719,19 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Add event listeners to both buttons
 closeEditModalBtn.addEventListener('click', function() {
+    resetEditModal()
     editModal.classList.add('hidden');
 });
 
 cancelEditModalBtn.addEventListener('click', function() {
+    resetEditModal()
     editModal.classList.add('hidden');
 });
 
 // Close modal when clicking outside
 window.addEventListener('click', function(event) {
     if (event.target === editModal) {
+        resetEditModal()
         editModal.classList.add('hidden');
     }
 });
@@ -1848,6 +1851,7 @@ document.getElementById('saveLifePlan').addEventListener('click', function() {
                         confirmButtonText: 'OK'
                     }).then(() => {
                         // Refresh the page or update the table row
+                        resetEditModal()
                         location.reload();
                     });
                 } else {
@@ -2012,6 +2016,92 @@ function setSelectWithFallback(selectId, value) {
       selectElement.appendChild(newOption);
     }
   }
+}
+
+function resetEditModal() {
+    // Reset customer search and related fields
+    document.getElementById('customerSearch').value = '';
+    document.getElementById('customerID').value = '';
+    
+    // Hide customer suggestions
+    const customerSuggestions = document.getElementById('customerSuggestions');
+    if (customerSuggestions) {
+        customerSuggestions.classList.add('hidden');
+    }
+    
+    // Reset customer details
+    document.getElementById('fname').value = '';
+    document.getElementById('mname').value = '';
+    document.getElementById('lname').value = '';
+    document.getElementById('suffix').value = '';
+    document.getElementById('email').value = '';
+    document.getElementById('phone').value = '';
+    
+    // Reset beneficiary details
+    document.getElementById('benefeciary_fname').value = '';
+    document.getElementById('benefeciary_mname').value = '';
+    document.getElementById('benefeciary_lname').value = '';
+    document.getElementById('benefeciary_suffix').value = '';
+    document.getElementById('benefeciary_dob').value = '';
+    document.getElementById('benefeciary_address').value = '';
+    document.getElementById('relationship_to_client').value = '';
+    
+    // Reset beneficiary address fields
+    document.getElementById('benefeciaryRegion').value = '';
+    document.getElementById('benefeciaryProvince').value = '';
+    document.getElementById('benefeciaryCity').value = '';
+    document.getElementById('benefeciaryBarangay').value = '';
+    document.getElementById('benefeciaryStreet').value = '';
+    
+    // Hide beneficiary address section
+    const beneficiaryAddressSection = document.getElementById('beneficiaryAddressSection');
+    if (beneficiaryAddressSection) {
+        beneficiaryAddressSection.classList.add('hidden');
+    }
+    
+    // Reset co-maker details
+    document.getElementById('comaker_fname').value = '';
+    document.getElementById('comaker_mname').value = '';
+    document.getElementById('comaker_lname').value = '';
+    document.getElementById('comaker_suffix').value = '';
+    document.getElementById('comaker_occupation').value = '';
+    document.getElementById('comaker_license_type').value = '';
+    document.getElementById('comaker_license_number').value = '';
+    document.getElementById('comaker_address').value = '';
+    
+    // Reset co-maker address fields
+    document.getElementById('comakerRegion').value = '';
+    document.getElementById('comakerProvince').value = '';
+    document.getElementById('comakerCity').value = '';
+    document.getElementById('comakerBarangay').value = '';
+    document.getElementById('comakerStreet').value = '';
+    
+    // Hide co-maker address section
+    const comakerAddressSection = document.getElementById('comakerAddressSection');
+    if (comakerAddressSection) {
+        comakerAddressSection.classList.add('hidden');
+    }
+    
+    // Reset plan details
+    document.getElementById('service_id').value = '';
+    document.getElementById('payment_duration').value = '';
+    document.getElementById('custom_price').value = '';
+    document.getElementById('payment_status').value = 'ongoing';
+    
+    // Remove the hidden lifeplanId field if it exists
+    const existingHiddenId = document.getElementById('lifeplanId');
+    if (existingHiddenId) {
+        existingHiddenId.remove();
+    }
+    
+    // Reset any disabled states on address dropdowns
+    document.getElementById('benefeciaryProvince').disabled = true;
+    document.getElementById('benefeciaryCity').disabled = true;
+    document.getElementById('benefeciaryBarangay').disabled = true;
+    
+    document.getElementById('comakerProvince').disabled = true;
+    document.getElementById('comakerCity').disabled = true;
+    document.getElementById('comakerBarangay').disabled = true;
 }
 </script>
 
