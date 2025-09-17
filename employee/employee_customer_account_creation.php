@@ -2665,7 +2665,69 @@ function unarchiveAccount(userId) {
 
 
   </script>
+
   <script src="sidebar.js"></script>
   <script src="tailwind.js"></script>
+  <script>
+// Mobile sidebar toggle functionality
+document.addEventListener('DOMContentLoaded', function() {
+  // Get mobile menu button
+  const mobileMenuBtn = document.getElementById('mobile-hamburger');
+  
+  // Add event listener to mobile hamburger if it exists
+  if (mobileMenuBtn) {
+    mobileMenuBtn.addEventListener('click', function() {
+      const sidebar = document.getElementById("sidebar");
+      const overlay = document.getElementById("mobile-overlay");
+      
+      if (sidebar.classList.contains("-translate-x-full")) {
+        // Show sidebar
+        sidebar.classList.remove("-translate-x-full");
+        sidebar.classList.add("translate-x-0");
+        if (overlay) {
+          overlay.classList.remove("hidden");
+        }
+      } else {
+        // Hide sidebar
+        sidebar.classList.remove("translate-x-0");
+        sidebar.classList.add("-translate-x-full");
+        if (overlay) {
+          overlay.classList.add("hidden");
+        }
+      }
+    });
+  }
+  
+  // Close sidebar when clicking outside on mobile
+  document.addEventListener('click', function(event) {
+    const sidebar = document.getElementById("sidebar");
+    const mobileMenuBtn = document.getElementById('mobile-hamburger');
+    const overlay = document.getElementById("mobile-overlay");
+    
+    if (window.innerWidth < 768 && 
+        sidebar && !sidebar.contains(event.target) && 
+        (!mobileMenuBtn || !mobileMenuBtn.contains(event.target))) {
+      sidebar.classList.remove('translate-x-0');
+      sidebar.classList.add('-translate-x-full');
+      if (overlay) {
+        overlay.classList.add('hidden');
+      }
+    }
+  });
+  
+  // Close sidebar when overlay is clicked
+  const overlay = document.getElementById('mobile-overlay');
+  if (overlay) {
+    overlay.addEventListener('click', function() {
+      if (window.innerWidth < 768) {
+        const sidebar = document.getElementById("sidebar");
+        sidebar.classList.remove('translate-x-0');
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+      }
+    });
+  }
+});
+</script>
 </body>
 </html>
