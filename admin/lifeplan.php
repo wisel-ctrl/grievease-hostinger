@@ -1356,8 +1356,8 @@ document.addEventListener('DOMContentLoaded', function() {
             // Update modal content
             document.getElementById('beneficiaryName').textContent = beneficiaryName;
             document.getElementById('monthlyAmount').textContent = formatPrice(monthlyAmount);
-            document.getElementById('totalPaid').textContent = '₱' + currentAmountPaid.toFixed(2);
-            document.getElementById('remainingBalance').textContent = '₱' + currentBalance.toFixed(2);
+            document.getElementById('totalPaid').textContent = formatPrice(currentAmountPaid);
+            document.getElementById('remainingBalance').textContent = formatPrice(currentBalance);
             
             // Fetch and display payment logs
             fetchPaymentLogs(currentLifeplanId);
@@ -1395,10 +1395,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="border-b pb-3 mb-3">
                             <div class="flex justify-between">
                                 <span class="font-medium">Payment #${index + 1}</span>
-                                <span class="text-green-600">₱${parseFloat(log.installment_amount).toFixed(2)}</span>
+                                <span class="text-green-600">${formatPrice(log.installment_amount)}</span>
                             </div>
                             <div class="text-sm text-gray-500">${formattedDate}</div>
-                            <div class="text-sm mt-1">New Balance: ₱${parseFloat(log.new_balance).toFixed(2)}</div>
+                            <div class="text-sm mt-1">New Balance: ₱${formatPrice(log.new_balance)}</div>
                             <div class="text-sm mt-1 text-gray-600">Paid by: ${customerName}</div>
                         </div>
                     `;
