@@ -1763,14 +1763,38 @@ const modalHTML = `
                     <div class="relative">
                         <input type="text" name="middle_name" value="${data.user.middle_name || ''}" 
                                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                               oninput="this.value = this.value.replace(/[^A-Za-z ]/g, '').replace(/\s{2,}/g, ' ');
-                                        this.value = this.value.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');"
-                               onpaste="const text = event.clipboardData.getData('text/plain').replace(/[^A-Za-z ]/g, '').replace(/\s{2,}/g, ' ');
+                               oninput="let value = this.value;
+                                        // Remove numbers and symbols, keep only letters and spaces
+                                        let cleanedValue = value.replace(/[^a-zA-Z\\s]/g, '');
+                                        // Remove multiple consecutive spaces
+                                        cleanedValue = cleanedValue.replace(/\\s+/g, ' ');
+                                        // Don't allow space unless there are at least 2 characters
+                                        if (cleanedValue.length === 1 && cleanedValue === ' ') {
+                                            cleanedValue = '';
+                                        }
+                                        // Don't allow space at the beginning
+                                        if (cleanedValue.startsWith(' ')) {
+                                            cleanedValue = cleanedValue.substring(1);
+                                        }
+                                        // Capitalize first letter of each word
+                                        cleanedValue = cleanedValue.toLowerCase().replace(/(?:^|\\s)\\S/g, function(a) {
+                                            return a.toUpperCase();
+                                        });
+                                        this.value = cleanedValue;"
+                               onkeydown="if (event.key === ' ' && this.value.length < 2) event.preventDefault();"
+                               onpaste="const text = event.clipboardData.getData('text/plain').replace(/[^A-Za-z ]/g, '').replace(/\\s+/g, ' ');
                                         event.preventDefault();
+                                        let cleanedText = text;
+                                        if (cleanedText.startsWith(' ')) {
+                                            cleanedText = cleanedText.substring(1);
+                                        }
+                                        if (this.value.length < 2 && cleanedText.startsWith(' ')) {
+                                            cleanedText = cleanedText.replace(/^\\s+/, '');
+                                        }
                                         const selection = window.getSelection();
                                         if (!selection.rangeCount) return;
                                         selection.deleteFromDocument();
-                                        selection.getRangeAt(0).insertNode(document.createTextNode(text));">
+                                        selection.getRangeAt(0).insertNode(document.createTextNode(cleanedText));">
                     </div>
                 </div>
                 <div>
@@ -1809,17 +1833,28 @@ const modalHTML = `
                                pattern="09[0-9]{9}" 
                                maxlength="11"
                                required 
-                               oninput="validatePhoneNumber(this); checkPhoneAvailability(this.value, ${data.user.id})"
+                               oninput="let value = this.value;
+                                        // Remove any non-digit characters immediately
+                                        let cleanedValue = value.replace(/[^0-9]/g, '');
+                                        // Limit to 11 digits
+                                        cleanedValue = cleanedValue.substring(0, 11);
+                                        this.value = cleanedValue;
+                                        validatePhoneNumber(this); 
+                                        checkPhoneAvailability(this.value, ${data.user.id})"
+                               onkeydown="// Allow only numbers, backspace, delete, tab, escape, enter, and arrow keys
+                                          const allowedKeys = ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'];
+                                          if (!allowedKeys.includes(event.key) && (event.key < '0' || event.key > '9')) {
+                                              event.preventDefault();
+                                          }"
                                onpaste="const text = event.clipboardData.getData('text/plain').replace(/[^0-9]/g, '');
                                         event.preventDefault();
                                         let pastedValue = text.substring(0, 11);
                                         if(pastedValue.length > 0 && !pastedValue.startsWith('09')) {
                                             pastedValue = '09' + pastedValue.substring(2);
                                         }
-                                        const selection = window.getSelection();
-                                        if (!selection.rangeCount) return;
-                                        selection.deleteFromDocument();
-                                        selection.getRangeAt(0).insertNode(document.createTextNode(pastedValue));">
+                                        this.value = pastedValue;
+                                        validatePhoneNumber(this); 
+                                        checkPhoneAvailability(this.value, ${data.user.id})">
                         <span id="phoneAvailability" class="availability-indicator hidden">
                             <i class="fas fa-check-circle text-green-500"></i> Available
                         </span>
