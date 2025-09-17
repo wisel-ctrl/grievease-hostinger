@@ -242,7 +242,7 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
             
           </div>
         </div>
-        <div class="overflow-x-auto scrollbar-thin">
+        <div class="md:overflow-x-visible overflow-x-auto scrollbar-thin">
           <table class="w-full">
             <thead>
               <tr class="bg-gray-50 border-b border-sidebar-border">
@@ -726,7 +726,7 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
               </div>
             </div>
           </div>
-        <div class="overflow-x-auto scrollbar-thin">
+        <div class="md:overflow-x-visible overflow-x-auto scrollbar-thin">
           <table class="w-full">
             <thead>
               <tr class="bg-gray-50 border-b border-sidebar-border">
