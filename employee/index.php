@@ -519,7 +519,6 @@ $ongoing_services = $ongoing_data['ongoing_count'];
                   </tr>
               </tbody>
           </table>
-      </div>
         </div>
     </div>
     
