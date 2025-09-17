@@ -269,6 +269,17 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
       background-color: #CA8A04;
     }
     
+    /* Special handling for employee_chat.php */
+    body.employee-chat #sidebar {
+      background-color: white !important;
+    }
+    
+    /* Blur effect for sidebar when modal is open */
+    .sidebar-blurred {
+      filter: blur(2px);
+      transition: filter 0.3s ease;
+    }
+    
     /* Add this to your existing styles */
     .main-content {
       margin-left: 16rem; /* Adjust this value to match the width of your sidebar */
@@ -1242,12 +1253,16 @@ document.getElementById('editInventoryForm').addEventListener('submit', function
     function openAddInventoryModal() {
         document.getElementById('addInventoryModal').classList.remove('hidden');
         document.body.classList.add('overflow-hidden');
+        // Add blur effect to sidebar
+        document.getElementById('sidebar').classList.add('sidebar-blurred');
     }
 
     // Function to close the add inventory modal
     function closeAddInventoryModal() {
         document.getElementById('addInventoryModal').classList.add('hidden');
         document.body.classList.remove('overflow-hidden');
+        // Remove blur effect from sidebar
+        document.getElementById('sidebar').classList.remove('sidebar-blurred');
         // Reset form and clear preview
         document.getElementById('addInventoryForm').reset();
         document.getElementById('imagePreviewContainer').classList.add('hidden');
@@ -1343,6 +1358,8 @@ function openEditInventoryModal(inventoryId) {
     const modal = document.getElementById('editInventoryModal');
     modal.classList.remove('hidden');
     document.body.classList.add('overflow-hidden');
+    // Add blur effect to sidebar
+    document.getElementById('sidebar').classList.add('sidebar-blurred');
     
     // Fetch inventory item details
     fetch(`inventory/get_inventory_item.php?id=${inventoryId}`)
@@ -1383,6 +1400,8 @@ function openEditInventoryModal(inventoryId) {
 function closeEditInventoryModal() {
     document.getElementById('editInventoryModal').classList.add('hidden');
     document.body.classList.remove('overflow-hidden');
+    // Remove blur effect from sidebar
+    document.getElementById('sidebar').classList.remove('sidebar-blurred');
     // Reset form and clear preview
     document.getElementById('editInventoryForm').reset();
     document.getElementById('editImagePreviewContainer').classList.add('hidden');
@@ -1604,6 +1623,8 @@ function openArchivedModal() {
     const modal = document.getElementById('archivedItemsModal');
     modal.classList.remove('hidden');
     document.body.classList.add('overflow-hidden');
+    // Add blur effect to sidebar
+    document.getElementById('sidebar').classList.add('sidebar-blurred');
     
     // Load archived items
     loadArchivedItems();
@@ -1620,6 +1641,8 @@ function openArchivedModal() {
 function closeArchivedModal() {
     document.getElementById('archivedItemsModal').classList.add('hidden');
     document.body.classList.remove('overflow-hidden');
+    // Remove blur effect from sidebar
+    document.getElementById('sidebar').classList.remove('sidebar-blurred');
 }
 
 // Function to load archived items via AJAX
