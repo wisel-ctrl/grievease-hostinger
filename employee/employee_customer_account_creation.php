@@ -2673,9 +2673,10 @@ function unarchiveAccount(userId) {
   <script>
 // Mobile sidebar toggle functionality
 document.addEventListener('DOMContentLoaded', function() {
-  // Initialize sidebar state based on screen size
+  // Get all elements once at the top level
   const sidebar = document.getElementById("sidebar");
   const overlay = document.getElementById("mobile-overlay");
+  const mobileMenuBtn = document.getElementById('mobile-hamburger');
   
   // Set initial state for mobile
   if (window.innerWidth < 768) {
@@ -2690,15 +2691,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
   
-  // Get mobile menu button
-  const mobileMenuBtn = document.getElementById('mobile-hamburger');
-  
   // Add event listener to mobile hamburger if it exists
   if (mobileMenuBtn) {
     mobileMenuBtn.addEventListener('click', function() {
-      const sidebar = document.getElementById("sidebar");
-      const overlay = document.getElementById("mobile-overlay");
-      
       if (sidebar.classList.contains("-translate-x-full")) {
         // Show sidebar - ensure full width on mobile
         sidebar.classList.remove("-translate-x-full");
@@ -2722,10 +2717,6 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Close sidebar when clicking outside on mobile
   document.addEventListener('click', function(event) {
-    const sidebar = document.getElementById("sidebar");
-    const mobileMenuBtn = document.getElementById('mobile-hamburger');
-    const overlay = document.getElementById("mobile-overlay");
-    
     if (window.innerWidth < 768 && 
         sidebar && !sidebar.contains(event.target) && 
         (!mobileMenuBtn || !mobileMenuBtn.contains(event.target))) {
@@ -2738,11 +2729,9 @@ document.addEventListener('DOMContentLoaded', function() {
   });
   
   // Close sidebar when overlay is clicked
-  const overlay = document.getElementById('mobile-overlay');
   if (overlay) {
     overlay.addEventListener('click', function() {
       if (window.innerWidth < 768) {
-        const sidebar = document.getElementById("sidebar");
         sidebar.classList.remove('translate-x-0');
         sidebar.classList.add('-translate-x-full');
         overlay.classList.add('hidden');
@@ -2752,9 +2741,6 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Handle window resize to ensure proper mobile behavior
   window.addEventListener('resize', function() {
-    const sidebar = document.getElementById("sidebar");
-    const overlay = document.getElementById("mobile-overlay");
-    
     if (window.innerWidth >= 768) {
       // Desktop: show sidebar and hide overlay
       if (sidebar) {
