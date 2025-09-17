@@ -185,7 +185,7 @@ $user_id = $_SESSION['user_id'];
 </style>
 
   <!-- Sidebar Navigation -->
-  <nav id="sidebar" class="w-64 h-screen bg-sidebar-bg font-hedvig fixed transition-all duration-300 overflow-y-auto z-40 scrollbar-thin shadow-sidebar">
+  <nav id="sidebar" class="w-64 h-screen bg-sidebar-bg font-hedvig fixed transition-all duration-300 overflow-y-auto z-40 scrollbar-thin shadow-sidebar translate-x-0">
     <!-- Logo and Header with hamburger menu -->
     <div class="flex items-center px-5 py-6 border-b border-sidebar-border">
       <button id="hamburger-menu" class="p-2 mr-2 bg-white rounded-lg shadow-md text-gray-600 hover:text-gray-900 transition-all duration-300">

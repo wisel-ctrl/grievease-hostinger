@@ -718,11 +718,6 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
-// Sidebar toggle for mobile
-document.getElementById('mobile-hamburger').addEventListener('click', function() {
-    const sidebar = document.getElementById('sidebar');
-    sidebar.classList.toggle('-translate-x-full');
-});
 </script>
 </body>
 </html>
