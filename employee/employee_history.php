@@ -375,14 +375,16 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
           $stmt->close();
           ?>
 
-          <div class="sticky bottom-0 left-0 right-0 px-3 sm:px-4 py-3 sm:py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-4">
-            <div id="paginationInfo" class="text-xs sm:text-sm text-gray-500 text-center sm:text-left">
-              <!-- Will be updated via AJAX -->
+          <div class="flex justify-between items-center p-4">
+              <div>
+                <p class="text-sm text-gray-600" id="paginationInfo">
+                  Loading records...
+                </p>
+              </div>
+              <div class="flex space-x-2" id="paginationControls">
+                <!-- Pagination buttons will be loaded here -->
+              </div>
             </div>
-            <div id="paginationControls" class="flex space-x-1 sm:space-x-2 overflow-x-auto scrollbar-thin">
-              <!-- Will be updated via AJAX -->
-            </div>
-          </div>
         </div>
       </div>
       
@@ -525,15 +527,16 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
           $stmt->close();
           ?>
 
-          <!-- Sticky Pagination Footer with improved spacing -->
-          <div class="sticky bottom-0 left-0 right-0 px-3 sm:px-4 py-3 sm:py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-4">
-            <div id="paginationInfoFullyPaid" class="text-xs sm:text-sm text-gray-500 text-center sm:text-left">
-              <!-- Will be updated via AJAX -->
+          <div class="flex justify-between items-center p-4">
+              <div>
+                <p class="text-sm text-gray-600" id="paginationInfoFullyPaid">
+                  Loading records...
+                </p>
+              </div>
+              <div class="flex space-x-2" id="paginationControlsFullyPaid">
+                <!-- Pagination buttons will be loaded here -->
+              </div>
             </div>
-            <div id="paginationControlsFullyPaid" class="flex space-x-1 sm:space-x-2 overflow-x-auto scrollbar-thin">
-              <!-- Will be updated via AJAX -->
-            </div>
-          </div>
           </div>
         </div>
         
