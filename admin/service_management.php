@@ -1557,19 +1557,19 @@ window.addEventListener('popstate', function(event) {
               </label>
               <div class="relative">
                 <select id="editCasketType" name="casketType" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
-                  <option value="">Select a Casket</option>
+                  <!-- <option value="">Select a Casket</option> -->
                   <?php
                   // Fetch inventory items where category_id = 1 and status = 1
-                  $sql = "SELECT inventory_id, item_name FROM inventory_tb WHERE category_id = 1 AND status = 1";
-                  $result = $conn->query($sql);
+                  // $sql = "SELECT inventory_id, item_name FROM inventory_tb WHERE category_id = 1 AND status = 1";
+                  // $result = $conn->query($sql);
 
-                  if ($result->num_rows > 0) {
-                      while ($row = $result->fetch_assoc()) {
-                          echo '<option value="' . $row["inventory_id"] . '">' . htmlspecialchars($row["item_name"]) . '</option>';
-                      }
-                  } else {
-                      echo '<option value="">No caskets available</option>';
-                  }
+                  // if ($result->num_rows > 0) {
+                  //     while ($row = $result->fetch_assoc()) {
+                  //         echo '<option value="' . $row["inventory_id"] . '">' . htmlspecialchars($row["item_name"]) . '</option>';
+                  //     }
+                  // } else {
+                  //     echo '<option value="">No caskets available</option>';
+                  // }
                   ?>
                 </select>
               </div>
@@ -1580,19 +1580,19 @@ window.addEventListener('popstate', function(event) {
               </label>
               <div class="relative">
                 <select id="editUrnType" name="urnType" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
-                  <option value="">Select a Urn</option>
+                  <!-- <option value="">Select a Urn</option> -->
                   <?php
                   // Fetch inventory items where category_id = 3 and status = 1
-                  $sql = "SELECT inventory_id, item_name FROM inventory_tb WHERE category_id = 3 AND status = 1";
-                  $result = $conn->query($sql);
+                  // $sql = "SELECT inventory_id, item_name FROM inventory_tb WHERE category_id = 3 AND status = 1";
+                  // $result = $conn->query($sql);
 
-                  if ($result->num_rows > 0) {
-                      while ($row = $result->fetch_assoc()) {
-                          echo '<option value="' . $row["inventory_id"] . '">' . htmlspecialchars($row["item_name"]) . '</option>';
-                      }
-                  } else {
-                      echo '<option value="">No urn available</option>';
-                  }
+                  // if ($result->num_rows > 0) {
+                  //     while ($row = $result->fetch_assoc()) {
+                  //         echo '<option value="' . $row["inventory_id"] . '">' . htmlspecialchars($row["item_name"]) . '</option>';
+                  //     }
+                  // } else {
+                  //     echo '<option value="">No urn available</option>';
+                  // }
                   ?>
                 </select>
               </div>
@@ -2363,25 +2363,27 @@ function populateEditForm(service) {
     document.getElementById('editCapitalPrice').value = service.capital_price;
     document.getElementById('editSellingPrice').value = service.selling_price;
     document.getElementById('editServiceCategory').value = service.service_categoryID;
-    // Add this with the other field settings
     document.getElementById('editServiceDescription').value = service.description || '';
-    
-    // Set casket and urn if available
-    if (service.casket_id) {
-        document.getElementById('editCasketType').value = service.casket_id;
-    }
-    if (service.urn_id) {
-        document.getElementById('editUrnType').value = service.urn_id;
-    }
     
     // Set branch - Loop through all branch radio buttons and check the matching one
     const branchRadios = document.querySelectorAll('input[name="branch_id"]');
     branchRadios.forEach(radio => {
         if (radio.value == service.branch_id) {
             radio.checked = true;
+            // Load caskets and urns for this branch
+            fetchEditItemsByBranch(service.branch_id, service.casket_id, service.urn_id);
         } else {
             radio.checked = false;
         }
+    });
+    
+    // Add event listeners to all branch radio buttons
+    branchRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            if (this.checked) {
+                fetchEditItemsByBranch(this.value);
+            }
+        });
     });
     
     // Set image if available
@@ -2443,15 +2445,75 @@ function populateEditForm(service) {
     statusRadios.forEach(radio => {
         radio.checked = (radio.value === numericStatus);
     });
-    
-    console.log('Branch ID:', service.branch_id);
-    console.log('Status:', service.status, 'Numeric Status:', numericStatus);
 }
 
 // Function to close the edit service modal
 function closeEditServiceModal() {
     document.getElementById('editServiceModal').classList.add('hidden');
     document.getElementById('editServiceForm').reset();
+}
+
+function fetchEditItemsByBranch(branchId, selectedCasketId = null, selectedUrnId = null) {
+    // Create AJAX request to fetch items for this branch
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', 'fetch_branch_items.php', true);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    
+    xhr.onload = function() {
+        if (this.status === 200) {
+            const response = JSON.parse(this.responseText);
+            
+            // Update casket dropdown
+            const casketSelect = document.getElementById('editCasketType');
+            casketSelect.innerHTML = '<option value="">Select a Casket</option>';
+            
+            if (response.caskets && response.caskets.length > 0) {
+                response.caskets.forEach(casket => {
+                    const option = document.createElement('option');
+                    option.value = casket.inventory_id;
+                    option.textContent = casket.item_name;
+                    
+                    // Select the previously selected casket if it matches
+                    if (selectedCasketId && casket.inventory_id == selectedCasketId) {
+                        option.selected = true;
+                    }
+                    
+                    casketSelect.appendChild(option);
+                });
+            } else {
+                const option = document.createElement('option');
+                option.value = "";
+                option.textContent = "No caskets available for this branch";
+                casketSelect.appendChild(option);
+            }
+            
+            // Update urn dropdown
+            const urnSelect = document.getElementById('editUrnType');
+            urnSelect.innerHTML = '<option value="">Select a Urn</option>';
+            
+            if (response.urns && response.urns.length > 0) {
+                response.urns.forEach(urn => {
+                    const option = document.createElement('option');
+                    option.value = urn.inventory_id;
+                    option.textContent = urn.item_name;
+                    
+                    // Select the previously selected urn if it matches
+                    if (selectedUrnId && urn.inventory_id == selectedUrnId) {
+                        option.selected = true;
+                    }
+                    
+                    urnSelect.appendChild(option);
+                });
+            } else {
+                const option = document.createElement('option');
+                option.value = "";
+                option.textContent = "No urns available for this branch";
+                urnSelect.appendChild(option);
+            }
+        }
+    };
+    
+    xhr.send('branch_id=' + branchId);
 }
 
 // Function to update service
