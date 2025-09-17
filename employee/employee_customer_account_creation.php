@@ -455,35 +455,6 @@ function validateName(input, errorElementId) {
   // Remove multiple consecutive spaces
   cleanedValue = cleanedValue.replace(/\s+/g, ' ');
   
-  // For middle name field, apply special space validation
-  if (errorElementId === 'middleNameError') {
-    // Don't allow space unless there are at least 2 characters before it
-    if (cleanedValue.includes(' ')) {
-      const parts = cleanedValue.split(' ');
-      let validParts = [];
-      
-      for (let i = 0; i < parts.length; i++) {
-        if (i === 0) {
-          // First part must have at least 2 characters to allow a space after
-          if (parts[i].length >= 2) {
-            validParts.push(parts[i]);
-          } else if (parts[i].length > 0) {
-            // If less than 2 characters, don't add space
-            validParts.push(parts[i]);
-            break; // Stop processing further parts
-          }
-        } else {
-          // Subsequent parts can be added if the previous part was valid
-          if (validParts.length > 0 && validParts[validParts.length - 1].length >= 2) {
-            validParts.push(parts[i]);
-          }
-        }
-      }
-      
-      cleanedValue = validParts.join(' ');
-    }
-  }
-  
   // Capitalize first letter of each word
   cleanedValue = cleanedValue.toLowerCase().replace(/(?:^|\s)\S/g, function(a) {
     return a.toUpperCase();
@@ -522,10 +493,10 @@ function validateName(input, errorElementId) {
 // Phone number validation
 function validatePhoneNumber(input) {
   const errorElement = document.getElementById('phoneError');
-  let phone = input.value;
+  let phone = input.value.trim();
   
-  // Remove any non-digit characters (letters, symbols, spaces)
-  phone = phone.replace(/[^0-9]/g, '');
+  // Remove any non-digit characters
+  phone = phone.replace(/\D/g, '');
   
   // Update the input value (only digits)
   input.value = phone;
@@ -569,8 +540,140 @@ function validateBirthdate() {
     return true;
   }
 }
+</script>
+
+
+
+  <!-- Manage Customer Accounts Section -->
+<div id="manageAccountSection">
+    <div class="bg-white rounded-lg shadow-sidebar p-5 mb-6 border border-sidebar-border hover:shadow-card transition-all duration-300">
+        <div class="mb-5 flex items-center">
+            <h3 class="text-lg font-semibold text-sidebar-text">Customer Accounts</h3>
+            <div class="ml-auto flex items-center space-x-3">
+                <div id="searchContainer" class="relative">
+                    <input type="text" id="searchCustomer" placeholder="Search customers..." 
+                           class="p-2 border border-sidebar-border rounded-md text-sm text-sidebar-text focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent w-full"
+                           oninput="searchCustomers()">
+                    <button id="clearSearchBtn" onclick="clearSearch()" class="absolute right-2 top-2 text-gray-400 hover:text-gray-600 hidden">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <button id="viewArchivedBtn" onclick="viewArchivedAccounts()" class="bg-yellow-600 text-white border-none py-2 px-4 rounded-md cursor-pointer hover:bg-darkgold transition-all duration-300">
+                    <i class="fas fa-archive mr-2"></i>Archived
+                </button>
+            </div>
+        </div>
+        <div class="p-5">
+            <div class="overflow-x-auto scrollbar-thin">
+                <table id="customerTable" class="w-full border-collapse min-w-[600px]">
+                    <thead>
+                        <tr class="bg-sidebar-hover text-left">
+                            <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Customer ID</th>
+                            <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Name</th>
+                            <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Email</th>
+                            <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Type</th>
+                            <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Status</th>
+                            <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Table content will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-5 bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+    <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
+        Loading customer accounts...
+    </div>
+    <div id="paginationContainer" class="flex space-x-2">
+        <!-- JavaScript will populate this -->
+    </div>
+</div>
+        </div>
+    </div>
+</div>
+
+    <!-- Customer Details Modal -->
+    <div id="customerModal" class="hidden fixed z-50 inset-0 overflow-auto bg-black bg-opacity-40">
+      <div class="bg-white mx-auto my-[10%] p-5 border border-gray-300 w-4/5 max-w-3xl rounded-lg shadow-lg">
+        <div class="flex justify-between items-center mb-5 border-b border-gray-300 pb-3">
+          <h3 id="modalTitle" class="m-0 text-lg font-semibold">Customer Details</h3>
+          <span onclick="closeModal()" class="cursor-pointer text-2xl">&times;</span>
+        </div>
+        <div id="modalContent">
+          <!-- Content will be dynamically populated -->
+        </div>
+        <div class="mt-5 text-right border-t border-gray-300 pt-4">
+          <button onclick="closeModal()" class="bg-gray-600 text-white border-none py-2 px-4 rounded-md cursor-pointer">Close</button>
+          <button id="modalActionButton" class="bg-blue-600 text-white border-none py-2 px-4 rounded-md ml-3 cursor-pointer">Save Changes</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="hidden fixed z-50 inset-0 overflow-auto bg-black bg-opacity-40">
+      <div class="bg-white mx-auto my-[15%] p-5 border border-gray-300 w-[400px] rounded-lg shadow-lg">
+        <div class="text-center mb-5">
+          <i class="fas fa-exclamation-triangle text-5xl text-red-600"></i>
+          <h3 class="mt-4 text-lg font-semibold">Confirm Deletion</h3>
+          <p class="text-gray-600">Are you sure you want to delete this customer account? This action cannot be undone.</p>
+        </div>
+        <div class="flex justify-center gap-3">
+          <button onclick="closeDeleteModal()" class="bg-gray-600 text-white border-none py-2 px-4 rounded-md cursor-pointer">Cancel</button>
+          <button onclick="deleteCustomer()" class="bg-red-600 text-white border-none py-2 px-4 rounded-md cursor-pointer">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+<!-- OTP Verification Modal -->
+<div id="otpVerificationModal" class="fixed inset-0 bg-black bg-opacity-60 z-[9999] hidden overflow-y-auto flex items-center justify-center p-4 overscroll-contain [will-change:transform]">
+  <div class="bg-white relative z-[10000] rounded-xl shadow-xl w-full max-w-md mx-2">
+    <!-- Modal Header -->
+    <div class="bg-gradient-to-r from-sidebar-accent to-white flex justify-between items-center p-6 flex-shrink-0 rounded-t-xl">
+      <h3 class="text-xl font-bold text-white"><i class="fas fa-shield-alt"></i> Email Verification</h3>
+      <button onclick="closeOtpModal()" class="bg-black bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 text-white hover:text-white transition-all duration-200">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <div class="p-6">
+      <p class="text-gray-700 mb-4">A verification code has been sent to <span id="otpEmail" class="font-medium"></span>. Please enter the code below.</p>
+      <div class="flex justify-center gap-2 mb-4">
+        <input type="text" class="otp-input w-12 h-12 border border-gray-300 rounded-md text-center text-xl font-bold" maxlength="1" autocomplete="off">
+        <input type="text" class="otp-input w-12 h-12 border border-gray-300 rounded-md text-center text-xl font-bold" maxlength="1" autocomplete="off">
+        <input type="text" class="otp-input w-12 h-12 border border-gray-300 rounded-md text-center text-xl font-bold" maxlength="1" autocomplete="off">
+        <input type="text" class="otp-input w-12 h-12 border border-gray-300 rounded-md text-center text-xl font-bold" maxlength="1" autocomplete="off">
+        <input type="text" class="otp-input w-12 h-12 border border-gray-300 rounded-md text-center text-xl font-bold" maxlength="1" autocomplete="off">
+        <input type="text" class="otp-input w-12 h-12 border border-gray-300 rounded-md text-center text-xl font-bold" maxlength="1" autocomplete="off">
+      </div>
+      <div id="otpError" class="text-red-500 text-center text-sm mb-4 hidden"></div>
+      <p class="text-sm text-gray-500 text-center">Didn't receive the code? <button type="button" onclick="resendOTP()" class="text-sidebar-accent hover:underline">Resend</button></p>
+    </div>
+    
+    <!-- Modal Footer -->
+    <div class="p-6 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white rounded-b-xl">
+      <button onclick="closeOtpModal()" class="px-5 py-3 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-semibold hover:bg-navy transition-colors">
+        Cancel
+      </button>
+      <button id="verifyOtpBtn" onclick="verifyOTP()" class="px-6 py-3 bg-sidebar-accent text-white rounded-lg font-semibold hover:bg-darkgold transition-colors flex items-center">
+        <i class="fas fa-check-circle mr-2"></i> Verify
+      </button>
+    </div>
+  </div>
+</div>
+  
+  
+  <!-- CUSTOMER ACCOUNT CREATION VALIDATION -->
+  
+  <script>
+
+document.getElementById("customerPhone").addEventListener("input", function (e) {
+    this.value = this.value.replace(/[^0-9]/g, ""); // Remove non-numeric characters
+  });
 
 // Real-time validation functions
+// Updated name validation functions
 function validateFirstName() {
     const firstNameInput = document.getElementById('firstName');
     const firstNameError = document.getElementById('firstNameError');
@@ -641,6 +744,36 @@ function validateMiddleName() {
     return true;
 }
 
+function validateBirthdate() {
+    const birthdateInput = document.getElementById('birthdate');
+    const birthdateError = document.getElementById('birthdateError');
+    const birthdate = birthdateInput.value;
+
+    if (birthdate === '') {
+        birthdateError.textContent = 'Birthdate is required';
+        birthdateError.classList.remove('hidden');
+        return false;
+    } 
+
+    const today = new Date();
+    const birthdateObj = new Date(birthdate);
+    let age = today.getFullYear() - birthdateObj.getFullYear();
+    const monthDiff = today.getMonth() - birthdateObj.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthdateObj.getDate())) {
+        age--;
+    }
+    
+    if (age < 18) {
+        birthdateError.textContent = 'You must be at least 18 years old';
+        birthdateError.classList.remove('hidden');
+        return false;
+    } else {
+        birthdateError.classList.add('hidden');
+        return true;
+    }
+}
+
 function validateEmail(input) {
     const emailError = document.getElementById('emailError');
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -652,6 +785,28 @@ function validateEmail(input) {
     } else {
         input.classList.remove('border-red-500');
         emailError.classList.add('hidden');
+        return true;
+    }
+}
+
+function validatePhoneNumber(input) {
+    const phoneError = document.getElementById('phoneError');
+    const phone = input.value.trim();
+    const phonePattern = /^09\d{9}$/;
+
+    // Remove any non-digit characters
+    const cleanedPhone = phone.replace(/[^0-9]/g, '');
+
+    if (phone === '') {
+        phoneError.textContent = 'Phone number is required';
+        phoneError.classList.remove('hidden');
+        return false;
+    } else if (!phonePattern.test(cleanedPhone)) {
+        phoneError.textContent = 'Please enter a valid 11-digit mobile number (e.g., 09123456789)';
+        phoneError.classList.remove('hidden');
+        return false;
+    } else {
+        phoneError.classList.add('hidden');
         return true;
     }
 }
@@ -1217,10 +1372,8 @@ document.addEventListener('DOMContentLoaded', function() {
         checkEmailAvailability(this.value);
     });
     
-    // Phone Number validation - only allow numbers, no letters or symbols
+    // Phone Number validation
     document.getElementById('customerPhone').addEventListener('input', function() {
-        // Remove any non-numeric characters (letters, symbols, spaces)
-        this.value = this.value.replace(/[^0-9]/g, '');
         validatePhoneNumber(this);
         checkPhoneAvailability(this.value);
     });
