@@ -359,9 +359,11 @@ $servicesJson = json_encode($allServices);
           <!-- Search Bar -->
           <div class="relative">
             <input type="text" id="service-search" placeholder="Search services..." 
-                  class="pl-10 pr-4 py-2 border border-sidebar-border rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+                  class="pl-10 pr-4 py-2 border border-sidebar-border rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent"
+                  oninput="validateSearchInput(this)"
+                  onkeypress="return preventInvalidSpaceInSearch(event, this)">
             <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-            <div id="search-error" class="hidden text-red-500 text-xs mt-1">Please avoid leading or multiple spaces</div>
+            <div id="search-error" class="hidden text-red-500 text-xs mt-1">Please avoid leading spaces, multiple consecutive spaces, or spaces before entering at least 2 characters</div>
           </div>
         </div>
       </div>
@@ -1716,6 +1718,76 @@ function handleEmailPaste(event, input) {
   validateEmail(input);
 }
 
+// Search input validation
+function validateSearchInput(input) {
+  const searchError = document.getElementById('search-error');
+  let value = input.value;
+  let hasError = false;
+  
+  // Check for leading spaces
+  if (value.startsWith(' ')) {
+    hasError = true;
+    // Remove leading spaces
+    value = value.trimStart();
+    input.value = value;
+  }
+  
+  // Check for multiple consecutive spaces
+  if (value.includes('  ')) {
+    hasError = true;
+    // Replace multiple spaces with single space
+    value = value.replace(/\s{2,}/g, ' ');
+    input.value = value;
+  }
+  
+  // Check if space is entered before 2 characters
+  const nonSpaceChars = value.replace(/\s/g, '').length;
+  if (value.includes(' ') && nonSpaceChars < 2) {
+    hasError = true;
+    // Remove spaces if less than 2 non-space characters
+    value = value.replace(/\s/g, '');
+    input.value = value;
+  }
+  
+  if (hasError) {
+    searchError.classList.remove('hidden');
+    // Don't filter services if there's an error
+  } else {
+    searchError.classList.add('hidden');
+    // Trigger filtering only if validation passes
+    filterAndDisplayServices();
+  }
+}
+
+// Prevent invalid space input in search field
+function preventInvalidSpaceInSearch(event, input) {
+  // If space key is pressed
+  if (event.keyCode === 32 || event.which === 32) {
+    const currentValue = input.value;
+    
+    // Prevent space if it would be at the beginning
+    if (currentValue.length === 0) {
+      event.preventDefault();
+      return false;
+    }
+    
+    // Prevent space if the last character is already a space (prevents consecutive spaces)
+    if (currentValue.charAt(currentValue.length - 1) === ' ') {
+      event.preventDefault();
+      return false;
+    }
+    
+    // Prevent space if there are less than 2 non-space characters
+    const nonSpaceChars = currentValue.replace(/\s/g, '').length;
+    if (nonSpaceChars < 2) {
+      event.preventDefault();
+      return false;
+    }
+  }
+  
+  return true;
+}
+
 // Street address validation
 function validateStreetInput(input) {
   const errorElement = document.getElementById(`${input.id}-error`);
@@ -2410,16 +2482,9 @@ function closeLifeplanCheckoutModal() {
   priceFilter.addEventListener('change', filterAndDisplayServices);
   priceSort.addEventListener('change', filterAndDisplayServices);
   serviceSearch.addEventListener('input', event => {
-    // Validate search input
-    const searchValue = event.target.value;
-    const searchError = document.getElementById('search-error');
-    
-    if (searchValue.startsWith(' ') || searchValue.includes('  ')) {
-      searchError.classList.remove('hidden');
-    } else {
-      searchError.classList.add('hidden');
-      filterAndDisplayServices();
-    }
+    // The validation is now handled by validateSearchInput function
+    // This event listener is kept for compatibility
+    validateSearchInput(event.target);
   });
   
   function fetchRegions() {
