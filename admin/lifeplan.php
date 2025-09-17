@@ -1356,8 +1356,8 @@ document.addEventListener('DOMContentLoaded', function() {
             // Update modal content
             document.getElementById('beneficiaryName').textContent = beneficiaryName;
             document.getElementById('monthlyAmount').textContent = formatPrice(monthlyAmount);
-            document.getElementById('totalPaid').textContent = '₱' + currentAmountPaid.toFixed(2);
-            document.getElementById('remainingBalance').textContent = '₱' + currentBalance.toFixed(2);
+            document.getElementById('totalPaid').textContent = formatPrice(currentAmountPaid);
+            document.getElementById('remainingBalance').textContent = formatPrice(currentBalance);
             
             // Fetch and display payment logs
             fetchPaymentLogs(currentLifeplanId);
@@ -1395,10 +1395,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="border-b pb-3 mb-3">
                             <div class="flex justify-between">
                                 <span class="font-medium">Payment #${index + 1}</span>
-                                <span class="text-green-600">₱${parseFloat(log.installment_amount).toFixed(2)}</span>
+                                <span class="text-green-600">${formatPrice(log.installment_amount)}</span>
                             </div>
                             <div class="text-sm text-gray-500">${formattedDate}</div>
-                            <div class="text-sm mt-1">New Balance: ₱${parseFloat(log.new_balance).toFixed(2)}</div>
+                            <div class="text-sm mt-1">New Balance: ${formatPrice(log.new_balance)}</div>
                             <div class="text-sm mt-1 text-gray-600">Paid by: ${customerName}</div>
                         </div>
                     `;
@@ -1416,35 +1416,35 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Open modal when clicking View Receipt buttons
     // Open modal when clicking View Receipt buttons
-    viewReceiptBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-            currentLifeplanId = this.getAttribute('data-id');
-            const beneficiaryName = this.getAttribute('data-name');
+    // viewReceiptBtns.forEach(btn => {
+    //     btn.addEventListener('click', function() {
+    //         currentLifeplanId = this.getAttribute('data-id');
+    //         const beneficiaryName = this.getAttribute('data-name');
             
-            // Get the raw values before formatting
-            const customPrice = parseFloat(this.getAttribute('data-custom-price'));
-            const paymentDuration = parseInt(this.getAttribute('data-duration'));
-            const totalPaid = parseFloat(this.getAttribute('data-total').replace(/,/g, ''));
-            currentBalance = parseFloat(this.getAttribute('data-balance').replace(/,/g, ''));
-            currentAmountPaid = totalPaid;
-            console.log(customPrice, paymentDuration);
-            // Calculate monthly amount properly
-            const monthlyAmount = (customPrice / (paymentDuration * 12)).toFixed(2);
-            console.log(monthlyAmount);
+    //         // Get the raw values before formatting
+    //         const customPrice = parseFloat(this.getAttribute('data-custom-price'));
+    //         const paymentDuration = parseInt(this.getAttribute('data-duration'));
+    //         const totalPaid = parseFloat(this.getAttribute('data-total').replace(/,/g, ''));
+    //         currentBalance = parseFloat(this.getAttribute('data-balance').replace(/,/g, ''));
+    //         currentAmountPaid = totalPaid;
+    //         console.log(customPrice, paymentDuration);
+    //         // Calculate monthly amount properly
+    //         const monthlyAmount = (customPrice / (paymentDuration * 12)).toFixed(2);
+    //         console.log(monthlyAmount);
             
-            // Fetch customer ID associated with this lifeplan
-            fetchCustomerId(currentLifeplanId);
+    //         // Fetch customer ID associated with this lifeplan
+    //         fetchCustomerId(currentLifeplanId);
             
-            // Update modal content
-            document.getElementById('beneficiaryName').textContent = beneficiaryName;
-            document.getElementById('monthlyAmount').textContent = '₱' + monthlyAmount;
-            document.getElementById('totalPaid').textContent = '₱' + currentAmountPaid.toFixed(2);
-            document.getElementById('remainingBalance').textContent = '₱' + currentBalance.toFixed(2);
+    //         // Update modal content
+    //         document.getElementById('beneficiaryName').textContent = beneficiaryName;
+    //         document.getElementById('monthlyAmount').textContent = '₱' + monthlyAmount;
+    //         document.getElementById('totalPaid').textContent = '₱' + currentAmountPaid.toFixed(2);
+    //         document.getElementById('remainingBalance').textContent = '₱' + currentBalance.toFixed(2);
             
-            // Show modal
-            modal.classList.remove('hidden');
-        });
-    });
+    //         // Show modal
+    //         modal.classList.remove('hidden');
+    //     });
+    // });
     
     // Fetch customer ID associated with a lifeplan
     function fetchCustomerId(lifeplanId) {
@@ -2142,9 +2142,9 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Set default dates - Date of Death:', today, 'Burial Date:', today);
         
         // Fetch LifePlan data and populate hidden inputs
-        console.log('Fetching LifePlan data from:', `lifeplan_process/get_lifeplan.php?id=${currentLifeplanId}`);
+        console.log('Fetching LifePlan data from:', `lifeplan_process/get_lifeplan_for_convert.php?id=${currentLifeplanId}`);
         
-        fetch(`lifeplan_process/get_lifeplan.php?id=${currentLifeplanId}`)
+        fetch(`lifeplan_process/get_lifeplan_for_convert.php?id=${currentLifeplanId}`)
             .then(response => {
                 console.log('Received response from server, parsing JSON...');
                 return response.json();
