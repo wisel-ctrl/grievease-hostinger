@@ -311,6 +311,9 @@ $profile_picture = $employee['profile_picture'] ? '../' . $employee['profile_pic
   <i class="fas fa-bars"></i>
 </button>
 
+<!-- Mobile overlay -->
+<div id="mobile-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden md:hidden transition-opacity duration-300"></div>
+
 <script>
 // Function to toggle sidebar visibility
 function toggleSidebar() {
@@ -423,20 +426,32 @@ function toggleSidebar() {
 function toggleMobileSidebar() {
   const sidebar = document.getElementById("sidebar");
   const logoText = document.getElementById("logo-text");
+  const overlay = document.getElementById("mobile-overlay");
   
-  if (sidebar.classList.contains("translate-x-0")) {
-    // Hide sidebar
-    sidebar.classList.remove("translate-x-0");
-    sidebar.classList.add("-translate-x-full");
-  } else {
+  console.log("toggleMobileSidebar called");
+  console.log("Current sidebar classes:", sidebar.className);
+  
+  if (sidebar.classList.contains("-translate-x-full")) {
     // Show sidebar
     sidebar.classList.remove("-translate-x-full");
     sidebar.classList.add("translate-x-0");
-    
-    // Ensure logo remains visible on mobile when sidebar is open
-    if (window.innerWidth < 768 && logoText) {
-      logoText.classList.remove("hidden");
+    if (overlay) {
+      overlay.classList.remove("hidden");
     }
+    console.log("Showing sidebar");
+  } else {
+    // Hide sidebar
+    sidebar.classList.remove("translate-x-0");
+    sidebar.classList.add("-translate-x-full");
+    if (overlay) {
+      overlay.classList.add("hidden");
+    }
+    console.log("Hiding sidebar");
+  }
+  
+  // Ensure logo remains visible on mobile when sidebar is open
+  if (window.innerWidth < 768 && logoText) {
+    logoText.classList.remove("hidden");
   }
   
   // Ensure sidebar background is maintained after toggling on mobile
@@ -485,8 +500,13 @@ function setActivePage() {
 // Initialize mobile menu for smaller screens
 function initMobileMenu() {
   const mobileMenuBtn = document.getElementById('mobile-hamburger');
+  console.log("initMobileMenu called, mobileMenuBtn:", mobileMenuBtn);
+  
   if (mobileMenuBtn) {
+    // Remove any existing event listeners to prevent duplicates
+    mobileMenuBtn.removeEventListener('click', toggleMobileSidebar);
     mobileMenuBtn.addEventListener('click', toggleMobileSidebar);
+    console.log("Mobile hamburger event listener added");
   }
   
   // Close sidebar when clicking outside on mobile
@@ -494,6 +514,7 @@ function initMobileMenu() {
     const sidebar = document.getElementById("sidebar");
     const mobileMenuBtn = document.getElementById('mobile-hamburger');
     const hamburgerMenu = document.getElementById('hamburger-menu');
+    const overlay = document.getElementById('mobile-overlay');
         
     if (window.innerWidth < 768 && 
         sidebar && !sidebar.contains(event.target) && 
@@ -501,6 +522,9 @@ function initMobileMenu() {
         (!hamburgerMenu || !hamburgerMenu.contains(event.target))) {
       sidebar.classList.remove('translate-x-0');
       sidebar.classList.add('-translate-x-full');
+      if (overlay) {
+        overlay.classList.add('hidden');
+      }
       
       // Ensure background is maintained after closing on mobile
       updateSidebarBackground();
@@ -521,20 +545,26 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   }
   
-  // Get or create mobile menu button
+  // Get mobile menu button (it should already exist in the HTML)
   let mobileMenuBtn = document.getElementById('mobile-hamburger');
+  console.log("Mobile menu button found:", mobileMenuBtn);
   
-  // Only create the mobile button if it doesn't exist
-  if (!mobileMenuBtn) {
-    mobileMenuBtn = document.createElement('button');
-    mobileMenuBtn.id = 'mobile-hamburger';
-    mobileMenuBtn.className = 'fixed top-4 left-4 z-50 p-2 bg-white rounded-lg shadow-md text-gray-600 hover:text-gray-900 md:hidden transition-all duration-300';
-    mobileMenuBtn.innerHTML = '<i class="fas fa-bars"></i>';
-    document.body.appendChild(mobileMenuBtn);
-    
+  // Add event listener to mobile hamburger if it exists
+  if (mobileMenuBtn) {
     mobileMenuBtn.addEventListener('click', toggleMobileSidebar);
+    console.log("Event listener added to mobile hamburger");
     // Only show mobile hamburger on small screens
     mobileMenuBtn.style.display = window.innerWidth < 768 ? "block" : "none";
+  }
+  
+  // Add event listener to mobile overlay to close sidebar when clicked
+  const mobileOverlay = document.getElementById('mobile-overlay');
+  if (mobileOverlay) {
+    mobileOverlay.addEventListener('click', function() {
+      if (window.innerWidth < 768) {
+        toggleMobileSidebar();
+      }
+    });
   }
   
   // Initialize the sidebar state
@@ -666,6 +696,7 @@ window.addEventListener('resize', function() {
   const sidebar = document.getElementById("sidebar");
   const hamburgerMenu = document.getElementById("hamburger-menu");
   const mobileMenuBtn = document.getElementById('mobile-hamburger');
+  const overlay = document.getElementById('mobile-overlay');
   
   if (window.innerWidth < 768) {
     // Mobile view: Show mobile hamburger, hide sidebar hamburger
@@ -677,6 +708,10 @@ window.addEventListener('resize', function() {
       sidebar.classList.add('-translate-x-full');
       sidebar.classList.remove('translate-x-0');
     }
+    // Hide overlay on mobile when resizing
+    if (overlay) {
+      overlay.classList.add('hidden');
+    }
   } else {
     // Desktop view: Hide mobile hamburger, show sidebar hamburger
     if (hamburgerMenu) hamburgerMenu.style.display = "block";
@@ -686,6 +721,10 @@ window.addEventListener('resize', function() {
     if (sidebar) {
       sidebar.classList.remove('-translate-x-full');
       sidebar.classList.add('translate-x-0');
+    }
+    // Always hide overlay on desktop
+    if (overlay) {
+      overlay.classList.add('hidden');
     }
   }
   

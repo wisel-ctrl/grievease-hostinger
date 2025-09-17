@@ -536,7 +536,6 @@ $ongoing_services = $ongoing_data['ongoing_count'];
 </div>
 
 
-  <script src="sidebar.js"></script>
   <script src="tailwind.js"></script>
 <script>
     // Revenue Toggle Functionality
