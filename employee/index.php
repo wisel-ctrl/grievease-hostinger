@@ -216,14 +216,20 @@ $ongoing_services = $ongoing_data['ongoing_count'];
 <div id="main-content" class="p-6 bg-gray-50 min-h-screen transition-all duration-300 ml-64 w-[calc(100%-16rem)] main-content">
   <!-- Header with breadcrumb and welcome message -->
   <div class="flex justify-between items-center mb-6 bg-white p-5 rounded-lg shadow-sidebar">
-    <div>
-      <h1 class="text-2xl font-bold text-sidebar-text">Employee Dashboard</h1>
-      <p class="text-sm text-gray-500">
-        Welcome back, 
-        <span class="hidden md:inline">
-            <?php echo htmlspecialchars($first_name . ' ' . $last_name); ?>
-        </span>
-      </p>
+    <div class="flex items-center">
+      <!-- Mobile Hamburger Menu Button -->
+      <button id="mobile-hamburger" class="p-2 mr-3 bg-gray-100 rounded-lg shadow-sm text-gray-600 hover:text-gray-900 hover:bg-gray-200 transition-all duration-300 md:hidden">
+        <i class="fas fa-bars"></i>
+      </button>
+      <div>
+        <h1 class="text-2xl font-bold text-sidebar-text">Employee Dashboard</h1>
+        <p class="text-sm text-gray-500">
+          Welcome back, 
+          <span class="hidden md:inline">
+              <?php echo htmlspecialchars($first_name . ' ' . $last_name); ?>
+          </span>
+        </p>
+      </div>
     </div>
     <div class="flex space-x-3">
     
@@ -673,79 +679,115 @@ function escapeHtml(unsafe) {
         }
 </script>
 
-<!-- Add this to your existing JavaScript at the bottom of the file -->
+<!-- Mobile Sidebar Toggle and Notification Scripts -->
 <script>
-// Improved notification bell functionality
-document.getElementById('notification-bell').addEventListener('click', function(event) {
-  event.stopPropagation();
-  const dropdown = document.getElementById('notifications-dropdown');
-  
-  if (dropdown.classList.contains('hidden')) {
-    // Show dropdown with animation
-    dropdown.classList.remove('hidden');
-    setTimeout(() => {
-      dropdown.classList.remove('opacity-0', 'translate-y-2');
-    }, 10);
-  } else {
-    // Hide dropdown with animation
-    dropdown.classList.add('opacity-0', 'translate-y-2');
-    setTimeout(() => {
-      dropdown.classList.add('hidden');
-    }, 300);
-  }
-  
-  // If showing notifications, mark as read (update counter)
-  if (!dropdown.classList.contains('hidden')) {
-    const notificationCounter = document.querySelector('#notification-bell > span');
-    
-    // Add a slight delay before animating the counter
-    setTimeout(() => {
-      notificationCounter.classList.add('scale-75', 'opacity-50');
-      
-      setTimeout(() => {
-        notificationCounter.textContent = '0';
-        notificationCounter.classList.add('scale-0');
-        
-        setTimeout(() => {
-          if (notificationCounter.textContent === '0') {
-            notificationCounter.classList.add('hidden');
-          }
-        }, 300);
-      }, 500);
-    }, 2000);
-  }
-});
-
-// Close notification dropdown when clicking outside
-document.addEventListener('click', function(event) {
-  const notificationsDropdown = document.getElementById('notifications-dropdown');
-  const notificationBell = document.getElementById('notification-bell');
-  
-  if (notificationsDropdown && notificationBell && !notificationBell.contains(event.target) && !notificationsDropdown.contains(event.target)) {
-    // Hide with animation
-    notificationsDropdown.classList.add('opacity-0', 'translate-y-2');
-    setTimeout(() => {
-      notificationsDropdown.classList.add('hidden');
-    }, 300);
-  }
-});
-
-// Add smooth transitions for notification counter badge
-document.querySelector('#notification-bell > span').classList.add('transition-all', 'duration-300');
-
-// Add animation to new notifications - subtle pulse effect
+// Mobile sidebar toggle functionality
 document.addEventListener('DOMContentLoaded', function() {
-  const unreadIndicators = document.querySelectorAll('#notifications-dropdown .bg-blue-600, #notifications-dropdown .bg-yellow-600, #notifications-dropdown .bg-green-600');
-  
-  unreadIndicators.forEach(indicator => {
-    setInterval(() => {
-      indicator.classList.add('scale-125', 'opacity-70');
-      setTimeout(() => {
-        indicator.classList.remove('scale-125', 'opacity-70');
-      }, 500);
-    }, 3000);
+  const mobileHamburger = document.getElementById('mobile-hamburger');
+  const sidebarHamburger = document.getElementById('hamburger-menu');
+  const sidebar = document.getElementById('sidebar');
+  const mainContent = document.getElementById('main-content');
+
+  // Function to toggle sidebar
+  function toggleSidebar() {
+    if (window.innerWidth <= 768) {
+      // Mobile behavior
+      sidebar.classList.toggle('-translate-x-full');
+      sidebar.classList.toggle('translate-x-0');
+    } else {
+      // Desktop behavior (existing functionality)
+      sidebar.classList.toggle('w-0');
+      sidebar.classList.toggle('w-64');
+      sidebar.classList.toggle('opacity-0');
+      sidebar.classList.toggle('invisible');
+      
+      if (sidebar.classList.contains('w-0')) {
+        mainContent.classList.remove('ml-64', 'w-[calc(100%-16rem)]');
+        mainContent.classList.add('ml-0', 'w-full');
+      } else {
+        mainContent.classList.remove('ml-0', 'w-full');
+        mainContent.classList.add('ml-64', 'w-[calc(100%-16rem)]');
+      }
+    }
+  }
+
+  // Mobile hamburger click event
+  if (mobileHamburger) {
+    mobileHamburger.addEventListener('click', toggleSidebar);
+  }
+
+  // Sidebar hamburger click event
+  if (sidebarHamburger) {
+    sidebarHamburger.addEventListener('click', toggleSidebar);
+  }
+
+  // Close sidebar when clicking outside on mobile
+  document.addEventListener('click', function(event) {
+    if (window.innerWidth <= 768) {
+      const isClickInsideSidebar = sidebar.contains(event.target);
+      const isClickOnHamburger = mobileHamburger && mobileHamburger.contains(event.target);
+      
+      if (!isClickInsideSidebar && !isClickOnHamburger && !sidebar.classList.contains('-translate-x-full')) {
+        sidebar.classList.add('-translate-x-full');
+        sidebar.classList.remove('translate-x-0');
+      }
+    }
   });
+
+  // Handle window resize
+  window.addEventListener('resize', function() {
+    if (window.innerWidth > 768) {
+      // Reset mobile classes when switching to desktop
+      sidebar.classList.remove('-translate-x-full', 'translate-x-0');
+      sidebar.classList.add('translate-x-0');
+    } else {
+      // Ensure sidebar is hidden on mobile by default
+      if (!sidebar.classList.contains('-translate-x-full')) {
+        sidebar.classList.add('-translate-x-full');
+        sidebar.classList.remove('translate-x-0');
+      }
+    }
+  });
+
+  // Initialize sidebar state based on screen size
+  if (window.innerWidth <= 768) {
+    sidebar.classList.add('-translate-x-full');
+    sidebar.classList.remove('translate-x-0');
+  }
 });
+
+// Improved notification bell functionality (if notification bell exists)
+const notificationBell = document.getElementById('notification-bell');
+if (notificationBell) {
+  notificationBell.addEventListener('click', function(event) {
+    event.stopPropagation();
+    const dropdown = document.getElementById('notifications-dropdown');
+    
+    if (dropdown.classList.contains('hidden')) {
+      dropdown.classList.remove('hidden');
+      setTimeout(() => {
+        dropdown.classList.remove('opacity-0', 'translate-y-2');
+      }, 10);
+    } else {
+      dropdown.classList.add('opacity-0', 'translate-y-2');
+      setTimeout(() => {
+        dropdown.classList.add('hidden');
+      }, 300);
+    }
+  });
+
+  // Close notification dropdown when clicking outside
+  document.addEventListener('click', function(event) {
+    const notificationsDropdown = document.getElementById('notifications-dropdown');
+    
+    if (notificationsDropdown && !notificationBell.contains(event.target) && !notificationsDropdown.contains(event.target)) {
+      notificationsDropdown.classList.add('opacity-0', 'translate-y-2');
+      setTimeout(() => {
+        notificationsDropdown.classList.add('hidden');
+      }, 300);
+    }
+  });
+}
 </script>
 </body>
 </html>
