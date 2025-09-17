@@ -11,7 +11,20 @@ if (!isset($_GET['id'])) {
 $lifeplanId = $_GET['id'];
 
 $stmt = $conn->prepare("
-    SELECT * FROM lifeplan_tb WHERE lifeplan_id = ?
+    SELECT 
+        l.*,
+        u.birthdate,
+        CONCAT_WS(', ',
+            COALESCE(u.region, ''),
+            COALESCE(u.province, ''),
+            COALESCE(u.city, ''),
+            COALESCE(u.barangay, ''),
+            COALESCE(u.street_address, ''),
+            COALESCE(u.zip_code, '')
+        ) AS full_address
+    FROM lifeplan_tb l
+    JOIN users u ON l.customerID = u.id
+    WHERE l.lifeplan_id = ?
 ");
 $stmt->bind_param('i', $lifeplanId);
 $stmt->execute();
