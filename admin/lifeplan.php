@@ -1307,9 +1307,9 @@ function updateStats() {
                 document.querySelector('.stats-card:nth-child(2) .text-2xl').textContent = data.active_plans;
                 document.querySelector('.stats-card:nth-child(3) .text-2xl').textContent = data.pending_payments;
                 document.querySelector('.stats-card:nth-child(4) .text-2xl').textContent = '₱' + data.total_revenue.toLocaleString('en-US', {minimumFractionDigits: 2});
-            }
-        })
-        .catch(error => console.error('Error updating stats:', error));
+        }
+    })
+  .catch(error => console.error('Error updating stats:', error));
 }
 
 // Update every 5 minutes (300000 ms)
@@ -1481,134 +1481,146 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Submit payment handler - Integrated version
     submitPaymentBtn.addEventListener('click', function() {
-    Swal.fire({
-        title: 'Confirm Payment',
-        text: 'Are you sure you want to record this payment?',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, record it!',
-        cancelButtonText: 'Cancel'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            const amount = parseFloat(document.getElementById('paymentAmount').value);
-            const date = document.getElementById('paymentDate').value;
-            const notes = document.getElementById('paymentNotes').value;
-            
-            // Validation from existing code
-            if (!amount || !date) {
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'Please fill in all required fields',
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                });
-                return;
-            }
-            
-            // Additional validation from enhanced code
-            if (isNaN(amount) || amount <= 0) {
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'Please enter a valid payment amount',
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                });
-                return;
-            }
-            
-            if (!currentLifeplanId || !currentCustomerId) {
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'Error: Missing required data. Please try again.',
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                });
-                return;
-            }
-            
-            // Calculate new values
-            const newAmountPaid = currentAmountPaid + amount;
-            const newBalance = Math.max(0, currentBalance - amount); // Ensure balance doesn't go negative
-            
-            // Prepare data for submission
-            const paymentData = {
-                lifeplan_id: currentLifeplanId,
-                customer_id: currentCustomerId,
-                installment_amount: amount,
-                current_balance: currentBalance,
-                new_balance: newBalance,
-                payment_date: date,
-                notes: notes,
-                amount_paid: newAmountPaid
-            };
-            
-            // Disable button to prevent multiple submissions (from enhanced code)
-            submitPaymentBtn.disabled = true;
-            submitPaymentBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-            
-            // Send payment data to server (enhanced functionality)
-            fetch('lifeplan_process/record_payment.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(paymentData)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Success message from existing code
-                    Swal.fire({
-                        title: 'Success!',
-                        text: 'Payment recorded successfully!',
-                        icon: 'success',
-                        confirmButtonText: 'OK'
-                    }).then(() => {
-                        // Update the UI with new values (enhanced functionality)
-                        document.getElementById('totalPaid').textContent = '₱' + newAmountPaid.toFixed(2);
-                        document.getElementById('remainingBalance').textContent = '₱' + newBalance.toFixed(2);
-                        
-                        // Update current values in case user wants to make another payment
-                        currentAmountPaid = newAmountPaid;
-                        currentBalance = newBalance;
-                        
-                        // Reset form (from existing code)
-                        document.getElementById('paymentAmount').value = '';
-                        document.getElementById('paymentDate').value = '';
-                        document.getElementById('paymentNotes').value = '';
-                        
-                        // Set default date to today (from existing code)
-                        document.getElementById('paymentDate').valueAsDate = new Date();
-                        
-                        modal.classList.add('hidden');
-                        
-                        // Optionally refresh the table data
-                        location.reload();
-                    });
-                } else {
-                    Swal.fire({
-                        title: 'Error!',
-                        text: 'Error recording payment: ' + (data.message || 'Unknown error'),
-                        icon: 'error',
-                        confirmButtonText: 'OK'
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'An error occurred while recording the payment',
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                });
-            })
-            .finally(() => {
-                submitPaymentBtn.disabled = false;
-                submitPaymentBtn.textContent = 'Record Payment';
-            });
+
+      // Validation: Check if payment amount exceeds current balance
+      if (amount > currentBalance) {
+          Swal.fire({
+              title: 'Payment Error',
+              text: `Payment amount (₱${amount.toFixed(2)}) cannot exceed the remaining balance (₱${currentBalance.toFixed(2)})`,
+              icon: 'error',
+              confirmButtonText: 'OK'
+          });
+          return;
+      }
+
+      Swal.fire({
+          title: 'Confirm Payment',
+          text: 'Are you sure you want to record this payment?',
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, record it!',
+          cancelButtonText: 'Cancel'
+      }).then((result) => {
+          if (result.isConfirmed) {
+              const amount = parseFloat(document.getElementById('paymentAmount').value);
+              const date = document.getElementById('paymentDate').value;
+              const notes = document.getElementById('paymentNotes').value;
+              
+              // Validation from existing code
+              if (!amount || !date) {
+                  Swal.fire({
+                      title: 'Error!',
+                      text: 'Please fill in all required fields',
+                      icon: 'error',
+                      confirmButtonText: 'OK'
+                  });
+                  return;
+              }
+              
+              // Additional validation from enhanced code
+              if (isNaN(amount) || amount <= 0) {
+                  Swal.fire({
+                      title: 'Error!',
+                      text: 'Please enter a valid payment amount',
+                      icon: 'error',
+                      confirmButtonText: 'OK'
+                  });
+                  return;
+              }
+              
+              if (!currentLifeplanId || !currentCustomerId) {
+                  Swal.fire({
+                      title: 'Error!',
+                      text: 'Error: Missing required data. Please try again.',
+                      icon: 'error',
+                      confirmButtonText: 'OK'
+                  });
+                  return;
+              }
+              
+              // Calculate new values
+              const newAmountPaid = currentAmountPaid + amount;
+              const newBalance = Math.max(0, currentBalance - amount); // Ensure balance doesn't go negative
+              
+              // Prepare data for submission
+              const paymentData = {
+                  lifeplan_id: currentLifeplanId,
+                  customer_id: currentCustomerId,
+                  installment_amount: amount,
+                  current_balance: currentBalance,
+                  new_balance: newBalance,
+                  payment_date: date,
+                  notes: notes,
+                  amount_paid: newAmountPaid
+              };
+              
+              // Disable button to prevent multiple submissions (from enhanced code)
+              submitPaymentBtn.disabled = true;
+              submitPaymentBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+              
+              // Send payment data to server (enhanced functionality)
+              fetch('lifeplan_process/record_payment.php', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify(paymentData)
+              })
+              .then(response => response.json())
+              .then(data => {
+                  if (data.success) {
+                      // Success message from existing code
+                      Swal.fire({
+                          title: 'Success!',
+                          text: 'Payment recorded successfully!',
+                          icon: 'success',
+                          confirmButtonText: 'OK'
+                      }).then(() => {
+                          // Update the UI with new values (enhanced functionality)
+                          document.getElementById('totalPaid').textContent = '₱' + newAmountPaid.toFixed(2);
+                          document.getElementById('remainingBalance').textContent = '₱' + newBalance.toFixed(2);
+                          
+                          // Update current values in case user wants to make another payment
+                          currentAmountPaid = newAmountPaid;
+                          currentBalance = newBalance;
+                          
+                          // Reset form (from existing code)
+                          document.getElementById('paymentAmount').value = '';
+                          document.getElementById('paymentDate').value = '';
+                          document.getElementById('paymentNotes').value = '';
+                          
+                          // Set default date to today (from existing code)
+                          document.getElementById('paymentDate').valueAsDate = new Date();
+                          
+                          modal.classList.add('hidden');
+                          
+                          // Optionally refresh the table data
+                          location.reload();
+                      });
+                  } else {
+                      Swal.fire({
+                          title: 'Error!',
+                          text: 'Error recording payment: ' + (data.message || 'Unknown error'),
+                          icon: 'error',
+                          confirmButtonText: 'OK'
+                      });
+                  }
+              })
+              .catch(error => {
+                  console.error('Error:', error);
+                  Swal.fire({
+                      title: 'Error!',
+                      text: 'An error occurred while recording the payment',
+                      icon: 'error',
+                      confirmButtonText: 'OK'
+                  });
+              })
+              .finally(() => {
+                  submitPaymentBtn.disabled = false;
+                  submitPaymentBtn.textContent = 'Record Payment';
+              });
         }
-    });
+      });
 });
     
     // Reset payment form (helper function)
