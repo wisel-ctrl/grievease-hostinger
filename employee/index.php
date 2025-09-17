@@ -213,12 +213,17 @@ $ongoing_services = $ongoing_data['ongoing_count'];
 <?php include 'employee_sidebar.php'; ?>
 
   <!-- Main Content -->
-<div id="main-content" class="ml-64 p-6 bg-gray-50 min-h-screen transition-all duration-300 main-content">
+<div id="main-content" class="p-6 bg-gray-50 min-h-screen transition-all duration-300 ml-64 w-[calc(100%-16rem)] main-content">
   <!-- Header with breadcrumb and welcome message -->
   <div class="flex justify-between items-center mb-6 bg-white p-5 rounded-lg shadow-sidebar">
     <div>
       <h1 class="text-2xl font-bold text-sidebar-text">Employee Dashboard</h1>
-      <p class="text-sm text-gray-500">Welcome back, </p>
+      <p class="text-sm text-gray-500">
+        Welcome back, 
+        <span class="hidden md:inline">
+            <?php echo htmlspecialchars($first_name . ' ' . $last_name); ?>
+        </span>
+      </p>
     </div>
     <div class="flex space-x-3">
     
@@ -226,34 +231,42 @@ $ongoing_services = $ongoing_data['ongoing_count'];
 </div>
 
   <!-- Quick Stats -->
-    <div class="mb-8">
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-      <!-- Services this Month -->
-      <div class="bg-white rounded-lg shadow-sidebar p-5 border border-sidebar-border hover:shadow-card transition-all duration-300">
-        <div class="flex items-center mb-3">
-          <div class="w-12 h-12 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center mr-3">
-            <i class="fas fa-calendar-alt text-lg"></i>
-          </div>
-          <span class="text-sidebar-text font-medium">Services this Month</span>
-        </div>
-        <div class="text-3xl font-bold mb-2 text-sidebar-text"><?php echo $services_this_month; ?></div>
-        <div class="text-sm text-green-600 flex items-center">
-          <i class="fas fa-arrow-up mr-1"></i> 2% from last week
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8">
+  <!-- Services this Month -->
+  <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden cursor-pointer">
+    <!-- Card header with brighter gradient background -->
+    <div class="bg-gradient-to-r from-blue-100 to-blue-200 px-4 sm:px-6 py-3 sm:py-4">
+      <div class="flex items-center justify-between mb-1">
+        <h3 class="text-xs sm:text-sm font-medium text-gray-700 leading-tight">Services This Month</h3>
+        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/90 text-slate-600 flex items-center justify-center">
+          <i class="fas fa-calendar-alt text-sm sm:text-base"></i>
         </div>
       </div>
+      <div class="flex items-end">
+       <span class="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800"><?php echo $services_this_month; ?></span>
+      </div>
+    </div>
+    
+    <!-- Card footer with change indicator -->
+    <div class="px-4 sm:px-6 py-2 sm:py-3 bg-white border-t border-gray-100">
+      <div class="flex items-center text-emerald-600">
+        <i class="fas fa-arrow-up mr-1 sm:mr-1.5 text-xs"></i>
+        <span class="font-medium text-xs">2.0% </span>
+        <span class="text-xs text-gray-500 ml-1">from last week</span>
+      </div>
+    </div>
+  </div>
       
-      <!-- Monthly Revenue with Toggle -->
-      <div class="bg-white rounded-lg shadow-sidebar p-5 border border-sidebar-border hover:shadow-card transition-all duration-300">
-        <div class="flex items-center justify-between mb-3">
-          <div class="flex items-center">
-            <div class="w-12 h-12 rounded-lg bg-green-100 text-green-600 flex items-center justify-center mr-3">
-              <i class="fas fa-peso-sign text-lg"></i>
-            </div>
-            <span class="text-sidebar-text font-medium">Monthly Revenue</span>
-          </div>
+  <!-- Monthly Revenue with Toggle -->
+  <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden cursor-pointer">
+    <!-- Card header with brighter gradient background -->
+    <div class="bg-gradient-to-r from-green-100 to-green-200 px-4 sm:px-6 py-3 sm:py-4">
+      <div class="flex items-center justify-between mb-1">
+        <h3 class="text-xs sm:text-sm font-medium text-gray-700 leading-tight">Monthly Revenue</h3>
+        <div class="flex items-center space-x-2">
           <div class="relative">
-            <button id="revenue-toggle" class="p-1 bg-gray-100 rounded-full flex items-center">
-              <span id="revenue-type" class="text-xs px-2">Cash</span>
+            <button id="revenue-toggle" class="p-1 bg-white/90 rounded-full flex items-center text-xs">
+              <span id="revenue-type" class="px-2">Cash</span>
               <i class="fas fa-chevron-down text-xs mr-1"></i>
             </button>
             <div id="revenue-dropdown" class="absolute right-0 mt-1 w-24 bg-white rounded-md shadow-lg hidden z-10">
@@ -261,60 +274,83 @@ $ongoing_services = $ongoing_data['ongoing_count'];
               <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="toggleRevenue('accrual')">Accrual</button>
             </div>
           </div>
-        </div>
-        <div id="cash-revenue" class="text-3xl font-bold mb-2 text-sidebar-text">₱<?php echo number_format($cash_revenue, 2); ?></div>
-        <div id="accrual-revenue" class="text-3xl font-bold mb-2 text-sidebar-text hidden">₱<?php echo number_format($accrual_revenue, 2); ?></div>
-        <div class="text-sm text-green-600 flex items-center">
-          <i class="fas fa-arrow-up mr-1"></i> 5% from yesterday
+          <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/90 text-green-600 flex items-center justify-center">
+            <i class="fas fa-peso-sign text-sm sm:text-base"></i>
+          </div>
         </div>
       </div>
-      
-      <!-- Ongoing Services -->
-      <div class="bg-white rounded-lg shadow-sidebar p-5 border border-sidebar-border hover:shadow-card transition-all duration-300">
-        <div class="flex items-center mb-3">
-          <div class="w-12 h-12 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center mr-3">
-            <i class="fas fa-tasks text-lg"></i>
-          </div>
-          <span class="text-sidebar-text font-medium">Ongoing Services</span>
-        </div>
-        <div class="text-3xl font-bold mb-2 text-sidebar-text"><?php echo $ongoing_services; ?></div>
-        <div class="text-sm text-red-600 flex items-center">
-          <i class="fas fa-arrow-down mr-1"></i> 1 task added
-        </div>
+      <div class="flex items-end">
+        <div id="cash-revenue" class="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800">₱<?php echo number_format($cash_revenue, 2); ?></div>
+        <div id="accrual-revenue" class="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 hidden">₱<?php echo number_format($accrual_revenue, 2); ?></div>
+      </div>
+    </div>
+    
+    <!-- Card footer with change indicator -->
+    <div class="px-4 sm:px-6 py-2 sm:py-3 bg-white border-t border-gray-100">
+      <div class="flex items-center text-emerald-600">
+        <i class="fas fa-arrow-up mr-1 sm:mr-1.5 text-xs"></i>
+        <span class="font-medium text-xs">5.0% </span>
+        <span class="text-xs text-gray-500 ml-1">from yesterday</span>
       </div>
     </div>
   </div>
+      
+  <!-- Ongoing Services -->
+  <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden cursor-pointer">
+    <!-- Card header with brighter gradient background -->
+    <div class="bg-gradient-to-r from-orange-100 to-orange-200 px-4 sm:px-6 py-3 sm:py-4">
+      <div class="flex items-center justify-between mb-1">
+        <h3 class="text-xs sm:text-sm font-medium text-gray-700 leading-tight">Ongoing Services</h3>
+        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/90 text-orange-600 flex items-center justify-center">
+          <i class="fas fa-tasks text-sm sm:text-base"></i>
+        </div>
+      </div>
+      <div class="flex items-end">
+        <span class="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800"><?php echo $ongoing_services; ?></span>
+      </div>
+    </div>
+    
+    <!-- Card footer with change indicator -->
+    <div class="px-4 sm:px-6 py-2 sm:py-3 bg-white border-t border-gray-100">
+      <div class="flex items-center text-rose-600">
+        <i class="fas fa-arrow-down mr-1 sm:mr-1.5 text-xs"></i>
+        <span class="font-medium text-xs">1 </span>
+        <span class="text-xs text-gray-500 ml-1">task added</span>
+      </div>
+    </div>
+  </div>
+</div>
 
   <!-- Pending Bookings Table -->
-  <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
-    <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
-      <h3 class="font-medium text-sidebar-text">Pending Bookings</h3>
+  <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden mb-8">
+    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 sm:p-5 border-b border-sidebar-border">
+      <h3 class="font-medium text-sidebar-text mb-2 sm:mb-0">Pending Bookings</h3>
     </div>
     <div class="overflow-x-auto scrollbar-thin">
       <table class="w-full">
         <thead>
           <tr class="bg-sidebar-hover">
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(0)">
+            <th class="p-3 sm:p-4 text-left text-xs sm:text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(0)">
               <div class="flex items-center">
                 Client Name <i class="fas fa-sort ml-1 text-gray-400"></i>
               </div>
             </th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(1)">
+            <th class="p-3 sm:p-4 text-left text-xs sm:text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(1)">
               <div class="flex items-center">
                 Service Type <i class="fas fa-sort ml-1 text-gray-400"></i>
               </div>
             </th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(2)">
+            <th class="p-3 sm:p-4 text-left text-xs sm:text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(2)">
               <div class="flex items-center">
                 Date <i class="fas fa-sort ml-1 text-gray-400"></i>
               </div>
             </th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(3)">
+            <th class="hidden sm:table-cell p-3 sm:p-4 text-left text-xs sm:text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(3)">
               <div class="flex items-center">
                 Location <i class="fas fa-sort ml-1 text-gray-400"></i>
               </div>
             </th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(4)">
+            <th class="p-3 sm:p-4 text-left text-xs sm:text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(4)">
               <div class="flex items-center">
                 Status <i class="fas fa-sort ml-1 text-gray-400"></i>
               </div>
@@ -342,69 +378,69 @@ $ongoing_services = $ongoing_data['ongoing_count'];
           if ($pending_result->num_rows > 0) {
             while ($booking = $pending_result->fetch_assoc()) {
               echo '<tr class="border-b border-sidebar-border hover:bg-sidebar-hover">';
-              echo '<td class="p-4 text-sm text-sidebar-text">' . htmlspecialchars($booking['full_name']) . '</td>';
-              echo '<td class="p-4 text-sm text-sidebar-text">' . htmlspecialchars($booking['service_name']) . '</td>';
-              echo '<td class="p-4 text-sm text-sidebar-text">' . date('M j, Y', strtotime($booking['booking_date'])) . '</td>';
-              echo '<td class="p-4 text-sm text-sidebar-text">' . htmlspecialchars($booking['deceased_address']) . '</td>';
-              echo '<td class="p-4 text-sm">';
+              echo '<td class="p-3 sm:p-4 text-xs sm:text-sm text-sidebar-text">' . htmlspecialchars($booking['full_name']) . '</td>';
+              echo '<td class="p-3 sm:p-4 text-xs sm:text-sm text-sidebar-text">' . htmlspecialchars($booking['service_name']) . '</td>';
+              echo '<td class="p-3 sm:p-4 text-xs sm:text-sm text-sidebar-text">' . date('M j, Y', strtotime($booking['booking_date'])) . '</td>';
+              echo '<td class="hidden sm:table-cell p-3 sm:p-4 text-xs sm:text-sm text-sidebar-text">' . htmlspecialchars($booking['deceased_address']) . '</td>';
+              echo '<td class="p-3 sm:p-4 text-xs sm:text-sm">';
               echo '<span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">Pending</span>';
               echo '</td>';
               echo '</tr>';
             }
           } else {
             echo '<tr class="border-b border-sidebar-border hover:bg-sidebar-hover">';
-            echo '<td colspan="5" class="p-4 text-sm text-sidebar-text text-center">No pending bookings found</td>';
+            echo '<td colspan="5" class="p-3 sm:p-4 text-xs sm:text-sm text-sidebar-text text-center">No pending bookings found</td>';
             echo '</tr>';
           }
           ?>
         </tbody>
       </table>
     </div>
-    <div class="p-4 border-t border-sidebar-border flex justify-between items-center">
-      <div class="text-sm text-gray-500">
+    <div class="p-3 sm:p-4 border-t border-sidebar-border flex flex-col sm:flex-row sm:justify-between sm:items-center">
+      <div class="text-xs sm:text-sm text-gray-500">
         Showing <?php echo $pending_result->num_rows; ?> pending bookings
       </div>
     </div>
   </div>
 
   <!-- Recent Inventory Activity -->
-  <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
-      <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
-          <h3 class="font-medium text-sidebar-text">Recent Inventory Activity</h3>
-          <button class="px-4 py-2 bg-sidebar-accent text-white rounded-md text-sm flex items-center hover:bg-darkgold transition-all duration-300">
-              <i class="fas fa-box mr-2"></i> Manage Inventory
+  <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden mb-8">
+      <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 sm:p-5 border-b border-sidebar-border">
+          <h3 class="font-medium text-sidebar-text mb-3 sm:mb-0">Recent Inventory Activity</h3>
+          <button class="px-3 sm:px-4 py-2 bg-sidebar-accent text-white rounded-md text-xs sm:text-sm flex items-center hover:bg-darkgold transition-all duration-300">
+              <i class="fas fa-box mr-1 sm:mr-2"></i> Manage Inventory
           </button>
       </div>
       <div class="overflow-x-auto scrollbar-thin">
           <table class="w-full">
               <thead>
                   <tr class="bg-sidebar-hover">
-                      <th class="p-4 text-left text-sm font-medium text-sidebar-text">Item</th>
-                      <th class="p-4 text-left text-sm font-medium text-sidebar-text">ID</th>
-                      <th class="p-4 text-left text-sm font-medium text-sidebar-text">Action</th>
-                      <th class="p-4 text-left text-sm font-medium text-sidebar-text">Date</th>
-                      <th class="p-4 text-left text-sm font-medium text-sidebar-text">Quantity</th>
+                      <th class="p-3 sm:p-4 text-left text-xs sm:text-sm font-medium text-sidebar-text">Item</th>
+                      <th class="p-3 sm:p-4 text-left text-xs sm:text-sm font-medium text-sidebar-text">ID</th>
+                      <th class="p-3 sm:p-4 text-left text-xs sm:text-sm font-medium text-sidebar-text">Action</th>
+                      <th class="hidden sm:table-cell p-3 sm:p-4 text-left text-xs sm:text-sm font-medium text-sidebar-text">Date</th>
+                      <th class="p-3 sm:p-4 text-left text-xs sm:text-sm font-medium text-sidebar-text">Quantity</th>
                   </tr>
               </thead>
               <tbody id="inventoryLogsBody">
                   <!-- Loading indicator row -->
                   <tr id="inventoryLoadingIndicator" class="border-b border-sidebar-border">
-                      <td colspan="5" class="p-4 text-sm text-center text-sidebar-text">
+                      <td colspan="5" class="p-3 sm:p-4 text-xs sm:text-sm text-center text-sidebar-text">
                           <i class="fas fa-circle-notch fa-spin mr-2"></i> Loading inventory activity...
                       </td>
                   </tr>
               </tbody>
           </table>
       </div>
-      <div class="p-4 border-t border-sidebar-border flex justify-between items-center">
-          <div id="inventoryPaginationInfo" class="text-sm text-gray-500">Loading...</div>
+      <div class="p-3 sm:p-4 border-t border-sidebar-border flex flex-col sm:flex-row sm:justify-between sm:items-center">
+          <div id="inventoryPaginationInfo" class="text-xs sm:text-sm text-gray-500 mb-2 sm:mb-0">Loading...</div>
           <div id="paginationControls" class="flex space-x-1"></div>
       </div>
   </div>
 
   <!-- Footer -->
-  <footer class="bg-white rounded-lg shadow-sidebar border border-sidebar-border p-4 text-center text-sm text-gray-500 mt-8">
-    <p>© 2025 GrievEase.</p>
+  <footer class="bg-white rounded-xl shadow-sm border border-sidebar-border p-3 sm:p-4 text-center text-xs sm:text-sm text-gray-500 mt-8">
+    <p> 2025 GrievEase.</p>
   </footer>
 </div>
 
