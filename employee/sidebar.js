@@ -3,19 +3,11 @@ function toggleSidebar() {
   const sidebar = document.getElementById("sidebar");
   const mainContent = document.getElementById("main-content");
   const hamburgerMenu = document.getElementById("hamburger-menu");
-  const isDesktop = window.innerWidth >= 1024; // Tailwind 'lg' breakpoint
 
   if (!sidebar || !mainContent || !hamburgerMenu) {
     console.error("One or more elements not found:", {
       sidebar, mainContent, hamburgerMenu
     });
-    return;
-  }
-
-  // On small screens, treat toggle as off-canvas show/hide, not width collapse
-  if (!isDesktop) {
-    sidebar.classList.toggle('-translate-x-full');
-    sidebar.classList.toggle('translate-x-0');
     return;
   }
 
@@ -120,20 +112,55 @@ document.addEventListener("DOMContentLoaded", function() {
   
   // Add event listener to the hamburger menu
   const hamburgerMenu = document.getElementById("hamburger-menu");
-  const desktopHamburger = document.getElementById('desktop-hamburger');
   if (hamburgerMenu) {
     hamburgerMenu.addEventListener("click", toggleSidebar);
  
-  }
-  if (desktopHamburger) {
-    desktopHamburger.addEventListener('click', toggleSidebar);
   }
   
   // Initialize the sidebar state
   const sidebar = document.getElementById("sidebar");
   const mainContent = document.getElementById("main-content");
-  // For mobile/tablet (< lg), let the sidebar start off-canvas using Tailwind classes set in the markup.
-  // No width-collapsing initialization is needed here.
+  
+  // Set initial state based on screen size
+  if (window.innerWidth < 768) {
+    // On mobile, start with collapsed sidebar
+    sidebar.classList.remove("w-64");
+    sidebar.classList.add("w-16");
+    mainContent.classList.remove("ml-64");
+    mainContent.classList.add("ml-16");
+    
+    // Keep icons visible but hide text in navigation links
+    document.querySelectorAll(".sidebar-link span").forEach(el => {
+      el.classList.add("hidden");
+    });
+
+    // Hide menu section headers
+    document.querySelectorAll(".menu-header").forEach(el => {
+      el.classList.add("hidden");
+    });
+ 
+    // Hide elements except hamburger menu in the header
+    const headerElements = document.querySelectorAll("#sidebar > div:first-child > *:not(#hamburger-menu)");
+    headerElements.forEach(el => {
+      el.classList.add("hidden");
+    });
+    
+    // Hide user profile text but keep the icon
+    const userProfileText = document.querySelectorAll("#sidebar > div:nth-child(2) > div:not(:first-child)");
+    userProfileText.forEach(el => {
+      el.classList.add("hidden");
+    });
+    
+    // Center the navigation icons when collapsed
+    document.querySelectorAll(".sidebar-link").forEach(el => {
+      el.classList.add("justify-center");
+      el.classList.remove("px-5");
+      el.classList.add("px-0");
+    });
+    
+    // Update hamburger icon
+    hamburgerMenu.innerHTML = '<i class="fas fa-chevron-right"></i>';
+  }
 });
 
 // Add CSS for transition effects
@@ -193,7 +220,7 @@ function initMobileMenu() {
     const sidebar = document.querySelector("nav");
     const mobileMenuBtn = document.getElementById('mobile-menu-btn');
     
-    if (window.innerWidth < 1024 && 
+    if (window.innerWidth < 768 && 
         !sidebar.contains(event.target) && 
         (!mobileMenuBtn || !mobileMenuBtn.contains(event.target))) {
       sidebar.classList.remove('translate-x-0');
@@ -227,12 +254,10 @@ document.addEventListener('DOMContentLoaded', function() {
 // Update sidebar state on window resize
 window.addEventListener('resize', function() {
   const sidebar = document.querySelector("nav");
-  if (window.innerWidth < 1024) {
-    // Ensure off-canvas on smaller than lg
+  if (window.innerWidth < 768) {
     sidebar.classList.add('-translate-x-full');
     sidebar.classList.remove('translate-x-0');
   } else {
-    // Ensure visible on desktop (lg+)
     sidebar.classList.remove('-translate-x-full');
     sidebar.classList.add('translate-x-0');
   }
