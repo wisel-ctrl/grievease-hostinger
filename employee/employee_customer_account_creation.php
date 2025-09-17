@@ -1644,8 +1644,10 @@ function searchCustomers() {
 
 // Helper function to update pagination info
 function updatePaginationInfo(visibleCount, totalCount) {
-  const infoElement = document.querySelector('#manageAccountSection .text-sm.text-gray-600');
-  infoElement.textContent = `Showing ${visibleCount} of ${totalCount} entries`;
+  const infoElement = document.getElementById('paginationInfo');
+  if (infoElement) {
+    infoElement.textContent = `Showing ${visibleCount} of ${totalCount} entries`;
+  }
 }
 
 // Clear search function
@@ -2671,6 +2673,23 @@ function unarchiveAccount(userId) {
   <script>
 // Mobile sidebar toggle functionality
 document.addEventListener('DOMContentLoaded', function() {
+  // Initialize sidebar state based on screen size
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("mobile-overlay");
+  
+  // Set initial state for mobile
+  if (window.innerWidth < 768) {
+    if (sidebar) {
+      sidebar.classList.add('-translate-x-full');
+      sidebar.classList.remove('translate-x-0');
+      sidebar.classList.add('w-64'); // Ensure full width for mobile
+      sidebar.classList.remove('w-16');
+    }
+    if (overlay) {
+      overlay.classList.add('hidden');
+    }
+  }
+  
   // Get mobile menu button
   const mobileMenuBtn = document.getElementById('mobile-hamburger');
   
@@ -2681,9 +2700,12 @@ document.addEventListener('DOMContentLoaded', function() {
       const overlay = document.getElementById("mobile-overlay");
       
       if (sidebar.classList.contains("-translate-x-full")) {
-        // Show sidebar
+        // Show sidebar - ensure full width on mobile
         sidebar.classList.remove("-translate-x-full");
         sidebar.classList.add("translate-x-0");
+        // Ensure sidebar is full width on mobile
+        sidebar.classList.remove("w-16");
+        sidebar.classList.add("w-64");
         if (overlay) {
           overlay.classList.remove("hidden");
         }
@@ -2727,6 +2749,34 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   }
+  
+  // Handle window resize to ensure proper mobile behavior
+  window.addEventListener('resize', function() {
+    const sidebar = document.getElementById("sidebar");
+    const overlay = document.getElementById("mobile-overlay");
+    
+    if (window.innerWidth >= 768) {
+      // Desktop: show sidebar and hide overlay
+      if (sidebar) {
+        sidebar.classList.remove('-translate-x-full');
+        sidebar.classList.add('translate-x-0');
+        sidebar.classList.add('w-64');
+        sidebar.classList.remove('w-16');
+      }
+      if (overlay) {
+        overlay.classList.add('hidden');
+      }
+    } else {
+      // Mobile: hide sidebar initially
+      if (sidebar && !sidebar.classList.contains('translate-x-0')) {
+        sidebar.classList.add('-translate-x-full');
+        sidebar.classList.remove('translate-x-0');
+      }
+      if (overlay) {
+        overlay.classList.add('hidden');
+      }
+    }
+  });
 });
 </script>
 </body>
