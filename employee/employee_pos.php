@@ -2548,13 +2548,20 @@ function updateCombinedAddress() {
     const provinceSelect = document.getElementById('deceasedProvince');
     const citySelect = document.getElementById('deceasedCity');
     const barangaySelect = document.getElementById('deceasedBarangay');
-    const streetAddress = document.getElementById('deceasedStreet').value;
-    const zipCode = document.getElementById('deceasedZip').value;
+    const streetElement = document.getElementById('deceasedStreet');
+    const zipElement = document.getElementById('deceasedZip');
+    const addressElement = document.getElementById('deceasedAddress');
     
-    const region = regionSelect.options[regionSelect.selectedIndex]?.text || '';
-    const province = provinceSelect.options[provinceSelect.selectedIndex]?.text || '';
-    const city = citySelect.options[citySelect.selectedIndex]?.text || '';
-    const barangay = barangaySelect.options[barangaySelect.selectedIndex]?.text || '';
+    // Only proceed if the address element exists
+    if (!addressElement) return;
+    
+    const streetAddress = streetElement ? streetElement.value : '';
+    const zipCode = zipElement ? zipElement.value : '';
+    
+    const region = regionSelect && regionSelect.selectedIndex >= 0 ? (regionSelect.options[regionSelect.selectedIndex]?.text || '') : '';
+    const province = provinceSelect && provinceSelect.selectedIndex >= 0 ? (provinceSelect.options[provinceSelect.selectedIndex]?.text || '') : '';
+    const city = citySelect && citySelect.selectedIndex >= 0 ? (citySelect.options[citySelect.selectedIndex]?.text || '') : '';
+    const barangay = barangaySelect && barangaySelect.selectedIndex >= 0 ? (barangaySelect.options[barangaySelect.selectedIndex]?.text || '') : '';
     
     // Create an array of non-empty address components
     const addressParts = [];
@@ -2567,47 +2574,66 @@ function updateCombinedAddress() {
     
     // Join the parts with commas
     const combinedAddress = addressParts.join(', ');
-    document.getElementById('deceasedAddress').value = combinedAddress;
+    addressElement.value = combinedAddress;
 }
 
 // Initialize address dropdowns when the page loads
 document.addEventListener('DOMContentLoaded', function() {
     fetchRegions();
     
-    // Set up event listeners for cascading dropdowns
-    document.getElementById('deceasedRegion').addEventListener('change', function() {
-        fetchProvinces(this.value);
-        document.getElementById('deceasedProvince').value = '';
-        document.getElementById('deceasedCity').value = '';
-        document.getElementById('deceasedBarangay').value = '';
-        document.getElementById('deceasedCity').disabled = true;
-        document.getElementById('deceasedBarangay').disabled = true;
-        updateCombinedAddress();
-    });
+    // Set up event listeners for cascading dropdowns (with null checks)
+    const deceasedRegion = document.getElementById('deceasedRegion');
+    const deceasedProvince = document.getElementById('deceasedProvince');
+    const deceasedCity = document.getElementById('deceasedCity');
+    const deceasedBarangay = document.getElementById('deceasedBarangay');
+    const deceasedStreet = document.getElementById('deceasedStreet');
+    const deceasedZip = document.getElementById('deceasedZip');
     
-    document.getElementById('deceasedProvince').addEventListener('change', function() {
-        fetchCities(this.value);
-        document.getElementById('deceasedCity').value = '';
-        document.getElementById('deceasedBarangay').value = '';
-        document.getElementById('deceasedBarangay').disabled = true;
-        updateCombinedAddress();
-    });
+    if (deceasedRegion) {
+        deceasedRegion.addEventListener('change', function() {
+            fetchProvinces(this.value);
+            if (deceasedProvince) deceasedProvince.value = '';
+            if (deceasedCity) deceasedCity.value = '';
+            if (deceasedBarangay) deceasedBarangay.value = '';
+            updateCombinedAddress();
+        });
+    }
     
-    document.getElementById('deceasedCity').addEventListener('change', function() {
-        fetchBarangays(this.value);
-        document.getElementById('deceasedBarangay').value = '';
-        updateCombinedAddress();
-    });
+    if (deceasedProvince) {
+        deceasedProvince.addEventListener('change', function() {
+            fetchCities(this.value);
+            if (deceasedCity) deceasedCity.value = '';
+            if (deceasedBarangay) deceasedBarangay.value = '';
+            updateCombinedAddress();
+        });
+    }
     
-    document.getElementById('deceasedBarangay').addEventListener('change', updateCombinedAddress);
-    document.getElementById('deceasedStreet').addEventListener('input', updateCombinedAddress);
-    document.getElementById('deceasedZip').addEventListener('input', updateCombinedAddress);
+    if (deceasedCity) {
+        deceasedCity.addEventListener('change', function() {
+            fetchBarangays(this.value);
+            if (deceasedBarangay) deceasedBarangay.value = '';
+            updateCombinedAddress();
+        });
+    }
     
-    // Also update combined address when form is submitted
-    document.getElementById('bookingForm').addEventListener('submit', function(e) {
-        updateCombinedAddress();
-        // Continue with form submission
-    });
+    if (deceasedBarangay) {
+        deceasedBarangay.addEventListener('change', updateCombinedAddress);
+    }
+    if (deceasedStreet) {
+        deceasedStreet.addEventListener('input', updateCombinedAddress);
+    }
+    if (deceasedZip) {
+        deceasedZip.addEventListener('input', updateCombinedAddress);
+    }
+    
+    // Also update combined address when form is submitted (only if form exists)
+    const bookingForm = document.getElementById('bookingForm');
+    if (bookingForm) {
+        bookingForm.addEventListener('submit', function(e) {
+            updateCombinedAddress();
+            // Continue with form submission
+        });
+    }
 });
 
 
@@ -2707,13 +2733,20 @@ function updateBeneficiaryCombinedAddress() {
     const provinceSelect = document.getElementById('beneficiaryProvince');
     const citySelect = document.getElementById('beneficiaryCity');
     const barangaySelect = document.getElementById('beneficiaryBarangay');
-    const streetAddress = document.getElementById('beneficiaryStreet').value;
-    const zipCode = document.getElementById('beneficiaryZip').value;
+    const streetElement = document.getElementById('beneficiaryStreet');
+    const zipElement = document.getElementById('beneficiaryZip');
+    const addressElement = document.getElementById('beneficiaryAddress');
     
-    const region = regionSelect.options[regionSelect.selectedIndex]?.text || '';
-    const province = provinceSelect.options[provinceSelect.selectedIndex]?.text || '';
-    const city = citySelect.options[citySelect.selectedIndex]?.text || '';
-    const barangay = barangaySelect.options[barangaySelect.selectedIndex]?.text || '';
+    // Only proceed if the address element exists
+    if (!addressElement) return;
+    
+    const streetAddress = streetElement ? streetElement.value : '';
+    const zipCode = zipElement ? zipElement.value : '';
+    
+    const region = regionSelect && regionSelect.selectedIndex >= 0 ? (regionSelect.options[regionSelect.selectedIndex]?.text || '') : '';
+    const province = provinceSelect && provinceSelect.selectedIndex >= 0 ? (provinceSelect.options[provinceSelect.selectedIndex]?.text || '') : '';
+    const city = citySelect && citySelect.selectedIndex >= 0 ? (citySelect.options[citySelect.selectedIndex]?.text || '') : '';
+    const barangay = barangaySelect && barangaySelect.selectedIndex >= 0 ? (barangaySelect.options[barangaySelect.selectedIndex]?.text || '') : '';
     
     const addressParts = [];
     if (streetAddress) addressParts.push(streetAddress);
@@ -2724,41 +2757,60 @@ function updateBeneficiaryCombinedAddress() {
     if (zipCode) addressParts.push(zipCode);
     
     const combinedAddress = addressParts.join(', ');
-    document.getElementById('beneficiaryAddress').value = combinedAddress;
+    addressElement.value = combinedAddress;
 }
 
 // Initialize beneficiary address dropdowns
 document.addEventListener('DOMContentLoaded', function() {
     fetchBeneficiaryRegions();
     
-    // Set up event listeners for beneficiary cascading dropdowns
-    document.getElementById('beneficiaryRegion').addEventListener('change', function() {
-        fetchBeneficiaryProvinces(this.value);
-        document.getElementById('beneficiaryProvince').value = '';
-        document.getElementById('beneficiaryCity').value = '';
-        document.getElementById('beneficiaryBarangay').value = '';
-        document.getElementById('beneficiaryCity').disabled = true;
-        document.getElementById('beneficiaryBarangay').disabled = true;
-        updateBeneficiaryCombinedAddress();
-    });
+    // Set up event listeners for beneficiary cascading dropdowns (with null checks)
+    const beneficiaryRegion = document.getElementById('beneficiaryRegion');
+    const beneficiaryProvince = document.getElementById('beneficiaryProvince');
+    const beneficiaryCity = document.getElementById('beneficiaryCity');
+    const beneficiaryBarangay = document.getElementById('beneficiaryBarangay');
+    const beneficiaryStreet = document.getElementById('beneficiaryStreet');
+    const beneficiaryZip = document.getElementById('beneficiaryZip');
     
-    document.getElementById('beneficiaryProvince').addEventListener('change', function() {
-        fetchBeneficiaryCities(this.value);
-        document.getElementById('beneficiaryCity').value = '';
-        document.getElementById('beneficiaryBarangay').value = '';
-        document.getElementById('beneficiaryBarangay').disabled = true;
-        updateBeneficiaryCombinedAddress();
-    });
+    if (beneficiaryRegion) {
+        beneficiaryRegion.addEventListener('change', function() {
+            fetchBeneficiaryProvinces(this.value);
+            if (beneficiaryProvince) beneficiaryProvince.value = '';
+            if (beneficiaryCity) beneficiaryCity.value = '';
+            if (beneficiaryBarangay) beneficiaryBarangay.value = '';
+            if (beneficiaryCity) beneficiaryCity.disabled = true;
+            if (beneficiaryBarangay) beneficiaryBarangay.disabled = true;
+            updateBeneficiaryCombinedAddress();
+        });
+    }
     
-    document.getElementById('beneficiaryCity').addEventListener('change', function() {
-        fetchBeneficiaryBarangays(this.value);
-        document.getElementById('beneficiaryBarangay').value = '';
-        updateBeneficiaryCombinedAddress();
-    });
+    if (beneficiaryProvince) {
+        beneficiaryProvince.addEventListener('change', function() {
+            fetchBeneficiaryCities(this.value);
+            if (beneficiaryCity) beneficiaryCity.value = '';
+            if (beneficiaryBarangay) beneficiaryBarangay.value = '';
+            if (beneficiaryBarangay) beneficiaryBarangay.disabled = true;
+            updateBeneficiaryCombinedAddress();
+        });
+    }
     
-    document.getElementById('beneficiaryBarangay').addEventListener('change', updateBeneficiaryCombinedAddress);
-    document.getElementById('beneficiaryStreet').addEventListener('input', updateBeneficiaryCombinedAddress);
-    document.getElementById('beneficiaryZip').addEventListener('input', updateBeneficiaryCombinedAddress);
+    if (beneficiaryCity) {
+        beneficiaryCity.addEventListener('change', function() {
+            fetchBeneficiaryBarangays(this.value);
+            if (beneficiaryBarangay) beneficiaryBarangay.value = '';
+            updateBeneficiaryCombinedAddress();
+        });
+    }
+    
+    if (beneficiaryBarangay) {
+        beneficiaryBarangay.addEventListener('change', updateBeneficiaryCombinedAddress);
+    }
+    if (beneficiaryStreet) {
+        beneficiaryStreet.addEventListener('input', updateBeneficiaryCombinedAddress);
+    }
+    if (beneficiaryZip) {
+        beneficiaryZip.addEventListener('input', updateBeneficiaryCombinedAddress);
+    }
 });
 
 </script>
