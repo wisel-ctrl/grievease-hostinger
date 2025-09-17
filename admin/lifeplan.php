@@ -1354,7 +1354,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Update modal content
             document.getElementById('beneficiaryName').textContent = beneficiaryName;
-            document.getElementById('monthlyAmount').textContent = '₱' + monthlyAmount;
+            document.getElementById('monthlyAmount').textContent = formatPrice(monthlyAmount);
             document.getElementById('totalPaid').textContent = '₱' + currentAmountPaid.toFixed(2);
             document.getElementById('remainingBalance').textContent = '₱' + currentBalance.toFixed(2);
             
@@ -3258,6 +3258,13 @@ document.addEventListener('DOMContentLoaded', function() {
 function toggleAddressSection(type) {
     const section = document.getElementById(`${type}AddressSection`);
     section.classList.toggle('hidden');
+}
+
+function formatPrice(amount) {
+    return "₱" + Number(amount).toLocaleString('en-PH', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
 }
 </script>
 
