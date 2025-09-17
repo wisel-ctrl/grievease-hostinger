@@ -470,9 +470,9 @@ $ongoing_services = $ongoing_data['ongoing_count'];
             <div class="flex items-center gap-3 mb-4 lg:mb-0">
                 <h4 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Recent Inventory Activity</h4>
             </div>
-            <button class="px-4 py-2 bg-sidebar-accent text-white rounded-md text-sm flex items-center hover:bg-darkgold transition-all duration-300">
+            <a href="employee_inventory.php" class="px-4 py-2 bg-sidebar-accent text-white rounded-md text-sm flex items-center hover:bg-darkgold transition-all duration-300">
                 <i class="fas fa-box mr-2"></i> Manage Inventory
-            </button>
+            </a>
         </div>
     </div>
     
