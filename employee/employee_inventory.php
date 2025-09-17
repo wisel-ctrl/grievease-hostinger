@@ -285,10 +285,19 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
       margin-left: 16rem; /* Adjust this value to match the width of your sidebar */
       width: calc(100% - 16rem); /* Ensure the main content takes up the remaining width */
       z-index: 1; /* Ensure the main content is above the sidebar */
+      transition: margin-left 0.3s ease, width 0.3s ease;
     }
 
     .sidebar {
       z-index: 10; /* Ensure the sidebar is below the main content */
+    }
+    
+    /* Mobile responsive adjustments for main content */
+    @media (max-width: 768px) {
+      .main-content {
+        margin-left: 0 !important;
+        width: 100% !important;
+      }
     }
     
     /* Ensure modals appear above sidebar */
@@ -2164,68 +2173,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-// Add this function to handle mobile sidebar toggle
-function toggleMobileSidebar() {
-  const sidebar = document.getElementById("sidebar");
-  const overlay = document.getElementById("mobile-overlay");
-  
-  if (sidebar.classList.contains("-translate-x-full")) {
-    // Show sidebar
-    sidebar.classList.remove("-translate-x-full");
-    sidebar.classList.add("translate-x-0");
-    if (overlay) {
-      overlay.classList.remove("hidden");
-    }
-  } else {
-    // Hide sidebar
-    sidebar.classList.remove("translate-x-0");
-    sidebar.classList.add("-translate-x-full");
-    if (overlay) {
-      overlay.classList.add("hidden");
-    }
-  }
-}
-
-// Initialize mobile menu functionality
-document.addEventListener('DOMContentLoaded', function() {
-  // Set up mobile hamburger menu
-  const mobileHamburger = document.getElementById('mobile-hamburger');
-  if (mobileHamburger) {
-    mobileHamburger.addEventListener('click', function(e) {
-      e.stopPropagation();
-      toggleMobileSidebar();
-    });
-  }
-  
-  // Close sidebar when clicking outside on mobile
-  document.addEventListener('click', function(event) {
-    const sidebar = document.getElementById("sidebar");
-    const mobileHamburger = document.getElementById('mobile-hamburger');
-    
-    if (window.innerWidth < 768 && 
-        sidebar && !sidebar.contains(event.target) && 
-        mobileHamburger && !mobileHamburger.contains(event.target)) {
-      sidebar.classList.remove("translate-x-0");
-      sidebar.classList.add("-translate-x-full");
-      
-      const overlay = document.getElementById("mobile-overlay");
-      if (overlay) {
-        overlay.classList.add("hidden");
-      }
-    }
-  });
-  
-  // Close sidebar when overlay is clicked
-  const overlay = document.getElementById("mobile-overlay");
-  if (overlay) {
-    overlay.addEventListener('click', function() {
-      toggleMobileSidebar();
-    });
-  }
-});
 
 </script>
-  <script src="sidebar.js"></script>
   <script src="tailwind.js"></script>
 
 
