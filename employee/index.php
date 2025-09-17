@@ -45,17 +45,60 @@ header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 
 require_once '../db_connect.php';
-  $user_id = $_SESSION['user_id'];
-  $query = "SELECT first_name , last_name , email , birthdate, branch_loc FROM users WHERE id = ?";
-  $stmt = $conn->prepare($query);
-  $stmt->bind_param("i", $user_id);
-  $stmt->execute();
-  $result = $stmt->get_result();
-  $row = $result->fetch_assoc();
-  $first_name = $row['first_name']; // We're confident user_id exists
-  $last_name = $row['last_name'];
-  $email = $row['email'];
-  $branch = $row['branch_loc'];
+
+// Function to calculate time ago
+function time_elapsed_string($datetime, $full = false) {
+    $now = new DateTime;
+    $ago = new DateTime($datetime);
+    $diff = $now->diff($ago);
+
+    // Calculate weeks separately without adding to the DateInterval object
+    $weeks = floor($diff->d / 7);
+    $days = $diff->d % 7;
+
+    $string = array(
+        'y' => 'year',
+        'm' => 'month',
+        'w' => 'week',
+        'd' => 'day',
+        'h' => 'hour',
+        'i' => 'minute',
+        's' => 'second',
+    );
+    
+    // Replace days with the remainder days
+    $diff->d = $days;
+    
+    foreach ($string as $k => &$v) {
+        if ($k === 'w') {
+            // Handle weeks separately
+            if ($weeks) {
+                $v = $weeks . ' ' . $v . ($weeks > 1 ? 's' : '');
+            } else {
+                unset($string[$k]);
+            }
+        } elseif ($diff->$k) {
+            $v = $diff->$k . ' ' . $v . ($diff->$k > 1 ? 's' : '');
+        } else {
+            unset($string[$k]);
+        }
+    }
+
+    if (!$full) $string = array_slice($string, 0, 1);
+    return $string ? implode(', ', $string) . ' ago' : 'just now';
+}
+
+$user_id = $_SESSION['user_id'];
+$query = "SELECT first_name , last_name , email , birthdate, branch_loc FROM users WHERE id = ?";
+$stmt = $conn->prepare($query);
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$row = $result->fetch_assoc();
+$first_name = $row['first_name']; // We're confident user_id exists
+$last_name = $row['last_name'];
+$email = $row['email'];
+$branch = $row['branch_loc'];
 
 // Calculate quick stats
 $current_month = date('m');
@@ -214,48 +257,218 @@ $ongoing_services = $ongoing_data['ongoing_count'];
 <?php include 'employee_sidebar.php'; ?>
 
   <!-- Main Content -->
-<div id="main-content" class="ml-64 p-6 bg-gray-50 min-h-screen transition-all duration-300 main-content">
+<div id="main-content" class="p-6 bg-gray-50 min-h-screen transition-all duration-300 ml-64 w-[calc(100%-16rem)] main-content">
   <!-- Header with breadcrumb and welcome message -->
   <div class="flex justify-between items-center mb-6 bg-white p-5 rounded-lg shadow-sidebar">
     <div>
       <h1 class="text-2xl font-bold text-sidebar-text">Employee Dashboard</h1>
-      <p class="text-sm text-gray-500">Welcome back, </p>
+      <p class="text-sm text-gray-500">
+      Welcome back, 
+      <span class="hidden md:inline">
+          <?php echo htmlspecialchars($first_name . ' ' . $last_name); ?>
+      </span>
+  </p>
     </div>
-    <div class="flex space-x-3">
-    
+<div class="flex space-x-3">
+    <!-- Notification Bell Button with improved styling -->
+    <div class="relative">
+        <?php
+        // Query for pending bookings relevant to employee's branch
+        $notificationQuery = "SELECT 
+                            b.booking_id,
+                            CONCAT(b.deceased_lname, ', ', b.deceased_fname, ' ', IFNULL(b.deceased_midname, '')) AS deceased_name,
+                            b.booking_date AS notification_date,
+                            IFNULL(s.service_name, 'Custom Package') AS service_name,
+                            'booking' AS notification_type
+                         FROM booking_tb b
+                         LEFT JOIN services_tb s ON b.service_id = s.service_id
+                         WHERE b.status = 'Pending'
+                         ORDER BY b.booking_date DESC
+                         LIMIT 10";
+        
+        $notificationResult = $conn->query($notificationQuery);
+        $employeeNotifications = [];
+        
+        if ($notificationResult && $notificationResult->num_rows > 0) {
+            while ($row = $notificationResult->fetch_assoc()) {
+                $employeeNotifications[] = $row;
+            }
+        }
+        
+        $totalPendingEmployee = count($employeeNotifications);
+        ?>
+        
+        <button id="notification-bell" class="p-2 rounded-full bg-white border border-sidebar-border shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300 relative">
+            <i class="fas fa-bell"></i>
+            <?php if ($totalPendingEmployee > 0): ?>
+            <span class="absolute -top-1 -right-1 bg-error text-white text-xs rounded-full h-5 w-5 flex items-center justify-center transform transition-all duration-300 scale-100 origin-center shadow-sm"><?php echo $totalPendingEmployee; ?></span>
+            <?php endif; ?>
+        </button>
+        
+        <!-- Improved Notification Dropdown -->
+        <div id="notifications-dropdown" class="absolute right-0 mt-3 w-96 sm:w-80 md:w-96 lg:w-96 xl:w-96 bg-white rounded-lg shadow-card border border-sidebar-border z-50 hidden transform transition-all duration-300 opacity-0 translate-y-2" style="max-height: 85vh; min-width: 280px; max-width: calc(100vw - 2rem);">
+            <style>
+                @media (max-width: 640px) {
+                    #notifications-dropdown {
+                        position: fixed !important;
+                        right: 1rem !important;
+                        left: 1rem !important;
+                        width: auto !important;
+                        max-width: none !important;
+                        margin-top: 0.5rem !important;
+                        max-height: 80vh !important;
+                    }
+                    
+                    /* Improve touch targets on mobile */
+                    #notifications-dropdown a {
+                        min-height: 44px !important;
+                    }
+                    
+                    /* Better scrolling on mobile */
+                    #notifications-dropdown .max-h-\[60vh\] {
+                        max-height: 60vh !important;
+                        -webkit-overflow-scrolling: touch;
+                    }
+                }
+                
+                @media (max-width: 480px) {
+                    #notifications-dropdown {
+                        right: 0.5rem !important;
+                        left: 0.5rem !important;
+                        margin-top: 0.25rem !important;
+                        max-height: 75vh !important;
+                    }
+                    
+                    /* Smaller max height for very small screens */
+                    #notifications-dropdown .max-h-\[60vh\] {
+                        max-height: 50vh !important;
+                    }
+                }
+                
+                /* Add line-clamp utility for text truncation */
+                .line-clamp-2 {
+                    display: -webkit-box;
+                    -webkit-line-clamp: 2;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                }
+                
+                /* Custom scrollbar for better mobile experience */
+                .scrollbar-thin::-webkit-scrollbar {
+                    width: 4px;
+                }
+                
+                .scrollbar-thin::-webkit-scrollbar-track {
+                    background: #f1f1f1;
+                    border-radius: 2px;
+                }
+                
+                .scrollbar-thin::-webkit-scrollbar-thumb {
+                    background: #c1c1c1;
+                    border-radius: 2px;
+                }
+                
+                .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+                    background: #a8a8a8;
+                }
+            </style>
+            <!-- Notifications Header with improved styling -->
+            <div class="px-3 sm:px-5 py-3 sm:py-4 border-b border-sidebar-border flex justify-between items-center bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
+                <div class="flex items-center">
+                    <div class="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-sidebar-accent bg-opacity-10 text-sidebar-accent flex items-center justify-center mr-2 sm:mr-3">
+                        <i class="fas fa-bell text-xs sm:text-sm"></i>
+                    </div>
+                    <h3 class="font-medium text-sidebar-text text-sm sm:text-base">Notifications</h3>
+                    <?php if ($totalPendingEmployee > 0): ?>
+                    <span class="ml-2 bg-error text-white text-xs rounded-full h-4 w-4 sm:h-5 sm:w-5 flex items-center justify-center text-xs"><?php echo $totalPendingEmployee; ?></span>
+                    <?php endif; ?>
+                </div>
+            </div>
+            
+            <!-- Notifications List with improved styling -->
+            <div class="max-h-[60vh] overflow-y-auto scrollbar-thin">
+                <?php
+                if ($totalPendingEmployee > 0) {
+                    foreach ($employeeNotifications as $notification) {
+                        $timeAgo = time_elapsed_string($notification['notification_date']);
+                        ?>
+                        <div class="block px-3 sm:px-5 py-3 sm:py-4 border-b border-sidebar-border hover:bg-sidebar-hover transition-all duration-300 flex items-start relative">
+                            <div class="absolute left-0 top-0 bottom-0 w-1 bg-blue-500 rounded-r"></div>
+                            <div class="flex-shrink-0 bg-blue-100 rounded-full p-1.5 sm:p-2.5 mr-2 sm:mr-4">
+                                <i class="fas fa-calendar-check text-blue-600 text-xs sm:text-sm"></i>
+                            </div>
+                            <div class="flex-grow min-w-0">
+                                <div class="flex justify-between items-start">
+                                    <p class="text-xs sm:text-sm font-semibold text-sidebar-text pr-2 truncate">New booking request</p>
+                                    <span class="h-2 w-2 sm:h-2.5 sm:w-2.5 bg-blue-600 rounded-full block flex-shrink-0 ml-1 sm:ml-2 mt-0.5 sm:mt-1"></span>
+                                </div>
+                                <p class="text-xs sm:text-sm text-gray-600 mt-1 line-clamp-2 break-words">
+                                    <?php echo htmlspecialchars($notification['deceased_name']) . ' - ' . htmlspecialchars($notification['service_name']); ?>
+                                </p>
+                                <div class="flex items-center mt-1 sm:mt-2 text-xs text-gray-400">
+                                    <i class="far fa-clock mr-1 sm:mr-1.5 text-xs"></i>
+                                    <span class="text-xs"><?php echo $timeAgo; ?></span>
+                                </div>
+                            </div>
+                        </div>
+                        <?php
+                    }
+                } else {
+                    ?>
+                    <div class="px-3 sm:px-5 py-3 sm:py-4 text-center text-gray-500">
+                        <i class="fas fa-check-circle text-green-500 text-xl sm:text-2xl mb-2"></i>
+                        <p class="text-sm sm:text-base">No pending notifications</p>
+                    </div>
+                    <?php
+                }
+                ?>
+            </div>
+        </div>
+    </div>
 </div>
 </div>
 
   <!-- Quick Stats -->
-    <div class="mb-8">
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-      <!-- Services this Month -->
-      <div class="bg-white rounded-lg shadow-sidebar p-5 border border-sidebar-border hover:shadow-card transition-all duration-300">
-        <div class="flex items-center mb-3">
-          <div class="w-12 h-12 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center mr-3">
-            <i class="fas fa-calendar-alt text-lg"></i>
-          </div>
-          <span class="text-sidebar-text font-medium">Services this Month</span>
-        </div>
-        <div class="text-3xl font-bold mb-2 text-sidebar-text"><?php echo $services_this_month; ?></div>
-        <div class="text-sm text-green-600 flex items-center">
-          <i class="fas fa-arrow-up mr-1"></i> 2% from last week
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8">
+  <!-- Services This Month Card -->
+  <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden cursor-pointer">
+    <!-- Card header with brighter gradient background -->
+    <div class="bg-gradient-to-r from-blue-100 to-blue-200 px-4 sm:px-6 py-3 sm:py-4">
+      <div class="flex items-center justify-between mb-1">
+        <h3 class="text-xs sm:text-sm font-medium text-gray-700 leading-tight">Services This Month</h3>
+        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/90 text-slate-600 flex items-center justify-center">
+          <i class="fas fa-calendar-alt text-sm sm:text-base"></i>
         </div>
       </div>
+      <div class="flex items-end">
+       <span class="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800"><?php echo $services_this_month; ?></span>
+      </div>
+    </div>
+    
+    <!-- Card footer with change indicator -->
+    <div class="px-4 sm:px-6 py-2 sm:py-3 bg-white border-t border-gray-100">
+      <div class="flex items-center text-emerald-600">
+        <i class="fas fa-arrow-up mr-1 sm:mr-1.5 text-xs"></i>
+        <span class="font-medium text-xs">2% </span>
+        <span class="text-xs text-gray-500 ml-1">from last week</span>
+      </div>
+    </div>
+  </div>
       
-      <!-- Monthly Revenue with Toggle -->
-      <div class="bg-white rounded-lg shadow-sidebar p-5 border border-sidebar-border hover:shadow-card transition-all duration-300">
-        <div class="flex items-center justify-between mb-3">
-          <div class="flex items-center">
-            <div class="w-12 h-12 rounded-lg bg-green-100 text-green-600 flex items-center justify-center mr-3">
-              <i class="fas fa-peso-sign text-lg"></i>
-            </div>
-            <span class="text-sidebar-text font-medium">Monthly Revenue</span>
+  <!-- Monthly Revenue Card -->
+  <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden cursor-pointer">
+    <!-- Card header with brighter gradient background -->
+    <div class="bg-gradient-to-r from-green-100 to-green-200 px-4 sm:px-6 py-3 sm:py-4">
+      <div class="flex items-center justify-between mb-1">
+        <h3 class="text-xs sm:text-sm font-medium text-gray-700 leading-tight">Monthly Revenue</h3>
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/90 text-green-600 flex items-center justify-center">
+            <i class="fas fa-peso-sign text-sm sm:text-base"></i>
           </div>
           <div class="relative">
-            <button id="revenue-toggle" class="p-1 bg-gray-100 rounded-full flex items-center">
-              <span id="revenue-type" class="text-xs px-2">Cash</span>
-              <i class="fas fa-chevron-down text-xs mr-1"></i>
+            <button id="revenue-toggle" class="p-1 bg-white/90 rounded-full flex items-center text-xs">
+              <span id="revenue-type" class="px-2">Cash</span>
+              <i class="fas fa-chevron-down ml-1"></i>
             </button>
             <div id="revenue-dropdown" class="absolute right-0 mt-1 w-24 bg-white rounded-md shadow-lg hidden z-10">
               <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="toggleRevenue('cash')">Cash</button>
@@ -263,134 +476,194 @@ $ongoing_services = $ongoing_data['ongoing_count'];
             </div>
           </div>
         </div>
-        <div id="cash-revenue" class="text-3xl font-bold mb-2 text-sidebar-text">₱<?php echo number_format($cash_revenue, 2); ?></div>
-        <div id="accrual-revenue" class="text-3xl font-bold mb-2 text-sidebar-text hidden">₱<?php echo number_format($accrual_revenue, 2); ?></div>
-        <div class="text-sm text-green-600 flex items-center">
-          <i class="fas fa-arrow-up mr-1"></i> 5% from yesterday
-        </div>
       </div>
-      
-      <!-- Ongoing Services -->
-      <div class="bg-white rounded-lg shadow-sidebar p-5 border border-sidebar-border hover:shadow-card transition-all duration-300">
-        <div class="flex items-center mb-3">
-          <div class="w-12 h-12 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center mr-3">
-            <i class="fas fa-tasks text-lg"></i>
-          </div>
-          <span class="text-sidebar-text font-medium">Ongoing Services</span>
-        </div>
-        <div class="text-3xl font-bold mb-2 text-sidebar-text"><?php echo $ongoing_services; ?></div>
-        <div class="text-sm text-red-600 flex items-center">
-          <i class="fas fa-arrow-down mr-1"></i> 1 task added
-        </div>
+      <div class="flex items-end">
+        <div id="cash-revenue" class="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800">₱<?php echo number_format($cash_revenue, 2); ?></div>
+        <div id="accrual-revenue" class="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 hidden">₱<?php echo number_format($accrual_revenue, 2); ?></div>
+      </div>
+    </div>
+    
+    <!-- Card footer with change indicator -->
+    <div class="px-4 sm:px-6 py-2 sm:py-3 bg-white border-t border-gray-100">
+      <div class="flex items-center text-emerald-600">
+        <i class="fas fa-arrow-up mr-1 sm:mr-1.5 text-xs"></i>
+        <span class="font-medium text-xs">5% </span>
+        <span class="text-xs text-gray-500 ml-1">from yesterday</span>
       </div>
     </div>
   </div>
+      
+  <!-- Ongoing Services Card -->
+  <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden cursor-pointer">
+    <!-- Card header with brighter gradient background -->
+    <div class="bg-gradient-to-r from-orange-100 to-orange-200 px-4 sm:px-6 py-3 sm:py-4">
+      <div class="flex items-center justify-between mb-1">
+        <h3 class="text-xs sm:text-sm font-medium text-gray-700 leading-tight">Ongoing Services</h3>
+        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/90 text-orange-600 flex items-center justify-center">
+          <i class="fas fa-tasks text-sm sm:text-base"></i>
+        </div>
+      </div>
+      <div class="flex items-end">
+        <span class="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800"><?php echo $ongoing_services; ?></span>
+      </div>
+    </div>
+    
+    <!-- Card footer with change indicator -->
+    <div class="px-4 sm:px-6 py-2 sm:py-3 bg-white border-t border-gray-100">
+      <div class="flex items-center text-rose-600">
+        <i class="fas fa-arrow-down mr-1 sm:mr-1.5 text-xs"></i>
+        <span class="font-medium text-xs">1 </span>
+        <span class="text-xs text-gray-500 ml-1">task added</span>
+      </div>
+    </div>
+  </div>
+</div>
 
   <!-- Pending Bookings Table -->
-  <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
-    <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
-      <h3 class="font-medium text-sidebar-text">Pending Bookings</h3>
+<div class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden">
+    <!-- Header Section - Made responsive with better stacking -->
+    <div class="bg-sidebar-hover p-4 border-b border-sidebar-border">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+            <div class="flex items-center gap-3 mb-4 lg:mb-0">
+                <h4 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Pending Bookings</h4>
+            </div>
+        </div>
     </div>
+    
+    <!-- Responsive Table Container with improved spacing -->
     <div class="overflow-x-auto scrollbar-thin">
-      <table class="w-full">
-        <thead>
-          <tr class="bg-sidebar-hover">
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(0)">
-              <div class="flex items-center">
-                Client Name <i class="fas fa-sort ml-1 text-gray-400"></i>
-              </div>
-            </th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(1)">
-              <div class="flex items-center">
-                Service Type <i class="fas fa-sort ml-1 text-gray-400"></i>
-              </div>
-            </th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(2)">
-              <div class="flex items-center">
-                Date <i class="fas fa-sort ml-1 text-gray-400"></i>
-              </div>
-            </th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(3)">
-              <div class="flex items-center">
-                Location <i class="fas fa-sort ml-1 text-gray-400"></i>
-              </div>
-            </th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(4)">
-              <div class="flex items-center">
-                Status <i class="fas fa-sort ml-1 text-gray-400"></i>
-              </div>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <?php
-          // Execute the pending bookings query
-          $pending_query = "SELECT 
-                              b.booking_id,
-                              COALESCE(s.service_name, 'Custom Package') AS service_name,
-                              CONCAT(u.first_name, ' ', u.middle_name, ' ', u.last_name, ' ', u.suffix) AS full_name,
-                              b.booking_date,
-                              b.deceased_address
-                            FROM booking_tb AS b
-                            JOIN users AS u ON b.customerID = u.id
-                            LEFT JOIN services_tb AS s ON b.service_id = s.service_id 
-                            WHERE b.status='Pending'";
-          
-          $stmt = $conn->prepare($pending_query);
-          $stmt->execute();
-          $pending_result = $stmt->get_result();
-          
-          if ($pending_result->num_rows > 0) {
-            while ($booking = $pending_result->fetch_assoc()) {
-              echo '<tr class="border-b border-sidebar-border hover:bg-sidebar-hover">';
-             
-              echo '<td class="p-4 text-sm text-sidebar-text">' . htmlspecialchars($booking['full_name']) . '</td>';
-              echo '<td class="p-4 text-sm text-sidebar-text">' . htmlspecialchars($booking['service_name']) . '</td>';
-              echo '<td class="p-4 text-sm text-sidebar-text">' . date('M j, Y', strtotime($booking['booking_date'])) . '</td>';
-              echo '<td class="p-4 text-sm text-sidebar-text">' . htmlspecialchars($booking['deceased_address']) . '</td>';
-              echo '<td class="p-4 text-sm">';
-              echo '<span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">Pending</span>';
-              echo '</td>';
-              echo '</tr>';
-            }
-          } else {
-            echo '<tr class="border-b border-sidebar-border hover:bg-sidebar-hover">';
-          
-          
-            echo '<td colspan="5" class="p-4 text-sm text-sidebar-text text-center">No pending bookings found</td>';
-            echo '</tr>';
-          }
-          ?>
-        </tbody>
-      </table>
+        <!-- Responsive Table with improved spacing and horizontal scroll for small screens -->
+        <div class="min-w-full">
+            <table class="w-full">
+                <thead>
+                    <tr class="bg-gray-50 border-b border-sidebar-border">
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(0)">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-user text-sidebar-accent"></i> Client Name
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(1)">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-clipboard-list text-sidebar-accent"></i> Service Type
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(2)">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-calendar text-sidebar-accent"></i> Date
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(3)">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-map-marker-alt text-sidebar-accent"></i> Location
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(4)">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-info-circle text-sidebar-accent"></i> Status
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                <?php
+                // Execute the pending bookings query
+                $pending_query = "SELECT 
+                                    b.booking_id,
+                                    COALESCE(s.service_name, 'Custom Package') AS service_name,
+                                    CONCAT(u.first_name, ' ', u.middle_name, ' ', u.last_name, ' ', u.suffix) AS full_name,
+                                    b.booking_date,
+                                    b.deceased_address
+                                  FROM booking_tb AS b
+                                  JOIN users AS u ON b.customerID = u.id
+                                  LEFT JOIN services_tb AS s ON b.service_id = s.service_id 
+                                  WHERE b.status='Pending'";
+                
+                $stmt = $conn->prepare($pending_query);
+                $stmt->execute();
+                $pending_result = $stmt->get_result();
+                
+                if ($pending_result->num_rows > 0) {
+                  while ($booking = $pending_result->fetch_assoc()) {
+                    echo '<tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">';
+                   
+                    echo '<td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">' . htmlspecialchars($booking['full_name']) . '</td>';
+                    echo '<td class="px-4 py-3.5 text-sm text-sidebar-text">' . htmlspecialchars($booking['service_name']) . '</td>';
+                    echo '<td class="px-4 py-3.5 text-sm text-sidebar-text">' . date('M j, Y', strtotime($booking['booking_date'])) . '</td>';
+                    echo '<td class="px-4 py-3.5 text-sm text-sidebar-text">' . htmlspecialchars($booking['deceased_address']) . '</td>';
+                    echo '<td class="px-4 py-3.5 text-sm">';
+                    echo '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-600 border border-yellow-200">';
+                    echo '<i class="fas fa-clock mr-1"></i> Pending';
+                    echo '</span>';
+                    echo '</td>';
+                    echo '</tr>';
+                  }
+                } else {
+                  echo '<tr>';
+                  echo '<td colspan="5" class="px-4 py-3.5 text-sm text-center text-sidebar-text">No pending bookings found</td>';
+                  echo '</tr>';
+                }
+                ?>
+            </tbody>
+            </table>
+        </div>
     </div>
-    <div class="p-4 border-t border-sidebar-border flex justify-between items-center">
-      <div class="text-sm text-gray-500">
-        Showing <?php echo $pending_result->num_rows; ?> pending bookings
-      </div>
+    
+    <!-- Sticky Pagination Footer with improved spacing -->
+    <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div class="text-sm text-gray-500 text-center sm:text-left">
+            Showing <?php echo $pending_result->num_rows; ?> pending bookings
+        </div>
     </div>
-  </div>
+</div>
 
   <!-- Recent Inventory Activity -->
-  <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
-      <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
-          <h3 class="font-medium text-sidebar-text">Recent Inventory Activity</h3>
-          <button class="px-4 py-2 bg-sidebar-accent text-white rounded-md text-sm flex items-center hover:bg-darkgold transition-all duration-300">
-              <i class="fas fa-box mr-2"></i> Manage Inventory
-          </button>
-      </div>
-      <div class="overflow-x-auto scrollbar-thin">
-          <table class="w-full">
-              <thead>
-                  <tr class="bg-sidebar-hover">
-                      
-                      <th class="p-4 text-left text-sm font-medium text-sidebar-text">Item</th>
-                      <th class="p-4 text-left text-sm font-medium text-sidebar-text">ID</th>
-                      <th class="p-4 text-left text-sm font-medium text-sidebar-text">Action</th>
-                      <th class="p-4 text-left text-sm font-medium text-sidebar-text">Date</th>
-                      <th class="p-4 text-left text-sm font-medium text-sidebar-text">Quantity</th>
-                  </tr>
-              </thead>
+<div class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden">
+    <!-- Header Section - Made responsive with better stacking -->
+    <div class="bg-sidebar-hover p-4 border-b border-sidebar-border">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+            <div class="flex items-center gap-3 mb-4 lg:mb-0">
+                <h4 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Recent Inventory Activity</h4>
+            </div>
+            <button class="px-4 py-2 bg-sidebar-accent text-white rounded-md text-sm flex items-center hover:bg-darkgold transition-all duration-300">
+                <i class="fas fa-box mr-2"></i> Manage Inventory
+            </button>
+        </div>
+    </div>
+    
+    <!-- Responsive Table Container with improved spacing -->
+    <div class="overflow-x-auto scrollbar-thin">
+        <!-- Responsive Table with improved spacing and horizontal scroll for small screens -->
+        <div class="min-w-full">
+            <table class="w-full">
+                <thead>
+                    <tr class="bg-gray-50 border-b border-sidebar-border">
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-box text-sidebar-accent"></i> Item
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-hashtag text-sidebar-accent"></i> ID
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-cog text-sidebar-accent"></i> Action
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-calendar text-sidebar-accent"></i> Date
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-sort-numeric-up text-sidebar-accent"></i> Quantity
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
               <tbody id="inventoryLogsBody">
                   <!-- Loading indicator row -->
                   <tr id="inventoryLoadingIndicator" class="border-b border-sidebar-border">
@@ -401,11 +674,15 @@ $ongoing_services = $ongoing_data['ongoing_count'];
               </tbody>
           </table>
       </div>
-      <div class="p-4 border-t border-sidebar-border flex justify-between items-center">
-          <div id="inventoryPaginationInfo" class="text-sm text-gray-500">Loading...</div>
-          <div id="paginationControls" class="flex space-x-1"></div>
-      </div>
-  </div>
+        </div>
+    </div>
+    
+    <!-- Sticky Pagination Footer with improved spacing -->
+    <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div id="inventoryPaginationInfo" class="text-sm text-gray-500 text-center sm:text-left">Loading...</div>
+        <div id="paginationControls" class="flex space-x-1"></div>
+    </div>
+</div>
 
   <!-- Footer -->
   <footer class="bg-white rounded-lg shadow-sidebar border border-sidebar-border p-4 text-center text-sm text-gray-500 mt-8">
@@ -642,7 +919,7 @@ function escapeHtml(unsafe) {
         }
 </script>
 
-<!-- Add this to your existing JavaScript at the bottom of the file -->
+<!-- Notification Bell JavaScript -->
 <script>
 // Improved notification bell functionality
 document.getElementById('notification-bell').addEventListener('click', function(event) {
@@ -667,21 +944,23 @@ document.getElementById('notification-bell').addEventListener('click', function(
   if (!dropdown.classList.contains('hidden')) {
     const notificationCounter = document.querySelector('#notification-bell > span');
     
-    // Add a slight delay before animating the counter
-    setTimeout(() => {
-      notificationCounter.classList.add('scale-75', 'opacity-50');
-      
+    if (notificationCounter) {
+      // Add a slight delay before animating the counter
       setTimeout(() => {
-        notificationCounter.textContent = '0';
-        notificationCounter.classList.add('scale-0');
+        notificationCounter.classList.add('scale-75', 'opacity-50');
         
         setTimeout(() => {
-          if (notificationCounter.textContent === '0') {
-            notificationCounter.classList.add('hidden');
-          }
-        }, 300);
-      }, 500);
-    }, 2000);
+          notificationCounter.textContent = '0';
+          notificationCounter.classList.add('scale-0');
+          
+          setTimeout(() => {
+            if (notificationCounter.textContent === '0') {
+              notificationCounter.classList.add('hidden');
+            }
+          }, 300);
+        }, 500);
+      }, 2000);
+    }
   }
 });
 
@@ -700,11 +979,14 @@ document.addEventListener('click', function(event) {
 });
 
 // Add smooth transitions for notification counter badge
-document.querySelector('#notification-bell > span').classList.add('transition-all', 'duration-300');
+const notificationBadge = document.querySelector('#notification-bell > span');
+if (notificationBadge) {
+  notificationBadge.classList.add('transition-all', 'duration-300');
+}
 
 // Add animation to new notifications - subtle pulse effect
 document.addEventListener('DOMContentLoaded', function() {
-  const unreadIndicators = document.querySelectorAll('#notifications-dropdown .bg-blue-600, #notifications-dropdown .bg-yellow-600, #notifications-dropdown .bg-green-600');
+  const unreadIndicators = document.querySelectorAll('#notifications-dropdown .bg-blue-600');
   
   unreadIndicators.forEach(indicator => {
     setInterval(() => {
