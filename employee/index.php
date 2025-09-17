@@ -215,6 +215,11 @@ $ongoing_services = $ongoing_data['ongoing_count'];
 
   <!-- Main Content -->
 <div id="main-content" class="ml-64 p-6 bg-gray-50 min-h-screen transition-all duration-300 main-content">
+  <!-- Mobile Hamburger Menu -->
+  <button id="mobile-hamburger" class="lg:hidden p-3 bg-sidebar-bg rounded-xl shadow-card text-sidebar-text hover:text-sidebar-accent hover:bg-sidebar-hover transition-all duration-300 mb-4 sm:mb-6">
+    <i class="fas fa-bars text-lg"></i>
+  </button>
+  
   <!-- Header with breadcrumb and welcome message -->
   <div class="flex justify-between items-center mb-6 bg-white p-5 rounded-lg shadow-sidebar">
     <div>
@@ -711,6 +716,12 @@ document.addEventListener('DOMContentLoaded', function() {
       }, 500);
     }, 3000);
   });
+});
+
+// Sidebar toggle for mobile
+document.getElementById('mobile-hamburger').addEventListener('click', function() {
+    const sidebar = document.getElementById('sidebar');
+    sidebar.classList.toggle('-translate-x-full');
 });
 </script>
 </body>
