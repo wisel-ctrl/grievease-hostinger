@@ -109,135 +109,179 @@ $user_id = $_SESSION['user_id'];
     .sidebar-link.active::before {
       background-color: #CA8A04;
     }
-    
-    /* Animate the sidebar
-    @keyframes slideIn {
-      from { transform: translateX(-100%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
-    }
-    
-    .animate-sidebar {
-      animation: slideIn 0.3s ease forwards;
-    } */
 
     /* Gradient background for menu section headers */
     .menu-header {
       background: linear-gradient(to right, rgba(202, 138, 4, 0.1), transparent);
     }
-    /* Add this to your existing styles */
-.main-content {
-  margin-left: 16rem; /* Adjust this value to match the width of your sidebar */
-  width: calc(100% - 16rem); /* Ensure the main content takes up the remaining width */
-  z-index: 1; /* Ensure the main content is above the sidebar */
-}
+    
+    /* Responsive main content container */
+    .main-content {
+      margin-left: 16rem;
+      width: calc(100% - 16rem);
+      z-index: 1;
+      transition: margin-left 0.3s ease, width 0.3s ease;
+    }
 
-.sidebar {
-  z-index: 10; /* Ensure the sidebar is below the main content */
-}
-/* Add this to your existing styles */
-#sidebar {
-  transition: width 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
-}
+    .sidebar {
+      z-index: 10;
+    }
+    
+    /* Sidebar responsive transitions */
+    #sidebar {
+      transition: width 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
+    }
 
-#main-content {
-  transition: margin-left 0.3s ease;
-}
+    #main-content {
+      transition: margin-left 0.3s ease, width 0.3s ease;
+    }
 
-.w-0 {
-  width: 0;
-}
+    .w-0 {
+      width: 0;
+    }
 
-.opacity-0 {
-  opacity: 0;
-}
+    .opacity-0 {
+      opacity: 0;
+    }
 
-.invisible {
-  visibility: hidden;
-}
-.w-\[calc\(100\%-16rem\)\] {
-  width: calc(100% - 16rem);
-}
+    .invisible {
+      visibility: hidden;
+    }
+    
+    .w-\[calc\(100\%-16rem\)\] {
+      width: calc(100% - 16rem);
+    }
 
-.w-\[calc\(100\%-4rem\)\] {
-  width: calc(100% - 4rem);
-}
+    .w-\[calc\(100\%-4rem\)\] {
+      width: calc(100% - 4rem);
+    }
+    
+    /* Mobile responsive styles */
+    @media (max-width: 768px) {
+      .main-content {
+        margin-left: 0;
+        width: 100%;
+      }
+      
+      #main-content {
+        margin-left: 0 !important;
+        width: 100% !important;
+      }
+      
+      .w-\[calc\(100\%-16rem\)\] {
+        width: 100% !important;
+      }
+      
+      /* Mobile-friendly touch targets */
+      .mobile-touch-target {
+        min-height: 44px;
+        min-width: 44px;
+      }
+      
+      /* Mobile table scrolling */
+      .mobile-table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      
+      /* Mobile modal adjustments */
+      .mobile-modal {
+        margin: 1rem;
+        max-height: calc(100vh - 2rem);
+        overflow-y: auto;
+      }
+    }
+    
+    /* Tablet responsive styles */
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .main-content {
+        margin-left: 16rem;
+        width: calc(100% - 16rem);
+      }
+    }
 
 /* Add to your existing styles */
 #archivedAccountsModal table {
     width: 100%;
     border-collapse: collapse;
-}
-
-#archivedAccountsModal th, 
-#archivedAccountsModal td {
+  }
+  
+  #archivedAccountsModal th, 
+  #archivedAccountsModal td {
     padding: 12px 15px;
     text-align: left;
     border-bottom: 1px solid #e2e8f0;
-}
-
-#archivedAccountsModal tr:hover {
+  }
+  
+  #archivedAccountsModal tr:hover {
     background-color: #f7fafc;
-}
-
-#archivedAccountsModal .max-h-\[60vh\] {
+  }
+  
+  #archivedAccountsModal .max-h-\[60vh\] {
     max-height: 60vh;
-}
-
-#searchContainer {
-  position: relative;
-  width: 300px;
-}
-
-#searchCustomer {
-  padding-right: 30px;
-  width: 100%;
-}
-
-#clearSearchBtn {
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 5px;
-  z-index: 10;
-}
-
-/* Loading indicator for search */
-.search-loading::after {
-  content: "";
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 16px;
-  height: 16px;
-  border: 2px solid rgba(202, 138, 4, 0.2);
-  border-top: 2px solid #CA8A04;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: translateY(-50%) rotate(0deg); }
-  100% { transform: translateY(-50%) rotate(360deg); }
-}
-
-.availability-indicator {
-        position: absolute;
-        right: 10px;
-        top: 50%;
-        transform: translateY(-50%);
-        font-size: 0.75rem;
-        display: flex;
-        align-items: center;
+  }
+  
+  #searchContainer {
+    position: relative;
+    width: 100%;
+  }
+  
+  @media (min-width: 640px) {
+    #searchContainer {
+      width: 300px;
     }
-    .availability-indicator i {
-        margin-right: 4px;
-    }
-    
+  }
+  
+  #searchCustomer {
+    padding-right: 30px;
+    width: 100%;
+  }
+  
+  #clearSearchBtn {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    z-index: 10;
+  }
+
+  /* Loading indicator for search */
+  .search-loading::after {
+    content: "";
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(202, 138, 4, 0.2);
+    border-top: 2px solid #CA8A04;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: translateY(-50%) rotate(0deg); }
+    100% { transform: translateY(-50%) rotate(360deg); }
+  }
+
+  .availability-indicator {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+  }
+  .availability-indicator i {
+    margin-right: 4px;
+  }
+  
   </style>
 </head>
 <body class="flex bg-gray-50">
@@ -245,30 +289,28 @@ $user_id = $_SESSION['user_id'];
 <?php include 'employee_sidebar.php'; ?>
 
   <!-- Main Content -->
-<div id="main-content" class="ml-64 p-6 bg-gray-50 min-h-screen transition-all duration-300 main-content">
+<div id="main-content" class="ml-64 w-[calc(100%-16rem)] p-4 sm:p-6 bg-gray-50 min-h-screen transition-all duration-300 main-content">
   <!-- Header with breadcrumb and welcome message -->
-  <div class="flex justify-between items-center mb-6 bg-white p-5 rounded-lg shadow-sidebar">
-    <div>
-      <h1 class="text-2xl font-bold text-sidebar-text">Customer Account Management</h1>
+  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 bg-white p-4 sm:p-5 rounded-lg shadow-sidebar gap-3 sm:gap-0">
+    <div class="flex-1">
+      <h1 class="text-xl sm:text-2xl font-bold text-sidebar-text">Customer Account Management</h1>
     </div>
-    <div class="flex space-x-3">
-      <button class="p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
-        <i class="fas fa-bell"></i>
+    <div class="flex space-x-2 sm:space-x-3">
+      <button class="mobile-touch-target p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
+        <i class="fas fa-bell text-sm sm:text-base"></i>
       </button>
-       
     </div>
   </div>
 
   <!-- Mode Selector -->
-  <div class="flex justify-start mb-6">
-      <div class="bg-gray-100 rounded-lg overflow-hidden inline-flex">
+  <div class="flex justify-start mb-4 sm:mb-6">
+      <div class="bg-gray-100 rounded-lg overflow-hidden inline-flex w-full sm:w-auto">
         <!-- Manage Accounts button first -->
-        <button id="manageBtn" onclick="switchMode('manage')" class="py-2 px-5 border-none bg-sidebar-accent text-white font-semibold cursor-pointer hover:bg-darkgold transition-all duration-300">Manage Accounts</button>
+        <button id="manageBtn" onclick="switchMode('manage')" class="flex-1 sm:flex-none py-2 sm:py-2 px-3 sm:px-5 border-none bg-sidebar-accent text-white font-semibold cursor-pointer hover:bg-darkgold transition-all duration-300 text-sm sm:text-base mobile-touch-target">Manage Accounts</button>
         <!-- Create Account button second -->
-        <button id="createBtn" onclick="switchMode('create')" class="py-2 px-5 border-none bg-transparent text-sidebar-text cursor-pointer hover:bg-sidebar-hover transition-all duration-300">Create Account</button>
+        <button id="createBtn" onclick="switchMode('create')" class="flex-1 sm:flex-none py-2 sm:py-2 px-3 sm:px-5 border-none bg-transparent text-sidebar-text cursor-pointer hover:bg-sidebar-hover transition-all duration-300 text-sm sm:text-base mobile-touch-target">Create Account</button>
       </div>
-      
-    </div>
+  </div>
 
 <!-- Add Customer Account Form (Non-Modal Version) -->
 <div id="createAccountSection" class="hidden">
@@ -557,13 +599,13 @@ function validateBirthdate() {
 
   <!-- Manage Customer Accounts Section -->
 <div id="manageAccountSection">
-    <div class="bg-white rounded-lg shadow-sidebar p-5 mb-6 border border-sidebar-border hover:shadow-card transition-all duration-300">
-        <div class="mb-5 flex items-center">
-            <h3 class="text-lg font-semibold text-sidebar-text">Customer Accounts</h3>
-            <div class="ml-auto flex items-center space-x-3">
-                <div id="searchContainer" class="relative">
+    <div class="bg-white rounded-lg shadow-sidebar p-4 sm:p-5 mb-4 sm:mb-6 border border-sidebar-border hover:shadow-card transition-all duration-300">
+        <div class="mb-4 sm:mb-5 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-0">
+            <h3 class="text-lg font-semibold text-sidebar-text flex-shrink-0">Customer Accounts</h3>
+            <div class="w-full sm:ml-auto flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
+                <div id="searchContainer" class="relative flex-1 sm:flex-none sm:w-64">
                     <input type="text" id="searchCustomer" placeholder="Search customers..." 
-                           class="p-2 border border-sidebar-border rounded-md text-sm text-sidebar-text focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent w-full"
+                           class="mobile-touch-target p-2 sm:p-2 border border-sidebar-border rounded-md text-sm text-sidebar-text focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent w-full"
                            oninput="let value = this.value;
                                     // Remove multiple consecutive spaces
                                     let cleanedValue = value.replace(/\s+/g, ' ');
@@ -593,22 +635,40 @@ function validateBirthdate() {
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
-                <button id="viewArchivedBtn" onclick="viewArchivedAccounts()" class="bg-yellow-600 text-white border-none py-2 px-4 rounded-md cursor-pointer hover:bg-darkgold transition-all duration-300">
-                    <i class="fas fa-archive mr-2"></i>Archived
+                <button id="viewArchivedBtn" onclick="viewArchivedAccounts()" class="mobile-touch-target bg-yellow-600 text-white border-none py-2 px-3 sm:px-4 rounded-md cursor-pointer hover:bg-darkgold transition-all duration-300 text-sm sm:text-base whitespace-nowrap">
+                    <i class="fas fa-archive mr-1 sm:mr-2"></i><span class="hidden sm:inline">Archived</span><span class="sm:hidden">Archive</span>
                 </button>
             </div>
         </div>
-        <div class="p-5">
-            <div class="overflow-x-auto scrollbar-thin">
-                <table id="customerTable" class="w-full border-collapse min-w-[600px]">
+        <div class="p-3 sm:p-5">
+            <div class="mobile-table-container overflow-x-auto scrollbar-thin">
+                <table id="customerTable" class="w-full border-collapse min-w-[700px]">
                     <thead>
                         <tr class="bg-sidebar-hover text-left">
-                            <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Customer ID</th>
-                            <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Name</th>
-                            <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Email</th>
-                            <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Type</th>
-                            <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Status</th>
-                            <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Actions</th>
+                            <th class="p-2 sm:p-3 border-b border-sidebar-border text-xs sm:text-sm font-medium text-sidebar-text">
+                                <i class="fas fa-id-card mr-1 sm:mr-2 text-sidebar-accent"></i>
+                                <span class="hidden sm:inline">Customer ID</span><span class="sm:hidden">ID</span>
+                            </th>
+                            <th class="p-2 sm:p-3 border-b border-sidebar-border text-xs sm:text-sm font-medium text-sidebar-text">
+                                <i class="fas fa-user mr-1 sm:mr-2 text-sidebar-accent"></i>
+                                Name
+                            </th>
+                            <th class="p-2 sm:p-3 border-b border-sidebar-border text-xs sm:text-sm font-medium text-sidebar-text hidden sm:table-cell">
+                                <i class="fas fa-envelope mr-1 sm:mr-2 text-sidebar-accent"></i>
+                                Email
+                            </th>
+                            <th class="p-2 sm:p-3 border-b border-sidebar-border text-xs sm:text-sm font-medium text-sidebar-text hidden md:table-cell">
+                                <i class="fas fa-tag mr-1 sm:mr-2 text-sidebar-accent"></i>
+                                Type
+                            </th>
+                            <th class="p-2 sm:p-3 border-b border-sidebar-border text-xs sm:text-sm font-medium text-sidebar-text">
+                                <i class="fas fa-circle mr-1 sm:mr-2 text-sidebar-accent"></i>
+                                Status
+                            </th>
+                            <th class="p-2 sm:p-3 border-b border-sidebar-border text-xs sm:text-sm font-medium text-sidebar-text">
+                                <i class="fas fa-cogs mr-1 sm:mr-2 text-sidebar-accent"></i>
+                                Actions
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -616,46 +676,46 @@ function validateBirthdate() {
                     </tbody>
                 </table>
             </div>
-            <div class="mt-5 bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
-    <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
-        Loading customer accounts...
-    </div>
-    <div id="paginationContainer" class="flex space-x-2">
-        <!-- JavaScript will populate this -->
-    </div>
-</div>
+            <div class="mt-3 sm:mt-5 bottom-0 left-0 right-0 px-3 sm:px-4 py-3 sm:py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-4">
+                <div id="paginationInfo" class="text-xs sm:text-sm text-gray-500 text-center sm:text-left order-2 sm:order-1">
+                    Loading customer accounts...
+                </div>
+                <div id="paginationContainer" class="flex flex-wrap justify-center sm:justify-end gap-1 sm:gap-2 order-1 sm:order-2">
+                    <!-- JavaScript will populate this -->
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
     <!-- Customer Details Modal -->
-    <div id="customerModal" class="hidden fixed z-50 inset-0 overflow-auto bg-black bg-opacity-40">
-      <div class="bg-white mx-auto my-[10%] p-5 border border-gray-300 w-4/5 max-w-3xl rounded-lg shadow-lg">
-        <div class="flex justify-between items-center mb-5 border-b border-gray-300 pb-3">
-          <h3 id="modalTitle" class="m-0 text-lg font-semibold">Customer Details</h3>
-          <span onclick="closeModal()" class="cursor-pointer text-2xl">&times;</span>
+    <div id="customerModal" class="hidden fixed z-50 inset-0 overflow-auto bg-black bg-opacity-40 p-4">
+      <div class="bg-white mx-auto my-4 sm:my-[10%] p-4 sm:p-5 border border-gray-300 w-full sm:w-4/5 max-w-3xl rounded-lg shadow-lg mobile-modal">
+        <div class="flex justify-between items-center mb-4 sm:mb-5 border-b border-gray-300 pb-3">
+          <h3 id="modalTitle" class="m-0 text-base sm:text-lg font-semibold">Customer Details</h3>
+          <span onclick="closeModal()" class="cursor-pointer text-xl sm:text-2xl mobile-touch-target">&times;</span>
         </div>
-        <div id="modalContent">
+        <div id="modalContent" class="max-h-[60vh] overflow-y-auto">
           <!-- Content will be dynamically populated -->
         </div>
-        <div class="mt-5 text-right border-t border-gray-300 pt-4">
-          <button onclick="closeModal()" class="bg-gray-600 text-white border-none py-2 px-4 rounded-md cursor-pointer">Close</button>
-          <button id="modalActionButton" class="bg-blue-600 text-white border-none py-2 px-4 rounded-md ml-3 cursor-pointer">Save Changes</button>
+        <div class="mt-4 sm:mt-5 flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 border-t border-gray-300 pt-4">
+          <button onclick="closeModal()" class="mobile-touch-target bg-gray-600 text-white border-none py-2 px-4 rounded-md cursor-pointer text-sm sm:text-base">Close</button>
+          <button id="modalActionButton" class="mobile-touch-target bg-blue-600 text-white border-none py-2 px-4 rounded-md cursor-pointer text-sm sm:text-base">Save Changes</button>
         </div>
       </div>
     </div>
 
     <!-- Delete Confirmation Modal -->
-    <div id="deleteModal" class="hidden fixed z-50 inset-0 overflow-auto bg-black bg-opacity-40">
-      <div class="bg-white mx-auto my-[15%] p-5 border border-gray-300 w-[400px] rounded-lg shadow-lg">
-        <div class="text-center mb-5">
-          <i class="fas fa-exclamation-triangle text-5xl text-red-600"></i>
-          <h3 class="mt-4 text-lg font-semibold">Confirm Deletion</h3>
-          <p class="text-gray-600">Are you sure you want to delete this customer account? This action cannot be undone.</p>
+    <div id="deleteModal" class="hidden fixed z-50 inset-0 overflow-auto bg-black bg-opacity-40 p-4">
+      <div class="bg-white mx-auto my-8 sm:my-[15%] p-4 sm:p-5 border border-gray-300 w-full max-w-sm sm:w-[400px] rounded-lg shadow-lg mobile-modal">
+        <div class="text-center mb-4 sm:mb-5">
+          <i class="fas fa-exclamation-triangle text-4xl sm:text-5xl text-red-600"></i>
+          <h3 class="mt-3 sm:mt-4 text-base sm:text-lg font-semibold">Confirm Deletion</h3>
+          <p class="text-sm sm:text-base text-gray-600 mt-2">Are you sure you want to delete this customer account? This action cannot be undone.</p>
         </div>
-        <div class="flex justify-center gap-3">
-          <button onclick="closeDeleteModal()" class="bg-gray-600 text-white border-none py-2 px-4 rounded-md cursor-pointer">Cancel</button>
-          <button onclick="deleteCustomer()" class="bg-red-600 text-white border-none py-2 px-4 rounded-md cursor-pointer">Delete</button>
+        <div class="flex flex-col sm:flex-row justify-center gap-2 sm:gap-3">
+          <button onclick="closeDeleteModal()" class="mobile-touch-target bg-gray-600 text-white border-none py-2 px-4 rounded-md cursor-pointer text-sm sm:text-base">Cancel</button>
+          <button onclick="deleteCustomer()" class="mobile-touch-target bg-red-600 text-white border-none py-2 px-4 rounded-md cursor-pointer text-sm sm:text-base">Delete</button>
         </div>
       </div>
     </div>
@@ -663,35 +723,35 @@ function validateBirthdate() {
   
 <!-- OTP Verification Modal -->
 <div id="otpVerificationModal" class="fixed inset-0 bg-black bg-opacity-60 z-[9999] hidden overflow-y-auto flex items-center justify-center p-4 overscroll-contain [will-change:transform]">
-  <div class="bg-white relative z-[10000] rounded-xl shadow-xl w-full max-w-md mx-2">
+  <div class="bg-white relative z-[10000] rounded-xl shadow-xl w-full max-w-md mx-2 mobile-modal">
     <!-- Modal Header -->
-    <div class="bg-gradient-to-r from-sidebar-accent to-white flex justify-between items-center p-6 flex-shrink-0 rounded-t-xl">
-      <h3 class="text-xl font-bold text-white"><i class="fas fa-shield-alt"></i> Email Verification</h3>
-      <button onclick="closeOtpModal()" class="bg-black bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 text-white hover:text-white transition-all duration-200">
+    <div class="bg-gradient-to-r from-sidebar-accent to-white flex justify-between items-center p-4 sm:p-6 flex-shrink-0 rounded-t-xl">
+      <h3 class="text-lg sm:text-xl font-bold text-white"><i class="fas fa-shield-alt mr-2"></i> Email Verification</h3>
+      <button onclick="closeOtpModal()" class="mobile-touch-target bg-black bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 text-white hover:text-white transition-all duration-200">
         <i class="fas fa-times"></i>
       </button>
     </div>
     
-    <div class="p-6">
-      <p class="text-gray-700 mb-4">A verification code has been sent to <span id="otpEmail" class="font-medium"></span>. Please enter the code below.</p>
-      <div class="flex justify-center gap-2 mb-4">
-        <input type="text" class="otp-input w-12 h-12 border border-gray-300 rounded-md text-center text-xl font-bold" maxlength="1" autocomplete="off">
-        <input type="text" class="otp-input w-12 h-12 border border-gray-300 rounded-md text-center text-xl font-bold" maxlength="1" autocomplete="off">
-        <input type="text" class="otp-input w-12 h-12 border border-gray-300 rounded-md text-center text-xl font-bold" maxlength="1" autocomplete="off">
-        <input type="text" class="otp-input w-12 h-12 border border-gray-300 rounded-md text-center text-xl font-bold" maxlength="1" autocomplete="off">
-        <input type="text" class="otp-input w-12 h-12 border border-gray-300 rounded-md text-center text-xl font-bold" maxlength="1" autocomplete="off">
-        <input type="text" class="otp-input w-12 h-12 border border-gray-300 rounded-md text-center text-xl font-bold" maxlength="1" autocomplete="off">
+    <div class="p-4 sm:p-6">
+      <p class="text-sm sm:text-base text-gray-700 mb-4">A verification code has been sent to <span id="otpEmail" class="font-medium"></span>. Please enter the code below.</p>
+      <div class="flex justify-center gap-1 sm:gap-2 mb-4">
+        <input type="text" class="otp-input w-10 h-10 sm:w-12 sm:h-12 border border-gray-300 rounded-md text-center text-lg sm:text-xl font-bold mobile-touch-target" maxlength="1" autocomplete="off">
+        <input type="text" class="otp-input w-10 h-10 sm:w-12 sm:h-12 border border-gray-300 rounded-md text-center text-lg sm:text-xl font-bold mobile-touch-target" maxlength="1" autocomplete="off">
+        <input type="text" class="otp-input w-10 h-10 sm:w-12 sm:h-12 border border-gray-300 rounded-md text-center text-lg sm:text-xl font-bold mobile-touch-target" maxlength="1" autocomplete="off">
+        <input type="text" class="otp-input w-10 h-10 sm:w-12 sm:h-12 border border-gray-300 rounded-md text-center text-lg sm:text-xl font-bold mobile-touch-target" maxlength="1" autocomplete="off">
+        <input type="text" class="otp-input w-10 h-10 sm:w-12 sm:h-12 border border-gray-300 rounded-md text-center text-lg sm:text-xl font-bold mobile-touch-target" maxlength="1" autocomplete="off">
+        <input type="text" class="otp-input w-10 h-10 sm:w-12 sm:h-12 border border-gray-300 rounded-md text-center text-lg sm:text-xl font-bold mobile-touch-target" maxlength="1" autocomplete="off">
       </div>
-      <div id="otpError" class="text-red-500 text-center text-sm mb-4 hidden"></div>
-      <p class="text-sm text-gray-500 text-center">Didn't receive the code? <button type="button" onclick="resendOTP()" class="text-sidebar-accent hover:underline">Resend</button></p>
+      <div id="otpError" class="text-red-500 text-center text-xs sm:text-sm mb-4 hidden"></div>
+      <p class="text-xs sm:text-sm text-gray-500 text-center">Didn't receive the code? <button type="button" onclick="resendOTP()" class="text-sidebar-accent hover:underline mobile-touch-target">Resend</button></p>
     </div>
     
     <!-- Modal Footer -->
-    <div class="p-6 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white rounded-b-xl">
-      <button onclick="closeOtpModal()" class="px-5 py-3 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-semibold hover:bg-navy transition-colors">
+    <div class="p-4 sm:p-6 flex flex-col sm:flex-row justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white rounded-b-xl">
+      <button onclick="closeOtpModal()" class="mobile-touch-target px-4 sm:px-5 py-2 sm:py-3 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-semibold hover:bg-navy transition-colors text-sm sm:text-base">
         Cancel
       </button>
-      <button id="verifyOtpBtn" onclick="verifyOTP()" class="px-6 py-3 bg-sidebar-accent text-white rounded-lg font-semibold hover:bg-darkgold transition-colors flex items-center">
+      <button id="verifyOtpBtn" onclick="verifyOTP()" class="mobile-touch-target px-5 sm:px-6 py-2 sm:py-3 bg-sidebar-accent text-white rounded-lg font-semibold hover:bg-darkgold transition-colors flex items-center justify-center text-sm sm:text-base">
         <i class="fas fa-check-circle mr-2"></i> Verify
       </button>
     </div>
