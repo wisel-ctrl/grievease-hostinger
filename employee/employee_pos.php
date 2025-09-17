@@ -511,7 +511,9 @@ $servicesJson = json_encode($allServices);
                 </label>
                 <input type="email" id="clientEmail" name="clientEmail" 
                        class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                       oninput="validateEmail(this)">
+                       oninput="validateEmail(this)"
+                       onkeypress="return preventSpaceInEmail(event)"
+                       onpaste="handleEmailPaste(event, this)">
                 <div class="text-xs text-red-500 mt-1 hidden" id="clientEmail-error">Please enter a valid email address</div>
               </div>
             </div>
@@ -872,13 +874,20 @@ function handlePhonePaste(event) {
 // Email validation
 function validateEmail(input) {
   const errorElement = document.getElementById(`${input.id}-error`);
-  const value = input.value.trim();
+  let value = input.value;
+  
+  // Remove any spaces from the input value
+  if (value.includes(' ')) {
+    value = value.replace(/\s/g, '');
+    input.value = value;
+  }
   
   // Basic email validation
   const isValid = value === '' || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
   
-  if (!isValid) {
+  if (!isValid && value !== '') {
     errorElement.classList.remove('hidden');
+    errorElement.textContent = "Please enter a valid email address (no spaces allowed)";
     return false;
   } else {
     errorElement.classList.add('hidden');
@@ -1280,9 +1289,10 @@ document.getElementById('deceasedRegion').addEventListener('change', function() 
                 <input type="email" id="lp-clientEmail" name="lp-Email" 
                        class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
                        oninput="validateEmailInput(this)"
+                       onkeypress="return preventSpaceInEmail(event)"
                        onpaste="cleanPastedEmail(this, event)"
                        pattern="[^@\s]+@[^@\s]+\.[^@\s]+"
-                       title="Please enter a valid email address">
+                       title="Please enter a valid email address (no spaces allowed)">
                 <div class="text-xs text-red-500 mt-1 hidden" id="lp-clientEmail-error">Please enter a valid email address</div>
               </div>
             </div>
@@ -1649,11 +1659,19 @@ function cleanPastedPhone(input, event) {
 // Email validation
 function validateEmailInput(input) {
   const errorElement = document.getElementById(`${input.id}-error`);
+  let value = input.value;
+  
+  // Remove any spaces from the input value
+  if (value.includes(' ')) {
+    value = value.replace(/\s/g, '');
+    input.value = value;
+  }
+  
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   
-  if (input.value.length > 0 && !emailRegex.test(input.value)) {
+  if (value.length > 0 && !emailRegex.test(value)) {
     errorElement.classList.remove('hidden');
-    errorElement.textContent = "Please enter a valid email address";
+    errorElement.textContent = "Please enter a valid email address (no spaces allowed)";
   } else {
     errorElement.classList.add('hidden');
   }
@@ -1671,6 +1689,31 @@ function cleanPastedEmail(input, event) {
   
   // Trigger validation
   validateEmailInput(input);
+}
+
+// Prevent space input in email fields
+function preventSpaceInEmail(event) {
+  // Prevent space character (keyCode 32) from being entered
+  if (event.keyCode === 32 || event.which === 32) {
+    event.preventDefault();
+    return false;
+  }
+  return true;
+}
+
+// Handle email paste events for the first email input
+function handleEmailPaste(event, input) {
+  event.preventDefault();
+  const pastedText = (event.clipboardData || window.clipboardData).getData('text');
+  
+  // Remove spaces from pasted email
+  const cleanedText = pastedText.replace(/\s/g, '');
+  
+  // Insert the cleaned text
+  document.execCommand('insertText', false, cleanedText);
+  
+  // Trigger validation
+  validateEmail(input);
 }
 
 // Street address validation
