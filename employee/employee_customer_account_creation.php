@@ -455,33 +455,18 @@ function validateName(input, errorElementId) {
   // Remove multiple consecutive spaces
   cleanedValue = cleanedValue.replace(/\s+/g, ' ');
   
-  // For middle name, don't allow space unless there are at least 2 characters
-  if (errorElementId === 'middleNameError') {
-    // If user tries to add space before having 2 characters, remove it
-    if (cleanedValue.length <= 2 && cleanedValue.includes(' ')) {
-      cleanedValue = cleanedValue.replace(/\s/g, '');
-    }
-    // Only allow one space maximum for middle name
-    const spaceCount = (cleanedValue.match(/\s/g) || []).length;
-    if (spaceCount > 1) {
-      // Keep only the first space
-      const firstSpaceIndex = cleanedValue.indexOf(' ');
-      cleanedValue = cleanedValue.substring(0, firstSpaceIndex + 1) + cleanedValue.substring(firstSpaceIndex + 1).replace(/\s/g, '');
-    }
-  }
+  // Capitalize first letter of each word
+  cleanedValue = cleanedValue.toLowerCase().replace(/(?:^|\s)\S/g, function(a) {
+    return a.toUpperCase();
+  });
   
   // If this is a required field (first or last name)
   const isRequired = errorElementId === 'firstNameError' || errorElementId === 'lastNameError';
   
   // For required fields, don't allow space unless there are at least 2 characters
-  if (isRequired && cleanedValue.length <= 2 && cleanedValue.includes(' ')) {
-    cleanedValue = cleanedValue.replace(/\s/g, '');
+  if (isRequired && cleanedValue.length === 1 && cleanedValue === ' ') {
+    cleanedValue = '';
   }
-  
-  // Capitalize first letter of each word
-  cleanedValue = cleanedValue.toLowerCase().replace(/(?:^|\s)\S/g, function(a) {
-    return a.toUpperCase();
-  });
   
   // Update the input value
   input.value = cleanedValue;
@@ -497,15 +482,7 @@ function validateName(input, errorElementId) {
     }
   }
   
-  // For optional fields (middle name) - validate if not empty
-  if (errorElementId === 'middleNameError' && cleanedValue.trim().length > 0) {
-    if (cleanedValue.trim().length < 2) {
-      errorElement.textContent = 'Middle name must be at least 2 characters';
-      errorElement.classList.remove('hidden');
-      return false;
-    }
-  }
-  
+  // For optional fields (middle name)
   errorElement.classList.add('hidden');
   return true;
 }
@@ -516,10 +493,10 @@ function validateName(input, errorElementId) {
 // Phone number validation
 function validatePhoneNumber(input) {
   const errorElement = document.getElementById('phoneError');
-  let phone = input.value;
+  let phone = input.value.trim();
   
-  // Remove any non-digit characters (letters, symbols, spaces)
-  phone = phone.replace(/[^0-9]/g, '');
+  // Remove any non-digit characters
+  phone = phone.replace(/\D/g, '');
   
   // Update the input value (only digits)
   input.value = phone;
@@ -748,38 +725,16 @@ function validateLastName() {
 function validateMiddleName() {
     const middleNameInput = document.getElementById('middleName');
     const middleNameError = document.getElementById('middleNameError');
-    let middleName = middleNameInput.value;
-    
-    // Clean input: remove numbers and symbols, keep only letters and single spaces
-    let cleanedValue = middleName.replace(/[^a-zA-Z\s]/g, '');
-    
-    // Remove multiple consecutive spaces
-    cleanedValue = cleanedValue.replace(/\s+/g, ' ');
-    
-    // Don't allow space unless there are at least 2 characters
-    if (cleanedValue.length <= 2 && cleanedValue.includes(' ')) {
-        cleanedValue = cleanedValue.replace(/\s/g, '');
-    }
-    
-    // Only allow one space maximum
-    const spaceCount = (cleanedValue.match(/\s/g) || []).length;
-    if (spaceCount > 1) {
-        const firstSpaceIndex = cleanedValue.indexOf(' ');
-        cleanedValue = cleanedValue.substring(0, firstSpaceIndex + 1) + cleanedValue.substring(firstSpaceIndex + 1).replace(/\s/g, '');
-    }
-    
-    // Capitalize first letter of each word
-    cleanedValue = cleanedValue.toLowerCase().replace(/(?:^|\s)\S/g, function(a) {
-        return a.toUpperCase();
-    });
-    
-    // Update the input value
-    middleNameInput.value = cleanedValue;
-    
-    // Validate if not empty
-    if (cleanedValue.trim() !== '') {
-        if (cleanedValue.trim().length < 2) {
-            middleNameError.textContent = 'Middle name must be at least 2 characters';
+    const middleName = middleNameInput.value.trim();
+    const nameRegex = /^[A-Za-z]*$/;
+
+    if (middleName !== '') {
+        if (!nameRegex.test(middleName)) {
+            middleNameError.textContent = 'Middle name must contain only letters (A-Z, a-z)';
+            middleNameError.classList.remove('hidden');
+            return false;
+        } else if (middleName.length === 1) {
+            middleNameError.textContent = 'Middle name must be at least 2 letters or empty';
             middleNameError.classList.remove('hidden');
             return false;
         }
@@ -1808,25 +1763,9 @@ const modalHTML = `
                     <div class="relative">
                         <input type="text" name="middle_name" value="${data.user.middle_name || ''}" 
                                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                               oninput="let cleanedValue = this.value.replace(/[^A-Za-z ]/g, '').replace(/\s{2,}/g, ' ');
-                                        if (cleanedValue.length <= 2 && cleanedValue.includes(' ')) {
-                                            cleanedValue = cleanedValue.replace(/\s/g, '');
-                                        }
-                                        const spaceCount = (cleanedValue.match(/\s/g) || []).length;
-                                        if (spaceCount > 1) {
-                                            const firstSpaceIndex = cleanedValue.indexOf(' ');
-                                            cleanedValue = cleanedValue.substring(0, firstSpaceIndex + 1) + cleanedValue.substring(firstSpaceIndex + 1).replace(/\s/g, '');
-                                        }
-                                        this.value = cleanedValue.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');"
-                               onpaste="let text = event.clipboardData.getData('text/plain').replace(/[^A-Za-z ]/g, '').replace(/\s{2,}/g, ' ');
-                                        if (text.length <= 2 && text.includes(' ')) {
-                                            text = text.replace(/\s/g, '');
-                                        }
-                                        const spaceCount = (text.match(/\s/g) || []).length;
-                                        if (spaceCount > 1) {
-                                            const firstSpaceIndex = text.indexOf(' ');
-                                            text = text.substring(0, firstSpaceIndex + 1) + text.substring(firstSpaceIndex + 1).replace(/\s/g, '');
-                                        }
+                               oninput="this.value = this.value.replace(/[^A-Za-z ]/g, '').replace(/\s{2,}/g, ' ');
+                                        this.value = this.value.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');"
+                               onpaste="const text = event.clipboardData.getData('text/plain').replace(/[^A-Za-z ]/g, '').replace(/\s{2,}/g, ' ');
                                         event.preventDefault();
                                         const selection = window.getSelection();
                                         if (!selection.rangeCount) return;
