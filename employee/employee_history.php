@@ -205,11 +205,6 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
       <div>
         <h1 class="text-2xl font-bold text-sidebar-text">Service History</h1>
       </div>
-      <div class="flex space-x-3">
-        <button class="p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
-          <i class="fas fa-bell"></i>
-        </button>
-      </div>
     </div>
 
     <!-- Tabs Navigation -->
@@ -5097,11 +5092,51 @@ let ongoingSearchTerm = '';
 // Add this to your existing script
 let searchDebounceTimer;
 
+// Universal input validation function for search bars
+function validateSearchInput(event) {
+    const input = event.target;
+    let value = input.value;
+    
+    // Remove multiple consecutive spaces
+    value = value.replace(/\s{2,}/g, ' ');
+    
+    // If input has less than 2 characters, remove any spaces
+    if (value.replace(/\s/g, '').length < 2) {
+        value = value.replace(/\s/g, '');
+    }
+    
+    // Update the input value if it was modified
+    if (input.value !== value) {
+        const cursorPosition = input.selectionStart;
+        input.value = value;
+        // Restore cursor position, accounting for removed characters
+        const newPosition = Math.min(cursorPosition, value.length);
+        input.setSelectionRange(newPosition, newPosition);
+    }
+}
+
 // Load data when page loads
 document.addEventListener('DOMContentLoaded', function() {
     loadOngoingServices(currentOngoingPage);
+    
+    // Apply validation to all search input fields
+    const searchInputs = [
+        'searchOngoing',
+        'searchFullyPaid', 
+        'searchOutstanding',
+        'searchCustomOngoing',
+        'searchCustomFullyPaid',
+        'searchCustomOutstanding',
+        'editCustomerSearch'
+    ];
+    
+    searchInputs.forEach(inputId => {
+        const input = document.getElementById(inputId);
+        if (input) {
+            input.addEventListener('input', validateSearchInput);
+        }
+    });
 });
-
 
 // Debounce function to prevent too many AJAX calls while typing
 function debounceSearch() {
