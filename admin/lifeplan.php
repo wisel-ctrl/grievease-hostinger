@@ -1481,6 +1481,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Submit payment handler - Integrated version
     submitPaymentBtn.addEventListener('click', function() {
+      const amount = parseFloat(document.getElementById('paymentAmount').value);
 
       // Validation: Check if payment amount exceeds current balance
       if (amount > currentBalance) {
@@ -1502,7 +1503,6 @@ document.addEventListener('DOMContentLoaded', function() {
           cancelButtonText: 'Cancel'
       }).then((result) => {
           if (result.isConfirmed) {
-              const amount = parseFloat(document.getElementById('paymentAmount').value);
               const date = document.getElementById('paymentDate').value;
               const notes = document.getElementById('paymentNotes').value;
               
