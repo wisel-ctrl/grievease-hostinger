@@ -293,6 +293,14 @@ $servicesJson = json_encode($allServices);
   </style>
 </head>
 <body class="flex bg-gray-50">
+  <!-- Mobile hamburger menu button (add this line) -->
+  <button id="mobile-hamburger" class="fixed top-4 left-4 z-50 p-2 bg-white rounded-lg shadow-md text-gray-600 hover:text-gray-900 md:hidden transition-all duration-300">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <!-- Mobile overlay (add this line) -->
+  <div id="mobile-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden md:hidden transition-opacity duration-300"></div>
+
   <!-- Modify the sidebar structure to include a dedicated space for the hamburger menu -->
 <?php include 'employee_sidebar.php'; ?>
 
