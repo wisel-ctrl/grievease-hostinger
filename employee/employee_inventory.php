@@ -1177,6 +1177,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
     </div>
   </div>
 </div>
+</div>
 
 
 
