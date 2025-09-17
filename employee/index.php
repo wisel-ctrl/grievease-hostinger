@@ -7,19 +7,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    /* Custom styles */
-    .sidebar-bg { background-color: #1E293B; }
-    .sidebar-border { border-color: #334155; }
-    .sidebar-text { color: #F8FAFC; }
-    .sidebar-hover { background-color: #F1F5F9; }
-    .sidebar-accent { color: #CA8A04; }
-    .darkgold { background-color: #B7791F; }
-    .navy { background-color: #0F172A; }
-    .primary { background-color: #1E40AF; }
-    .success { background-color: #10B981; }
-    .error { color: #EF4444; }
-    .shadow-sidebar { box-shadow: 2px 0 10px rgba(0,0,0,0.1); }
-    
     /* Custom scrollbar styles */
     .scrollbar-thin::-webkit-scrollbar {
       width: 4px;
