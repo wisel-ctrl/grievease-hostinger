@@ -290,6 +290,29 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
     .sidebar {
       z-index: 10; /* Ensure the sidebar is below the main content */
     }
+    
+    /* Ensure modals appear above sidebar */
+    #archivedItemsModal,
+    #addInventoryModal,
+    #editInventoryModal {
+      z-index: 60 !important;
+    }
+    
+    /* Ensure modal content has proper z-index */
+    #archivedItemsModal > div:last-child,
+    #addInventoryModal > div:last-child,
+    #editInventoryModal > div:last-child {
+      z-index: 70 !important;
+    }
+    
+    /* Define custom z-index values */
+    .z-60 {
+      z-index: 60;
+    }
+    
+    .z-70 {
+      z-index: 70;
+    }
     /* Add this to your existing styles */
     #sidebar {
       transition: width 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
@@ -350,12 +373,12 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
 </head>
 <body class="flex bg-gray-50">
     <!-- Archived Inventory Items Modal -->
-<div id="archivedItemsModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
+<div id="archivedItemsModal" class="fixed inset-0 z-60 flex items-center justify-center hidden overflow-y-auto">
   <!-- Modal Backdrop -->
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm" onclick="closeArchivedModal()"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-4xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-4xl mx-4 sm:mx-auto z-70 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
     <!-- Close Button -->
     <button type="button" class="absolute top-4 right-4 text-gray-500 hover:text-sidebar-accent transition-colors" onclick="closeArchivedModal()">
       <i class="fas fa-times"></i>
@@ -402,12 +425,12 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
 </div>
 
 <!-- Add New Inventory Item Modal -->
-<div id="addInventoryModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
+<div id="addInventoryModal" class="fixed inset-0 z-60 flex items-center justify-center hidden overflow-y-auto">
   <!-- Modal Backdrop -->
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm" onclick="closeAddInventoryModal()"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-70 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
     <!-- Close Button -->
     <button type="button" class="absolute top-4 right-4 text-gray-500 hover:text-sidebar-accent transition-colors" onclick="closeAddInventoryModal()">
       <i class="fas fa-times"></i>
@@ -529,12 +552,12 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
 </div>
 
 <!-- Edit Inventory Item Modal -->
-<div id="editInventoryModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
+<div id="editInventoryModal" class="fixed inset-0 z-60 flex items-center justify-center hidden overflow-y-auto">
   <!-- Modal Backdrop -->
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm" onclick="closeEditInventoryModal()"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-md mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-md mx-4 sm:mx-auto z-70 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
     <!-- Close Button -->
     <button type="button" class="absolute top-4 right-4 text-gray-500 hover:text-sidebar-accent transition-colors" onclick="closeEditInventoryModal()">
       <i class="fas fa-times"></i>
