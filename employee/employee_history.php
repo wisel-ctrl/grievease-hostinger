@@ -205,11 +205,6 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
       <div>
         <h1 class="text-2xl font-bold text-sidebar-text">Service History</h1>
       </div>
-      <div class="flex space-x-3">
-        <button class="p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
-          <i class="fas fa-bell"></i>
-        </button>
-      </div>
     </div>
 
     <!-- Tabs Navigation -->
