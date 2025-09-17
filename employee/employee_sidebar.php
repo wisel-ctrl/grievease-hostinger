@@ -432,9 +432,31 @@ function toggleMobileSidebar() {
   console.log("Current sidebar classes:", sidebar.className);
   
   if (sidebar.classList.contains("-translate-x-full")) {
-    // Show sidebar
+    // Show sidebar - ensure it's full width and visible
     sidebar.classList.remove("-translate-x-full");
     sidebar.classList.add("translate-x-0");
+    // Ensure sidebar is full width on mobile
+    sidebar.classList.remove("w-16");
+    sidebar.classList.add("w-64");
+    
+    // Show all sidebar content
+    document.querySelectorAll(".sidebar-link span").forEach(el => {
+      el.classList.remove("hidden");
+    });
+    document.querySelectorAll(".menu-header").forEach(el => {
+      el.classList.remove("hidden");
+    });
+    document.querySelectorAll("#sidebar > div:first-child > *:not(#hamburger-menu)").forEach(el => {
+      el.classList.remove("hidden");
+    });
+    document.querySelectorAll("#sidebar > div:nth-child(2) > div:not(:first-child)").forEach(el => {
+      el.classList.remove("hidden");
+    });
+    document.querySelectorAll(".sidebar-link").forEach(el => {
+      el.classList.remove("justify-center", "px-0");
+      el.classList.add("px-5");
+    });
+    
     if (overlay) {
       overlay.classList.remove("hidden");
     }
@@ -576,6 +598,9 @@ document.addEventListener("DOMContentLoaded", function() {
     // On mobile, start with hidden sidebar
     sidebar.classList.add("-translate-x-full");
     sidebar.classList.remove("translate-x-0");
+    // Ensure sidebar is full width when it shows on mobile
+    sidebar.classList.remove("w-16");
+    sidebar.classList.add("w-64");
     
     // Show the mobile hamburger and hide the in-sidebar one
     if (mobileMenuBtn) {
@@ -588,6 +613,7 @@ document.addEventListener("DOMContentLoaded", function() {
     // On desktop, start with expanded sidebar
     sidebar.classList.remove("-translate-x-full");
     sidebar.classList.add("translate-x-0");
+    sidebar.classList.add("w-64");
     
     // Hide mobile hamburger and show the in-sidebar one
     if (mobileMenuBtn) {
@@ -639,22 +665,22 @@ document.addEventListener("DOMContentLoaded", function() {
     
     @media (max-width: 768px) {
       #sidebar {
-        position: fixed;
+        position: fixed !important;
         top: 0;
         left: 0;
-        height: 100%;
+        height: 100vh !important;
         width: 16rem !important;
-        z-index: 50;
-        transform: translateX(0);
-        background-color: white; /* Reinforced background for mobile */
+        z-index: 50 !important;
+        background-color: white !important;
+        box-shadow: 2px 0 10px rgba(0,0,0,0.1) !important;
       }
       
       #sidebar.translate-x-0 {
-        transform: translateX(0);
+        transform: translateX(0) !important;
       }
       
       #sidebar.-translate-x-full {
-        transform: translateX(-100%);
+        transform: translateX(-100%) !important;
       }
       
       #main-content {
@@ -670,6 +696,17 @@ document.addEventListener("DOMContentLoaded", function() {
       /* Show mobile hamburger on mobile */
       #mobile-hamburger {
         display: block !important;
+      }
+      
+      /* Ensure mobile overlay covers everything */
+      #mobile-overlay {
+        position: fixed !important;
+        top: 0;
+        left: 0;
+        width: 100vw !important;
+        height: 100vh !important;
+        background-color: rgba(0, 0, 0, 0.5) !important;
+        z-index: 40 !important;
       }
     }
     
@@ -703,10 +740,12 @@ window.addEventListener('resize', function() {
     if (hamburgerMenu) hamburgerMenu.style.display = "none";
     if (mobileMenuBtn) mobileMenuBtn.style.display = "block";
     
-    // Ensure sidebar is hidden initially on mobile
+    // Ensure sidebar is hidden initially on mobile and full width
     if (sidebar) {
       sidebar.classList.add('-translate-x-full');
       sidebar.classList.remove('translate-x-0');
+      sidebar.classList.remove("w-16");
+      sidebar.classList.add("w-64");
     }
     // Hide overlay on mobile when resizing
     if (overlay) {
@@ -721,6 +760,7 @@ window.addEventListener('resize', function() {
     if (sidebar) {
       sidebar.classList.remove('-translate-x-full');
       sidebar.classList.add('translate-x-0');
+      sidebar.classList.add("w-64");
     }
     // Always hide overlay on desktop
     if (overlay) {
