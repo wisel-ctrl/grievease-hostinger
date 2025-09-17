@@ -389,7 +389,8 @@ $ongoing_services = $ongoing_data['ongoing_count'];
             }
           } else {
             echo '<tr class="border-b border-sidebar-border hover:bg-sidebar-hover">';
-            echo '<td colspan="5" class="p-3 sm:p-4 text-xs sm:text-sm text-sidebar-text text-center">No pending bookings found</td>';
+            echo '<td colspan="4" class="p-3 sm:p-4 text-xs sm:text-sm text-sidebar-text text-center sm:hidden">No pending bookings found</td>';
+            echo '<td colspan="5" class="hidden sm:table-cell p-3 sm:p-4 text-xs sm:text-sm text-sidebar-text text-center">No pending bookings found</td>';
             echo '</tr>';
           }
           ?>
