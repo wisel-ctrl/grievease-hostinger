@@ -2668,102 +2668,122 @@ function unarchiveAccount(userId) {
 
   </script>
 
-  <script src="sidebar.js"></script>
   <script src="tailwind.js"></script>
   <script>
-// Mobile sidebar toggle functionality
+// Override the sidebar.js mobile functionality with our own
 document.addEventListener('DOMContentLoaded', function() {
-  // Get all elements once at the top level
-  const sidebar = document.getElementById("sidebar");
-  const overlay = document.getElementById("mobile-overlay");
-  const mobileMenuBtn = document.getElementById('mobile-hamburger');
-  
-  // Set initial state for mobile
-  if (window.innerWidth < 768) {
-    if (sidebar) {
-      sidebar.classList.add('-translate-x-full');
-      sidebar.classList.remove('translate-x-0');
-      sidebar.classList.add('w-64'); // Ensure full width for mobile
-      sidebar.classList.remove('w-16');
-    }
-    if (overlay) {
-      overlay.classList.add('hidden');
-    }
-  }
-  
-  // Add event listener to mobile hamburger if it exists
-  if (mobileMenuBtn) {
-    mobileMenuBtn.addEventListener('click', function() {
-      if (sidebar.classList.contains("-translate-x-full")) {
-        // Show sidebar - ensure full width on mobile
-        sidebar.classList.remove("-translate-x-full");
-        sidebar.classList.add("translate-x-0");
-        // Ensure sidebar is full width on mobile
-        sidebar.classList.remove("w-16");
-        sidebar.classList.add("w-64");
-        if (overlay) {
-          overlay.classList.remove("hidden");
+  // Wait a bit for sidebar.js to load, then override its functionality
+  setTimeout(function() {
+    // Get all elements
+    const sidebar = document.getElementById("sidebar");
+    const overlay = document.getElementById("mobile-overlay");
+    const mobileMenuBtn = document.getElementById('mobile-hamburger');
+    
+    console.log('Initializing mobile menu override...');
+    console.log('Sidebar:', sidebar);
+    console.log('Overlay:', overlay);
+    console.log('Mobile button:', mobileMenuBtn);
+    
+    // Remove any existing event listeners by cloning the button
+    if (mobileMenuBtn) {
+      const newMobileMenuBtn = mobileMenuBtn.cloneNode(true);
+      mobileMenuBtn.parentNode.replaceChild(newMobileMenuBtn, mobileMenuBtn);
+      
+      // Add our own event listener
+      newMobileMenuBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        console.log('Mobile hamburger clicked - our handler');
+        console.log('Sidebar classes before:', sidebar.className);
+        
+        if (sidebar.classList.contains("-translate-x-full")) {
+          // Show sidebar
+          sidebar.classList.remove("-translate-x-full");
+          sidebar.classList.add("translate-x-0");
+          sidebar.classList.remove("w-16");
+          sidebar.classList.add("w-64");
+          if (overlay) {
+            overlay.classList.remove("hidden");
+          }
+          console.log('Showing sidebar');
+        } else {
+          // Hide sidebar
+          sidebar.classList.remove("translate-x-0");
+          sidebar.classList.add("-translate-x-full");
+          if (overlay) {
+            overlay.classList.add("hidden");
+          }
+          console.log('Hiding sidebar');
         }
-      } else {
-        // Hide sidebar
-        sidebar.classList.remove("translate-x-0");
-        sidebar.classList.add("-translate-x-full");
-        if (overlay) {
-          overlay.classList.add("hidden");
-        }
-      }
-    });
-  }
-  
-  // Close sidebar when clicking outside on mobile
-  document.addEventListener('click', function(event) {
-    if (window.innerWidth < 768 && 
-        sidebar && !sidebar.contains(event.target) && 
-        (!mobileMenuBtn || !mobileMenuBtn.contains(event.target))) {
-      sidebar.classList.remove('translate-x-0');
-      sidebar.classList.add('-translate-x-full');
-      if (overlay) {
-        overlay.classList.add('hidden');
-      }
+        
+        console.log('Sidebar classes after:', sidebar.className);
+      });
     }
-  });
-  
-  // Close sidebar when overlay is clicked
-  if (overlay) {
-    overlay.addEventListener('click', function() {
-      if (window.innerWidth < 768) {
-        sidebar.classList.remove('translate-x-0');
-        sidebar.classList.add('-translate-x-full');
-        overlay.classList.add('hidden');
-      }
-    });
-  }
-  
-  // Handle window resize to ensure proper mobile behavior
-  window.addEventListener('resize', function() {
-    if (window.innerWidth >= 768) {
-      // Desktop: show sidebar and hide overlay
+    
+    // Set initial state for mobile
+    if (window.innerWidth < 768) {
       if (sidebar) {
-        sidebar.classList.remove('-translate-x-full');
-        sidebar.classList.add('translate-x-0');
+        sidebar.classList.add('-translate-x-full');
+        sidebar.classList.remove('translate-x-0');
         sidebar.classList.add('w-64');
         sidebar.classList.remove('w-16');
       }
       if (overlay) {
         overlay.classList.add('hidden');
       }
-    } else {
-      // Mobile: hide sidebar initially
-      if (sidebar && !sidebar.classList.contains('translate-x-0')) {
-        sidebar.classList.add('-translate-x-full');
-        sidebar.classList.remove('translate-x-0');
-      }
-      if (overlay) {
-        overlay.classList.add('hidden');
-      }
     }
-  });
+    
+    // Close sidebar when clicking outside on mobile
+    document.addEventListener('click', function(event) {
+      if (window.innerWidth < 768 && 
+          sidebar && !sidebar.contains(event.target) && 
+          !event.target.closest('#mobile-hamburger')) {
+        sidebar.classList.remove('translate-x-0');
+        sidebar.classList.add('-translate-x-full');
+        if (overlay) {
+          overlay.classList.add('hidden');
+        }
+      }
+    });
+    
+    // Close sidebar when overlay is clicked
+    if (overlay) {
+      overlay.addEventListener('click', function() {
+        sidebar.classList.remove('translate-x-0');
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+      });
+    }
+    
+    // Handle window resize
+    window.addEventListener('resize', function() {
+      if (window.innerWidth >= 768) {
+        // Desktop: show sidebar and hide overlay
+        if (sidebar) {
+          sidebar.classList.remove('-translate-x-full');
+          sidebar.classList.add('translate-x-0');
+          sidebar.classList.add('w-64');
+          sidebar.classList.remove('w-16');
+        }
+        if (overlay) {
+          overlay.classList.add('hidden');
+        }
+      } else {
+        // Mobile: hide sidebar initially
+        if (sidebar && !sidebar.classList.contains('translate-x-0')) {
+          sidebar.classList.add('-translate-x-full');
+          sidebar.classList.remove('translate-x-0');
+        }
+        if (overlay) {
+          overlay.classList.add('hidden');
+        }
+      }
+    });
+    
+  }, 100); // Small delay to ensure sidebar.js has loaded
 });
 </script>
+<script src="sidebar.js"></script>
 </body>
 </html>
