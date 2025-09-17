@@ -1465,7 +1465,7 @@ $total_lifeplan_pages = ceil($total_lifeplan_bookings / $lifeplan_bookings_per_p
         <input type="hidden" id="bookingIdForDecline" name="bookingId">
         
         <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Reason for Declining</label>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Common Reason for Declining</label>
           
           <!-- Suggested Reasons -->
           <div class="grid grid-cols-2 gap-2 mb-4">
@@ -1939,7 +1939,7 @@ $total_lifeplan_pages = ceil($total_lifeplan_bookings / $lifeplan_bookings_per_p
         <input type="hidden" id="customBookingIdForDecline" name="bookingId">
         
         <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Reason for Declining</label>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Common Reason for Declining</label>
           
           <!-- Suggested Reasons -->
           <div class="grid grid-cols-2 gap-2 mb-4">
@@ -2381,7 +2381,7 @@ $total_lifeplan_pages = ceil($total_lifeplan_bookings / $lifeplan_bookings_per_p
         <input type="hidden" id="lifeplanIdForDecline" name="lifeplanId">
         
         <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Reason for Declining</label>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Common Reason for Declining</label>
           
           <!-- Suggested Reasons -->
           <div class="grid grid-cols-2 gap-2 mb-4">
