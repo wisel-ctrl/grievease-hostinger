@@ -18,7 +18,7 @@ function sanitizeInput($input) {
 $requiredFields = [
     'employeeId', 'firstName', 'lastName', 'dateOfBirth', 
     'gender', 'employeeEmail', 'employeePhone', 
-    'employeePosition', 'paymentStructure', 'branch'
+    'employeePosition', 'editPaymentStructure', 'branch'
 ];
 
 foreach ($requiredFields as $field) {
@@ -40,7 +40,7 @@ $gender = in_array($_POST['gender'], ['Male', 'Female']) ? $_POST['gender'] : nu
 $email = filter_input(INPUT_POST, 'employeeEmail', FILTER_VALIDATE_EMAIL);
 $phoneNumber = $_POST['employeePhone'];
 $position = sanitizeInput($_POST['employeePosition']);
-$paymentStructure = in_array($_POST['paymentStructure'], ['monthly', 'commission', 'both']) ? $_POST['paymentStructure'] : null;
+$paymentStructure = in_array($_POST['editPaymentStructure'], ['monthly', 'commission', 'both']) ? $_POST['editPaymentStructure'] : null;
 $branchId = filter_input(INPUT_POST, 'branch', FILTER_VALIDATE_INT);
 
 // Validate salary fields based on payment structure
