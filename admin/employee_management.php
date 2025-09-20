@@ -550,7 +550,7 @@ echo "</tr>";
             <p id="employeeName" class="text-sm font-medium text-gray-800">-</p>
           </div>
           <div class="flex-1 px-1">
-            <p class="text-xs font-medium text-gray-500">Base Salary</p>
+            <p class="text-xs font-medium text-gray-500">Commission compensation</p>
             <p id="employeeBaseSalary" class="text-sm font-medium text-gray-800">-</p>
           </div>
           <div class="flex-1 px-1" id="monthlySalaryContainer" style="display: none;">
@@ -594,7 +594,7 @@ echo "</tr>";
               <p id="totalEarnings" class="text-lg font-bold text-green-600">₱0.00</p>
             </div>
             <div class="flex-1 px-1">
-              <p class="text-xs font-medium text-gray-500">Base Salary</p>
+              <p class="text-xs font-medium text-gray-500">Salary</p>
               <p id="modalBaseSalary" class="text-lg font-bold text-blue-600">₱0.00</p>
             </div>
           </div>
