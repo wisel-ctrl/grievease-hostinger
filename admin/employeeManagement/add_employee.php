@@ -21,9 +21,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $bday = sanitizeInput($_POST['dateOfBirth']);
     $position = sanitizeInput($_POST['employeePosition']);
     $phone_number = sanitizeInput($_POST['employeePhone']);
+    $pay_structure = sanitizeInput($_POST['paymentStructure']);
     $email = sanitizeInput($_POST['employeeEmail']);
     $branch_id = sanitizeInput($_POST['branch']);
-    $base_salary = sanitizeInput($_POST['employeeSalary']);
+    $base_salary = !empty($_POST['commissionSalary']) ? sanitizeInput($_POST['commissionSalary']) : NULL;
+    $monthly_salary = !empty($_POST['monthlySalary']) ? sanitizeInput($_POST['monthlySalary']) : NULL;
 
     // Validate inputs (add more robust validation as needed)
     $errors = [];
@@ -49,15 +51,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Prepare SQL statement
             $sql = "INSERT INTO employee_tb (
                 fname, mname, lname, suffix, gender, bday, 
-                position, phone_number, email, branch_id, base_salary
+                position, phone_number, email, branch_id, base_salary, pay_structure, monthly_salary
             ) VALUES (
-                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
             )";
 
             // Prepare and bind parameters
             $stmt = $conn->prepare($sql);
             $stmt->bind_param(
-                "sssssssssid", 
+                "sssssssssidsd", 
                 $fname, 
                 $mname, 
                 $lname, 
@@ -68,7 +70,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $phone_number, 
                 $email, 
                 $branch_id, 
-                $base_salary
+                $base_salary,
+                $pay_structure,
+                $monthly_salary
             );
 
             // Execute the statement
