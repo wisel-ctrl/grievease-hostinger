@@ -18,7 +18,7 @@ function sanitizeInput($input) {
 $requiredFields = [
     'employeeId', 'firstName', 'lastName', 'dateOfBirth', 
     'gender', 'employeeEmail', 'employeePhone', 
-    'employeePosition', 'employeeSalary', 'branch'
+    'employeePosition', 'paymentStructure', 'branch'
 ];
 
 foreach ($requiredFields as $field) {
@@ -40,13 +40,59 @@ $gender = in_array($_POST['gender'], ['Male', 'Female']) ? $_POST['gender'] : nu
 $email = filter_input(INPUT_POST, 'employeeEmail', FILTER_VALIDATE_EMAIL);
 $phoneNumber = $_POST['employeePhone'];
 $position = sanitizeInput($_POST['employeePosition']);
-$salary = filter_input(INPUT_POST, 'employeeSalary', FILTER_VALIDATE_FLOAT);
+$paymentStructure = in_array($_POST['paymentStructure'], ['monthly', 'commission', 'both']) ? $_POST['paymentStructure'] : null;
 $branchId = filter_input(INPUT_POST, 'branch', FILTER_VALIDATE_INT);
+
+// Validate salary fields based on payment structure
+$monthlySalary = null;
+$commissionSalary = null;
+
+if ($paymentStructure === 'monthly' || $paymentStructure === 'both') {
+    if (!isset($_POST['monthlySalary']) || empty($_POST['monthlySalary'])) {
+        $response['message'] = "Monthly salary is required for the selected payment structure";
+        echo json_encode($response);
+        exit();
+    }
+    $monthlySalary = filter_input(INPUT_POST, 'monthlySalary', FILTER_VALIDATE_FLOAT);
+    if ($monthlySalary === false || $monthlySalary <= 0) {
+        $response['message'] = "Invalid monthly salary amount";
+        echo json_encode($response);
+        exit();
+    }
+}
+
+if ($paymentStructure === 'commission' || $paymentStructure === 'both') {
+    if (!isset($_POST['commissionSalary']) || empty($_POST['commissionSalary'])) {
+        $response['message'] = "Commission salary is required for the selected payment structure";
+        echo json_encode($response);
+        exit();
+    }
+    $commissionSalary = filter_input(INPUT_POST, 'commissionSalary', FILTER_VALIDATE_FLOAT);
+    if ($commissionSalary === false || $commissionSalary <= 0) {
+        $response['message'] = "Invalid commission salary amount";
+        echo json_encode($response);
+        exit();
+    }
+}
+
+// Set base_salary based on payment structure
+$baseSalary = null; // Default to NULL
+
+if ($paymentStructure === 'monthly') {
+    // For monthly-only, base_salary is NULL (as requested)
+    $baseSalary = null;
+} elseif ($paymentStructure === 'commission') {
+    // For commission-only, store commission amount in base_salary
+    $baseSalary = $commissionSalary;
+} elseif ($paymentStructure === 'both') {
+    // For "both" payment structure, store commission amount in base_salary
+    $baseSalary = $commissionSalary;
+}
 
 // Validate data
 if (!$employeeId || !$firstName || !$lastName || !$dateOfBirth || 
     !$gender || !$email || !$phoneNumber || !$position || 
-    $salary === false || !$branchId) {
+    !$paymentStructure || !$branchId) {
     $response['message'] = 'Invalid input data';
     echo json_encode($response);
     exit();
@@ -64,15 +110,17 @@ try {
             email = ?, 
             phone_number = ?, 
             position = ?, 
+            pay_structure = ?, 
+            monthly_salary = ?, 
             base_salary = ?, 
             branch_id = ?
             WHERE employeeID = ?";
     
     $stmt = $conn->prepare($sql);
     
-    // Bind parameters
+    // Bind parameters - note the change in type definition string
     $stmt->bind_param(
-        "sssssssssdii", 
+        "ssssssssssddii", 
         $firstName, 
         $lastName, 
         $middleName, 
@@ -82,7 +130,9 @@ try {
         $email, 
         $phoneNumber, 
         $position, 
-        $salary, 
+        $paymentStructure, 
+        $monthlySalary, 
+        $baseSalary, 
         $branchId,
         $employeeId
     );
@@ -110,3 +160,4 @@ try {
 header('Content-Type: application/json');
 echo json_encode($response);
 exit();
+?>
