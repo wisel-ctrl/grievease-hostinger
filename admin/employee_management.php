@@ -1620,119 +1620,138 @@ function terminateEmployee(employeeId) {
 </script>
 
   <script src="script.js"></script>
-  <script>
-      document.addEventListener('DOMContentLoaded', function() {
-          // Get the form elements
-          const dateOfBirthInput = document.getElementById('dateOfBirth');
-          const employeeSalaryInput = document.getElementById('employeeSalary');
-          const addEmployeeForm = document.getElementById('addEmployeeAccountForm');
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Get the form elements
+    const dateOfBirthInput = document.getElementById('dateOfBirth');
+    const employeeSalaryInput = document.getElementById('employeeSalary');
+    const addEmployeeForm = document.getElementById('addEmployeeAccountForm');
 
-          // Set max date for birthdate (18 years ago)
-          const today = new Date();
-          const minDate = new Date();
-          minDate.setFullYear(today.getFullYear() - 18);
-          const minDateString = minDate.toISOString().split('T')[0];
-          dateOfBirthInput.max = minDateString;
+    // Set max date for birthdate (18 years ago)
+    const today = new Date();
+    const minDate = new Date();
+    minDate.setFullYear(today.getFullYear() - 18);
+    const minDateString = minDate.toISOString().split('T')[0];
+    dateOfBirthInput.max = minDateString;
 
-          // Validate birthdate on change
-          dateOfBirthInput.addEventListener('change', function() {
-              const selectedDate = new Date(this.value);
-              const eighteenYearsAgo = new Date();
-              eighteenYearsAgo.setFullYear(eighteenYearsAgo.getFullYear() - 18);
-              
-              if (selectedDate > eighteenYearsAgo) {
-                  alert('Employee must be at least 18 years old.');
-                  this.value = '';
-                  this.focus();
-              }
-          });
+    // Validate birthdate on change
+    dateOfBirthInput.addEventListener('change', function() {
+        const selectedDate = new Date(this.value);
+        const eighteenYearsAgo = new Date();
+        eighteenYearsAgo.setFullYear(eighteenYearsAgo.getFullYear() - 18);
+        
+        if (selectedDate > eighteenYearsAgo) {
+            alert('Employee must be at least 18 years old.');
+            this.value = '';
+            this.focus();
+        }
+    });
 
-          // Validate salary on input
-          employeeSalaryInput.addEventListener('input', function() {
-              const salary = parseFloat(this.value);
-              if (salary > 10000) {
-                  alert('Salary must be less than or equal to ₱10,000');
-                  this.value = '';
-                  this.focus();
-              }
-          });
+    // Validate salary on input
+    employeeSalaryInput.addEventListener('input', function() {
+        const salary = parseFloat(this.value);
+        if (salary > 10000) {
+            alert('Salary must be less than or equal to ₱10,000');
+            this.value = '';
+            this.focus();
+        }
+    });
 
-          // Form submission validation
-          addEmployeeForm.addEventListener('submit', function(event) {
-              // Revalidate birthdate
-              const birthDate = new Date(dateOfBirthInput.value);
-              const eighteenYearsAgo = new Date();
-              eighteenYearsAgo.setFullYear(eighteenYearsAgo.getFullYear() - 18);
-              
-              if (birthDate > eighteenYearsAgo) {
-                  alert('Employee must be at least 18 years old.');
-                  dateOfBirthInput.focus();
-                  event.preventDefault();
-                  return;
-              }
+    // Form submission validation
+    addEmployeeForm.addEventListener('submit', function(event) {
+        // Revalidate birthdate
+        const birthDate = new Date(dateOfBirthInput.value);
+        const eighteenYearsAgo = new Date();
+        eighteenYearsAgo.setFullYear(eighteenYearsAgo.getFullYear() - 18);
+        
+        if (birthDate > eighteenYearsAgo) {
+            alert('Employee must be at least 18 years old.');
+            dateOfBirthInput.focus();
+            event.preventDefault();
+            return;
+        }
 
-              // Revalidate salary
-              const salary = parseFloat(employeeSalaryInput.value);
-              if (salary > 10000) {
-                  alert('Salary must be less than or equal to ₱10,000');
-                  employeeSalaryInput.focus();
-                  event.preventDefault();
-                  return;
-              }
+        // Revalidate salary
+        const salary = parseFloat(employeeSalaryInput.value);
+        if (salary > 10000) {
+            alert('Salary must be less than or equal to ₱10,000');
+            employeeSalaryInput.focus();
+            event.preventDefault();
+            return;
+        }
 
-              // If all validations pass, the form will submit
-          });
-      });
+        // If all validations pass, the form will submit
+    });
+});
 
-          document.addEventListener('DOMContentLoaded', function() {
-          const addEmployeeAccountForm = document.getElementById('addEmployeeAccountForm');
-          
-          addEmployeeAccountForm.addEventListener('submit', function(event) {
-              // Prevent the default form submission
-              event.preventDefault();
-              
-              // Create FormData object to easily send form data
-              const formData = new FormData(addEmployeeAccountForm);
-              
-              // Send data to server using fetch
-              fetch('employeeManagement/add_employee.php', {
-                  method: 'POST',
-                  body: formData
-              })
-              .then(response => response.json())
-              .then(data => {
-                  if (data.status === 'success') {
-                      // Success handling
-                      console.log('Employee added successfully:', data);
-                      alert(data.message);
-                      closeAddEmployeeModal();
-                      location.reload();
-                      addEmployeeAccountForm.reset();
-                  } else {
-                      // Error handling
-                      console.error('Error:', data);
-                      if (data.errors) {
-                          // Display validation errors
-                          alert(data.errors.join('\n'));
-                      } else {
-                          alert(data.message || 'An error occurred');
-                      }
-                  }
-              })
-              .catch(error => {
-                  console.error('Network or server error:', error);
-                  alert('An unexpected error occurred. Please try again.');
-              });
-          });
-      });
+document.addEventListener('DOMContentLoaded', function() {
+  const addEmployeeAccountForm = document.getElementById('addEmployeeAccountForm');
+  const paymentStructure = document.querySelector('input[name="paymentStructure"]:checked').value;
+  const monthlySalary = document.getElementById('monthlySalary');
+  const commissionSalary = document.getElementById('commissionSalary');
+
+  addEmployeeAccountForm.addEventListener('submit', function(event) {
+    // Prevent the default form submission
+    event.preventDefault();
+    
+    // Create FormData object to easily send form data
+    const formData = new FormData(addEmployeeAccountForm);
+
+    if (paymentStructure === 'monthly' || paymentStructure === 'both') {
+      if (!monthlySalary.value) {
+        e.preventDefault();
+        alert('Monthly salary is required');
+        return;
+      }
+    }
+    
+    if (paymentStructure === 'commission' || paymentStructure === 'both') {
+      if (!commissionSalary.value) {
+        e.preventDefault();
+        alert('Commission salary is required');
+        return;
+      }
+    }
+    
+    // Send data to server using fetch
+    fetch('employeeManagement/add_employee.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            // Success handling
+            console.log('Employee added successfully:', data);
+            alert(data.message);
+            closeAddEmployeeModal();
+            location.reload();
+            addEmployeeAccountForm.reset();
+        } else {
+            // Error handling
+            console.error('Error:', data);
+            if (data.errors) {
+                // Display validation errors
+                alert(data.errors.join('\n'));
+            } else {
+                alert(data.message || 'An error occurred');
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Network or server error:', error);
+        alert('An unexpected error occurred. Please try again.');
+    });
+  });
+});
 
       
-      function filterByBranch(branchId) {
-    if (branchId === '') {
-        window.location.href = 'employee_management.php';
-    } else {
-        window.location.href = 'employee_management.php?branch_id=' + branchId + '&page=1';
-    }
+function filterByBranch(branchId) {
+  if (branchId === '') {
+      window.location.href = 'employee_management.php';
+  } else {
+      window.location.href = 'employee_management.php?branch_id=' + branchId + '&page=1';
+  }
 }
 
     // Function to open the Add Employee Modal
