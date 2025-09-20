@@ -1870,7 +1870,7 @@ function filterByBranch(branchId) {
         setEditPaymentStructure(
           data.pay_structure, 
           data.monthly_salary, 
-          data.commission_salary
+          data.base_salary
         );
         
         // Set branch radio button
