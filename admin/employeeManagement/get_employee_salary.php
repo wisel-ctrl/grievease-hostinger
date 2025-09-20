@@ -17,17 +17,17 @@ if (!$employeeId || !$startDate || !$endDate) {
 try {
     $startDateTime = new DateTime($startDate);
     $endDateTime = new DateTime($endDate);
-    $formattedStartDate = $startDateTime->format('Y-m-d') . ' 00:00:00';
-    $formattedEndDate = $endDateTime->format('Y-m-d') . ' 23:59:59';
+    $formattedStartDate = $startDateTime->format('Y-m-d 00:00:00');
+    $formattedEndDate = $endDateTime->format('Y-m-d 23:59:59');
 } catch (Exception $e) {
     echo json_encode(['success' => false, 'message' => 'Invalid date format']);
     exit;
 }
 
 try {
-    // Query to get service payments and service details
+    // Query with UNION for commission + monthly salaries
     $query = "
-                SELECT 
+        SELECT 
             esp.payment_date,
             IFNULL(s.service_name, 'Customize Package') AS service_name,
             esp.income AS service_income
@@ -42,37 +42,78 @@ try {
         WHERE 
             esp.employeeID = ?
             AND esp.payment_date BETWEEN ? AND ?
-        ORDER BY 
-            esp.payment_date DESC;
+            AND esp.payment_date >= e.date_created
+            AND (
+                e.pay_structure = 'commission'
+                OR e.pay_structure = 'both'
+                OR e.pay_structure = 'monthly'
+            )
+
+        UNION ALL
+
+        SELECT
+            DATE_FORMAT(dates.generated_date, '%Y-%m-%d') AS payment_date,
+            'Monthly Salary' AS service_name,
+            e.monthly_salary AS service_income
+        FROM
+            employee_tb e
+        JOIN (
+            SELECT LAST_DAY(DATE_ADD(?, INTERVAL seq MONTH)) AS generated_date
+            FROM (
+                SELECT ? AS start_date, ? AS end_date
+            ) r
+            JOIN seq_0_to_120 seqs 
+                ON seqs.seq <= TIMESTAMPDIFF(MONTH, r.start_date, r.end_date)
+        ) dates
+            ON 1=1
+        WHERE 
+            e.EmployeeID = ?
+            AND e.pay_structure IN ('monthly','both')
+            AND dates.generated_date BETWEEN ? AND ?
+            AND dates.generated_date >= e.date_created
+
+        ORDER BY payment_date DESC
     ";
-    
+
     $stmt = $conn->prepare($query);
-    $stmt->bind_param("iss", $employeeId, $formattedStartDate, $formattedEndDate);
+    $stmt->bind_param(
+        "issssssis", 
+        $employeeId, 
+        $formattedStartDate, 
+        $formattedEndDate,
+        $formattedStartDate, // for DATE_ADD start
+        $formattedStartDate, // for range subquery start
+        $formattedEndDate,   // for range subquery end
+        $employeeId, 
+        $formattedStartDate, 
+        $formattedEndDate
+    );
+
     $stmt->execute();
     $result = $stmt->get_result();
-    
+
     $services = [];
     $totalServices = 0;
     $totalEarnings = 0;
-    
+
     while ($row = $result->fetch_assoc()) {
         $services[] = [
-            'payment_date' => $row['payment_date'],
-            'service_name' => $row['service_name'],
-            'service_income' => $row['service_income'],
-            'employee_share' => $row['service_income'] // Same as income
+            'payment_date'   => $row['payment_date'],
+            'service_name'   => $row['service_name'],
+            'service_income' => (float)$row['service_income'],
+            'employee_share' => (float)$row['service_income']
         ];
         $totalServices++;
-        $totalEarnings += $row['service_income']; // Summing the income directly
+        $totalEarnings += (float)$row['service_income'];
     }
-    
+
     echo json_encode([
-        'success' => true,
+        'success'        => true,
         'total_services' => $totalServices,
         'total_earnings' => $totalEarnings,
-        'services' => $services
+        'services'       => $services
     ]);
-    
+
 } catch (Exception $e) {
     echo json_encode([
         'success' => false,
