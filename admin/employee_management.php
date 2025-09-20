@@ -2017,7 +2017,7 @@ function fetchEmployeeSalary() {
       if (data && data.success) {
         // Update summary
         document.getElementById('totalServices').textContent = data.total_services || 0;
-        document.getElementById('totalEarnings').textContent = formatPrice(data.total_earnings || 0));
+        document.getElementById('totalEarnings').textContent = formatPrice(data.total_earnings || 0);
         
         // Update service details table
         const tbody = document.getElementById('serviceDetailsBody');
@@ -2442,7 +2442,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
-
 function formatPrice(amount) {
     return "₱" + Number(amount).toLocaleString('en-PH', {
         minimumFractionDigits: 2,
