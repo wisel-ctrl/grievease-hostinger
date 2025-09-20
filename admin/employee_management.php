@@ -1624,8 +1624,10 @@ function terminateEmployee(employeeId) {
 document.addEventListener('DOMContentLoaded', function() {
     // Get the form elements
     const dateOfBirthInput = document.getElementById('dateOfBirth');
-    const employeeSalaryInput = document.getElementById('employeeSalary');
     const addEmployeeForm = document.getElementById('addEmployeeAccountForm');
+    const paymentStructure = document.querySelector('input[name="paymentStructure"]:checked').value;
+    const monthlySalary = document.getElementById('monthlySalary');
+    const commissionSalary = document.getElementById('commissionSalary');
 
     // Set max date for birthdate (18 years ago)
     const today = new Date();
@@ -1647,15 +1649,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Validate salary on input
-    employeeSalaryInput.addEventListener('input', function() {
-        const salary = parseFloat(this.value);
-        if (salary > 10000) {
-            alert('Salary must be less than or equal to ₱10,000');
-            this.value = '';
-            this.focus();
-        }
-    });
 
     // Form submission validation
     addEmployeeForm.addEventListener('submit', function(event) {
@@ -1672,12 +1665,28 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // Revalidate salary
-        const salary = parseFloat(employeeSalaryInput.value);
+        const salary = parseFloat(monthlySalary.value);
         if (salary > 10000) {
             alert('Salary must be less than or equal to ₱10,000');
-            employeeSalaryInput.focus();
+            monthlySalary.focus();
             event.preventDefault();
             return;
+        }
+
+        if (paymentStructure === 'monthly' || paymentStructure === 'both') {
+          if (!monthlySalary.value) {
+            e.preventDefault();
+            alert('Monthly salary is required');
+            return;
+          }
+        }
+        
+        if (paymentStructure === 'commission' || paymentStructure === 'both') {
+          if (!commissionSalary.value) {
+            e.preventDefault();
+            alert('Commission salary is required');
+            return;
+          }
         }
 
         // If all validations pass, the form will submit
@@ -1686,9 +1695,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 document.addEventListener('DOMContentLoaded', function() {
   const addEmployeeAccountForm = document.getElementById('addEmployeeAccountForm');
-  const paymentStructure = document.querySelector('input[name="paymentStructure"]:checked').value;
-  const monthlySalary = document.getElementById('monthlySalary');
-  const commissionSalary = document.getElementById('commissionSalary');
 
   addEmployeeAccountForm.addEventListener('submit', function(event) {
     // Prevent the default form submission
@@ -1697,21 +1703,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Create FormData object to easily send form data
     const formData = new FormData(addEmployeeAccountForm);
 
-    if (paymentStructure === 'monthly' || paymentStructure === 'both') {
-      if (!monthlySalary.value) {
-        e.preventDefault();
-        alert('Monthly salary is required');
-        return;
-      }
-    }
-    
-    if (paymentStructure === 'commission' || paymentStructure === 'both') {
-      if (!commissionSalary.value) {
-        e.preventDefault();
-        alert('Commission salary is required');
-        return;
-      }
-    }
     
     // Send data to server using fetch
     fetch('employeeManagement/add_employee.php', {
