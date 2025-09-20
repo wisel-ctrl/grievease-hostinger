@@ -788,7 +788,7 @@ echo "</tr>";
         </div>
 
         <!-- Monthly Salary Input (initially hidden) -->
-        <div id="monthlySalaryContainer" class="hidden">
+        <div id="monthlySalaryContainerForAdding" class="hidden">
           <label for="monthlySalary" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
             Monthly Salary (₱) <span class="text-red-500">*</span>
           </label>
@@ -2522,7 +2522,7 @@ function formatPrice(amount) {
 // Payment structure radio button logic
 document.addEventListener('DOMContentLoaded', function() {
   const paymentRadios = document.querySelectorAll('.payment-radio');
-  const monthlyContainer = document.getElementById('monthlySalaryContainer');
+  const monthlyContainer = document.getElementById('monthlySalaryContainerForAdding');
   const commissionContainer = document.getElementById('commissionSalaryContainer');
   
   paymentRadios.forEach(radio => {
