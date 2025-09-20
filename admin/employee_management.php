@@ -743,6 +743,29 @@ echo "</tr>";
           </div>
         </div>
 
+        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
+          <p class="block text-xs font-medium text-gray-700 mb-2 flex items-center">
+            Payment Structure <span class="text-red-500">*</span>
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="radio" name="paymentStructure" value="monthly" required class="mr-2 text-sidebar-accent focus:ring-sidebar-accent payment-radio">
+              <i class="fas fa-calendar-alt mr-1 text-sidebar-accent"></i>
+              Monthly
+            </label>
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="radio" name="paymentStructure" value="commission" required class="mr-2 text-sidebar-accent focus:ring-sidebar-accent payment-radio">
+              <i class="fas fa-percent mr-1 text-sidebar-accent"></i>
+              Commission
+            </label>
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="radio" name="paymentStructure" value="both" required class="mr-2 text-sidebar-accent focus:ring-sidebar-accent payment-radio">
+              <i class="fas fa-random mr-1 text-sidebar-accent"></i>
+              Both/Hybrid
+            </label>
+          </div>
+        </div>
+
         <!-- Position and Salary -->
         <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
           <div class="w-full sm:flex-1">
@@ -762,18 +785,35 @@ echo "</tr>";
               </select>
             </div>
           </div>
-          <div class="w-full sm:flex-1">
-            <label for="employeeSalary" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              Salary per Service (₱) <span class="text-red-500">*</span>
-            </label>
-            <div class="relative">
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <span class="text-gray-500">₱</span>
-              </div>
-              <input type="number" id="employeeSalary" name="employeeSalary" required step="0.01" min="0.01"
-                  class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                  placeholder="Amount">
+        </div>
+
+        <!-- Monthly Salary Input (initially hidden) -->
+        <div id="monthlySalaryContainer" class="hidden">
+          <label for="monthlySalary" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Monthly Salary (₱) <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <span class="text-gray-500">₱</span>
             </div>
+            <input type="number" id="monthlySalary" name="monthlySalary" step="0.01" min="0.01"
+                class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                placeholder="Amount">
+          </div>
+        </div>
+
+        <!-- Commission Salary Input (modified from original) -->
+        <div id="commissionSalaryContainer">
+          <label for="commissionSalary" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Pay per Commission (₱) <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <span class="text-gray-500">₱</span>
+            </div>
+            <input type="number" id="commissionSalary" name="commissionSalary" step="0.01" min="0.01"
+                class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                placeholder="Amount">
           </div>
         </div>
 
@@ -938,28 +978,6 @@ echo "</tr>";
           </div>
         </div>
         
-        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
-          <p class="block text-xs font-medium text-gray-700 mb-2 flex items-center">
-            Payment Structure <span class="text-red-500">*</span>
-          </p>
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
-              <input type="radio" name="paymentStructure" value="monthly" required class="mr-2 text-sidebar-accent focus:ring-sidebar-accent payment-radio">
-              <i class="fas fa-calendar-alt mr-1 text-sidebar-accent"></i>
-              Monthly
-            </label>
-            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
-              <input type="radio" name="paymentStructure" value="commission" required class="mr-2 text-sidebar-accent focus:ring-sidebar-accent payment-radio">
-              <i class="fas fa-percent mr-1 text-sidebar-accent"></i>
-              Commission
-            </label>
-            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
-              <input type="radio" name="paymentStructure" value="both" required class="mr-2 text-sidebar-accent focus:ring-sidebar-accent payment-radio">
-              <i class="fas fa-random mr-1 text-sidebar-accent"></i>
-              Both/Hybrid
-            </label>
-          </div>
-        </div>
         <!-- Position and Salary -->
         <div>
           <label for="editEmployeePosition" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
@@ -2493,12 +2511,41 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
 function formatPrice(amount) {
     return "₱" + Number(amount).toLocaleString('en-PH', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
     });
 }
+
+// Payment structure radio button logic
+document.addEventListener('DOMContentLoaded', function() {
+  const paymentRadios = document.querySelectorAll('.payment-radio');
+  const monthlyContainer = document.getElementById('monthlySalaryContainer');
+  const commissionContainer = document.getElementById('commissionSalaryContainer');
+  
+  paymentRadios.forEach(radio => {
+    radio.addEventListener('change', function() {
+      if (this.value === 'monthly') {
+        monthlyContainer.classList.remove('hidden');
+        commissionContainer.classList.add('hidden');
+      } else if (this.value === 'commission') {
+        monthlyContainer.classList.add('hidden');
+        commissionContainer.classList.remove('hidden');
+      } else if (this.value === 'both') {
+        monthlyContainer.classList.remove('hidden');
+        commissionContainer.classList.remove('hidden');
+      }
+    });
+  });
+  
+  // Set initial state based on default selected radio
+  const defaultSelected = document.querySelector('.payment-radio:checked');
+  if (defaultSelected) {
+    defaultSelected.dispatchEvent(new Event('change'));
+  }
+});
 </script>
   
 </body>
