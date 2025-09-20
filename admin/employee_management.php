@@ -937,7 +937,29 @@ echo "</tr>";
                 placeholder="09XXXXXXXXX or +63XXXXXXXXXX" pattern="(\+63|0)\d{10}" title="Philippine phone number (09XXXXXXXXX or +63XXXXXXXXXX)">
           </div>
         </div>
-
+        
+        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
+          <p class="block text-xs font-medium text-gray-700 mb-2 flex items-center">
+            Payment Structure <span class="text-red-500">*</span>
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="radio" name="paymentStructure" value="monthly" required class="mr-2 text-sidebar-accent focus:ring-sidebar-accent payment-radio">
+              <i class="fas fa-calendar-alt mr-1 text-sidebar-accent"></i>
+              Monthly
+            </label>
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="radio" name="paymentStructure" value="commission" required class="mr-2 text-sidebar-accent focus:ring-sidebar-accent payment-radio">
+              <i class="fas fa-percent mr-1 text-sidebar-accent"></i>
+              Commission
+            </label>
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="radio" name="paymentStructure" value="both" required class="mr-2 text-sidebar-accent focus:ring-sidebar-accent payment-radio">
+              <i class="fas fa-random mr-1 text-sidebar-accent"></i>
+              Both/Hybrid
+            </label>
+          </div>
+        </div>
         <!-- Position and Salary -->
         <div>
           <label for="editEmployeePosition" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
