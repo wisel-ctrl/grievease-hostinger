@@ -1933,8 +1933,8 @@ function viewEmployeeDetails(employeeId) {
         
         // Format base salary
         const baseSalary = parseFloat(data.base_salary || 0);
-        document.getElementById('employeeBaseSalary').textContent = '₱' + baseSalary.toFixed(2);
-        document.getElementById('modalBaseSalary').textContent = '₱' + baseSalary.toFixed(2);
+        document.getElementById('employeeBaseSalary').textContent = formatPrice(baseSalary);
+        document.getElementById('modalBaseSalary').textContent = formatPrice(baseSalary);
         
         // Set default date range (last 30 days)
         const today = new Date();
@@ -2017,7 +2017,7 @@ function fetchEmployeeSalary() {
       if (data && data.success) {
         // Update summary
         document.getElementById('totalServices').textContent = data.total_services || 0;
-        document.getElementById('totalEarnings').textContent = '₱' + parseFloat(data.total_earnings || 0).toFixed(2);
+        document.getElementById('totalEarnings').textContent = formatPrice(data.total_earnings || 0));
         
         // Update service details table
         const tbody = document.getElementById('serviceDetailsBody');
@@ -2030,7 +2030,7 @@ function fetchEmployeeSalary() {
             row.innerHTML = `
               <td class="p-3 text-sm text-gray-700">${service.payment_date}</td>
               <td class="p-3 text-sm text-gray-700">${service.service_name}</td>
-              <td class="p-3 text-sm text-gray-700">₱${parseFloat(service.service_income).toFixed(2)}</td>
+              <td class="p-3 text-sm text-gray-700">${formatPrice(service.service_income)}</td>
             `;
             tbody.appendChild(row);
           });
@@ -2442,6 +2442,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+function formatPrice(amount) {
+    return "₱" + Number(amount).toLocaleString('en-PH', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+}
 </script>
   
 </body>
