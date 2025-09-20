@@ -553,6 +553,10 @@ echo "</tr>";
             <p class="text-xs font-medium text-gray-500">Base Salary</p>
             <p id="employeeBaseSalary" class="text-sm font-medium text-gray-800">-</p>
           </div>
+          <div class="flex-1 px-1" id="monthlySalaryContainer" style="display: none;">
+            <p class="text-xs font-medium text-gray-500">Monthly Salary</p>
+            <p id="employeeMonthlySalary" class="text-sm font-medium text-gray-800">-</p>
+          </div>
         </div>
         
         <!-- Date Range Picker -->
@@ -1931,11 +1935,36 @@ function viewEmployeeDetails(employeeId) {
           (data.lname || '') + 
           (data.suffix ? ' ' + data.suffix : '');
         
+        // Handle different pay structures
+        const payStructure = data.pay_structure || "commissioned";
+        const monthlySalaryContainer = document.getElementById('monthlySalaryContainer');
+        const employeeBaseSalaryEl = document.getElementById('employeeBaseSalary');
+        const modalBaseSalaryEl = document.getElementById('modalBaseSalary');
+        
         // Format base salary
         const baseSalary = parseFloat(data.base_salary || 0);
-        document.getElementById('employeeBaseSalary').textContent = formatPrice(baseSalary);
-        document.getElementById('modalBaseSalary').textContent = formatPrice(baseSalary);
+        employeeBaseSalaryEl.textContent = formatPrice(baseSalary);
+        modalBaseSalaryEl.textContent = formatPrice(baseSalary);
         
+        // Handle monthly salary display based on pay structure
+        if (payStructure === "monthly") {
+          // Hide base salary, show monthly salary
+          employeeBaseSalaryEl.textContent = "-";
+          modalBaseSalaryEl.textContent = formatPrice(parseFloat(data.monthly_salary || 0));
+          monthlySalaryContainer.style.display = 'block';
+          document.getElementById('employeeMonthlySalary').textContent = formatPrice(parseFloat(data.monthly_salary || 0));
+        } 
+        else if (payStructure === "both") {
+          // Show both base and monthly salary
+          monthlySalaryContainer.style.display = 'block';
+          document.getElementById('employeeMonthlySalary').textContent = formatPrice(parseFloat(data.monthly_salary || 0));
+        }
+        else {
+          // Commissioned only - default behavior
+          monthlySalaryContainer.style.display = 'none';
+        }
+        
+        // Rest of your date handling code remains the same...
         // Set default date range (last 30 days)
         const today = new Date();
         const thirtyDaysAgo = new Date();
