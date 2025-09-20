@@ -977,8 +977,32 @@ echo "</tr>";
                 placeholder="09XXXXXXXXX or +63XXXXXXXXXX" pattern="(\+63|0)\d{10}" title="Philippine phone number (09XXXXXXXXX or +63XXXXXXXXXX)">
           </div>
         </div>
+
+        <!-- Payment Structure Selection -->
+        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
+          <p class="block text-xs font-medium text-gray-700 mb-2 flex items-center">
+            Payment Structure <span class="text-red-500">*</span>
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="radio" name="editPaymentStructure" value="monthly" required class="mr-2 text-sidebar-accent focus:ring-sidebar-accent edit-payment-radio">
+              <i class="fas fa-calendar-alt mr-1 text-sidebar-accent"></i>
+              Monthly
+            </label>
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="radio" name="editPaymentStructure" value="commission" required class="mr-2 text-sidebar-accent focus:ring-sidebar-accent edit-payment-radio">
+              <i class="fas fa-percent mr-1 text-sidebar-accent"></i>
+              Commission
+            </label>
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="radio" name="editPaymentStructure" value="both" required class="mr-2 text-sidebar-accent focus:ring-sidebar-accent edit-payment-radio">
+              <i class="fas fa-random mr-1 text-sidebar-accent"></i>
+              Both/Hybrid
+            </label>
+          </div>
+        </div>
         
-        <!-- Position and Salary -->
+        <!-- Position -->
         <div>
           <label for="editEmployeePosition" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
             Position <span class="text-red-500">*</span>
@@ -996,16 +1020,32 @@ echo "</tr>";
             </select>
           </div>
         </div>
-        
-        <div>
-          <label for="editEmployeeSalary" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            Salary per Service (₱) <span class="text-red-500">*</span>
+
+        <!-- Monthly Salary Input (initially hidden) -->
+        <div id="editMonthlySalaryContainer" class="hidden">
+          <label for="editMonthlySalary" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Monthly Salary (₱) <span class="text-red-500">*</span>
           </label>
           <div class="relative">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <span class="text-gray-500">₱</span>
             </div>
-            <input type="number" id="editEmployeeSalary" name="employeeSalary" required step="0.01" min="0.01"
+            <input type="number" id="editMonthlySalary" name="monthlySalary" step="0.01" min="0.01"
+                class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                placeholder="Amount">
+          </div>
+        </div>
+
+        <!-- Commission Salary Input (modified from original) -->
+        <div id="editCommissionSalaryContainer">
+          <label for="editCommissionSalary" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Pay per Commission (₱) <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <span class="text-gray-500">₱</span>
+            </div>
+            <input type="number" id="editCommissionSalary" name="commissionSalary" step="0.01" min="0.01"
                 class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
                 placeholder="Amount">
           </div>
@@ -1819,7 +1859,6 @@ function filterByBranch(branchId) {
         document.getElementById('editEmployeeEmail').value = data.email || '';
         document.getElementById('editEmployeePhone').value = data.phone_number || '';
         document.getElementById('editEmployeePosition').value = data.position || '';
-        document.getElementById('editEmployeeSalary').value = data.base_salary || '';
         
         // Set gender radio button
         if (data.gender === 'Male') {
@@ -1827,6 +1866,12 @@ function filterByBranch(branchId) {
         } else if (data.gender === 'Female') {
           document.getElementById('editGenderFemale').checked = true;
         }
+
+        setEditPaymentStructure(
+          data.pay_structure, 
+          data.monthly_salary, 
+          data.commission_salary
+        );
         
         // Set branch radio button
         const branchRadio = document.querySelector(`.editBranchRadio[value="${data.branch_id}"]`);
@@ -2555,6 +2600,45 @@ document.addEventListener('DOMContentLoaded', function() {
   if (defaultSelected) {
     defaultSelected.dispatchEvent(new Event('change'));
   }
+});
+
+// Edit modal payment structure radio button logic
+document.addEventListener('DOMContentLoaded', function() {
+  const editPaymentRadios = document.querySelectorAll('.edit-payment-radio');
+  const editMonthlyContainer = document.getElementById('editMonthlySalaryContainer');
+  const editCommissionContainer = document.getElementById('editCommissionSalaryContainer');
+  
+  editPaymentRadios.forEach(radio => {
+    radio.addEventListener('change', function() {
+      if (this.value === 'monthly') {
+        editMonthlyContainer.classList.remove('hidden');
+        editCommissionContainer.classList.add('hidden');
+      } else if (this.value === 'commission') {
+        editMonthlyContainer.classList.add('hidden');
+        editCommissionContainer.classList.remove('hidden');
+      } else if (this.value === 'both') {
+        editMonthlyContainer.classList.remove('hidden');
+        editCommissionContainer.classList.remove('hidden');
+      }
+    });
+  });
+  
+  // Function to set payment structure when editing an employee
+  window.setEditPaymentStructure = function(paymentType, monthlySalary, commissionSalary) {
+    const radio = document.querySelector(`input[name="editPaymentStructure"][value="${paymentType}"]`);
+    if (radio) {
+      radio.checked = true;
+      radio.dispatchEvent(new Event('change'));
+      
+      if (monthlySalary) {
+        document.getElementById('editMonthlySalary').value = monthlySalary;
+      }
+      
+      if (commissionSalary) {
+        document.getElementById('editCommissionSalary').value = commissionSalary;
+      }
+    }
+  };
 });
 </script>
   
