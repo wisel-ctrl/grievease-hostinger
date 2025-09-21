@@ -135,10 +135,19 @@ $totalPages = ceil($totalEmployees / $perPage);
   <div id="main-content" class="p-6 bg-gray-50 min-h-screen transition-all duration-300 ml-64 w-[calc(100%-16rem)] main-content">
   <!-- Header with breadcrumb and welcome message -->
   <div class="flex justify-between items-center mb-6 bg-white p-5 rounded-lg shadow-sidebar">
+    <!-- Left Section -->
     <div>
       <h1 class="text-2xl font-bold text-sidebar-text">Employee Management</h1>
     </div>
+
+    <!-- Right Section (Button) -->
+    <div>
+      <button class="bg-[#D69E2E] hover:bg-[#B7791F] text-white font-semibold px-4 py-2 rounded-lg shadow-md transition">
+        Record This Month’s Payroll
+      </button>
+    </div>
   </div>
+
 
 <!-- View Employee Details Section -->
 <div class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden">
