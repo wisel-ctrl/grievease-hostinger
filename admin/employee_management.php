@@ -2964,6 +2964,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Make the open function available globally
   window.openPayrollModal = openPayrollModal;
   window.selectBranchForPayroll = selectBranchForPayroll;
+  window.selectBranch = selectBranch;
 });
 </script>
 
