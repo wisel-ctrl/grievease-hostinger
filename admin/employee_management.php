@@ -1184,7 +1184,7 @@ echo "</tr>";
                     </svg>
                     Select Branch
                 </h3>
-                <button id="closeBranchModal" class="text-white hover:text-amber-200 transition-colors">
+                <button onclick="closeBranchSelectionModal()" id="closeBranchModal" class="text-white hover:text-amber-200 transition-colors">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
@@ -1199,28 +1199,6 @@ echo "</tr>";
             <!-- Branch Options -->
             <div class="space-y-3">
                 <!-- Paete Branch -->
-                <button onclick="selectBranch('1')" class="w-full group">
-                    <div class="bg-gradient-to-r from-amber-50 to-yellow-50 hover:from-amber-100 hover:to-yellow-100 border-2 border-amber-200 hover:border-amber-400 rounded-xl p-4 transition-all duration-200 transform hover:scale-105">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center">
-                                <div class="bg-amber-400 text-white rounded-full p-2 mr-3">
-                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
-                                    </svg>
-                                </div>
-                                <div class="text-left">
-                                    <h4 class="font-semibold text-gray-800 group-hover:text-amber-700">Paete Branch</h4>
-                                    <p class="text-sm text-gray-600">Main Office Location</p>
-                                </div>
-                            </div>
-                            <svg class="w-5 h-5 text-amber-500 group-hover:text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                            </svg>
-                        </div>
-                    </div>
-                </button>
-
-                <!-- Pila Branch -->
                 <button onclick="selectBranch('2')" class="w-full group">
                     <div class="bg-gradient-to-r from-amber-50 to-yellow-50 hover:from-amber-100 hover:to-yellow-100 border-2 border-amber-200 hover:border-amber-400 rounded-xl p-4 transition-all duration-200 transform hover:scale-105">
                         <div class="flex items-center justify-between">
@@ -1232,6 +1210,28 @@ echo "</tr>";
                                 </div>
                                 <div class="text-left">
                                     <h4 class="font-semibold text-gray-800 group-hover:text-amber-700">Pila Branch</h4>
+                                    <p class="text-sm text-gray-600">Main Office Location</p>
+                                </div>
+                            </div>
+                            <svg class="w-5 h-5 text-amber-500 group-hover:text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+
+                <!-- Pila Branch -->
+                <button onclick="selectBranch('1')" class="w-full group">
+                    <div class="bg-gradient-to-r from-amber-50 to-yellow-50 hover:from-amber-100 hover:to-yellow-100 border-2 border-amber-200 hover:border-amber-400 rounded-xl p-4 transition-all duration-200 transform hover:scale-105">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="bg-amber-400 text-white rounded-full p-2 mr-3">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+                                    </svg>
+                                </div>
+                                <div class="text-left">
+                                    <h4 class="font-semibold text-gray-800 group-hover:text-amber-700">Paete Branch</h4>
                                     <p class="text-sm text-gray-600">Secondary Location</p>
                                 </div>
                             </div>
@@ -1246,7 +1246,7 @@ echo "</tr>";
 
         <!-- Modal Footer -->
         <div class="bg-gray-50 rounded-b-2xl px-6 py-4">
-            <button id="cancelBranchSelection" class="w-full bg-gray-300 hover:bg-gray-400 text-gray-700 font-semibold py-2 px-4 rounded-lg transition-colors">
+            <button onclick="closeBranchSelectionModal()" id="cancelBranchSelection" class="w-full bg-gray-300 hover:bg-gray-400 text-gray-700 font-semibold py-2 px-4 rounded-lg transition-colors">
                 Cancel
             </button>
         </div>
@@ -2965,6 +2965,7 @@ document.addEventListener('DOMContentLoaded', function() {
   window.openPayrollModal = openPayrollModal;
   window.selectBranchForPayroll = selectBranchForPayroll;
   window.selectBranch = selectBranch;
+  window.closeBranchSelectionModal = closeBranchSelectionModal;
 });
 </script>
 
