@@ -2902,7 +2902,7 @@ document.addEventListener('DOMContentLoaded', function() {
   cancelBtn.addEventListener('click', closePayrollModal);
   recordExpenseBtn.addEventListener('click', function() {
     // Get the branch_id from wherever you stored it
-    const branchId = /* get the selected branch_id */;
+    const branchId = 2;
     
     // Handle recording expense with branch_id
     alert(`Expense recorded successfully for branch ${branchId}!`);
