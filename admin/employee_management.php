@@ -1172,6 +1172,94 @@ echo "</tr>";
   </div>
 </div>
 
+<div id="payrollModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+  <!-- Modal Content -->
+  <div class="bg-gradient-to-br from-yellow-50 to-amber-50 rounded-xl shadow-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-hidden">
+      <!-- Header -->
+      <div class="bg-gradient-to-r from-[#D69E2E] to-[#B7791F] text-white p-6">
+          <div class="flex justify-between items-center">
+              <h2 class="text-2xl font-bold">Monthly Payroll Record</h2>
+              <button id="closeModal" class="text-white hover:text-gray-200 transition">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
+              </button>
+          </div>
+          <p class="text-amber-100 mt-2" id="currentMonth">November 2024</p>
+      </div>
+
+      <!-- Content -->
+      <div class="p-6 max-h-[60vh] overflow-y-auto">
+          <!-- Employee List -->
+          <div class="mb-6">
+              <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                  <span class="w-2 h-2 bg-[#D69E2E] rounded-full mr-2"></span>
+                  Employee Payroll Details
+              </h3>
+              
+              <div class="overflow-x-auto">
+                  <table class="w-full border border-amber-200 rounded-lg">
+                      <thead class="bg-gradient-to-r from-amber-100 to-yellow-100">
+                          <tr>
+                              <th class="px-4 py-3 text-left text-gray-700 font-semibold border-b border-amber-200">Employee Name</th>
+                              <th class="px-4 py-3 text-right text-gray-700 font-semibold border-b border-amber-200">Monthly Salary</th>
+                              <th class="px-4 py-3 text-right text-gray-700 font-semibold border-b border-amber-200">Commission</th>
+                              <th class="px-4 py-3 text-right text-gray-700 font-semibold border-b border-amber-200">Total Pay</th>
+                          </tr>
+                      </thead>
+                      <tbody id="employeeTableBody" class="bg-white">
+                          <!-- Employee rows will be inserted here -->
+                      </tbody>
+                  </table>
+              </div>
+          </div>
+
+          <!-- Summary Section -->
+          <div class="bg-gradient-to-r from-amber-100 to-yellow-100 rounded-lg p-6 border-2 border-[#D69E2E]">
+              <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                  <span class="w-2 h-2 bg-[#D69E2E] rounded-full mr-2"></span>
+                  Payroll Summary
+              </h3>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                  <div class="text-center">
+                      <p class="text-sm text-gray-600">Total Monthly Salaries</p>
+                      <p class="text-xl font-bold text-gray-800" id="totalMonthlySalary">₱0.00</p>
+                  </div>
+                  <div class="text-center">
+                      <p class="text-sm text-gray-600">Total Commissions</p>
+                      <p class="text-xl font-bold text-gray-800" id="totalCommissions">₱0.00</p>
+                  </div>
+                  <div class="text-center">
+                      <p class="text-sm text-gray-600">Total Employees</p>
+                      <p class="text-xl font-bold text-gray-800" id="totalEmployees">0</p>
+                  </div>
+              </div>
+              <div class="border-t-2 border-[#D69E2E] pt-4">
+                  <div class="text-center">
+                      <p class="text-sm text-gray-600">Grand Total Payroll Expense</p>
+                      <p class="text-3xl font-bold text-[#B7791F]" id="grandTotal">₱0.00</p>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="bg-gray-50 px-6 py-4 border-t flex justify-between items-center">
+          <div class="text-sm text-gray-500">
+              Ready to record this expense in your books
+          </div>
+          <div class="space-x-3">
+              <button id="cancelBtn" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition">
+                  Cancel
+              </button>
+              <button id="recordExpenseBtn" class="bg-[#D69E2E] hover:bg-[#B7791F] text-white px-6 py-2 rounded-lg font-semibold transition shadow-md">
+                  Record Expense
+              </button>
+          </div>
+      </div>
+  </div>
+</div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Common validation functions
@@ -2649,6 +2737,154 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   };
 });
+</script>
+
+<script>
+// Sample employee data - replace with your actual data source
+const employeeData = [
+    {
+        name: "John Doe",
+        monthlySalary: 25000,
+        commission: 3500
+    },
+    {
+        name: "Jane Smith",
+        monthlySalary: 28000,
+        commission: 4200
+    },
+    {
+        name: "Mike Johnson",
+        monthlySalary: 22000,
+        commission: 2800
+    },
+    {
+        name: "Sarah Wilson",
+        monthlySalary: 30000,
+        commission: 5100
+    },
+    {
+        name: "David Brown",
+        monthlySalary: 26000,
+        commission: 3900
+    }
+];
+
+// Function to format currency
+function formatCurrency(amount) {
+    return '₱' + amount.toLocaleString('en-PH', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+}
+
+// Function to get current month/year
+function getCurrentMonth() {
+    const now = new Date();
+    return now.toLocaleDateString('en-US', { 
+        month: 'long', 
+        year: 'numeric' 
+    });
+}
+
+// Function to populate employee table
+function populateEmployeeTable() {
+    const tableBody = document.getElementById('employeeTableBody');
+    const currentMonthElement = document.getElementById('currentMonth');
+    
+    // Update current month
+    currentMonthElement.textContent = getCurrentMonth();
+    
+    // Clear existing rows
+    tableBody.innerHTML = '';
+    
+    let totalMonthlySalary = 0;
+    let totalCommissions = 0;
+    let totalEmployees = employeeData.length;
+    
+    // Add each employee row
+    employeeData.forEach((employee, index) => {
+        const totalPay = employee.monthlySalary + employee.commission;
+        totalMonthlySalary += employee.monthlySalary;
+        totalCommissions += employee.commission;
+        
+        const row = document.createElement('tr');
+        row.className = index % 2 === 0 ? 'bg-white' : 'bg-amber-25';
+        row.innerHTML = `
+            <td class="px-4 py-3 border-b border-amber-100 font-medium text-gray-800">${employee.name}</td>
+            <td class="px-4 py-3 border-b border-amber-100 text-right text-gray-700">${formatCurrency(employee.monthlySalary)}</td>
+            <td class="px-4 py-3 border-b border-amber-100 text-right text-gray-700">${formatCurrency(employee.commission)}</td>
+            <td class="px-4 py-3 border-b border-amber-100 text-right font-semibold text-gray-800">${formatCurrency(totalPay)}</td>
+        `;
+        tableBody.appendChild(row);
+    });
+    
+    // Update summary
+    document.getElementById('totalMonthlySalary').textContent = formatCurrency(totalMonthlySalary);
+    document.getElementById('totalCommissions').textContent = formatCurrency(totalCommissions);
+    document.getElementById('totalEmployees').textContent = totalEmployees;
+    document.getElementById('grandTotal').textContent = formatCurrency(totalMonthlySalary + totalCommissions);
+}
+
+// Function to open modal
+function openPayrollModal() {
+    populateEmployeeTable();
+    document.getElementById('payrollModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+}
+
+// Function to close modal
+function closePayrollModal() {
+    document.getElementById('payrollModal').classList.add('hidden');
+    document.body.style.overflow = 'auto'; // Restore background scrolling
+}
+
+// Function to handle expense recording
+function recordExpense() {
+    const grandTotal = document.getElementById('grandTotal').textContent;
+    const currentMonth = document.getElementById('currentMonth').textContent;
+    
+    // Here you would typically send this data to your backend or accounting system
+    alert(`Payroll expense of ${grandTotal} for ${currentMonth} has been recorded!\n\nIn a real application, this would be sent to your expense tracking system.`);
+    
+    closePayrollModal();
+}
+
+// Event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    // Open modal button
+    document.getElementById('openPayrollModal').addEventListener('click', openPayrollModal);
+    
+    // Close modal buttons
+    document.getElementById('closeModal').addEventListener('click', closePayrollModal);
+    document.getElementById('cancelBtn').addEventListener('click', closePayrollModal);
+    
+    // Record expense button
+    document.getElementById('recordExpenseBtn').addEventListener('click', recordExpense);
+    
+    // Close modal when clicking outside
+    document.getElementById('payrollModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closePayrollModal();
+        }
+    });
+    
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closePayrollModal();
+        }
+    });
+});
+
+// Export functions for external use
+window.PayrollModal = {
+    open: openPayrollModal,
+    close: closePayrollModal,
+    updateEmployeeData: function(newData) {
+        employeeData.length = 0;
+        employeeData.push(...newData);
+    }
+};
 </script>
   
 </body>
