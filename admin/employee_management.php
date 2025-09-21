@@ -1172,6 +1172,87 @@ echo "</tr>";
   </div>
 </div>
 
+<div id="branchSelectionModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 transform transition-all">
+        <!-- Modal Header -->
+        <div class="bg-gradient-to-r from-amber-400 to-yellow-500 rounded-t-2xl px-6 py-4">
+            <div class="flex items-center justify-between">
+                <h3 class="text-xl font-bold text-white flex items-center">
+                    <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"/>
+                        <path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd"/>
+                    </svg>
+                    Select Branch
+                </h3>
+                <button id="closeBranchModal" class="text-white hover:text-amber-200 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Modal Content -->
+        <div class="p-6">
+            <p class="text-gray-600 mb-6 text-center">Choose a branch to view payroll information:</p>
+            
+            <!-- Branch Options -->
+            <div class="space-y-3">
+                <!-- Paete Branch -->
+                <button onclick="selectBranch('1')" class="w-full group">
+                    <div class="bg-gradient-to-r from-amber-50 to-yellow-50 hover:from-amber-100 hover:to-yellow-100 border-2 border-amber-200 hover:border-amber-400 rounded-xl p-4 transition-all duration-200 transform hover:scale-105">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="bg-amber-400 text-white rounded-full p-2 mr-3">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+                                    </svg>
+                                </div>
+                                <div class="text-left">
+                                    <h4 class="font-semibold text-gray-800 group-hover:text-amber-700">Paete Branch</h4>
+                                    <p class="text-sm text-gray-600">Main Office Location</p>
+                                </div>
+                            </div>
+                            <svg class="w-5 h-5 text-amber-500 group-hover:text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+
+                <!-- Pila Branch -->
+                <button onclick="selectBranch('2')" class="w-full group">
+                    <div class="bg-gradient-to-r from-amber-50 to-yellow-50 hover:from-amber-100 hover:to-yellow-100 border-2 border-amber-200 hover:border-amber-400 rounded-xl p-4 transition-all duration-200 transform hover:scale-105">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="bg-amber-400 text-white rounded-full p-2 mr-3">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+                                    </svg>
+                                </div>
+                                <div class="text-left">
+                                    <h4 class="font-semibold text-gray-800 group-hover:text-amber-700">Pila Branch</h4>
+                                    <p class="text-sm text-gray-600">Secondary Location</p>
+                                </div>
+                            </div>
+                            <svg class="w-5 h-5 text-amber-500 group-hover:text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="bg-gray-50 rounded-b-2xl px-6 py-4">
+            <button id="cancelBranchSelection" class="w-full bg-gray-300 hover:bg-gray-400 text-gray-700 font-semibold py-2 px-4 rounded-lg transition-colors">
+                Cancel
+            </button>
+        </div>
+    </div>
+</div>
+
 <div id="payrollModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
   <!-- Modal Content -->
   <div class="bg-gradient-to-br from-yellow-50 to-amber-50 rounded-xl shadow-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-hidden">
@@ -2779,23 +2860,31 @@ function formatCurrency(amount) {
 </script>
 
 <script>
-  function selectBranchForPayroll() {
-    // You can implement this as a modal or dropdown
-    const branch = prompt("Select branch:\n1. Paete (Enter 1)\n2. Pila (Enter 2)");
-    
-    if (branch === "1" || branch === "2") {
-      openPayrollModal(branch);
-    } else {
-      alert("Please select a valid branch (1 for Paete, 2 for Pila)");
-    }
-  }
 document.addEventListener('DOMContentLoaded', function() {
   const modal = document.getElementById('payrollModal');
+  const branchModal = document.getElementById('branchSelectionModal');
   const closeModal = document.getElementById('closeModal');
   const cancelBtn = document.getElementById('cancelBtn');
   const recordExpenseBtn = document.getElementById('recordExpenseBtn');
 
-  
+  let selectedBranchId = null;
+
+  // Function to show branch selection modal
+  function selectBranchForPayroll() {
+      branchModal.classList.remove('hidden');
+  }
+
+  // Function to hide branch selection modal
+  function closeBranchSelectionModal() {
+      branchModal.classList.add('hidden');
+  }
+
+  // Function to select branch and open payroll modal
+  function selectBranch(branchId) {
+      selectedBranchId = branchId;
+      closeBranchSelectionModal();
+      openPayrollModal(branchId);
+  }
   
   // Function to open modal and load data
   function openPayrollModal(branchId) {
@@ -2874,7 +2963,7 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Make the open function available globally
   window.openPayrollModal = openPayrollModal;
-  
+  window.selectBranchForPayroll = selectBranchForPayroll;
 });
 </script>
   
