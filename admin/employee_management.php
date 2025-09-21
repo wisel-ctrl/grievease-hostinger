@@ -143,7 +143,7 @@ $totalPages = ceil($totalEmployees / $perPage);
     <!-- Right Section (Button) -->
     <div>
       <button class="bg-[#D69E2E] hover:bg-[#B7791F] text-white font-semibold px-4 py-2 rounded-lg shadow-md transition">
-        Record This Month’s Payroll
+        Record Payroll
       </button>
     </div>
   </div>
