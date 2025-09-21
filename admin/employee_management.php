@@ -2865,6 +2865,8 @@ document.addEventListener('DOMContentLoaded', function() {
   const cancelBtn = document.getElementById('cancelBtn');
   const recordExpenseBtn = document.getElementById('recordExpenseBtn');
 
+  console.log("bat ayaw gumana pucha");
+
   let selectedBranchId = null;
 
   // Function to show branch selection modal
