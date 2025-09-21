@@ -142,7 +142,7 @@ $totalPages = ceil($totalEmployees / $perPage);
 
     <!-- Right Section (Button) -->
     <div>
-      <button id="openPayrollModal" class="bg-[#D69E2E] hover:bg-[#B7791F] text-white font-semibold px-4 py-2 rounded-lg shadow-md transition">
+      <button onclick="openPayrollModal()" id="openPayrollModal" class="bg-[#D69E2E] hover:bg-[#B7791F] text-white font-semibold px-4 py-2 rounded-lg shadow-md transition">
         Record Payroll
       </button>
     </div>
@@ -2776,115 +2776,90 @@ function formatCurrency(amount) {
         maximumFractionDigits: 2
     });
 }
+</script>
 
-// Function to get current month/year
-function getCurrentMonth() {
-    const now = new Date();
-    return now.toLocaleDateString('en-US', { 
-        month: 'long', 
-        year: 'numeric' 
-    });
-}
-
-// Function to populate employee table
-function populateEmployeeTable() {
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const modal = document.getElementById('payrollModal');
+  const closeModal = document.getElementById('closeModal');
+  const cancelBtn = document.getElementById('cancelBtn');
+  const recordExpenseBtn = document.getElementById('recordExpenseBtn');
+  
+  // Function to open modal and load data
+  function openPayrollModal() {
+    modal.classList.remove('hidden');
+    loadPayrollData();
+  }
+  
+  // Function to close modal
+  function closePayrollModal() {
+    modal.classList.add('hidden');
+  }
+  
+  // Event listeners
+  closeModal.addEventListener('click', closePayrollModal);
+  cancelBtn.addEventListener('click', closePayrollModal);
+  recordExpenseBtn.addEventListener('click', function() {
+    // Handle recording expense
+    alert('Expense recorded successfully!');
+    closePayrollModal();
+  });
+  
+  // Load payroll data from API
+  async function loadPayrollData() {
+    try {
+      const response = await fetch('employeeManagement/payroll.php');
+      const data = await response.json();
+      
+      if (data.success) {
+        populateEmployeeTable(data.employees);
+        updateSummary(data.summary);
+        updateCurrentMonth();
+      } else {
+        console.error('Error loading payroll data:', data.message);
+      }
+    } catch (error) {
+      console.error('Error fetching payroll data:', error);
+    }
+  }
+  
+  // Populate employee table
+  function populateEmployeeTable(employees) {
     const tableBody = document.getElementById('employeeTableBody');
-    const currentMonthElement = document.getElementById('currentMonth');
-    
-    // Update current month
-    currentMonthElement.textContent = getCurrentMonth();
-    
-    // Clear existing rows
     tableBody.innerHTML = '';
     
-    let totalMonthlySalary = 0;
-    let totalCommissions = 0;
-    let totalEmployees = employeeData.length;
-    
-    // Add each employee row
-    employeeData.forEach((employee, index) => {
-        const totalPay = employee.monthlySalary + employee.commission;
-        totalMonthlySalary += employee.monthlySalary;
-        totalCommissions += employee.commission;
-        
-        const row = document.createElement('tr');
-        row.className = index % 2 === 0 ? 'bg-white' : 'bg-amber-25';
-        row.innerHTML = `
-            <td class="px-4 py-3 border-b border-amber-100 font-medium text-gray-800">${employee.name}</td>
-            <td class="px-4 py-3 border-b border-amber-100 text-right text-gray-700">${formatCurrency(employee.monthlySalary)}</td>
-            <td class="px-4 py-3 border-b border-amber-100 text-right text-gray-700">${formatCurrency(employee.commission)}</td>
-            <td class="px-4 py-3 border-b border-amber-100 text-right font-semibold text-gray-800">${formatCurrency(totalPay)}</td>
-        `;
-        tableBody.appendChild(row);
+    employees.forEach(employee => {
+      const row = document.createElement('tr');
+      row.className = 'border-b border-amber-200 hover:bg-amber-50 transition';
+      row.innerHTML = `
+        <td class="px-4 py-3 text-gray-700">${employee.full_name}</td>
+        <td class="px-4 py-3 text-right text-gray-700">₱${parseFloat(employee.monthly_salary).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
+        <td class="px-4 py-3 text-right text-gray-700">₱${parseFloat(employee.commission_salary).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
+        <td class="px-4 py-3 text-right font-semibold text-gray-800">₱${parseFloat(employee.total_salary).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
+      `;
+      tableBody.appendChild(row);
     });
-    
-    // Update summary
-    document.getElementById('totalMonthlySalary').textContent = formatCurrency(totalMonthlySalary);
-    document.getElementById('totalCommissions').textContent = formatCurrency(totalCommissions);
-    document.getElementById('totalEmployees').textContent = totalEmployees;
-    document.getElementById('grandTotal').textContent = formatCurrency(totalMonthlySalary + totalCommissions);
-}
-
-// Function to open modal
-function openPayrollModal() {
-    populateEmployeeTable();
-    document.getElementById('payrollModal').classList.remove('hidden');
-    document.body.style.overflow = 'hidden'; // Prevent background scrolling
-}
-
-// Function to close modal
-function closePayrollModal() {
-    document.getElementById('payrollModal').classList.add('hidden');
-    document.body.style.overflow = 'auto'; // Restore background scrolling
-}
-
-// Function to handle expense recording
-function recordExpense() {
-    const grandTotal = document.getElementById('grandTotal').textContent;
-    const currentMonth = document.getElementById('currentMonth').textContent;
-    
-    // Here you would typically send this data to your backend or accounting system
-    alert(`Payroll expense of ${grandTotal} for ${currentMonth} has been recorded!\n\nIn a real application, this would be sent to your expense tracking system.`);
-    
-    closePayrollModal();
-}
-
-// Event listeners
-document.addEventListener('DOMContentLoaded', function() {
-    // Open modal button
-    document.getElementById('openPayrollModal').addEventListener('click', openPayrollModal);
-    
-    // Close modal buttons
-    document.getElementById('closeModal').addEventListener('click', closePayrollModal);
-    document.getElementById('cancelBtn').addEventListener('click', closePayrollModal);
-    
-    // Record expense button
-    document.getElementById('recordExpenseBtn').addEventListener('click', recordExpense);
-    
-    // Close modal when clicking outside
-    document.getElementById('payrollModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closePayrollModal();
-        }
-    });
-    
-    // Close modal with Escape key
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            closePayrollModal();
-        }
-    });
+  }
+  
+  // Update summary section
+  function updateSummary(summary) {
+    document.getElementById('totalMonthlySalary').textContent = `₱${parseFloat(summary.total_monthly_salary).toLocaleString('en-PH', { minimumFractionDigits: 2 })}`;
+    document.getElementById('totalCommissions').textContent = `₱${parseFloat(summary.total_commission_salary).toLocaleString('en-PH', { minimumFractionDigits: 2 })}`;
+    document.getElementById('totalEmployees').textContent = summary.total_employees;
+    document.getElementById('grandTotal').textContent = `₱${parseFloat(summary.total_salary).toLocaleString('en-PH', { minimumFractionDigits: 2 })}`;
+  }
+  
+  // Update current month display
+  function updateCurrentMonth() {
+    const now = new Date();
+    const month = now.toLocaleString('default', { month: 'long' });
+    const year = now.getFullYear();
+    document.getElementById('currentMonth').textContent = `${month} ${year}`;
+  }
+  
+  // Make the open function available globally
+  window.openPayrollModal = openPayrollModal;
 });
-
-// Export functions for external use
-window.PayrollModal = {
-    open: openPayrollModal,
-    close: closePayrollModal,
-    updateEmployeeData: function(newData) {
-        employeeData.length = 0;
-        employeeData.push(...newData);
-    }
-};
 </script>
   
 </body>
