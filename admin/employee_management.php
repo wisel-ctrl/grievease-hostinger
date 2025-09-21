@@ -2857,9 +2857,7 @@ function formatCurrency(amount) {
         maximumFractionDigits: 2
     });
 }
-</script>
 
-<script>
 document.addEventListener('DOMContentLoaded', function() {
   const modal = document.getElementById('payrollModal');
   const branchModal = document.getElementById('branchSelectionModal');
@@ -2966,6 +2964,8 @@ document.addEventListener('DOMContentLoaded', function() {
   window.selectBranchForPayroll = selectBranchForPayroll;
 });
 </script>
+
+
   
 </body>
 </html>
