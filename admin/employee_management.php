@@ -142,7 +142,7 @@ $totalPages = ceil($totalEmployees / $perPage);
 
     <!-- Right Section (Button) -->
     <div>
-      <button onclick="openPayrollModal()" id="openPayrollModal" class="bg-[#D69E2E] hover:bg-[#B7791F] text-white font-semibold px-4 py-2 rounded-lg shadow-md transition">
+      <button onclick="selectBranchForPayroll()" id="openPayrollModal" class="bg-[#D69E2E] hover:bg-[#B7791F] text-white font-semibold px-4 py-2 rounded-lg shadow-md transition">
         Record Payroll
       </button>
     </div>
@@ -2784,11 +2784,22 @@ document.addEventListener('DOMContentLoaded', function() {
   const closeModal = document.getElementById('closeModal');
   const cancelBtn = document.getElementById('cancelBtn');
   const recordExpenseBtn = document.getElementById('recordExpenseBtn');
+
+  function selectBranchForPayroll() {
+    // You can implement this as a modal or dropdown
+    const branch = prompt("Select branch:\n1. Paete (Enter 1)\n2. Pila (Enter 2)");
+    
+    if (branch === "1" || branch === "2") {
+      openPayrollModal(branch);
+    } else {
+      alert("Please select a valid branch (1 for Paete, 2 for Pila)");
+    }
+  }
   
   // Function to open modal and load data
-  function openPayrollModal() {
+  function openPayrollModal(branchId) {
     modal.classList.remove('hidden');
-    loadPayrollData();
+    loadPayrollData(branchId); // Pass branchId to load function
   }
   
   // Function to close modal
@@ -2800,15 +2811,18 @@ document.addEventListener('DOMContentLoaded', function() {
   closeModal.addEventListener('click', closePayrollModal);
   cancelBtn.addEventListener('click', closePayrollModal);
   recordExpenseBtn.addEventListener('click', function() {
-    // Handle recording expense
-    alert('Expense recorded successfully!');
+    // Get the branch_id from wherever you stored it
+    const branchId = /* get the selected branch_id */;
+    
+    // Handle recording expense with branch_id
+    alert(`Expense recorded successfully for branch ${branchId}!`);
     closePayrollModal();
   });
   
   // Load payroll data from API
-  async function loadPayrollData() {
+  async function loadPayrollData(branchId) {
     try {
-      const response = await fetch('employeeManagement/payroll.php');
+      const response = await fetch(`employeeManagement/payroll.php?branch_id=${branchId}`);
       const data = await response.json();
       
       if (data.success) {
@@ -2859,6 +2873,7 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Make the open function available globally
   window.openPayrollModal = openPayrollModal;
+  window.selectBranchForPayroll = selectBranchForPayroll;
 });
 </script>
   

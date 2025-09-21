@@ -1,22 +1,20 @@
 <?php
-header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST');
-header('Access-Control-Allow-Headers: Content-Type');
+// ... your existing headers and connection code ...
 
-require_once('../../db_connect.php');
+// Get branch_id from request
+$branch_id = isset($_GET['branch_id']) ? intval($_GET['branch_id']) : 0;
 
-// Check connection
-if ($conn->connect_error) {
+// Validate branch_id
+if ($branch_id !== 1 && $branch_id !== 2) {
     echo json_encode([
         'success' => false,
-        'message' => 'Database connection failed: ' . $conn->connect_error
+        'message' => 'Invalid branch ID. Please provide 1 for Paete or 2 for Pila.'
     ]);
     exit;
 }
 
-// Function to get employee payroll data
-function getEmployeePayrollData($conn) {
+// Function to get employee payroll data with branch filter
+function getEmployeePayrollData($conn, $branch_id) {
     $query = "
         SELECT 
             e.employeeID,
@@ -50,6 +48,7 @@ function getEmployeePayrollData($conn) {
            AND YEAR(esp.payment_date) = YEAR(CURDATE())
            AND MONTH(esp.payment_date) = MONTH(CURDATE())
         WHERE e.status = 'active'
+        AND e.branch_id = $branch_id
         GROUP BY 
             e.employeeID,
             e.fname, e.mname, e.lname, e.suffix,
@@ -70,8 +69,8 @@ function getEmployeePayrollData($conn) {
     return $employees;
 }
 
-// Function to get payroll summary
-function getPayrollSummary($conn) {
+// Function to get payroll summary with branch filter
+function getPayrollSummary($conn, $branch_id) {
     $query = "
         SELECT 
             COUNT(e.employeeID) AS total_employees,
@@ -104,6 +103,7 @@ function getPayrollSummary($conn) {
             GROUP BY employeeID
         ) esp_month ON e.employeeID = esp_month.employeeID
         WHERE e.status = 'active'
+        AND e.branch_id = $branch_id
     ";
     
     $result = $conn->query($query);
@@ -121,13 +121,14 @@ function getPayrollSummary($conn) {
 }
 
 try {
-    // Get data from database
-    $employees = getEmployeePayrollData($conn);
-    $summary = getPayrollSummary($conn);
+    // Get data from database with branch filter
+    $employees = getEmployeePayrollData($conn, $branch_id);
+    $summary = getPayrollSummary($conn, $branch_id);
     
     // Return JSON response
     echo json_encode([
         'success' => true,
+        'branch_id' => $branch_id,
         'employees' => $employees,
         'summary' => $summary
     ]);
