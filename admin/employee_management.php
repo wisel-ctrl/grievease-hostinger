@@ -2779,12 +2779,6 @@ function formatCurrency(amount) {
 </script>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  const modal = document.getElementById('payrollModal');
-  const closeModal = document.getElementById('closeModal');
-  const cancelBtn = document.getElementById('cancelBtn');
-  const recordExpenseBtn = document.getElementById('recordExpenseBtn');
-
   function selectBranchForPayroll() {
     // You can implement this as a modal or dropdown
     const branch = prompt("Select branch:\n1. Paete (Enter 1)\n2. Pila (Enter 2)");
@@ -2795,6 +2789,13 @@ document.addEventListener('DOMContentLoaded', function() {
       alert("Please select a valid branch (1 for Paete, 2 for Pila)");
     }
   }
+document.addEventListener('DOMContentLoaded', function() {
+  const modal = document.getElementById('payrollModal');
+  const closeModal = document.getElementById('closeModal');
+  const cancelBtn = document.getElementById('cancelBtn');
+  const recordExpenseBtn = document.getElementById('recordExpenseBtn');
+
+  
   
   // Function to open modal and load data
   function openPayrollModal(branchId) {
@@ -2873,7 +2874,7 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Make the open function available globally
   window.openPayrollModal = openPayrollModal;
-  window.selectBranchForPayroll = selectBranchForPayroll;
+  
 });
 </script>
   
