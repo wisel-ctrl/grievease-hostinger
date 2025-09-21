@@ -1,5 +1,10 @@
 <?php
-// ... your existing headers and connection code ...
+header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST');
+header('Access-Control-Allow-Headers: Content-Type');
+
+require_once('../../db_connect.php');
 
 // Get branch_id from request
 $branch_id = isset($_GET['branch_id']) ? intval($_GET['branch_id']) : 0;
