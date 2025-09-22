@@ -2900,13 +2900,58 @@ document.addEventListener('DOMContentLoaded', function() {
   // Event listeners
   closeModal.addEventListener('click', closePayrollModal);
   cancelBtn.addEventListener('click', closePayrollModal);
-  recordExpenseBtn.addEventListener('click', function() {
-    // Get the branch_id from wherever you stored it
-    const branchId = 2;
-    
-    // Handle recording expense with branch_id
-    alert(`Expense recorded successfully for branch ${branchId}!`);
-    closePayrollModal();
+  // Event listener for recording expense
+  recordExpenseBtn.addEventListener('click', async function() {
+      // Get the grand total from the summary
+      const grandTotalText = document.getElementById('grandTotal').textContent;
+      const grandTotal = parseFloat(grandTotalText.replace('₱', '').replace(/,/g, ''));
+      
+      // Get the branch_id from your branch selection
+      const branchId = selectedBranchId;
+      
+      if (!branchId) {
+          alert('Please select a branch first!');
+          return;
+      }
+      
+      if (grandTotal <= 0) {
+          alert('No payroll expense to record!');
+          return;
+      }
+      
+      try {
+          // Show loading state
+          recordExpenseBtn.disabled = true;
+          recordExpenseBtn.textContent = 'Recording...';
+          
+          const response = await fetch('employeeManagement/record_payroll_expense.php', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                  branch_id: branchId,
+                  grand_total: grandTotal
+              })
+          });
+          
+          const data = await response.json();
+          
+          if (data.success) {
+              alert(`✅ Payroll expense recorded successfully!\nExpense: ${data.expense_name}\nAmount: ₱${grandTotal.toLocaleString('en-PH')}\nBranch: ${branchId}`);
+              closePayrollModal();
+          } else {
+              alert('Error recording expense: ' + data.message);
+          }
+          
+      } catch (error) {
+          console.error('Error recording expense:', error);
+          alert('Error recording expense. Please try again.');
+      } finally {
+          // Reset button state
+          recordExpenseBtn.disabled = false;
+          recordExpenseBtn.textContent = 'Record Expense';
+      }
   });
   
   // Load payroll data from API
