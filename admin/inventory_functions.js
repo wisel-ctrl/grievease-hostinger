@@ -351,25 +351,6 @@ saveItemChanges();
 
 function saveItemChanges() {
 const form = document.getElementById('editInventoryForm');
-
-// Validate form before submission
-const itemName = document.getElementById('editItemName').value;
-const unitPrice = document.getElementById('editUnitPrice').value;
-
-// Validate item name
-if (!itemName.trim() || /[0-9]/.test(itemName) || itemName.includes('  ') || itemName.startsWith(' ')) {
-  document.getElementById('editItemNameError').classList.remove('hidden');
-  document.getElementById('editItemName').focus();
-  return false;
-}
-
-// Validate unit price (no spaces)
-if (unitPrice.includes(' ')) {
-  document.getElementById('editUnitPriceError').classList.remove('hidden');
-  document.getElementById('editUnitPrice').focus();
-  return false;
-}
-
 const formData = new FormData(form);
 
 // Show confirmation dialog

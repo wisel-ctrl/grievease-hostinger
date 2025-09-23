@@ -1140,126 +1140,6 @@ document.getElementById('addInventoryForm').addEventListener('submit', function(
     document.getElementById('itemName').focus();
   }
 });
-
-// Edit Modal Validation Functions
-function validateEditItemName(input) {
-  const errorElement = document.getElementById('editItemNameError');
-  let value = input.value;
-  let isValid = true;
-  
-  // Remove numbers from input
-  const numbersRemoved = value.replace(/[0-9]/g, '');
-  if (numbersRemoved !== value) {
-    input.value = numbersRemoved;
-    value = numbersRemoved;
-    isValid = false;
-  }
-  
-  // Check if first character is space
-  if (value.length > 0 && value.charAt(0) === ' ') {
-    input.value = value.trim();
-    value = value.trim();
-    isValid = false;
-  }
-  
-  // Check for consecutive spaces
-  if (value.includes('  ')) {
-    input.value = value.replace(/\s+/g, ' ');
-    value = value.replace(/\s+/g, ' ');
-    isValid = false;
-  }
-  
-  // Only allow space after at least 2 characters
-  if (value.length < 2 && value.includes(' ')) {
-    input.value = value.replace(/\s/g, '');
-    value = value.replace(/\s/g, '');
-    isValid = false;
-  }
-  
-  // Show/hide error message
-  if (!isValid) {
-    errorElement.classList.remove('hidden');
-  } else {
-    errorElement.classList.add('hidden');
-  }
-  
-  // Auto-capitalize first letter
-  if (value.length === 1) {
-    input.value = value.charAt(0).toUpperCase() + value.slice(1);
-  }
-}
-
-function handleEditItemNamePaste(event) {
-  event.preventDefault();
-  const pastedText = (event.clipboardData || window.clipboardData).getData('text');
-  
-  // Clean the pasted text
-  let cleanedText = pastedText;
-  
-  // Remove numbers
-  cleanedText = cleanedText.replace(/[0-9]/g, '');
-  
-  // Remove consecutive spaces
-  cleanedText = cleanedText.replace(/\s+/g, ' ');
-  
-  // Remove leading space
-  if (cleanedText.startsWith(' ')) {
-    cleanedText = cleanedText.trim();
-  }
-  
-  // Remove spaces if less than 2 characters
-  if (cleanedText.length < 2 && cleanedText.includes(' ')) {
-    cleanedText = cleanedText.replace(/\s/g, '');
-  }
-  
-  // Insert the cleaned text
-  const input = event.target;
-  input.value = cleanedText;
-  
-  // Trigger validation
-  validateEditItemName(input);
-}
-
-function validateEditUnitPrice(input) {
-  const errorElement = document.getElementById('editUnitPriceError');
-  let value = input.value;
-  let isValid = true;
-  
-  // Remove spaces from input
-  const spacesRemoved = value.replace(/\s/g, '');
-  if (spacesRemoved !== value) {
-    input.value = spacesRemoved;
-    value = spacesRemoved;
-    isValid = false;
-  }
-  
-  // Show/hide error message
-  if (!isValid) {
-    errorElement.classList.remove('hidden');
-  } else {
-    errorElement.classList.add('hidden');
-  }
-  
-  // Validate negative values
-  if (parseFloat(value) < 0) {
-    input.value = '';
-  }
-}
-
-function handleEditUnitPricePaste(event) {
-  event.preventDefault();
-  const pastedText = (event.clipboardData || window.clipboardData).getData('text');
-  
-  // Remove all spaces from pasted text
-  const cleanedText = pastedText.replace(/\s/g, '');
-  
-  // Insert the cleaned text
-  const input = event.target;
-  input.value = cleanedText;
-  
-  // Trigger validation
-  validateEditUnitPrice(input);
-}
 </script>
 
 <!-- Edit Inventory Modal -->
@@ -1297,8 +1177,7 @@ function handleEditUnitPricePaste(event) {
             Item Name <span class="text-red-500">*</span>
           </label>
           <div class="relative">
-            <input type="text" id="editItemName" name="editItemName" value="<?php echo $item_name; ?>" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Item Name" oninput="validateEditItemName(this)" onpaste="handleEditItemNamePaste(event)">
-            <div id="editItemNameError" class="text-red-500 text-xs mt-1 hidden">Item name can only contain letters and spaces. No consecutive spaces allowed.</div>
+            <input type="text" id="editItemName" name="editItemName" value="<?php echo $item_name; ?>" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Item Name">
           </div>
         </div>
 
@@ -1347,8 +1226,7 @@ function handleEditUnitPricePaste(event) {
             </div>
             <input type="text" id="editUnitPrice" name="editUnitPrice" value="<?php echo number_format($unit_price, 2); ?>" required 
                    class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
-                   placeholder="0.00" oninput="validateEditUnitPrice(this)" onpaste="handleEditUnitPricePaste(event)">
-            <div id="editUnitPriceError" class="text-red-500 text-xs mt-1 hidden">Unit price cannot contain spaces.</div>
+                   placeholder="0.00">
           </div>
         </div>
 
