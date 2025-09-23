@@ -374,24 +374,33 @@ for ($i = 4; $i >= 0; $i--) {
     $year = $date->format('Y');
     
     $query = "SELECT SUM(total_discounted) as projected_income FROM (
-        -- Your existing query modified for yearly
-        SELECT discounted_price as total_discounted 
-        FROM sales_tb 
-        WHERE YEAR(get_timestamp) = ?
+        -- 1. Direct sales from sales_tb not referenced in analytics_tb
+        SELECT s.discounted_price as total_discounted
+        FROM sales_tb s
+        WHERE YEAR(s.get_timestamp) = ?
+          AND s.sales_id NOT IN (
+              SELECT a.sales_id 
+              FROM analytics_tb a 
+              WHERE a.sales_type = 'traditional'
+                AND YEAR(a.sale_date) = ?
+          )
         
         UNION ALL
         
-        SELECT discounted_price as total_discounted
-        FROM customsales_tb
-        WHERE YEAR(get_timestamp) = ?
-        AND customsales_id NOT IN (
-            SELECT sales_id FROM analytics_tb 
-            WHERE sales_type = 'custom'
-            AND YEAR(sale_date) = ?
-        )
+        -- 2. Direct custom sales from customsales_tb not referenced in analytics_tb
+        SELECT c.discounted_price as total_discounted
+        FROM customsales_tb c
+        WHERE YEAR(c.get_timestamp) = ?
+          AND c.customsales_id NOT IN (
+              SELECT a.sales_id 
+              FROM analytics_tb a 
+              WHERE a.sales_type = 'custom'
+                AND YEAR(a.sale_date) = ?
+          )
         
         UNION ALL
         
+        -- 3. Analytics records
         SELECT 
             CASE
                 WHEN a.sales_type = 'traditional' AND s.sales_id IS NOT NULL THEN s.discounted_price
@@ -399,13 +408,15 @@ for ($i = 4; $i >= 0; $i--) {
                 ELSE a.discounted_price
             END as total_discounted
         FROM analytics_tb a
-        LEFT JOIN sales_tb s ON a.sales_type = 'traditional' AND a.sales_id = s.sales_id
-        LEFT JOIN customsales_tb c ON a.sales_type = 'custom' AND a.sales_id = c.customsales_id
+        LEFT JOIN sales_tb s 
+              ON a.sales_type = 'traditional' AND a.sales_id = s.sales_id
+        LEFT JOIN customsales_tb c 
+              ON a.sales_type = 'custom' AND a.sales_id = c.customsales_id
         WHERE YEAR(a.sale_date) = ?
     ) as combined_sales";
     
     $stmt = $conn->prepare($query);
-    $stmt->bind_param("iiii", $year, $year, $year, $year);
+    $stmt->bind_param("iiiii", $year, $year, $year, $year, $year);
     $stmt->execute();
     $result = $stmt->get_result();
     $data = $result->fetch_assoc();
