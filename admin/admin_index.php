@@ -756,7 +756,7 @@ for ($i = 11; $i >= 0; $i--) {
     ) as combined_sales";
     
     $stmt = $conn->prepare($query);
-    $stmt->bind_param("iiiiiiii", 
+    $stmt->bind_param("iiiiiiiiii", 
         $month, $year,        // 1. sales_tb direct
         $month, $year,        // 2. customsales_tb direct
         $month, $year,        // 2. customsales_tb not in analytics
