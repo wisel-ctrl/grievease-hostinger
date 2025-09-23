@@ -649,14 +649,19 @@ for ($i = 11; $i >= 0; $i--) {
     $monthLabels[] = $date->format('M Y');
     
     $query = "SELECT SUM(amount_paid) as revenue FROM (
-        -- 1. Direct sales from sales_tb
+        -- 1. Direct sales from sales_tb that are NOT in analytics_tb
         SELECT amount_paid 
         FROM sales_tb 
         WHERE branch_id = 2 AND MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?
+        AND sales_id NOT IN (
+            SELECT sales_id FROM analytics_tb 
+            WHERE sales_type = 'traditional'
+            AND MONTH(sale_date) = ? AND YEAR(sale_date) = ?
+        )
         
         UNION ALL
         
-        -- 2. Direct custom sales from customsales_tb not referenced in analytics_tb
+        -- 2. Direct custom sales from customsales_tb that are NOT in analytics_tb
         SELECT amount_paid
         FROM customsales_tb
         WHERE branch_id = 2 AND MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?
@@ -684,12 +689,13 @@ for ($i = 11; $i >= 0; $i--) {
         WHERE MONTH(a.sale_date) = ? AND YEAR(a.sale_date) = ?
         AND (a.branch_id = 2 OR (s.sales_id IS NOT NULL OR c.customsales_id IS NOT NULL))
     ) as combined_sales";
-    
+
     $stmt = $conn->prepare($query);
     $stmt->bind_param("iiiiiiii", 
-        $month, $year,        // 1. sales_tb direct
-        $month, $year,        // 2. customsales_tb direct
-        $month, $year,        // 2. customsales_tb not in analytics
+        $month, $year,        // 1. sales_tb direct (NOT in analytics)
+        $month, $year,        // 1. exclusion for traditional sales
+        $month, $year,        // 2. customsales_tb direct (NOT in analytics)  
+        $month, $year,        // 2. exclusion for custom sales
         $month, $year         // 3. analytics_tb all records
     );
     $stmt->execute();
