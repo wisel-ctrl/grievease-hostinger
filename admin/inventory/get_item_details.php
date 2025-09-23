@@ -119,7 +119,7 @@ if ($result && $result->num_rows > 0) {
     <div class="mt-6">
         <div class="bg-dark-gold p-5 rounded-xl w-full">
             <div class="flex flex-col items-center space-y-3">
-                <div class="w-full h-64 sm:h-80 md:h-96 bg-center bg-cover rounded-lg shadow-md border-2 border-gold" 
+                <div class="w-full h-48 sm:h-56 bg-center bg-cover rounded-lg shadow-md border-2 border-gold" 
                     style="background-image: url('uploads/inventory/<?php echo htmlspecialchars(basename($item["inventory_img"])); ?>');">
                 </div>
                 <span class="text-sm text-white">Item Image</span>
