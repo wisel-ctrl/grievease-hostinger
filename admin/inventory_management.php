@@ -1233,8 +1233,8 @@ document.getElementById('addInventoryForm').addEventListener('submit', function(
         <!-- Current Image Preview -->
         <div class="bg-navy p-3 sm:p-4 rounded-lg">
           <div class="flex flex-col items-center space-y-2 sm:space-y-3">
-            <div class="w-full h-32 bg-center bg-cover rounded-lg shadow-md" style="background-image: url('<?php echo $inventory_img; ?>');"></div>
-            <span class="text-xs sm:text-sm text-gray-600">Current Image</span>
+            <div class="w-full h-48 sm:h-56 md:h-64 bg-center bg-cover rounded-lg shadow-md border border-gray-200" style="background-image: url('<?php echo $inventory_img; ?>');"></div>
+            <span class="text-xs sm:text-sm text-gray-600 font-medium">Current Image</span>
           </div>
         </div>
 
