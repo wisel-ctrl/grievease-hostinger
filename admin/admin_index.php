@@ -718,6 +718,11 @@ for ($i = 11; $i >= 0; $i--) {
         SELECT amount_paid 
         FROM sales_tb 
         WHERE branch_id = 1 AND MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?
+        AND sales_id NOT IN (
+            SELECT sales_id FROM analytics_tb 
+            WHERE sales_type = 'traditional'
+            AND MONTH(sale_date) = ? AND YEAR(sale_date) = ?
+        )
         
         UNION ALL
         
@@ -755,7 +760,8 @@ for ($i = 11; $i >= 0; $i--) {
         $month, $year,        // 1. sales_tb direct
         $month, $year,        // 2. customsales_tb direct
         $month, $year,        // 2. customsales_tb not in analytics
-        $month, $year         // 3. analytics_tb all records
+        $month, $year,         // 3. analytics_tb all records
+        $month, $year
     );
     $stmt->execute();
     $result = $stmt->get_result();
