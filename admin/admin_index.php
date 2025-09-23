@@ -140,10 +140,11 @@ FROM (
 ) AS combined_sales";
 
 $stmt = $conn->prepare($revenueQuery);
-$stmt->bind_param("iiiiiiii", 
+$stmt->bind_param("iiiiiiiiii", 
     $currentMonth, $currentYear,        // 1. sales_tb direct
     $currentMonth, $currentYear,        // 2. customsales_tb direct
-    $currentMonth, $currentYear,        // 2. customsales_tb not in analytics
+    $currentMonth, $currentYear,  
+    $currentMonth, $currentYear,      // 2. customsales_tb not in analytics
     $currentMonth, $currentYear         // 3. analytics_tb all records
 );
 $stmt->execute();
