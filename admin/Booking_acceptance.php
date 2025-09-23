@@ -2568,7 +2568,7 @@ $total_lifeplan_pages = ceil($total_lifeplan_bookings / $lifeplan_bookings_per_p
         new Date(data.booking_date).getFullYear() + '-' + 
         String(data.booking_id).padStart(3, '0');
       document.getElementById('customerName').textContent = data.customer_name;
-      document.getElementById('contactNumber').textContent = data.contact_number || "Not provided";
+      document.getElementById('contactNumber').textContent = data.phone_number || "Not provided";
       document.getElementById('emailAddress').textContent = data.email;
       document.getElementById('address').textContent = data.address || "Not provided";
       document.getElementById('serviceType').textContent = data.service_name;

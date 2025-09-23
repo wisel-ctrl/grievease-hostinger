@@ -11,7 +11,7 @@ if (!isset($_GET['id'])) {
 $booking_id = (int)$_GET['id'];
 
 $query = "SELECT b.*, CONCAT(u.first_name, ' ', COALESCE(u.middle_name, ''), ' ', u.last_name, ' ', 
-            COALESCE(u.suffix, '')) AS customer_name, 
+            COALESCE(u.suffix, '')) AS customer_name, CONCAT(u.region, ' ', u.province, ' ', u.city, ' ', u.barangay, ' ', u.street_address, ' ', u.zip_code) as address,
             s.service_name,u.phone_number, u.email FROM booking_tb b 
             JOIN users u ON b.customerID = u.id 
             JOIN services_tb s ON b.service_id = s.service_id 
