@@ -784,6 +784,11 @@ for ($i = 4; $i >= 0; $i--) {
         SELECT amount_paid 
         FROM sales_tb 
         WHERE branch_id = 2 AND YEAR(get_timestamp) = ?
+        AND sales_id NOT IN (
+            SELECT sales_id FROM analytics_tb 
+            WHERE sales_type = 'traditional'
+            AND YEAR(sale_date) = ?
+        )
         
         UNION ALL
         
@@ -817,11 +822,12 @@ for ($i = 4; $i >= 0; $i--) {
     ) as combined_sales";
     
     $stmt = $conn->prepare($query);
-    $stmt->bind_param("iiii", 
+    $stmt->bind_param("iiiii", 
         $year,  // 1. sales_tb direct
         $year,  // 2. customsales_tb direct
         $year,  // 2. customsales_tb not in analytics
-        $year   // 3. analytics_tb records
+        $year,   // 3. analytics_tb records
+        $year
     );
     $stmt->execute();
     $result = $stmt->get_result();
@@ -842,6 +848,11 @@ for ($i = 4; $i >= 0; $i--) {
         SELECT amount_paid 
         FROM sales_tb 
         WHERE branch_id = 1 AND YEAR(get_timestamp) = ?
+        AND sales_id NOT IN (
+            SELECT sales_id FROM analytics_tb 
+            WHERE sales_type = 'traditional'
+            AND YEAR(sale_date) = ?
+        )
         
         UNION ALL
         
@@ -875,11 +886,12 @@ for ($i = 4; $i >= 0; $i--) {
     ) as combined_sales";
     
     $stmt = $conn->prepare($query);
-    $stmt->bind_param("iiii", 
+    $stmt->bind_param("iiiii", 
         $year,  // 1. sales_tb direct
         $year,  // 2. customsales_tb direct
         $year,  // 2. customsales_tb not in analytics
-        $year   // 3. analytics_tb records
+        $year,   // 3. analytics_tb records
+        $year
     );
     $stmt->execute();
     $result = $stmt->get_result();
