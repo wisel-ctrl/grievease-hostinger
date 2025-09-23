@@ -356,8 +356,8 @@ for ($i = 11; $i >= 0; $i--) {
 
     
     $stmt = $conn->prepare($query);
-    $stmt->bind_param("iiiiiiii", 
-        $month, $year, $month, $year, $month, $year, $month, $year
+    $stmt->bind_param("iiiiiiiiii", 
+        $month, $year, $month, $year, $month, $year, $month, $year, $month, $year
     );
     $stmt->execute();
     $result = $stmt->get_result();
