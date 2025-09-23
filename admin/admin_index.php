@@ -510,46 +510,54 @@ for ($i = 4; $i >= 0; $i--) {
     $year = $date->format('Y');
     
     $query = "SELECT SUM(amount_paid) as revenue FROM (
-        -- 1. Direct sales from sales_tb
-        SELECT amount_paid 
-        FROM sales_tb 
-        WHERE YEAR(get_timestamp) = ?
+        -- 1. Direct sales from sales_tb not referenced in analytics_tb
+        SELECT s.amount_paid
+        FROM sales_tb s
+        WHERE YEAR(s.get_timestamp) = ?
+          AND s.sales_id NOT IN (
+              SELECT a.sales_id 
+              FROM analytics_tb a
+              WHERE a.sales_type = 'traditional'
+                AND YEAR(a.sale_date) = ?
+          )
         
         UNION ALL
         
         -- 2. Direct custom sales from customsales_tb not referenced in analytics_tb
-        SELECT amount_paid
-        FROM customsales_tb
-        WHERE YEAR(get_timestamp) = ?
-        AND customsales_id NOT IN (
-            SELECT sales_id FROM analytics_tb 
-            WHERE sales_type = 'custom'
-            AND YEAR(sale_date) = ?
-        )
+        SELECT c.amount_paid
+        FROM customsales_tb c
+        WHERE YEAR(c.get_timestamp) = ?
+          AND c.customsales_id NOT IN (
+              SELECT a.sales_id 
+              FROM analytics_tb a
+              WHERE a.sales_type = 'custom'
+                AND YEAR(a.sale_date) = ?
+          )
         
         UNION ALL
         
-        -- 3. All analytics records (they may or may not reference other tables)
+        -- 3. All analytics records (reference overrides raw amount_paid)
         SELECT 
             CASE
-                -- If it's traditional and has a sales_id reference
                 WHEN a.sales_type = 'traditional' AND s.sales_id IS NOT NULL THEN s.amount_paid
-                -- If it's custom and has a customsales_id reference
                 WHEN a.sales_type = 'custom' AND c.customsales_id IS NOT NULL THEN c.amount_paid
-                -- Otherwise use analytics_tb's own amount_paid
                 ELSE a.amount_paid
             END as amount_paid
         FROM analytics_tb a
-        LEFT JOIN sales_tb s ON a.sales_type = 'traditional' AND a.sales_id = s.sales_id
-        LEFT JOIN customsales_tb c ON a.sales_type = 'custom' AND a.sales_id = c.customsales_id
+        LEFT JOIN sales_tb s 
+              ON a.sales_type = 'traditional' AND a.sales_id = s.sales_id
+        LEFT JOIN customsales_tb c 
+              ON a.sales_type = 'custom' AND a.sales_id = c.customsales_id
         WHERE YEAR(a.sale_date) = ?
     ) as combined_sales";
+
     
     $stmt = $conn->prepare($query);
-    $stmt->bind_param("iiii", 
+    $stmt->bind_param("iiiii", 
         $year,        // 1. sales_tb direct
         $year,        // 2. customsales_tb direct
         $year,        // 2. customsales_tb not in analytics
+        $year,
         $year         // 3. analytics_tb all records
     );
     $stmt->execute();
