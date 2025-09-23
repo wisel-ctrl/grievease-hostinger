@@ -1828,41 +1828,59 @@ document.addEventListener('DOMContentLoaded', function() {
 function validateEditItemName(input) {
   const errorElement = document.getElementById('editItemNameError');
   let value = input.value;
+  let originalValue = value;
+  
+  // Remove any numbers from the input
+  value = value.replace(/[0-9]/g, '');
   
   // Check if first character is space
   if (value.length > 0 && value.charAt(0) === ' ') {
+    value = value.trim();
+  }
+  
+  // Only allow space if there are already at least 2 characters before it
+  if (value.length > 0) {
+    let processedValue = '';
+    let charCount = 0;
+    
+    for (let i = 0; i < value.length; i++) {
+      const char = value.charAt(i);
+      
+      if (char === ' ') {
+        // Only allow space if we have at least 2 characters and the previous character isn't a space
+        if (charCount >= 2 && processedValue.charAt(processedValue.length - 1) !== ' ') {
+          processedValue += char;
+        }
+      } else {
+        processedValue += char;
+        charCount++;
+      }
+    }
+    
+    value = processedValue;
+  }
+  
+  // Show error if input was modified (contained numbers or invalid spaces)
+  if (originalValue !== value) {
     if (!errorElement) {
       // Create error element if it doesn't exist
       const errorDiv = document.createElement('div');
       errorDiv.id = 'editItemNameError';
       errorDiv.className = 'text-red-500 text-xs mt-1';
-      errorDiv.textContent = 'Item name cannot start with space or have consecutive spaces';
+      errorDiv.textContent = 'Only letters allowed. Spaces only after 2+ characters.';
       input.parentNode.appendChild(errorDiv);
     } else {
+      errorElement.textContent = 'Only letters allowed. Spaces only after 2+ characters.';
       errorElement.classList.remove('hidden');
     }
-    input.value = value.trim();
-    return;
-  }
-  
-  // Check for consecutive spaces
-  if (value.includes('  ')) {
-    if (!errorElement) {
-      const errorDiv = document.createElement('div');
-      errorDiv.id = 'editItemNameError';
-      errorDiv.className = 'text-red-500 text-xs mt-1';
-      errorDiv.textContent = 'Item name cannot start with space or have consecutive spaces';
-      input.parentNode.appendChild(errorDiv);
-    } else {
-      errorElement.classList.remove('hidden');
+  } else {
+    if (errorElement) {
+      errorElement.classList.add('hidden');
     }
-    input.value = value.replace(/\s+/g, ' ');
-    return;
   }
   
-  if (errorElement) {
-    errorElement.classList.add('hidden');
-  }
+  // Update input value
+  input.value = value;
   
   // Auto-capitalize first letter
   if (value.length === 1) {
@@ -1871,7 +1889,16 @@ function validateEditItemName(input) {
 }
 
 function validateEditUnitPrice(input) {
-  if (input.value < 0) {
+  let value = input.value;
+  
+  // Remove all spaces from the input
+  value = value.replace(/\s/g, '');
+  
+  // Update input value without spaces
+  input.value = value;
+  
+  // Check if value is negative
+  if (parseFloat(value) < 0) {
     input.value = '';
   }
 }
