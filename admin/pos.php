@@ -1510,7 +1510,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 Payment Term
               </label>
               <select id="lp-paymentTerm" name="paymentTerm" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
-                <option value="1">1 Year (Full Payment)</option>
+                <option value="1">1 Year</option>
                 <option value="2">2 Years</option>
                 <option value="3">3 Years</option>
                 <option value="5">5 Years</option>
