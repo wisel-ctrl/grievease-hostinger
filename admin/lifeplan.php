@@ -1877,6 +1877,38 @@ document.getElementById('saveLifePlan').addEventListener('click', function() {
     });
 });
     
+    function calculateSubscriptionDuration(initialDate) {
+        if (!initialDate) return 'No start date available';
+        
+        const startDate = new Date(initialDate);
+        const currentDate = new Date();
+        
+        // Calculate the difference
+        const diffTime = Math.abs(currentDate - startDate);
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        
+        // Calculate years, months, and days
+        const years = Math.floor(diffDays / 365);
+        const months = Math.floor((diffDays % 365) / 30);
+        const days = diffDays % 30;
+        
+        // Format the duration string
+        let duration = '';
+        if (years > 0) {
+            duration += `${years} year${years > 1 ? 's' : ''}`;
+        }
+        if (months > 0) {
+            if (duration) duration += ', ';
+            duration += `${months} month${months > 1 ? 's' : ''}`;
+        }
+        if (days > 0 || (!years && !months)) {
+            if (duration) duration += ', ';
+            duration += `${days} day${days > 1 ? 's' : ''}`;
+        }
+        
+        return duration;
+    }
+
     // Function to fetch LifePlan data
     function fetchLifePlanData(lifeplanId) {
         fetch('lifeplan_process/get_lifeplan.php?id=' + lifeplanId)
@@ -1918,6 +1950,23 @@ document.getElementById('saveLifePlan').addEventListener('click', function() {
                         document.getElementById('suffix').value = data.suffix || '';
                         document.getElementById('email').value = data.email || '';
                         document.getElementById('phone').value = data.phone || '';
+                    }
+
+                    if (data.initial_date) {
+                        const duration = calculateSubscriptionDuration(data.initial_date);
+                        document.getElementById('subscriptionDuration').textContent = duration;
+                        
+                        // Format and display start date
+                        const startDate = new Date(data.initial_date);
+                        const formattedStartDate = startDate.toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                        });
+                        document.getElementById('startDate').textContent = formattedStartDate;
+                    } else {
+                        document.getElementById('subscriptionDuration').textContent = 'No start date available';
+                        document.getElementById('startDate').textContent = 'N/A';
                     }
                     
                     // Populate beneficiary fields
