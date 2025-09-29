@@ -4515,9 +4515,9 @@ function populateReceipt(data) {
             <h3 class="font-bold mb-2 text-primary font-inter">Service Details</h3>
             <div class="space-y-1">
                 <p class="text-sm"><span class="text-darkgold font-medium">Service:</span> ${data.service_name}</p>
-                <p class="text-sm"><span class="text-darkgold font-medium">Total Amount:</span> ₱${parseFloat(data.selling_price).toFixed(2)}</p>
-                <p class="text-sm"><span class="text-darkgold font-medium">Amount Paid:</span> ₱${parseFloat(data.amount_paid || 0).toFixed(2)}</p>
-                <p class="text-sm"><span class="text-darkgold font-medium">Balance:</span> ₱${(parseFloat(data.selling_price) - parseFloat(data.amount_paid || 0)).toFixed(2)}</p>
+                <p class="text-sm"><span class="text-darkgold font-medium">Total Amount:</span> ${formatCurrency(data.selling_price)}</p>
+                <p class="text-sm"><span class="text-darkgold font-medium">Amount Paid:</span> ${formatCurrency(data.amount_paid || 0)}</p>
+                <p class="text-sm"><span class="text-darkgold font-medium">Balance:</span> ${(formatCurrency(data.selling_price) - formatCurrency(data.amount_paid || 0))}</p>
             </div>
         </div>
        
