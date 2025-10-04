@@ -127,7 +127,6 @@ $html .= '</td>';
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <script src="currency_formatter.js"></script>
   <!-- Include SweetAlert2 CSS and JS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
@@ -968,7 +967,7 @@ if ($branchResult->num_rows > 0) {
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <span class="text-gray-500">₱</span>
             </div>
-            <input type="text" id="unitPrice" name="unitPrice"  required 
+            <input type="number" id="unitPrice" name="unitPrice" step="0.01" min="0" required 
                    class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
                    placeholder="0.00"
                    oninput="validateUnitPrice(this)">
@@ -1224,9 +1223,7 @@ document.getElementById('addInventoryForm').addEventListener('submit', function(
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <span class="text-gray-500">₱</span>
             </div>
-            <input type="text" id="editUnitPrice" name="editUnitPrice" value="<?php echo number_format($unit_price, 2); ?>" required 
-                   class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
-                   placeholder="0.00">
+            <input type="number" id="editUnitPrice" name="editUnitPrice" value="<?php echo $unit_price; ?>" step="0.01" required class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="0.00">
           </div>
         </div>
 
@@ -1743,10 +1740,6 @@ function updatePaginationActiveState(branchId, currentPage) {
 </script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Attach currency formatter to Unit Price fields
-  attachCurrencyFormatter(document.getElementById('unitPrice'));      // Add modal
-  attachCurrencyFormatter(document.getElementById('editUnitPrice'));  // Edit modal
-  
     // Get the data from PHP
     const monthLabels = <?php echo json_encode($monthLabels); ?>;
     const monthValues = <?php echo json_encode($monthValues); ?>;
