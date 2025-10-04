@@ -4900,11 +4900,6 @@ function loadOutstandingServices(page = 1) {
                                     <button class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip" title="Record Payment" onclick="openRecordPaymentModal('${row.sales_id}', '${clientName.replace(/'/g, "\\'")}', ${row.balance})">
                                         <i class="fas fa-money-bill-wave"></i>
                                     </button>
-                                    <button class="p-2 bg-teal-100 text-teal-600 rounded-lg hover:bg-teal-200 transition-all tooltip" 
-                                            title="Send SMS Notification" 
-                                            onclick="sendSMSNotification('${row.customsales_id}', 'custom')">
-                                      <i class="fas fa-sms"></i>
-                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -5294,11 +5289,6 @@ function loadCustomOutstandingServices(page = 1, search = '', sort = '') {
                   </button>
                   <button class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip" title="Record Payment" onclick="openCustomRecordPaymentModal('${row.customsales_id}', '${clientName.replace(/'/g, "\\'")}', ${row.balance})">
                     <i class="fas fa-money-bill-wave"></i>
-                  </button>
-                  <button class="p-2 bg-teal-100 text-teal-600 rounded-lg hover:bg-teal-200 transition-all tooltip" 
-                          title="Send SMS Notification" 
-                          onclick="sendSMSNotification('${row.customsales_id}', 'custom')">
-                    <i class="fas fa-sms"></i>
                   </button>
                 </div>
               </td>
