@@ -99,7 +99,7 @@ try {
         if ($checkResult->num_rows > 0) {
             // Item exists, update quantity instead of inserting
             $existingItem = $checkResult->fetch_assoc();
-            $existing_id = $existingItem['id'];
+            $existing_id = $existingItem['inventory_id'];
             $existing_quantity = $existingItem['quantity'];
             $existing_price = $existingItem['price'];
             $existing_total_value = $existingItem['total_value'];
