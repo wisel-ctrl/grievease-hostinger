@@ -2338,9 +2338,16 @@ function escapeHtml(unsafe) {
 
 
 
+function openFeedbackModal(packageType, packageId, packageName) {
+    document.getElementById('feedback-package-type').value = packageType;
+    document.getElementById('feedback-package-id').value = packageId;
+    document.getElementById('feedback-package-name').value = packageName;
+    document.getElementById('feedback-modal').classList.remove('hidden');
+}
+
 function openPaymentHistoryModal(packageType, Id) {
     const tbody = document.getElementById('payment-history-body');
-    tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" class="text-center py-8"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>';
     
     // Set modal title based on package type
     const titles = {
@@ -7285,5 +7292,122 @@ function formatCurrency(amount) {
 }
 
 </script>
-</body> 
+<!-- Feedback Modal -->
+<div id="feedback-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 hidden">
+    <div class="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div class="bg-navy p-6 flex justify-between items-center">
+            <h2 class="text-xl font-semibold text-white">Leave Feedback</h2>
+            <button onclick="closeFeedbackModal()" class="text-white hover:text-gray-200">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="p-6">
+            <input type="hidden" id="feedback-package-type">
+            <input type="hidden" id="feedback-package-id">
+            
+            <div class="mb-6">
+                <label class="block text-gray-700 text-sm font-medium mb-2">Rating</label>
+                <div class="flex items-center space-x-2">
+                    <label class="inline-flex items-center">
+                        <input type="radio" name="rating" value="5" class="h-5 w-5 text-yellow-500">
+                        <span class="ml-2">5 (Excellent)</span>
+                    </label>
+                    <label class="inline-flex items-center ml-4">
+                        <input type="radio" name="rating" value="4" class="h-5 w-5 text-yellow-500">
+                        <span class="ml-2">4 (Very Good)</span>
+                    </label>
+                    <label class="inline-flex items-center ml-4">
+                        <input type="radio" name="rating" value="3" class="h-5 w-5 text-yellow-500">
+                        <span class="ml-2">3 (Good)</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="mb-6">
+                <label for="feedback-comments" class="block text-gray-700 text-sm font-medium mb-2">Comments</label>
+                <textarea id="feedback-comments" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"></textarea>
+            </div>
+            
+            <div class="flex justify-end space-x-3">
+                <button onclick="closeFeedbackModal()" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                    Cancel
+                </button>
+                <button id="feedback-submit-btn" onclick="submitFeedback()" class="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 flex items-center">
+                    <i class="fas fa-paper-plane mr-2"></i> Submit Feedback
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Feedback JavaScript -->
+<script>
+// Feedback modal functions
+function openFeedbackModal(packageType, id) {
+    // Store the package type and ID for form submission
+    document.getElementById('feedback-package-type').value = packageType;
+    document.getElementById('feedback-package-id').value = id;
+    
+    // Reset form
+    document.querySelector('input[name="rating"]:checked')?.checked = false;
+    document.getElementById('feedback-comments').value = '';
+    
+    // Show the feedback modal
+    document.getElementById('feedback-modal').classList.remove('hidden');
+}
+
+function closeFeedbackModal() {
+    document.getElementById('feedback-modal').classList.add('hidden');
+}
+
+function submitFeedback() {
+    const packageType = document.getElementById('feedback-package-type').value;
+    const packageId = document.getElementById('feedback-package-id').value;
+    const rating = document.querySelector('input[name="rating"]:checked')?.value;
+    const comments = document.getElementById('feedback-comments').value.trim();
+    
+    if (!rating) {
+        alert('Please select a rating');
+        return;
+    }
+    
+    // Show loading state
+    const submitBtn = document.getElementById('feedback-submit-btn');
+    const originalBtnText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+    submitBtn.disabled = true;
+    
+    // Prepare form data
+    const formData = new FormData();
+    formData.append('package_type', packageType);
+    formData.append('package_id', packageId);
+    formData.append('rating', rating);
+    formData.append('comments', comments);
+    
+    // Submit feedback via AJAX
+    fetch('profile/submit_feedback.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Thank you for your feedback!');
+            closeFeedbackModal();
+        } else {
+            throw new Error(data.message || 'Failed to submit feedback');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to submit feedback. Please try again.');
+    })
+    .finally(() => {
+        submitBtn.innerHTML = originalBtnText;
+        submitBtn.disabled = false;
+    });
+}
+</script>
+
+</body>
 </html>
