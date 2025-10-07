@@ -118,7 +118,7 @@ try {
             // Update the existing record
             $updateStmt = $conn->prepare("UPDATE inventory_tb 
                                         SET quantity = ?, price = ?, total_value = ?, inventory_img = ?
-                                        WHERE id = ?");
+                                        WHERE inventory_id = ?");
             $updateStmt->bind_param("iddsi", $new_quantity, $new_price, $new_total_value, $final_image, $existing_id);
             
             if ($updateStmt->execute()) {
