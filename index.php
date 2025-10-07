@@ -422,6 +422,113 @@
         </div>
 
     <!-- Footer -->
+    <!-- Feedback Section -->
+    <div class="py-16 px-4 sm:px-6 lg:px-8 bg-white" id="feedback">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-navy font-hedvig">Share Your Thoughts</h2>
+                <p class="mt-3 text-lg text-gray-600 max-w-2xl mx-auto">We'd love to hear your feedback about our services</p>
+            </div>
+            
+            <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
+                <!-- Feedback Form -->
+                <div class="p-6 sm:p-8">
+                    <form id="feedbackForm" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
+                                <input type="text" id="name" name="name" required 
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-600 focus:border-transparent transition duration-200"
+                                    placeholder="Enter your name">
+                            </div>
+                            <div>
+                                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                                <input type="email" id="email" name="email" 
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-600 focus:border-transparent transition duration-200"
+                                    placeholder="your.email@example.com">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="rating" class="block text-sm font-medium text-gray-700 mb-1">Rating</label>
+                            <div class="flex items-center space-x-2">
+                                {[1, 2, 3, 4, 5].map(star => (
+                                    `<button type="button" 
+                                        class="text-2xl focus:outline-none" 
+                                        data-rating="${star}" 
+                                        onmouseover="highlightStars(${star})" 
+                                        onmouseout="resetStars()"
+                                        onclick="setRating(${star})">
+                                        <i class="far fa-star text-yellow-400 hover:text-yellow-500 transition-colors" id="star-${star}"></i>
+                                    </button>`
+                                )).join('')}
+                                <input type="hidden" id="rating" name="rating" value="0" required>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="message" class="block text-sm font-medium text-gray-700 mb-1">Your Feedback</label>
+                            <textarea id="message" name="message" rows="4" required
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-600 focus:border-transparent transition duration-200"
+                                placeholder="Share your thoughts with us..."></textarea>
+                        </div>
+                        <div class="flex items-center justify-end">
+                            <button type="submit" 
+                                class="bg-navy hover:bg-navy/90 text-white px-6 py-2.5 rounded-lg font-medium transition duration-200 flex items-center">
+                                <i class="fas fa-paper-plane mr-2"></i>
+                                Submit Feedback
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Comments Section -->
+                <div class="border-t border-gray-200">
+                    <div class="p-6 sm:p-8">
+                        <h3 class="text-xl font-semibold text-navy mb-6">Recent Feedback</h3>
+                        <div id="commentsContainer" class="space-y-6">
+                            <!-- Sample Comment (will be populated by JavaScript) -->
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="font-medium text-gray-900">John D.</div>
+                                        <div class="flex text-yellow-400">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="far fa-star"></i>
+                                        </div>
+                                    </div>
+                                    <span class="text-sm text-gray-500">2 days ago</span>
+                                </div>
+                                <p class="text-gray-700">The service was exceptional. The team was very compassionate and professional throughout the entire process.</p>
+                            </div>
+                            <!-- More comments will be loaded here -->
+                        </div>
+                        <div class="mt-6 text-center">
+                            <button id="loadMoreComments" class="text-navy hover:underline focus:outline-none">
+                                Load more comments
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Success Modal -->
+    <div id="feedbackSuccessModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl p-8 max-w-md w-full mx-4 text-center">
+            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-check-circle text-green-500 text-3xl"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-2">Thank You!</h3>
+            <p class="text-gray-600 mb-6">Your feedback has been submitted successfully.</p>
+            <button onclick="closeFeedbackModal()" class="bg-navy text-white px-6 py-2 rounded-lg font-medium hover:bg-navy/90 transition duration-200">
+                Close
+            </button>
+        </div>
+    </div>
+
     <footer class="bg-black font-playfair text-white py-12">
         <div class="container mx-auto px-6">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -497,13 +604,157 @@
 
 
     <!-- Back to Top Button -->
-<button id="backToTopBtn" class="fixed bottom-8 right-8 bg-black hover:bg-black/80 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 opacity-0 pointer-events-none transform translate-y-4">
-    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
-    </svg>
-</button>
+    <button id="backToTopBtn" class="fixed bottom-8 right-8 bg-black hover:bg-black/80 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 opacity-0 pointer-events-none transform translate-y-4">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+        </svg>
+    </button>
 
-    
+    <!-- Feedback Form JavaScript -->
+    <script>
+        // Star Rating Functionality
+        function highlightStars(count) {
+            for (let i = 1; i <= 5; i++) {
+                const star = document.getElementById(`star-${i}`);
+                if (star) {
+                    if (i <= count) {
+                        star.classList.remove('far');
+                        star.classList.add('fas');
+                    } else {
+                        star.classList.remove('fas');
+                        star.classList.add('far');
+                    }
+                }
+            }
+        }
+
+        function resetStars() {
+            const currentRating = parseInt(document.getElementById('rating').value) || 0;
+            highlightStars(currentRating);
+        }
+
+        function setRating(rating) {
+            document.getElementById('rating').value = rating;
+            highlightStars(rating);
+        }
+
+        // Form Submission
+        document.addEventListener('DOMContentLoaded', function() {
+            const feedbackForm = document.getElementById('feedbackForm');
+            
+            if (feedbackForm) {
+                feedbackForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    // Get form data
+                    const formData = new FormData(feedbackForm);
+                    const feedback = Object.fromEntries(formData.entries());
+                    
+                    // Here you would typically send this data to your server
+                    // For now, we'll just show the success message
+                    showFeedbackSuccess();
+                    
+                    // Reset form
+                    feedbackForm.reset();
+                    document.getElementById('rating').value = '0';
+                    resetStars();
+                    
+                    // Add the new comment to the top of the list
+                    addNewComment(feedback);
+                });
+            }
+            
+            // Load more comments functionality
+            const loadMoreBtn = document.getElementById('loadMoreComments');
+            if (loadMoreBtn) {
+                loadMoreBtn.addEventListener('click', function() {
+                    // In a real app, you would fetch more comments from the server here
+                    // For now, we'll just show an alert
+                    alert('Loading more comments...');
+                });
+            }
+        });
+        
+        function showFeedbackSuccess() {
+            const modal = document.getElementById('feedbackSuccessModal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+        
+        function closeFeedbackModal() {
+            const modal = document.getElementById('feedbackSuccessModal');
+            if (modal) {
+                modal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }
+        }
+        
+        function addNewComment(feedback) {
+            const commentsContainer = document.getElementById('commentsContainer');
+            if (!commentsContainer) return;
+            
+            const now = new Date();
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            const formattedDate = now.toLocaleDateString('en-US', options);
+            
+            // Create stars HTML based on rating
+            let starsHtml = '';
+            const rating = parseInt(feedback.rating) || 0;
+            for (let i = 1; i <= 5; i++) {
+                if (i <= rating) {
+                    starsHtml += '<i class="fas fa-star"></i>';
+                } else {
+                    starsHtml += '<i class="far fa-star"></i>';
+                }
+            }
+            
+            // Create the new comment element
+            const commentDiv = document.createElement('div');
+            commentDiv.className = 'bg-gray-50 p-4 rounded-lg animate-fade-in';
+            commentDiv.innerHTML = `
+                <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center space-x-3">
+                        <div class="font-medium text-gray-900">${feedback.name || 'Anonymous'}</div>
+                        <div class="flex text-yellow-400">
+                            ${starsHtml}
+                        </div>
+                    </div>
+                    <span class="text-sm text-gray-500">Just now</span>
+                </div>
+                <p class="text-gray-700">${feedback.message}</p>
+            `;
+            
+            // Add the new comment to the top of the container
+            const firstChild = commentsContainer.firstChild;
+            if (firstChild) {
+                commentsContainer.insertBefore(commentDiv, firstChild);
+            } else {
+                commentsContainer.appendChild(commentDiv);
+            }
+            
+            // Add animation class
+            setTimeout(() => {
+                commentDiv.classList.add('opacity-100');
+            }, 10);
+        }
+        
+        // Add fade-in animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            .animate-fade-in {
+                animation: fadeIn 0.3s ease-out forwards;
+                opacity: 0;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+
     <!-- Additional Scripts -->
     <script>
 
