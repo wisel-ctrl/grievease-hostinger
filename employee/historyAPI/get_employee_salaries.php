@@ -5,7 +5,10 @@ if (isset($_GET['employee_ids'])) {
     $employeeIds = explode(',', $_GET['employee_ids']);
     $placeholders = implode(',', array_fill(0, count($employeeIds), '?'));
     
-    $query = "SELECT employeeID, base_salary FROM employee_tb WHERE employeeID IN ($placeholders)";
+    $query = "SELECT employeeID, CASE 
+                        WHEN pay_structure = 'monthly' THEN 0
+                        ELSE base_salary
+                    END AS  base_salary FROM employee_tb WHERE employeeID IN ($placeholders)";
     $stmt = $conn->prepare($query);
     
     // Bind parameters dynamically
