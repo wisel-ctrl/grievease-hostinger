@@ -89,20 +89,77 @@ try {
             $imagePath = 'uploads/inventory/' . $uniqueFilename;
         }
         
-        // Insert into database with total_value
-        $stmt = $conn->prepare("INSERT INTO inventory_tb 
-                        (item_name, category_id, quantity, price, total_value, branch_id, inventory_img, status) 
-                        VALUES (?, ?, ?, ?, ?, ?, ?, 1)");
+        // Check if item with same name and category already exists in this branch
+        $checkStmt = $conn->prepare("SELECT id, quantity, price, total_value, inventory_img FROM inventory_tb 
+                                   WHERE item_name = ? AND category_id = ? AND branch_id = ? AND status = 1");
+        $checkStmt->bind_param("sii", $itemName, $category_id, $branch_id);
+        $checkStmt->execute();
+        $checkResult = $checkStmt->get_result();
         
-        $stmt->bind_param("siiddis", $itemName, $category_id, $quantity, $price, $total_value, $branch_id, $imagePath);
-        
-        if ($stmt->execute()) {
-            $response['success'] = true;
-            $response['message'] = "Item added successfully!";
-            $response['inventory_id'] = $conn->insert_id;
+        if ($checkResult->num_rows > 0) {
+            // Item exists, update quantity instead of inserting
+            $existingItem = $checkResult->fetch_assoc();
+            $existing_id = $existingItem['id'];
+            $existing_quantity = $existingItem['quantity'];
+            $existing_price = $existingItem['price'];
+            $existing_total_value = $existingItem['total_value'];
+            $existing_image = $existingItem['inventory_img'];
+            
+            // Use new price if provided, otherwise keep existing price
+            $new_price = ($price > 0) ? $price : $existing_price;
+            
+            // Calculate new quantity and total value
+            $new_quantity = $existing_quantity + $quantity;
+            $new_total_value = $new_quantity * $new_price;
+            
+            // Determine which image to use (prefer new image if uploaded, otherwise keep existing)
+            $final_image = $imagePath ?: $existing_image;
+            
+            // Update the existing record
+            $updateStmt = $conn->prepare("UPDATE inventory_tb 
+                                        SET quantity = ?, price = ?, total_value = ?, inventory_img = ?
+                                        WHERE id = ?");
+            $updateStmt->bind_param("iddsi", $new_quantity, $new_price, $new_total_value, $final_image, $existing_id);
+            
+            if ($updateStmt->execute()) {
+                $response['success'] = true;
+                $response['message'] = "Item already exists. Quantity updated successfully!";
+                $response['inventory_id'] = $existing_id;
+                $response['action'] = 'updated';
+                
+                // Clean up new uploaded image if we're using the existing one
+                if ($imagePath && $final_image !== $imagePath) {
+                    $fullImagePath = '../../admin/' . $imagePath;
+                    if (file_exists($fullImagePath)) {
+                        unlink($fullImagePath);
+                    }
+                }
+            } else {
+                throw new Exception("Database error while updating: " . $updateStmt->error);
+            }
+            
+            $updateStmt->close();
         } else {
-            throw new Exception("Database error: " . $stmt->error);
+            // Item doesn't exist, insert new record
+            $insertStmt = $conn->prepare("INSERT INTO inventory_tb 
+                            (item_name, category_id, quantity, price, total_value, branch_id, inventory_img, status) 
+                            VALUES (?, ?, ?, ?, ?, ?, ?, 1)");
+            
+            $insertStmt->bind_param("siiddis", $itemName, $category_id, $quantity, $price, $total_value, $branch_id, $imagePath);
+            
+            if ($insertStmt->execute()) {
+                $response['success'] = true;
+                $response['message'] = "Item added successfully!";
+                $response['inventory_id'] = $conn->insert_id;
+                $response['action'] = 'inserted';
+            } else {
+                throw new Exception("Database error: " . $insertStmt->error);
+            }
+            
+            $insertStmt->close();
         }
+        
+        $checkStmt->close();
     } else {
         throw new Exception("Invalid request method.");
     }
