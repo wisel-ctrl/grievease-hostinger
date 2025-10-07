@@ -90,7 +90,7 @@ try {
         }
         
         // Check if item with same name and category already exists in this branch
-        $checkStmt = $conn->prepare("SELECT id, quantity, price, total_value, inventory_img FROM inventory_tb 
+        $checkStmt = $conn->prepare("SELECT inventory_id, quantity, price, total_value, inventory_img FROM inventory_tb 
                                    WHERE item_name = ? AND category_id = ? AND branch_id = ? AND status = 1");
         $checkStmt->bind_param("sii", $itemName, $category_id, $branch_id);
         $checkStmt->execute();
