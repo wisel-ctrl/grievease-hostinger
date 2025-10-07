@@ -58,12 +58,13 @@ if ($conn->connect_error) {
 // Function to get all active services
 function getServices($conn) {
     $sql = "SELECT s.service_id, s.service_name,s.description , s.service_categoryID, s.branch_id, 
-                  s.inclusions,s.flower_design , s.capital_price, s.selling_price, s.image_url, 
+                  s.inclusions,s.flower_design , s.capital_price, s.selling_price, s.image_url, i.item_name as casket,
                   b.branch_name, 
                   c.service_category_name
            FROM services_tb s
            INNER JOIN branch_tb b ON s.branch_id = b.branch_id
            INNER JOIN service_category c ON s.service_categoryID = c.service_categoryID
+           INNER JOIN inventory_tb i ON s.casket_id = i.inventory_id
            WHERE s.status = 'Active'
            ORDER BY s.branch_id, s.service_categoryID, s.service_name";
     
@@ -131,7 +132,9 @@ $userId = $_SESSION['user_id'];
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GrievEase - Point-Of-Sale</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/js/all.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"/>
+
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
@@ -1510,7 +1513,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 Payment Term
               </label>
               <select id="lp-paymentTerm" name="paymentTerm" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
-                <option value="1">1 Year (Full Payment)</option>
+                <option value="1">1 Year</option>
                 <option value="2">2 Years</option>
                 <option value="3">3 Years</option>
                 <option value="5">5 Years</option>
@@ -2710,6 +2713,7 @@ document.getElementById('price-sort').addEventListener('change', filterAndSortSe
         </div>
         <div class="p-5 flex-grow flex flex-col">
           <div class="text-lg font-bold mb-2 text-sidebar-text">${service.service_name}</div>
+          ${service.casket ? `<div class="text-gray-600 text-sm mb-2"><i class="fas fa-box text-gray-400 mr-2"></i>${service.casket}</div>` : ''}
           ${service.flower_design ? `<div class="text-gray-600 text-sm mb-2"><i class="fas fa-leaf text-gray-400 mr-2"></i>${service.flower_design}</div>` : ''}
           ${inclusionsHtml}
           <div class="text-lg font-bold text-sidebar-accent mt-auto">₱${parseFloat(service.selling_price).toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>

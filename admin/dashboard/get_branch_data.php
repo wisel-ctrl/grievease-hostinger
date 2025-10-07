@@ -12,31 +12,37 @@ $currentWeek = $currentDate->format('W');
 $branchQuery = "SELECT 
     b.branch_id,
     b.branch_name,
-    COALESCE(s.service_count, 0) + COALESCE(c.custom_service_count, 0) + COALESCE(a.analytics_service_count, 0) AS service_count,
-    COALESCE(s.revenue, 0) + COALESCE(c.custom_revenue, 0) + COALESCE(a.analytics_revenue, 0) AS revenue,
+    COALESCE(combined.service_count, 0) AS service_count,
+    COALESCE(combined.revenue, 0) AS revenue,
     COALESCE(e.expenses, 0) AS expenses,
-    COALESCE(s.capital_total, 0) AS capital_total,
-    (COALESCE(s.revenue, 0) + COALESCE(c.custom_revenue, 0) + COALESCE(a.analytics_revenue, 0) - (COALESCE(s.capital_total, 0) + COALESCE(e.expenses, 0))) AS profit,
+    COALESCE(combined.capital_total, 0) AS capital_total,
+    (COALESCE(combined.revenue, 0) - (COALESCE(combined.capital_total, 0) + COALESCE(e.expenses, 0))) AS profit,
     CASE 
-        WHEN COALESCE(s.revenue, 0) + COALESCE(c.custom_revenue, 0) + COALESCE(a.analytics_revenue, 0) > 0 THEN 
-            (COALESCE(s.revenue, 0) + COALESCE(c.custom_revenue, 0) + COALESCE(a.analytics_revenue, 0) - (COALESCE(s.capital_total, 0) + COALESCE(e.expenses, 0))) / (COALESCE(s.revenue, 0) + COALESCE(c.custom_revenue, 0) + COALESCE(a.analytics_revenue, 0)) * 100
+        WHEN COALESCE(combined.revenue, 0) > 0 THEN 
+            (COALESCE(combined.revenue, 0) - (COALESCE(combined.capital_total, 0) + COALESCE(e.expenses, 0))) / COALESCE(combined.revenue, 0) * 100
         ELSE 0 
     END AS margin
 FROM 
     branch_tb b
 LEFT JOIN (
+    -- Combined sales query to avoid double-counting
     SELECT 
-        s.branch_id,
-        COUNT(DISTINCT s.sales_id) AS service_count,
-        SUM(s.amount_paid) AS revenue,
-        SUM(sv.capital_price) AS capital_total
-    FROM 
-        sales_tb s
-    LEFT JOIN 
-        services_tb sv ON s.service_id = sv.service_id
-    WHERE ";
+        branch_id,
+        COUNT(DISTINCT sales_id) AS service_count,
+        SUM(amount_paid) AS revenue,
+        SUM(capital_price) AS capital_total
+    FROM (
+        -- 1. Direct sales from sales_tb that are NOT in analytics_tb
+        SELECT 
+            s.branch_id,
+            s.sales_id,
+            s.amount_paid,
+            sv.capital_price
+        FROM sales_tb s
+        LEFT JOIN services_tb sv ON s.service_id = sv.service_id
+        WHERE s.branch_id IN (1, 2) AND ";
 
-// Add date filtering based on period
+// Add date filtering based on period for direct sales
 switch ($period) {
     case 'week':
         $branchQuery .= "YEARWEEK(s.get_timestamp, 1) = YEARWEEK(CURDATE(), 1)";
@@ -51,46 +57,96 @@ switch ($period) {
         $branchQuery .= "MONTH(s.get_timestamp) = MONTH(CURDATE()) AND YEAR(s.get_timestamp) = YEAR(CURDATE())";
 }
 
-$branchQuery .= " GROUP BY s.branch_id ) s ON b.branch_id = s.branch_id
-LEFT JOIN (
-    SELECT 
-        branch_id,
-        COUNT(DISTINCT customsales_id) AS custom_service_count,
-        SUM(amount_paid) AS custom_revenue
-    FROM 
-        customsales_tb
-    WHERE ";
+$branchQuery .= " AND s.sales_id NOT IN (
+            SELECT sales_id FROM analytics_tb 
+            WHERE sales_type = 'traditional' AND ";
 
-// Repeat for custom sales
+// Add date filtering for analytics exclusion
 switch ($period) {
     case 'week':
-        $branchQuery .= "YEARWEEK(get_timestamp, 1) = YEARWEEK(CURDATE(), 1)";
+        $branchQuery .= "YEARWEEK(sale_date, 1) = YEARWEEK(CURDATE(), 1)";
         break;
     case 'month':
-        $branchQuery .= "MONTH(get_timestamp) = MONTH(CURDATE()) AND YEAR(get_timestamp) = YEAR(CURDATE())";
+        $branchQuery .= "MONTH(sale_date) = MONTH(CURDATE()) AND YEAR(sale_date) = YEAR(CURDATE())";
         break;
     case 'year':
-        $branchQuery .= "YEAR(get_timestamp) = YEAR(CURDATE())";
+        $branchQuery .= "YEAR(sale_date) = YEAR(CURDATE())";
         break;
     default:
-        $branchQuery .= "MONTH(get_timestamp) = MONTH(CURDATE()) AND YEAR(get_timestamp) = YEAR(CURDATE())";
+        $branchQuery .= "MONTH(sale_date) = MONTH(CURDATE()) AND YEAR(sale_date) = YEAR(CURDATE())";
 }
 
-$branchQuery .= " GROUP BY branch_id ) c ON b.branch_id = c.branch_id
-LEFT JOIN (
-    SELECT 
-        a.branch_id,
-        COUNT(DISTINCT a.analytics_id) AS analytics_service_count,
-        SUM(a.amount_paid) AS analytics_revenue
-    FROM 
-        analytics_tb a
-    WHERE 
-        (a.sales_id IS NULL OR 
-         (a.sales_type = 'traditional' AND NOT EXISTS (SELECT 1 FROM sales_tb s WHERE s.sales_id = a.sales_id)) OR
-         (a.sales_type = 'custom' AND NOT EXISTS (SELECT 1 FROM customsales_tb cs WHERE cs.customsales_id = a.sales_id))
-        ) AND ";
+$branchQuery .= ")
+        
+        UNION ALL
+        
+        -- 2. Direct custom sales from customsales_tb that are NOT in analytics_tb
+        SELECT 
+            cs.branch_id,
+            cs.customsales_id as sales_id,
+            cs.amount_paid,
+            0 as capital_price
+        FROM customsales_tb cs
+        WHERE cs.branch_id IN (1, 2) AND ";
 
-// Add date filtering for analytics based on period
+// Add date filtering based on period for custom sales
+switch ($period) {
+    case 'week':
+        $branchQuery .= "YEARWEEK(cs.get_timestamp, 1) = YEARWEEK(CURDATE(), 1)";
+        break;
+    case 'month':
+        $branchQuery .= "MONTH(cs.get_timestamp) = MONTH(CURDATE()) AND YEAR(cs.get_timestamp) = YEAR(CURDATE())";
+        break;
+    case 'year':
+        $branchQuery .= "YEAR(cs.get_timestamp) = YEAR(CURDATE())";
+        break;
+    default:
+        $branchQuery .= "MONTH(cs.get_timestamp) = MONTH(CURDATE()) AND YEAR(cs.get_timestamp) = YEAR(CURDATE())";
+}
+
+$branchQuery .= " AND cs.customsales_id NOT IN (
+            SELECT sales_id FROM analytics_tb 
+            WHERE sales_type = 'custom' AND ";
+
+// Add date filtering for analytics exclusion
+switch ($period) {
+    case 'week':
+        $branchQuery .= "YEARWEEK(sale_date, 1) = YEARWEEK(CURDATE(), 1)";
+        break;
+    case 'month':
+        $branchQuery .= "MONTH(sale_date) = MONTH(CURDATE()) AND YEAR(sale_date) = YEAR(CURDATE())";
+        break;
+    case 'year':
+        $branchQuery .= "YEAR(sale_date) = YEAR(CURDATE())";
+        break;
+    default:
+        $branchQuery .= "MONTH(sale_date) = MONTH(CURDATE()) AND YEAR(sale_date) = YEAR(CURDATE())";
+}
+
+$branchQuery .= ")
+        
+        UNION ALL
+        
+        -- 3. All analytics records (they may or may not reference other tables)
+        SELECT 
+            COALESCE(s.branch_id, c.branch_id, a.branch_id) as branch_id,
+            a.analytics_id as sales_id,
+            CASE
+                WHEN a.sales_type = 'traditional' AND s.sales_id IS NOT NULL THEN s.amount_paid
+                WHEN a.sales_type = 'custom' AND c.customsales_id IS NOT NULL THEN c.amount_paid
+                ELSE a.amount_paid
+            END as amount_paid,
+            CASE
+                WHEN a.sales_type = 'traditional' AND s.sales_id IS NOT NULL THEN sv.capital_price
+                ELSE 0
+            END as capital_price
+        FROM analytics_tb a
+        LEFT JOIN sales_tb s ON a.sales_type = 'traditional' AND a.sales_id = s.sales_id
+        LEFT JOIN services_tb sv ON s.service_id = sv.service_id
+        LEFT JOIN customsales_tb c ON a.sales_type = 'custom' AND a.sales_id = c.customsales_id
+        WHERE (a.branch_id IN (1, 2) OR s.branch_id IN (1, 2) OR c.branch_id IN (1, 2)) AND ";
+
+// Add date filtering for analytics
 switch ($period) {
     case 'week':
         $branchQuery .= "YEARWEEK(a.sale_date, 1) = YEARWEEK(CURDATE(), 1)";
@@ -105,7 +161,9 @@ switch ($period) {
         $branchQuery .= "MONTH(a.sale_date) = MONTH(CURDATE()) AND YEAR(a.sale_date) = YEAR(CURDATE())";
 }
 
-$branchQuery .= " GROUP BY a.branch_id ) a ON b.branch_id = a.branch_id
+$branchQuery .= " ) as combined_sales
+    GROUP BY branch_id
+) combined ON b.branch_id = combined.branch_id
 LEFT JOIN (
     SELECT 
         branch_id,

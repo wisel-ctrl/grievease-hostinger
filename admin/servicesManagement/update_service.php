@@ -26,6 +26,7 @@ $status = $_POST['status'];
 $flowerDesign = isset($_POST['flowerDesign']) ? $_POST['flowerDesign'] : '';
 $inclusions = isset($_POST['inclusions']) ? $_POST['inclusions'] : ''; 
 $currentImagePath = $_POST['currentImagePath'];
+$currentImagePath = preg_replace('/^servicesManagement\//', '', $currentImagePath);
 $description = $_POST['serviceDescription'] ?? null;
         
 

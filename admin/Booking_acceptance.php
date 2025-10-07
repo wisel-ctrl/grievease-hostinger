@@ -1465,7 +1465,7 @@ $total_lifeplan_pages = ceil($total_lifeplan_bookings / $lifeplan_bookings_per_p
         <input type="hidden" id="bookingIdForDecline" name="bookingId">
         
         <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Common Reason for Declining</label>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Common Reasons for Declining:</label>
           
           <!-- Suggested Reasons -->
           <div class="grid grid-cols-2 gap-2 mb-4">
@@ -1939,7 +1939,7 @@ $total_lifeplan_pages = ceil($total_lifeplan_bookings / $lifeplan_bookings_per_p
         <input type="hidden" id="customBookingIdForDecline" name="bookingId">
         
         <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Common Reason for Declining</label>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Common Reasons for Declining:</label>
           
           <!-- Suggested Reasons -->
           <div class="grid grid-cols-2 gap-2 mb-4">
@@ -2381,7 +2381,7 @@ $total_lifeplan_pages = ceil($total_lifeplan_bookings / $lifeplan_bookings_per_p
         <input type="hidden" id="lifeplanIdForDecline" name="lifeplanId">
         
         <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Common Reason for Declining</label>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Common Reasons for Declining:</label>
           
           <!-- Suggested Reasons -->
           <div class="grid grid-cols-2 gap-2 mb-4">
@@ -2568,7 +2568,7 @@ $total_lifeplan_pages = ceil($total_lifeplan_bookings / $lifeplan_bookings_per_p
         new Date(data.booking_date).getFullYear() + '-' + 
         String(data.booking_id).padStart(3, '0');
       document.getElementById('customerName').textContent = data.customer_name;
-      document.getElementById('contactNumber').textContent = data.contact_number || "Not provided";
+      document.getElementById('contactNumber').textContent = data.phone_number || "Not provided";
       document.getElementById('emailAddress').textContent = data.email;
       document.getElementById('address').textContent = data.address || "Not provided";
       document.getElementById('serviceType').textContent = data.service_name;

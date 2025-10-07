@@ -1216,6 +1216,22 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="border-t pt-3 sm:pt-4 mt-3 sm:mt-4">
           <h4 class="text-sm sm:text-md font-medium text-gray-700 mb-2 sm:mb-3">Plan Information</h4>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+
+            <div class="md:col-span-2 mb-3">
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                    <div class="flex items-center">
+                    <i class="fas fa-calendar-alt text-blue-600 mr-2"></i>
+                    <span class="text-sm font-medium text-gray-700">Subscription Duration:</span>
+                    <span id="subscriptionDuration" class="ml-2 text-sm font-semibold text-blue-700">
+                        <!-- Duration will be calculated and displayed here -->
+                    </span>
+                    </div>
+                    <div class="mt-1 text-xs text-gray-600">
+                    Started on: <span id="startDate"></span>
+                    </div>
+                </div>
+            </div>
+            
             <div>
               <label for="service_id" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">Service</label>
               <div class="relative">
@@ -1877,6 +1893,38 @@ document.getElementById('saveLifePlan').addEventListener('click', function() {
     });
 });
     
+    function calculateSubscriptionDuration(initialDate) {
+        if (!initialDate) return 'No start date available';
+        
+        const startDate = new Date(initialDate);
+        const currentDate = new Date();
+        
+        // Calculate the difference
+        const diffTime = Math.abs(currentDate - startDate);
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        
+        // Calculate years, months, and days
+        const years = Math.floor(diffDays / 365);
+        const months = Math.floor((diffDays % 365) / 30);
+        const days = diffDays % 30;
+        
+        // Format the duration string
+        let duration = '';
+        if (years > 0) {
+            duration += `${years} year${years > 1 ? 's' : ''}`;
+        }
+        if (months > 0) {
+            if (duration) duration += ', ';
+            duration += `${months} month${months > 1 ? 's' : ''}`;
+        }
+        if (days > 0 || (!years && !months)) {
+            if (duration) duration += ', ';
+            duration += `${days} day${days > 1 ? 's' : ''}`;
+        }
+        
+        return duration;
+    }
+
     // Function to fetch LifePlan data
     function fetchLifePlanData(lifeplanId) {
         fetch('lifeplan_process/get_lifeplan.php?id=' + lifeplanId)
@@ -1918,6 +1966,23 @@ document.getElementById('saveLifePlan').addEventListener('click', function() {
                         document.getElementById('suffix').value = data.suffix || '';
                         document.getElementById('email').value = data.email || '';
                         document.getElementById('phone').value = data.phone || '';
+                    }
+
+                    if (data.initial_date) {
+                        const duration = calculateSubscriptionDuration(data.initial_date);
+                        document.getElementById('subscriptionDuration').textContent = duration;
+                        
+                        // Format and display start date
+                        const startDate = new Date(data.initial_date);
+                        const formattedStartDate = startDate.toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                        });
+                        document.getElementById('startDate').textContent = formattedStartDate;
+                    } else {
+                        document.getElementById('subscriptionDuration').textContent = 'No start date available';
+                        document.getElementById('startDate').textContent = 'N/A';
                     }
                     
                     // Populate beneficiary fields

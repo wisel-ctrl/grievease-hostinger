@@ -4468,6 +4468,10 @@ function populateReceipt(data) {
         return new Date(dateString).toLocaleDateString('en-US', options);
     };
 
+    const sellingPrice = Number(data.selling_price) || 0;
+    const amountPaid = Number(data.amount_paid) || 0;
+    const balance = sellingPrice - amountPaid;
+
     const deceasedName = `${data.deceased_lname}, ${data.deceased_fname}` + 
                        (data.deceased_midname ? ` ${data.deceased_midname}` : '') + 
                        (data.deceased_suffix ? ` ${data.deceased_suffix}` : '');
@@ -4515,9 +4519,9 @@ function populateReceipt(data) {
             <h3 class="font-bold mb-2 text-primary font-inter">Service Details</h3>
             <div class="space-y-1">
                 <p class="text-sm"><span class="text-darkgold font-medium">Service:</span> ${data.service_name}</p>
-                <p class="text-sm"><span class="text-darkgold font-medium">Total Amount:</span> ₱${parseFloat(data.selling_price).toFixed(2)}</p>
-                <p class="text-sm"><span class="text-darkgold font-medium">Amount Paid:</span> ₱${parseFloat(data.amount_paid || 0).toFixed(2)}</p>
-                <p class="text-sm"><span class="text-darkgold font-medium">Balance:</span> ₱${(parseFloat(data.selling_price) - parseFloat(data.amount_paid || 0)).toFixed(2)}</p>
+                <p class="text-sm"><span class="text-darkgold font-medium">Total Amount:</span> ${formatCurrency(data.selling_price)}</p>
+                <p class="text-sm"><span class="text-darkgold font-medium">Amount Paid:</span> ${formatCurrency(data.amount_paid || 0)}</p>
+                <p class="text-sm"><span class="text-darkgold font-medium">Balance:</span> ${formatCurrency(balance)}</p>
             </div>
         </div>
        

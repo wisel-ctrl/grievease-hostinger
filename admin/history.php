@@ -771,6 +771,11 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
                         <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details" onclick="viewServiceDetails('<?php echo $row['sales_id']; ?>')">
                           <i class="fas fa-eye"></i>
                         </button>
+                        <button class="p-2 bg-indigo-100 text-indigo-600 rounded-lg hover:bg-indigo-200 transition-all tooltip" 
+                                title="Send Payment Reminder" 
+                                onclick="sendPaymentReminder(<?php echo $row['sales_id']; ?>)">
+                          <i class="fas fa-comment-dots"></i>
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -1020,6 +1025,11 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
                                         <div class="flex space-x-2">
                                             <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details" onclick="viewServiceDetails('<?php echo $row['sales_id']; ?>')">
                                                 <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="p-2 bg-indigo-100 text-indigo-600 rounded-lg hover:bg-indigo-200 transition-all tooltip" 
+                                                    title="Send Payment Reminder" 
+                                                    onclick="sendPaymentReminder(<?php echo $row['sales_id']; ?>)">
+                                              <i class="fas fa-comment-dots"></i>
                                             </button>
                                             <button class="p-2 bg-orange-100 text-orange-600 rounded-lg hover:bg-orange-200 transition-all tooltip" title="Record Payment" onclick="openRecordPaymentModal('<?php echo $row['sales_id']; ?>','<?php echo $clientName; ?>','<?php echo $row['balance']; ?>')">
                                                 <i class="fas fa-money-bill-wave"></i>
@@ -4900,6 +4910,11 @@ function loadOutstandingServices(page = 1) {
                                     <button class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip" title="Record Payment" onclick="openRecordPaymentModal('${row.sales_id}', '${clientName.replace(/'/g, "\\'")}', ${row.balance})">
                                         <i class="fas fa-money-bill-wave"></i>
                                     </button>
+                                    <button class="p-2 bg-indigo-100 text-indigo-600 rounded-lg hover:bg-indigo-200 transition-all tooltip" 
+                                            title="Send Payment Reminder" 
+                                            onclick="sendPaymentReminder(${row.sales_id})">
+                                      <i class="fas fa-comment-dots"></i>
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -5290,6 +5305,11 @@ function loadCustomOutstandingServices(page = 1, search = '', sort = '') {
                   <button class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip" title="Record Payment" onclick="openCustomRecordPaymentModal('${row.customsales_id}', '${clientName.replace(/'/g, "\\'")}', ${row.balance})">
                     <i class="fas fa-money-bill-wave"></i>
                   </button>
+                  <button class="p-2 bg-indigo-100 text-indigo-600 rounded-lg hover:bg-indigo-200 transition-all tooltip" 
+                                            title="Send Payment Reminder" 
+                                            onclick="sendCustomPaymentReminder(${row.customsales_id})">
+                                        <i class="fas fa-comment-dots"></i>
+                                    </button>
                 </div>
               </td>
             </tr>
@@ -7172,6 +7192,108 @@ function formatCurrency(amount) {
     return `₱ ${formattedAmount}`;
 }
 
+function sendPaymentReminder(salesId) {
+  Swal.fire({
+    title: 'Send Reminder?',
+    text: 'This will send an SMS reminder to the customer about their outstanding balance.',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, send it!',
+    cancelButtonText: 'Cancel'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // Show loading
+      Swal.fire({
+        title: 'Sending...',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+
+      // AJAX to send the reminder
+      fetch(`history/send_sms_notification.php?sales_id=${salesId}`)
+        .then(response => response.json())
+        .then(data => {
+          Swal.close();
+          if (data.success) {
+            Swal.fire({
+              icon: 'success',
+              title: 'Success!',
+              text: 'Reminder sent successfully.',
+              timer: 2000,
+              showConfirmButton: false
+            });
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: data.message || 'Failed to send reminder.'
+            });
+          }
+        })
+        .catch(error => {
+          Swal.close();
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'An error occurred: ' + error.message
+          });
+        });
+    }
+  });
+}
+
+
+function sendCustomPaymentReminder(customsalesId) {
+  Swal.fire({
+    title: 'Send Reminder?',
+    text: 'This will send an SMS reminder to the customer about their outstanding balance for the custom service.',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, send it!',
+    cancelButtonText: 'Cancel'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      Swal.fire({
+        title: 'Sending...',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+
+      fetch(`history/send_custom_sms_notification.php?customsales_id=${customsalesId}`)
+        .then(response => response.json())
+        .then(data => {
+          Swal.close();
+          if (data.success) {
+            Swal.fire({
+              icon: 'success',
+              title: 'Success!',
+              text: 'Reminder sent successfully.',
+              timer: 2000,
+              showConfirmButton: false
+            });
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: data.message || 'Failed to send reminder.'
+            });
+          }
+        })
+        .catch(error => {
+          Swal.close();
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'An error occurred: ' + error.message
+          });
+        });
+    }
+  });
+}
 
 </script>
 
