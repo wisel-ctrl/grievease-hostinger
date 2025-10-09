@@ -35,7 +35,10 @@ $totalOngoing = $countResult->fetch_assoc()['total'];
 
 $ongoingQuery = "SELECT s.sales_id, s.fname, s.mname, s.lname, s.suffix, 
     s.fname_deceased, s.mname_deceased, s.lname_deceased, s.suffix_deceased,
-    sv.service_name, s.date_of_burial, s.balance, s.status, s.customerID, s.payment_status,
+    sv.service_name, CASE 
+        WHEN s.date_of_burial IS NULL THEN 'To follow' 
+        ELSE DATE_FORMAT(s.date_of_burial, '%M %d, %Y') 
+    END AS date_of_burial , s.balance, s.status, s.customerID, s.payment_status,
     (SELECT COUNT(*) FROM employee_service_payments esp WHERE esp.sales_id = s.sales_id AND esp.sales_type = 'service') AS staff_assigned
     FROM sales_tb s
     JOIN services_tb sv ON s.service_id = sv.service_id
