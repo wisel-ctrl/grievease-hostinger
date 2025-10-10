@@ -4086,7 +4086,7 @@ function viewServiceDetails(serviceId) {
         document.getElementById('serviceDate').textContent = data.date_of_burial ? formatDate(data.date_of_burial) : 'N/A';
         document.getElementById('serviceStatus').textContent = data.status || 'N/A';
         document.getElementById('serviceOutstandingBalance').textContent = 
-          data.balance ? `₱${parseFloat(data.balance).toFixed(2)}` : '₱0.00';
+          data.balance ? `${formatCurrency(data.balance)}` : '₱0.00';
 
         // Populate initial staff section
         if (data.initial_staff) {
