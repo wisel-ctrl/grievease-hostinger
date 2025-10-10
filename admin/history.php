@@ -376,7 +376,7 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
                 </th>
                 <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(4)">
                   <div class="flex items-center gap-1.5">
-                    <i class="fas fa-calendar text-sidebar-accent"></i> Date of Burial 
+                    <i class="fas fa-calendar text-sidebar-accent"></i> Interment Date 
                   </div>
                 </th>
                 <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(5)">
@@ -716,7 +716,7 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
                 </th>
                 <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(4)">
                   <div class="flex items-center gap-1.5">
-                    <i class="fas fa-calendar text-sidebar-accent"></i> Date of Burial
+                    <i class="fas fa-calendar text-sidebar-accent"></i> Interment Date
                   </div>
                 </th>
                 <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(5)">
@@ -965,7 +965,7 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
                             </th>
                             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortOutstandingTable(4)">
                                 <div class="flex items-center gap-1.5">
-                                    <i class="fas fa-calendar text-sidebar-accent"></i> Date of Burial 
+                                    <i class="fas fa-calendar text-sidebar-accent"></i> Interment Date
                                 </div>
                             </th>
                             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortOutstandingTable(5)">
@@ -1237,7 +1237,7 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
               </th>
               <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortCustomOngoingTable(4)">
                 <div class="flex items-center gap-1.5">
-                  <i class="fas fa-calendar text-sidebar-accent"></i> Date of Burial
+                  <i class="fas fa-calendar text-sidebar-accent"></i> Interment Date
                 </div>
               </th>
               <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortCustomOngoingTable(5)">
@@ -1407,7 +1407,7 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
               </th>
               <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortCustomFullyPaidTable(4)">
                 <div class="flex items-center gap-1.5">
-                  <i class="fas fa-calendar text-sidebar-accent"></i> Date of Burial
+                  <i class="fas fa-calendar text-sidebar-accent"></i> Interment Date
                 </div>
               </th>
               <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortCustomFullyPaidTable(5)">
@@ -1572,7 +1572,7 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
               </th>
               <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortCustomOutstandingTable(4)">
                 <div class="flex items-center gap-1.5">
-                  <i class="fas fa-calendar text-sidebar-accent"></i> Date of Burial
+                  <i class="fas fa-calendar text-sidebar-accent"></i> Interment Date
                 </div>
               </th>
               <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortCustomOutstandingTable(5)">
@@ -1985,7 +1985,7 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
               </div>
               <div class="form-group">
                 <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                  Date of Burial
+                  Interment Date
                 </label>
                 <input 
                   type="date" 
@@ -3189,7 +3189,7 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
             </div>
             
             <div class="space-y-1">
-              <label class="block text-xs font-medium text-gray-500">Date of Burial</label>
+              <label class="block text-xs font-medium text-gray-500">Interment Date</label>
               <div id="customServiceDate" class="text-sm font-medium text-gray-800">-</div>
             </div>
             
