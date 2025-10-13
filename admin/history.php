@@ -6256,7 +6256,11 @@ function validateDates() {
 
 // Price validation function
 function validatePrice() {
-  const price = parseFloat(document.getElementById('editCustomServicePrice').value);
+  let rawPrice = document.getElementById('editCustomServicePrice').value.trim();
+  const cleanedPrice = rawPrice.replace(/[^0-9.]/g, ''); // strip out anything except digits and dot
+  
+  const price = parseFloat(cleanedPrice);
+  console.log('Parsed price:', price);
   
   if (price <= 0 || isNaN(price)) {
     Swal.fire({
