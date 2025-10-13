@@ -2309,6 +2309,11 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
               <label class="block text-xs font-medium text-gray-500">Status</label>
               <div id="serviceStatus" class="text-sm font-medium text-gray-800">-</div>
             </div>
+
+            <div class="space-y-1 col-span-1 sm:col-span-2">
+              <label class="block text-xs font-medium text-gray-500">Interment Place</label>
+              <div id="serviceIntermentPlace" class="text-sm font-medium text-gray-800">-</div>
+            </div>
             
             <div class="space-y-1 col-span-1 sm:col-span-2">
               <label class="block text-xs font-medium text-gray-500">Outstanding Balance</label>
@@ -4238,6 +4243,7 @@ function viewServiceDetails(serviceId) {
         document.getElementById('branchName').textContent = data.branch_name || 'N/A';
         document.getElementById('serviceDate').textContent = data.date_of_burial ? formatDate(data.date_of_burial) : 'N/A';
         document.getElementById('serviceStatus').textContent = data.status || 'N/A';
+        document.getElementById('serviceIntermentPlace').textContent = data.interment_place || 'N/A';
         document.getElementById('serviceOutstandingBalance').textContent = 
           data.balance ? `${formatCurrency(data.balance)}` : '₱0.00';
 
