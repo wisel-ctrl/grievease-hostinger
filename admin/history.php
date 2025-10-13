@@ -2301,7 +2301,7 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
             </div>
             
             <div class="space-y-1">
-              <label class="block text-xs font-medium text-gray-500">Date</label>
+              <label class="block text-xs font-medium text-gray-500">Interment Date</label>
               <div id="serviceDate" class="text-sm font-medium text-gray-800">-</div>
             </div>
             
