@@ -6257,6 +6257,7 @@ function validateDates() {
 // Price validation function
 function validatePrice() {
   let rawPrice = document.getElementById('editCustomServicePrice').value.trim();
+  console.log('raw price:', rawPrice);
   const cleanedPrice = rawPrice.replace(/[^0-9.]/g, ''); // strip out anything except digits and dot
   
   const price = parseFloat(cleanedPrice);
