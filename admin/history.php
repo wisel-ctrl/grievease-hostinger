@@ -4240,7 +4240,7 @@ function viewServiceDetails(serviceId) {
         document.getElementById('serviceClientName').textContent = 
           `${data.fname} ${data.mname ? data.mname + ' ' : ''}${data.lname}${data.suffix ? ' ' + data.suffix : ''}`;
         document.getElementById('serviceServiceType').textContent = data.service_name || 'N/A';
-        document.getElementById('branchName').textContent = data.branch_name || 'N/A';
+        document.getElementById('branchName').textContent = data.branch_name ? toProperCase(data.branch_name) : 'N/A';
         document.getElementById('serviceDate').textContent = data.date_of_burial ? formatDate(data.date_of_burial) : 'N/A';
         document.getElementById('serviceStatus').textContent = data.status || 'N/A';
         document.getElementById('serviceIntermentPlace').textContent = data.interment_place || 'N/A';
@@ -7350,6 +7350,14 @@ function formatCurrency(amount) {
     
     return `₱ ${formattedAmount}`;
 }
+
+function toProperCase(str) {
+  if (!str) return '';
+  return str
+    .toLowerCase()               // make everything lowercase first
+    .replace(/\b\w/g, c => c.toUpperCase()); // capitalize each word’s first letter
+}
+
 
 function sendPaymentReminder(salesId) {
   Swal.fire({
