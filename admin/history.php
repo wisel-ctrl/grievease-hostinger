@@ -2206,7 +2206,7 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
 
         <div>
           <label for="internmentPlace" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            Internment Place
+            Interment Place
           </label>
           <div class="relative">
             <input type="text" id="internmentPlace" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Type to search cemetery..." autocomplete="off">
@@ -4139,6 +4139,7 @@ function finalizeServiceCompletion() {
     const completionDateInput = document.getElementById('completionDate').value;
     const completionNotes = document.getElementById('completionNotes').value;
     const balanceSettled = document.getElementById('finalBalanceSettled').checked;
+    const intermentPlace = document.getElementById('internmentPlace').value;
     
     if (!completionDateInput) {
         alert('Please specify a completion date.');
@@ -4179,7 +4180,8 @@ function finalizeServiceCompletion() {
                 notes: completionNotes,
                 service_stage: 'completion',
                 completion_date: completionDateTime, // Now includes time
-                balance_settled: balanceSettled
+                balance_settled: balanceSettled,
+                interment_place: intermentPlace
             };
 
             console.log('Sending completion data:', completionData);
