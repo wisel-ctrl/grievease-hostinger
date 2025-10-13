@@ -6255,7 +6255,7 @@ function validateDates() {
 }
 
 // Price validation function
-function validatePrice() {
+function validateCustomPrice() {
   let rawPrice = document.getElementById('editCustomServicePrice').value.trim();
   console.log('raw price:', rawPrice);
   const cleanedPrice = rawPrice.replace(/[^0-9.]/g, ''); // strip out anything except digits and dot
@@ -6280,7 +6280,7 @@ document.getElementById('editCustomServiceForm').addEventListener('submit', func
   e.preventDefault();
   
   // Validate price first
-  if (!validatePrice()) {
+  if (!validateCustomPrice()) {
     return;
   }
   
