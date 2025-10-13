@@ -3701,10 +3701,24 @@ function closeEditServiceModal() {
 
 // Function to save changes to a service
 function saveServiceChanges() {
+  // Check if selectedCustomerId is null or empty
+  const selectedCustomerId = document.getElementById('selectedCustomerId').value;
+  
+  if (!selectedCustomerId) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Customer Account Required',
+      text: 'You need to connect this to a customer account first before changing some details.',
+      confirmButtonColor: '#3085d6',
+      confirmButtonText: 'OK'
+    });
+    return; // Stop the function execution
+  }
+
   // Get all form values
   const formData = {
     sales_id: document.getElementById('salesId').value,
-    customer_id: document.getElementById('selectedCustomerId').value,
+    customer_id: selectedCustomerId,
     service_id: document.getElementById('serviceSelect').value,
     service_price: document.getElementById('servicePrice').value,
     firstName: document.getElementById('firstName').value,
@@ -3729,32 +3743,49 @@ function saveServiceChanges() {
   console.log('Service Form Data:', formData);
   
   fetch('history/update_history_sales.php', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify(formData)
-})
-.then(response => response.json())
-.then(data => {
-  console.log('Success:', data);
-  if (data.success) {
-    alert('Service updated successfully!');
-    closeEditServiceModal();
-    cancelAddressChange();
-    location.reload();
-  } else {
-    alert('Error: ' + data.message);
-  }
-})
-.catch(error => {
-  console.error('Error:', error);
-  alert('An error occurred while updating the service');
-});
-
-  // For demo purposes, just show an alert
-  alert('Service changes would be saved here. Check console for form data.');
-  closeEditServiceModal();
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(formData)
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log('Success:', data);
+    if (data.success) {
+      Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: 'Service updated successfully!',
+        confirmButtonColor: '#3085d6',
+        confirmButtonText: 'OK'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          closeEditServiceModal();
+          cancelAddressChange();
+          location.reload();
+        }
+      });
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Error: ' + data.message,
+        confirmButtonColor: '#d33',
+        confirmButtonText: 'OK'
+      });
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'An error occurred while updating the service',
+      confirmButtonColor: '#d33',
+      confirmButtonText: 'OK'
+    });
+  });
 }
 
 // Function to open the Assign Staff Modal
