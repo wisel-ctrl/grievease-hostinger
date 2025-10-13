@@ -117,6 +117,13 @@ try {
     $updateFields = ["status = 'Completed'"];
     $params = [];
     $types = "";
+
+    // Add interment_place if provided
+    if (!empty($data['interment_place'])) {
+        $updateFields[] = "interment_place = ?";
+        $types .= "s";
+        $params[] = $data['interment_place'];
+    }
     
     if (!empty($data['balance_settled'])) {
         $updateFields[] = "balance = 0";
