@@ -95,6 +95,7 @@ function generateInventoryRow($row) {
   $html .= '</td>';
   
   $html .= '<td class="p-4 text-sm font-medium text-sidebar-text" data-sort-value="' . $row["price"] . '">₱' . number_format($row["price"], 2) . '</td>';
+  $html .= '<td class="p-4 text-sm font-medium text-sidebar-text" data-sort-value="' . $row["selling_price"] . '">₱' . number_format($row["selling_price"], 2) . '</td>';
   $html .= '<td class="p-4 text-sm font-medium text-sidebar-text" data-sort-value="' . $row["total_value"] . '">₱' . number_format($row["total_value"], 2) . '</td>';
  $html .= '<td class="p-2 text-sm align-middle">';
 $html .= '<div class="flex space-x-2 h-full items-center">'; // Ensure vertical centering
@@ -448,6 +449,7 @@ if ($branchResult->num_rows > 0) {
       c.category_name, 
       i.quantity, 
       i.price, 
+      i.selling_price,
       (i.quantity * i.price) AS total_value
       FROM inventory_tb i
       JOIN inventory_category c ON i.category_id = c.category_id
@@ -691,7 +693,15 @@ if ($branchResult->num_rows > 0) {
                  
               </div>
             </th>
+            
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(<?php echo $branchId; ?>, 5)">
+              <div class="flex items-center gap-1.5">
+                <i class="fas fa-peso-sign text-sidebar-accent"></i> Selling Price 
+              </div>
+            </th>
+        
+            
+            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(<?php echo $branchId; ?>, 6)">
               <div class="flex items-center gap-1.5">
                 <i class="fas fa-peso-sign text-sidebar-accent"></i> Total Value 
                  
@@ -712,7 +722,7 @@ if ($branchResult->num_rows > 0) {
                   }
               } else {
                   echo '<tr>';
-                  echo '<td colspan="7" class="p-6 text-sm text-center">';
+                  echo '<td colspan="8" class="p-6 text-sm text-center">';
                   echo '<div class="flex flex-col items-center">';
                   echo '<i class="fas fa-box-open text-gray-300 text-4xl mb-3"></i>';
                   echo '<p class="text-gray-500">No inventory items found for this branch</p>';
@@ -974,6 +984,18 @@ if ($branchResult->num_rows > 0) {
                    oninput="validateUnitPrice(this)">
           </div>
         </div>
+        
+        <!-- Selling Price Input (add after Unit Price input) -->
+        <div>
+          <label for="sellingPrice" class="block mb-2 text-sm font-medium text-sidebar-text">Selling Price</label>
+          <div class="relative">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₱</span>
+            <input type="number" id="sellingPrice" name="sellingPrice" step="0.01" min="0" required
+                   class="w-full p-2.5 pl-8 border border-sidebar-border rounded-md focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent"
+                   placeholder="Enter selling price">
+          </div>
+        </div>
+
         
         <!-- File Upload -->
         <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
@@ -1745,6 +1767,7 @@ function updatePaginationActiveState(branchId, currentPage) {
 document.addEventListener('DOMContentLoaded', function() {
     // Attach currency formatter to Unit Price fields
   attachCurrencyFormatter(document.getElementById('unitPrice'));      // Add modal
+  attachCurrencyFormatter(document.getElementById('sellingPrice'));
   attachCurrencyFormatter(document.getElementById('editUnitPrice'));  // Edit modal
   
     // Get the data from PHP

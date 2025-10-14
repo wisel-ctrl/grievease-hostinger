@@ -12,8 +12,9 @@ try {
         $branch_id   = intval($_POST['branch_id'] ?? 0);
         $quantity    = intval($_POST['quantity'] ?? 0);
         $price       = floatval($_POST['unitPrice'] ?? 0.00);
+        $selling_price = floatval($_POST['sellingPrice'] ?? 0.00);
 
-        if (empty($itemName) || $category_id <= 0 || $branch_id <= 0 || $quantity <= 0) {
+        if (empty($itemName) || $category_id <= 0 || $branch_id <= 0 || $quantity <= 0 || $selling_price <= 0) {
             throw new Exception("Please fill in all required fields with valid values.");
         }
 
@@ -58,10 +59,10 @@ try {
             $newQuantity = $row['quantity'] + $quantity;
             $updateStmt = $conn->prepare("
                 UPDATE inventory_tb 
-                SET quantity = ?, price = ?, inventory_img = COALESCE(?, inventory_img), status = 1
+                SET quantity = ?, price = ?, selling_price = ?, inventory_img = COALESCE(?, inventory_img), status = 1
                 WHERE inventory_id = ?
             ");
-            $updateStmt->bind_param("idsi", $newQuantity, $price, $imagePath, $row['inventory_id']);
+            $updateStmt->bind_param("iddsi", $newQuantity, $price, $selling_price, $imagePath, $row['inventory_id']);
 
             if ($updateStmt->execute()) {
                 $response['success'] = true;
@@ -77,10 +78,10 @@ try {
             // Step 3: Insert new item
             $insertStmt = $conn->prepare("
                 INSERT INTO inventory_tb 
-                (item_name, category_id, quantity, price, branch_id, inventory_img, status) 
-                VALUES (?, ?, ?, ?, ?, ?, 1)
+                (item_name, category_id, quantity, price, selling_price, branch_id, inventory_img, status) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, 1)
             ");
-            $insertStmt->bind_param("siidis", $itemName, $category_id, $quantity, $price, $branch_id, $imagePath);
+            $insertStmt->bind_param("siiddis", $itemName, $category_id, $quantity, $price, $selling_price, $branch_id, $imagePath);
 
             if ($insertStmt->execute()) {
                 $response['success'] = true;

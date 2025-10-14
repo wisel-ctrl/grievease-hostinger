@@ -501,6 +501,7 @@ const category = document.getElementById('category').value; // This now contains
 const branch = document.querySelector('input[name="branch"]:checked').value;
 const quantity = document.getElementById('quantity').value;
 const unitPrice = document.getElementById('unitPrice').value;
+const sellingPrice = document.getElementById('sellingPrice').value;
 
 // No need to convert category to category_id as the select option value already contains category_id
 
@@ -508,6 +509,7 @@ const unitPrice = document.getElementById('unitPrice').value;
 formData.append('category_id', category); // Just use the category value directly as it's already the ID
 formData.append('branch_id', branch);
 formData.append('price', unitPrice);
+formData.append('sellingPrice', sellingPrice);
 
 // Show confirmation dialog before proceeding
 Swal.fire({
@@ -518,6 +520,7 @@ html: `
 <p><strong>Item Name:</strong> ${itemName}</p>
 <p><strong>Quantity:</strong> ${quantity}</p>
 <p><strong>Unit Price:</strong> ₱${unitPrice}</p>
+<p><strong>Selling Price:</strong> ₱${sellingPrice}</p>
 </div>
 `,
 icon: 'question',
