@@ -65,7 +65,7 @@ try {
         
         // Move uploaded file
         if (move_uploaded_file($deathCertFile['tmp_name'], $uploadPath)) {
-            $death_cert_image = '../customer/booking/uploads/' . $newFilename;
+            $death_cert_image = 'uploads/death_cert_' . $newFilename;
         } else {
             throw new Exception("Failed to upload death certificate file.");
         }
@@ -95,7 +95,7 @@ try {
         
         // Move uploaded file
         if (move_uploaded_file($discountIdFile['tmp_name'], $uploadPath)) {
-            $discount_id_img = '../uploads/valid_ids/' . $newFilename;
+            $discount_id_img = 'uploads/valid_ids/discount_id_' . $newFilename;
         } else {
             throw new Exception("Failed to upload discount ID file.");
         }
