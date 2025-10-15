@@ -1064,11 +1064,11 @@ document.addEventListener('DOMContentLoaded', function() {
             Additional Services
           </h4>
           <div class="space-y-3">
-            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
-              <input type="checkbox" name="withCremation" id="withCremation" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-              With Cremation
-            </label>
-            <p class="text-sm text-gray-500 ml-8">Check this box if the service includes cremation</p>
+              <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+                  <input type="checkbox" name="withCremation" id="withCremation" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+                  With Cremation <span class="ml-2 text-sidebar-accent font-semibold">(+₱45,000)</span>
+              </label>
+              <p class="text-sm text-gray-500 ml-8">Check this box if the service includes cremation</p>
           </div>
         </div>
       </form>
@@ -2913,6 +2913,9 @@ function openTraditionalCheckout() {
   const servicePrice = serviceTypeModal.dataset.servicePrice;
   const branchId = serviceTypeModal.dataset.branchId;
 
+  trackOriginalPrice(); // For discount
+  initializeBasePrice();
+
   // Set the service details in the form
   document.getElementById('service-id').value = serviceId;
   document.getElementById('service-price').value = servicePrice;
@@ -3364,6 +3367,77 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Initialize when modal opens (you'll need to call this from your openCheckoutModal function)
   window.trackOriginalPrice = trackOriginalPrice;
+});
+
+// Cremation fee functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const cremationCheckbox = document.getElementById('withCremation');
+    const totalPriceInput = document.getElementById('totalPrice');
+    const footerTotalPrice = document.getElementById('footer-total-price');
+    const discountCheckbox = document.getElementById('seniorPwdDiscount');
+    
+    const CREMATION_FEE = 45000;
+    let basePrice = 0;
+    let isCremationAdded = false;
+
+    // Initialize base price when modal opens
+    function initializeBasePrice() {
+        basePrice = parseFloat(totalPriceInput.value) || 0;
+        isCremationAdded = false;
+    }
+
+    // Handle cremation checkbox change
+    cremationCheckbox.addEventListener('change', function() {
+        if (this.checked) {
+            addCremationFee();
+        } else {
+            removeCremationFee();
+        }
+        updateFooterTotal();
+    });
+
+    function addCremationFee() {
+        if (!isCremationAdded) {
+            basePrice = parseFloat(totalPriceInput.value) || 0;
+            const newPrice = basePrice + CREMATION_FEE;
+            totalPriceInput.value = newPrice.toFixed(2);
+            isCremationAdded = true;
+            
+            // Re-apply discount if checkbox is checked
+            if (discountCheckbox.checked) {
+                applyDiscount();
+            }
+        }
+    }
+
+    function removeCremationFee() {
+        if (isCremationAdded) {
+            const newPrice = basePrice;
+            totalPriceInput.value = newPrice.toFixed(2);
+            isCremationAdded = false;
+            
+            // Re-apply discount if checkbox is checked
+            if (discountCheckbox.checked) {
+                applyDiscount();
+            }
+        }
+    }
+
+    function updateFooterTotal() {
+        const price = parseFloat(totalPriceInput.value) || 0;
+        footerTotalPrice.textContent = `₱${price.toFixed(2)}`;
+    }
+
+    // Apply discount function (from previous code)
+    function applyDiscount() {
+        const currentPrice = parseFloat(totalPriceInput.value) || 0;
+        const discountedPrice = currentPrice * 0.8;
+        totalPriceInput.value = discountedPrice.toFixed(2);
+        updateFooterTotal();
+    }
+
+    // Initialize when modal opens
+    window.initializeBasePrice = initializeBasePrice;
 });
 </script>
   
