@@ -3898,39 +3898,48 @@ function saveServiceChanges() {
     return; // Stop the function execution
   }
 
-  // Get all form values
-  const formData = {
-    sales_id: document.getElementById('salesId').value,
-    customer_id: selectedCustomerId,
-    service_id: document.getElementById('serviceSelect').value,
-    service_price: document.getElementById('servicePrice').value,
-    firstName: document.getElementById('firstName').value,
-    middleName: document.getElementById('middleName').value,
-    lastName: document.getElementById('lastName').value,
-    nameSuffix: document.getElementById('nameSuffix').value,
-    email: document.getElementById('email').value,
-    phone: document.getElementById('phone').value,
-    deceasedFirstName: document.getElementById('deceasedFirstName').value,
-    deceasedMiddleName: document.getElementById('deceasedMiddleName').value,
-    deceasedLastName: document.getElementById('deceasedLastName').value,
-    deceasedSuffix: document.getElementById('deceasedSuffix').value,
-    birthDate: document.getElementById('birthDate').value,
-    deathDate: document.getElementById('deathDate').value,
-    burialDate: document.getElementById('burialDate').value,
-    deceasedAddress: document.getElementById('currentAddressDisplay').value,
-    branch: document.querySelector('input[name="branch"]:checked')?.value,
-    deathCertificate: document.getElementById('deathCertificate').files[0]?.name || 'No file selected'
-  };
+  // Create FormData object
+  const formData = new FormData();
+  
+  // Add all form data
+  formData.append('sales_id', document.getElementById('salesId').value);
+  formData.append('customer_id', selectedCustomerId);
+  formData.append('service_id', document.getElementById('serviceSelect').value);
+  formData.append('service_price', document.getElementById('servicePrice').value);
+  formData.append('firstName', document.getElementById('firstName').value);
+  formData.append('middleName', document.getElementById('middleName').value);
+  formData.append('lastName', document.getElementById('lastName').value);
+  formData.append('nameSuffix', document.getElementById('nameSuffix').value);
+  formData.append('email', document.getElementById('email').value);
+  formData.append('phone', document.getElementById('phone').value);
+  formData.append('deceasedFirstName', document.getElementById('deceasedFirstName').value);
+  formData.append('deceasedMiddleName', document.getElementById('deceasedMiddleName').value);
+  formData.append('deceasedLastName', document.getElementById('deceasedLastName').value);
+  formData.append('deceasedSuffix', document.getElementById('deceasedSuffix').value);
+  formData.append('birthDate', document.getElementById('birthDate').value);
+  formData.append('deathDate', document.getElementById('deathDate').value);
+  formData.append('burialDate', document.getElementById('burialDate').value);
+  formData.append('deceasedAddress', document.getElementById('currentAddressDisplay').value);
+  formData.append('branch', document.querySelector('input[name="branch"]:checked')?.value);
+
+  // Add files if they exist
+  const deathCertFile = document.getElementById('deathCertificate').files[0];
+  const discountIdFile = document.getElementById('discountIdFile').files[0];
+  
+  if (deathCertFile) {
+    formData.append('deathCertificate', deathCertFile);
+  }
+  
+  if (discountIdFile) {
+    formData.append('discountIdFile', discountIdFile);
+  }
 
   // Log the form data to console
-  console.log('Service Form Data:', formData);
+  console.log('Service Form Data:', Object.fromEntries(formData));
   
   fetch('history/update_history_sales.php', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(formData)
+    body: formData // Remove Content-Type header for FormData
   })
   .then(response => response.json())
   .then(data => {
