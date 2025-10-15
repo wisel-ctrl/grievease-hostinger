@@ -1042,7 +1042,7 @@ document.addEventListener('DOMContentLoaded', function() {
           <div class="space-y-3 sm:space-y-4">
             <!-- Discount Checkbox -->
             <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
-              <input type="checkbox" name="seniorPwdDiscount" id="seniorPwdDiscount" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              <input type="checkbox" name="senior_pwd_discount" id="seniorPwdDiscount" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
               Apply Senior Citizen/PWD Discount (20% Off)
             </label>
             <p class="text-sm text-gray-500 ml-4">Check this box if you're eligible for Senior Citizen or PWD discount</p>
@@ -1055,7 +1055,7 @@ document.addEventListener('DOMContentLoaded', function() {
               </label>
               <div class="relative">
                 <div class="flex items-center border border-gray-300 rounded-lg px-3 py-2 focus-within:ring-1 focus-within:ring-sidebar-accent focus-within:border-sidebar-accent transition-all duration-200">
-                  <input type="file" id="seniorPwdId" name="seniorPwdId" accept="image/*,.pdf" class="w-full focus:outline-none">
+                  <input type="file" id="seniorPwdId" name="discount_id_img" accept="image/*,.pdf" class="w-full focus:outline-none">
                 </div>
                 <!-- Image preview container -->
                 <div id="idPreview" class="mt-2 hidden">
@@ -3123,6 +3123,9 @@ function confirmCheckout() {
 
   const withCremation = document.getElementById('withCremation').checked;
   formData.append('withCremation', withCremation ? 'on' : 'off');
+
+  const seniorPwdDiscount = document.getElementById('seniorPwdDiscount').checked;
+  formData.append('senior_pwd_discount', seniorPwdDiscount ? 'yes' : 'no');
 
   // Validate email format
   const email = document.getElementById('clientEmail').value;

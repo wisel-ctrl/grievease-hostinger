@@ -37,16 +37,25 @@ try {
     
     // Get the cremation checkbox value
     $with_cremate = isset($_POST['withCremation']) && $_POST['withCremation'] === 'on' ? 'yes' : 'no';
+
+    $senior_pwd_discount = $_POST['senior_pwd_discount'] ?? 'no';
     
     $sold_by = $_POST['sold_by'] ?? 1; // Default to admin ID 1
     $status = $_POST['status'] ?? 'Pending';
     
     $death_cert_path = null;
+    $discount_id_path = null;
+
     $upload_dir = '../../customer/booking/uploads/';
+    $valid_ids_dir = '../uploads/valid_ids/';
 
     // Ensure the directory exists
     if (!is_dir($upload_dir)) {
         mkdir($upload_dir, 0777, true);
+    }
+
+    if (!is_dir($valid_ids_dir)) {
+        mkdir($valid_ids_dir, 0777, true);
     }
 
     if (isset($_FILES['deathCertificate']) && $_FILES['deathCertificate']['error'] === UPLOAD_ERR_OK) {
@@ -70,6 +79,27 @@ try {
         }
     }
 
+    if (isset($_FILES['discount_id_img']) && $_FILES['discount_id_img']['error'] === UPLOAD_ERR_OK) {
+        // Generate a unique filename with date and random numbers
+        $dateNow = date('Ymd_His'); // e.g., 20251015_153045
+        $randomNum = mt_rand(100000, 999999);
+        
+        // Get the file extension (e.g., jpg, png)
+        $extension = pathinfo($_FILES['discount_id_img']['name'], PATHINFO_EXTENSION);
+        
+        // Final filename as requested: discount_id_datenow but numbers and random numbers
+        $fileName = "discount_id_{$dateNow}_{$randomNum}." . $extension;
+        $filePath = $valid_ids_dir . $fileName;
+        
+        // Move the uploaded file
+        if (move_uploaded_file($_FILES['discount_id_img']['tmp_name'], $filePath)) {
+            // Save only relative path in database
+            $discount_id_path = 'uploads/valid_ids/' . $fileName;
+        } else {
+            throw new Exception('Failed to move uploaded discount ID file.');
+        }
+    }
+
     // Prepare SQL statement - including with_cremate
     $stmt = $conn->prepare("INSERT INTO sales_tb (
         fname, mname, lname, suffix, phone, email,
@@ -77,18 +107,18 @@ try {
         date_of_birth, date_of_death, date_of_burial, deceased_address,
         branch_id, service_id, payment_method, initial_price, discounted_price, 
         amount_paid, balance, status, payment_status, death_cert_image, sold_by,
-        with_cremate
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        with_cremate, senior_pwd_discount, discount_id_img
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
     // Bind parameters - added with_cremate
     $stmt->bind_param(
-        "ssssssssssssssiisddddsssis",
+        "ssssssssssssssiisddddsssisss",
         $fname, $mname, $lname, $suffix, $phone, $email,
         $fname_deceased, $mname_deceased, $lname_deceased, $suffix_deceased,
         $date_of_birth, $date_of_death, $date_of_burial, $deceased_address,
         $branch_id, $service_id, $payment_method, $initial_price, $discounted_price, 
         $amount_paid, $balance, $status, $payment_status, $death_cert_path, $sold_by,
-        $with_cremate
+        $with_cremate, $senior_pwd_discount, $discount_id_path
     );
 
     // Execute the statement
