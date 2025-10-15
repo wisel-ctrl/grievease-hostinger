@@ -3817,7 +3817,7 @@ function openEditServiceModal(serviceId) {
           
           // Show existing discount ID if available
           if (data.discount_id_img) {
-            const discountPath = `../customer/booking/${data.discount_id_img}`;
+            const discountPath = `${data.discount_id_img}`;
             document.getElementById('discountIdPreviewImg').src = discountPath;
             document.getElementById('discountIdPreviewName').textContent = 'Discount ID';
             document.getElementById('discountIdPreview').classList.remove('hidden');
