@@ -31,6 +31,7 @@ $sql = "SELECT
             c.category_name, 
             i.quantity, 
             i.price, 
+            i.selling_price,
             (i.quantity * i.price) AS total_value
         FROM inventory_tb i
         JOIN inventory_category c ON i.category_id = c.category_id

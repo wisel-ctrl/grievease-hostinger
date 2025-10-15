@@ -1418,16 +1418,17 @@ function loadPage(branchId, page) {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
-            return response.text();
+            return response.text(); // This expects text/HTML
         })
         .then(data => {
             // Update the table content
             document.getElementById(`inventoryTable_${branchId}`).innerHTML = data;
             
             // Update URL without reloading
-            const url = new URL(window.location);
-            url.searchParams.set(`page_${branchId}`, page);
-            window.history.pushState({ branchId, page }, '', url);
+            // const url = new URL(window.location);
+            // url.searchParams.set(`page_${branchId}`, page);
+            // window.history.pushState({ branchId, page }, '', url);
+
             
             // Update pagination info with correct total items
             updatePaginationInfo(branchId, page, totalItems, itemsPerPage);
@@ -1684,21 +1685,23 @@ function updatePaginationActiveState(branchId, currentPage) {
     });
 }
 
-// Add this to handle browser back/forward navigation
-window.addEventListener('popstate', function(event) {
-    if (event.state) {
-        // When navigating back/forward, reload the current page state
-        const { branchId, page } = event.state;
-        loadPage(branchId, page);
-    } else {
-        // Initial page load - load all branches with their current page
-        document.querySelectorAll('.branch-container').forEach(container => {
-            const branchId = container.dataset.branchId;
-            const urlParams = new URLSearchParams(window.location.search);
-            const currentPage = urlParams.get(`page_${branchId}`) || 1;
-            loadPage(branchId, currentPage);
-        });
-    }
+// In loadPage function, replace URL modification with:
+sessionStorage.setItem(`page_${branchId}`, page);
+
+// And modify the initialization to use sessionStorage:
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.branch-container').forEach(container => {
+        const branchId = container.dataset.branchId;
+        // Try sessionStorage first, then URL, then default to 1
+        const currentPage = sessionStorage.getItem(`page_${branchId}`) || 
+                          (new URLSearchParams(window.location.search)).get(`page_${branchId}`) || 
+                          1;
+        const totalItems = parseInt(container.dataset.totalItems);
+        const totalPages = Math.ceil(totalItems / 5);
+        
+        updatePaginationInfo(branchId, currentPage, totalItems, 5);
+        updatePaginationControls(branchId, currentPage, totalPages);
+    });
 });
 
 // Initialize pagination on page load
