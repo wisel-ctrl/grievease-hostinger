@@ -5,6 +5,11 @@ require_once '../../db_connect.php';
 $json = file_get_contents('php://input');
 $data = json_decode($json, true);
 
+if (!$data) {
+    $data = $_POST;
+}
+
+
 if (empty($data['sales_id'])) {
     echo json_encode(['success' => false, 'message' => 'Sales ID is required']);
     exit;
