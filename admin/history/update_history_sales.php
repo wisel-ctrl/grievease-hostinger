@@ -91,7 +91,7 @@ try {
         // Generate unique filename
         $fileExtension = pathinfo($discountIdFile['name'], PATHINFO_EXTENSION);
         $newFilename = uniqid() . '_' . time() . '.' . $fileExtension;
-        $uploadPath = '../../uploads/valid_ids/' . $newFilename;
+        $uploadPath = '../uploads/valid_ids/' . $newFilename;
         
         // Move uploaded file
         if (move_uploaded_file($discountIdFile['tmp_name'], $uploadPath)) {
