@@ -3799,8 +3799,8 @@ function openEditServiceModal(serviceId) {
         }
 
         // Handle Death Certificate Preview
-        if (data.death_cert_img) {
-          const deathCertPath = `../customer/booking/${data.death_cert_img}`;
+        if (data.death_cert_image) {
+          const deathCertPath = `../customer/booking/${data.death_cert_image}`;
           document.getElementById('deathCertPreviewImg').src = deathCertPath;
           document.getElementById('deathCertPreviewName').textContent = 'Death Certificate';
           document.getElementById('deathCertPreview').classList.remove('hidden');
