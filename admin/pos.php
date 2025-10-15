@@ -974,6 +974,20 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
   </div>
 </div>
+
+        <!-- Cremation Checklist Section -->
+        <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
+          <h4 class="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4 pb-2 border-b border-gray-200 flex items-center">
+            Additional Services
+          </h4>
+          <div class="space-y-3">
+              <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+                  <input type="checkbox" name="withCremation" id="withCremation" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+                  With Cremation <span class="ml-2 text-sidebar-accent font-semibold">(+₱45,000)</span>
+              </label>
+              <p class="text-sm text-gray-500 ml-8">Check this box if the service includes cremation</p>
+          </div>
+        </div>
   
         <!-- Payment Information -->
         <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
@@ -1020,19 +1034,45 @@ document.addEventListener('DOMContentLoaded', function() {
           </div>
         </div>
 
-        <!-- Cremation Checklist Section -->
+        <!-- Senior Citizen/PWD Discount Section -->
         <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
           <h4 class="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4 pb-2 border-b border-gray-200 flex items-center">
-            Additional Services
+            Discount Information
           </h4>
-          <div class="space-y-3">
+          <div class="space-y-3 sm:space-y-4">
+            <!-- Discount Checkbox -->
             <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
-              <input type="checkbox" name="withCremation" id="withCremation" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-              With Cremation
+              <input type="checkbox" name="senior_pwd_discount" id="seniorPwdDiscount" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              Apply Senior Citizen/PWD Discount (20% Off)
             </label>
-            <p class="text-sm text-gray-500 ml-8">Check this box if the service includes cremation</p>
+            <p class="text-sm text-gray-500 ml-4">Check this box if you're eligible for Senior Citizen or PWD discount</p>
+            
+            <!-- ID Upload Section -->
+            <div id="idUploadSection" class="hidden mt-3">
+              <label for="seniorPwdId" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                Senior Citizen ID or PWD ID 
+                <span class="text-xs text-gray-500 ml-1">(Optional)</span>
+              </label>
+              <div class="relative">
+                <div class="flex items-center border border-gray-300 rounded-lg px-3 py-2 focus-within:ring-1 focus-within:ring-sidebar-accent focus-within:border-sidebar-accent transition-all duration-200">
+                  <input type="file" id="seniorPwdId" name="discount_id_img" accept="image/*,.pdf" class="w-full focus:outline-none">
+                </div>
+                <!-- Image preview container -->
+                <div id="idPreview" class="mt-2 hidden">
+                  <div class="relative inline-block">
+                    <img id="idPreviewImage" src="#" alt="ID Preview" class="max-h-40 rounded-lg border border-gray-200">
+                    <button type="button" id="removeIdPreviewBtn" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors">
+                      <i class="fas fa-times text-xs"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">Upload a clear photo of your valid Senior Citizen ID or PWD ID</p>
+            </div>
           </div>
         </div>
+
+        
       </form>
     </div>
     
@@ -2875,6 +2915,9 @@ function openTraditionalCheckout() {
   const servicePrice = serviceTypeModal.dataset.servicePrice;
   const branchId = serviceTypeModal.dataset.branchId;
 
+  trackOriginalPrice(); // For discount
+  initializeBasePrice();
+
   // Set the service details in the form
   document.getElementById('service-id').value = serviceId;
   document.getElementById('service-price').value = servicePrice;
@@ -3081,6 +3124,9 @@ function confirmCheckout() {
   const withCremation = document.getElementById('withCremation').checked;
   formData.append('withCremation', withCremation ? 'on' : 'off');
 
+  const seniorPwdDiscount = document.getElementById('seniorPwdDiscount').checked;
+  formData.append('senior_pwd_discount', seniorPwdDiscount ? 'yes' : 'no');
+
   // Validate email format
   const email = document.getElementById('clientEmail').value;
   if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -3246,6 +3292,166 @@ function startNewOrder() {
 }
   </script>
   <script src = 'tailwind.js'></script>
+<script>
+// Senior Citizen/PWD Discount functionality
+document.addEventListener('DOMContentLoaded', function() {
+  const discountCheckbox = document.getElementById('seniorPwdDiscount');
+  const idUploadSection = document.getElementById('idUploadSection');
+  const totalPriceInput = document.getElementById('totalPrice');
+  const footerTotalPrice = document.getElementById('footer-total-price');
+  const idInput = document.getElementById('seniorPwdId');
+  const idPreview = document.getElementById('idPreview');
+  const idPreviewImage = document.getElementById('idPreviewImage');
+  const removeIdPreviewBtn = document.getElementById('removeIdPreviewBtn');
+
+  let originalPrice = 0;
+
+  // Track original price when modal opens
+  function trackOriginalPrice() {
+    originalPrice = parseFloat(totalPriceInput.value) || 0;
+  }
+
+  // Toggle ID upload section
+  discountCheckbox.addEventListener('change', function() {
+    if (this.checked) {
+      idUploadSection.classList.remove('hidden');
+      applyDiscount();
+    } else {
+      idUploadSection.classList.add('hidden');
+      removeDiscount();
+    }
+  });
+
+  // Apply 20% discount
+  function applyDiscount() {
+    const currentPrice = parseFloat(totalPriceInput.value) || originalPrice;
+    originalPrice = currentPrice; // Store current price as original
+    
+    const discountedPrice = currentPrice * 0.8;
+    totalPriceInput.value = discountedPrice.toFixed(2);
+    updateFooterTotal();
+  }
+
+  // Remove discount
+  function removeDiscount() {
+    totalPriceInput.value = originalPrice.toFixed(2);
+    updateFooterTotal();
+  }
+
+  // Update footer total display
+  function updateFooterTotal() {
+    const price = parseFloat(totalPriceInput.value) || 0;
+    footerTotalPrice.textContent = formatPrice(price);
+  }
+
+  // ID preview functionality
+  idInput.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        idPreviewImage.src = e.target.result;
+        idPreview.classList.remove('hidden');
+      }
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // Remove ID preview
+  removeIdPreviewBtn.addEventListener('click', function() {
+    idInput.value = '';
+    idPreview.classList.add('hidden');
+  });
+
+  // Update original price when total price changes
+  totalPriceInput.addEventListener('input', function() {
+    if (!discountCheckbox.checked) {
+      originalPrice = parseFloat(this.value) || 0;
+    }
+  });
+
+  // Initialize when modal opens (you'll need to call this from your openCheckoutModal function)
+  window.trackOriginalPrice = trackOriginalPrice;
+});
+
+// Cremation fee functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const cremationCheckbox = document.getElementById('withCremation');
+    const totalPriceInput = document.getElementById('totalPrice');
+    const footerTotalPrice = document.getElementById('footer-total-price');
+    const discountCheckbox = document.getElementById('seniorPwdDiscount');
+    
+    const CREMATION_FEE = 45000;
+    let basePrice = 0;
+    let isCremationAdded = false;
+
+    // Initialize base price when modal opens
+    function initializeBasePrice() {
+        basePrice = parseFloat(totalPriceInput.value) || 0;
+        isCremationAdded = false;
+    }
+
+    // Handle cremation checkbox change
+    cremationCheckbox.addEventListener('change', function() {
+        if (this.checked) {
+            addCremationFee();
+        } else {
+            removeCremationFee();
+        }
+        updateFooterTotal();
+    });
+
+    function addCremationFee() {
+        if (!isCremationAdded) {
+            basePrice = parseFloat(totalPriceInput.value) || 0;
+            const newPrice = basePrice + CREMATION_FEE;
+            totalPriceInput.value = newPrice.toFixed(2);
+            isCremationAdded = true;
+            
+            // Re-apply discount if checkbox is checked
+            if (discountCheckbox.checked) {
+                applyDiscount();
+            }
+        }
+    }
+
+    function removeCremationFee() {
+        if (isCremationAdded) {
+            const newPrice = basePrice;
+            totalPriceInput.value = newPrice.toFixed(2);
+            isCremationAdded = false;
+            
+            // Re-apply discount if checkbox is checked
+            if (discountCheckbox.checked) {
+                applyDiscount();
+            }
+        }
+    }
+
+    function updateFooterTotal() {
+        const price = parseFloat(totalPriceInput.value) || 0;
+        footerTotalPrice.textContent = formatPrice(price);
+    }
+
+    // Apply discount function (from previous code)
+    function applyDiscount() {
+        const currentPrice = parseFloat(totalPriceInput.value) || 0;
+        const discountedPrice = currentPrice * 0.8;
+        totalPriceInput.value = discountedPrice.toFixed(2);
+        updateFooterTotal();
+    }
+
+    // Initialize when modal opens
+    window.initializeBasePrice = initializeBasePrice;
+});
+
+function formatPrice(amount) {
+    return "₱" + Number(amount).toLocaleString('en-PH', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+}
+</script>
   
   
   

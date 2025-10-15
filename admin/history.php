@@ -2009,14 +2009,34 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
               </div>
             </div>
 
-            <!-- Death Certificate Upload - Updated to match modal 2 -->
+            <!-- Death Certificate Upload with Preview -->
             <div class="form-group mt-4">
               <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                 Death Certificate
               </label>
-              <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg">
+              
+              <!-- Preview Section -->
+              <div id="deathCertPreview" class="mb-3 hidden">
+                <p class="text-xs text-gray-500 mb-2">Current Death Certificate:</p>
+                <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg border">
+                  <img id="deathCertPreviewImg" src="" alt="Death Certificate Preview" class="h-16 w-16 object-cover rounded border">
+                  <div class="flex-1">
+                    <p id="deathCertPreviewName" class="text-sm font-medium text-gray-700"></p>
+                    <button 
+                      type="button" 
+                      onclick="removeDeathCertificate()"
+                      class="text-xs text-red-600 hover:text-red-800 mt-1"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Upload Section -->
+              <div id="deathCertUpload" class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg">
                 <div class="space-y-1 text-center">
-                  <div class="flex text-sm text-gray-600">
+                  <div class="flex text-sm text-gray-600 justify-center">
                     <label for="deathCertificate" class="relative cursor-pointer bg-white rounded-md font-medium text-sidebar-accent hover:text-opacity-80 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-sidebar-accent">
                       <span>Upload a file</span>
                       <input 
@@ -2025,6 +2045,7 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
                         type="file" 
                         class="sr-only"
                         accept=".pdf,.jpg,.jpeg,.png"
+                        onchange="previewDeathCertificate(this)"
                       >
                     </label>
                     <p class="pl-1">or drag and drop</p>
@@ -2032,8 +2053,56 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
                   <p class="text-xs text-gray-500">PNG, JPG, PDF up to 10MB</p>
                 </div>
               </div>
-              <p id="file-name" class="mt-2 text-sm text-gray-500"></p>
+              <p id="death-cert-file-name" class="mt-2 text-sm text-gray-500"></p>
             </div>
+
+            <!-- Senior/PWD Discount ID Upload -->
+            <div id="discountUploadSection" class="form-group mt-4 hidden">
+              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                Senior/PWD Discount ID
+              </label>
+              
+              <!-- Preview Section -->
+              <div id="discountIdPreview" class="mb-3 hidden">
+                <p class="text-xs text-gray-500 mb-2">Current Discount ID:</p>
+                <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg border">
+                  <img id="discountIdPreviewImg" src="" alt="Discount ID Preview" class="h-16 w-16 object-cover rounded border">
+                  <div class="flex-1">
+                    <p id="discountIdPreviewName" class="text-sm font-medium text-gray-700"></p>
+                    <button 
+                      type="button" 
+                      onclick="removeDiscountId()"
+                      class="text-xs text-red-600 hover:text-red-800 mt-1"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Upload Section -->
+              <div id="discountIdUpload" class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg">
+                <div class="space-y-1 text-center">
+                  <div class="flex text-sm text-gray-600 justify-center">
+                    <label for="discountIdFile" class="relative cursor-pointer bg-white rounded-md font-medium text-sidebar-accent hover:text-opacity-80 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-sidebar-accent">
+                      <span>Upload Discount ID</span>
+                      <input 
+                        id="discountIdFile" 
+                        name="discountIdFile" 
+                        type="file" 
+                        class="sr-only"
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        onchange="previewDiscountId(this)"
+                      >
+                    </label>
+                    <p class="pl-1">or drag and drop</p>
+                  </div>
+                  <p class="text-xs text-gray-500">PNG, JPG, PDF up to 10MB</p>
+                </div>
+              </div>
+              <p id="discount-file-name" class="mt-2 text-sm text-gray-500"></p>
+            </div>
+
           </div>
         </form>
       </div>
@@ -3576,6 +3645,88 @@ function toggleBodyScroll(isOpen) {
   }
 }
 
+// Preview Death Certificate
+function previewDeathCertificate(input) {
+  const preview = document.getElementById('deathCertPreview');
+  const previewImg = document.getElementById('deathCertPreviewImg');
+  const previewName = document.getElementById('deathCertPreviewName');
+  const uploadSection = document.getElementById('deathCertUpload');
+  const fileName = document.getElementById('death-cert-file-name');
+
+  if (input.files && input.files[0]) {
+    const file = input.files[0];
+    
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        previewImg.src = e.target.result;
+      }
+      reader.readAsDataURL(file);
+    } else {
+      previewImg.src = '../assets/icons/pdf-icon.png'; // Add a PDF icon
+    }
+    
+    previewName.textContent = file.name;
+    fileName.textContent = `Selected file: ${file.name}`;
+    preview.classList.remove('hidden');
+    uploadSection.classList.add('hidden');
+  }
+}
+
+// Remove Death Certificate
+function removeDeathCertificate() {
+  const input = document.getElementById('deathCertificate');
+  const preview = document.getElementById('deathCertPreview');
+  const uploadSection = document.getElementById('deathCertUpload');
+  const fileName = document.getElementById('death-cert-file-name');
+  
+  input.value = '';
+  preview.classList.add('hidden');
+  uploadSection.classList.remove('hidden');
+  fileName.textContent = '';
+}
+
+// Preview Discount ID
+function previewDiscountId(input) {
+  const preview = document.getElementById('discountIdPreview');
+  const previewImg = document.getElementById('discountIdPreviewImg');
+  const previewName = document.getElementById('discountIdPreviewName');
+  const uploadSection = document.getElementById('discountIdUpload');
+  const fileName = document.getElementById('discount-file-name');
+
+  if (input.files && input.files[0]) {
+    const file = input.files[0];
+    
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        previewImg.src = e.target.result;
+      }
+      reader.readAsDataURL(file);
+    } else {
+      previewImg.src = '../assets/icons/pdf-icon.png';
+    }
+    
+    previewName.textContent = file.name;
+    fileName.textContent = `Selected file: ${file.name}`;
+    preview.classList.remove('hidden');
+    uploadSection.classList.add('hidden');
+  }
+}
+
+// Remove Discount ID
+function removeDiscountId() {
+  const input = document.getElementById('discountIdFile');
+  const preview = document.getElementById('discountIdPreview');
+  const uploadSection = document.getElementById('discountIdUpload');
+  const fileName = document.getElementById('discount-file-name');
+  
+  input.value = '';
+  preview.classList.add('hidden');
+  uploadSection.classList.remove('hidden');
+  fileName.textContent = '';
+}
+
 // Function to open the Edit Service Modal
 function openEditServiceModal(serviceId) {
   
@@ -3646,6 +3797,38 @@ function openEditServiceModal(serviceId) {
         if (data.discounted_price) {
           document.getElementById('servicePrice').value = data.discounted_price;
         }
+
+        // Handle Death Certificate Preview
+        if (data.death_cert_image) {
+          const deathCertPath = `../customer/booking/${data.death_cert_image}`;
+          document.getElementById('deathCertPreviewImg').src = deathCertPath;
+          document.getElementById('deathCertPreviewName').textContent = 'Death Certificate';
+          document.getElementById('deathCertPreview').classList.remove('hidden');
+          document.getElementById('deathCertUpload').classList.add('hidden');
+        } else {
+          document.getElementById('deathCertPreview').classList.add('hidden');
+          document.getElementById('deathCertUpload').classList.remove('hidden');
+        }
+
+        // Handle Senior/PWD Discount Upload Section
+        const discountSection = document.getElementById('discountUploadSection');
+        if (data.senior_pwd_discount === "Yes") {
+          discountSection.classList.remove('hidden');
+          
+          // Show existing discount ID if available
+          if (data.discount_id_img) {
+            const discountPath = `${data.discount_id_img}`;
+            document.getElementById('discountIdPreviewImg').src = discountPath;
+            document.getElementById('discountIdPreviewName').textContent = 'Discount ID';
+            document.getElementById('discountIdPreview').classList.remove('hidden');
+            document.getElementById('discountIdUpload').classList.add('hidden');
+          } else {
+            document.getElementById('discountIdPreview').classList.add('hidden');
+            document.getElementById('discountIdUpload').classList.remove('hidden');
+          }
+        } else {
+          discountSection.classList.add('hidden');
+        }
         
         // Now fetch services for this branch
         fetchServicesForBranch(data.branch_id, data.service_id);
@@ -3715,39 +3898,48 @@ function saveServiceChanges() {
     return; // Stop the function execution
   }
 
-  // Get all form values
-  const formData = {
-    sales_id: document.getElementById('salesId').value,
-    customer_id: selectedCustomerId,
-    service_id: document.getElementById('serviceSelect').value,
-    service_price: document.getElementById('servicePrice').value,
-    firstName: document.getElementById('firstName').value,
-    middleName: document.getElementById('middleName').value,
-    lastName: document.getElementById('lastName').value,
-    nameSuffix: document.getElementById('nameSuffix').value,
-    email: document.getElementById('email').value,
-    phone: document.getElementById('phone').value,
-    deceasedFirstName: document.getElementById('deceasedFirstName').value,
-    deceasedMiddleName: document.getElementById('deceasedMiddleName').value,
-    deceasedLastName: document.getElementById('deceasedLastName').value,
-    deceasedSuffix: document.getElementById('deceasedSuffix').value,
-    birthDate: document.getElementById('birthDate').value,
-    deathDate: document.getElementById('deathDate').value,
-    burialDate: document.getElementById('burialDate').value,
-    deceasedAddress: document.getElementById('currentAddressDisplay').value,
-    branch: document.querySelector('input[name="branch"]:checked')?.value,
-    deathCertificate: document.getElementById('deathCertificate').files[0]?.name || 'No file selected'
-  };
+  // Create FormData object
+  const formData = new FormData();
+  
+  // Add all form data
+  formData.append('sales_id', document.getElementById('salesId').value);
+  formData.append('customer_id', selectedCustomerId);
+  formData.append('service_id', document.getElementById('serviceSelect').value);
+  formData.append('service_price', document.getElementById('servicePrice').value);
+  formData.append('firstName', document.getElementById('firstName').value);
+  formData.append('middleName', document.getElementById('middleName').value);
+  formData.append('lastName', document.getElementById('lastName').value);
+  formData.append('nameSuffix', document.getElementById('nameSuffix').value);
+  formData.append('email', document.getElementById('email').value);
+  formData.append('phone', document.getElementById('phone').value);
+  formData.append('deceasedFirstName', document.getElementById('deceasedFirstName').value);
+  formData.append('deceasedMiddleName', document.getElementById('deceasedMiddleName').value);
+  formData.append('deceasedLastName', document.getElementById('deceasedLastName').value);
+  formData.append('deceasedSuffix', document.getElementById('deceasedSuffix').value);
+  formData.append('birthDate', document.getElementById('birthDate').value);
+  formData.append('deathDate', document.getElementById('deathDate').value);
+  formData.append('burialDate', document.getElementById('burialDate').value);
+  formData.append('deceasedAddress', document.getElementById('currentAddressDisplay').value);
+  formData.append('branch', document.querySelector('input[name="branch"]:checked')?.value);
+
+  // Add files if they exist
+  const deathCertFile = document.getElementById('deathCertificate').files[0];
+  const discountIdFile = document.getElementById('discountIdFile').files[0];
+  
+  if (deathCertFile) {
+    formData.append('deathCertificate', deathCertFile);
+  }
+  
+  if (discountIdFile) {
+    formData.append('discountIdFile', discountIdFile);
+  }
 
   // Log the form data to console
-  console.log('Service Form Data:', formData);
+  console.log('Service Form Data:', Object.fromEntries(formData));
   
   fetch('history/update_history_sales.php', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(formData)
+    body: formData // Remove Content-Type header for FormData
   })
   .then(response => response.json())
   .then(data => {
