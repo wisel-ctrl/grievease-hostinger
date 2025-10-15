@@ -3812,7 +3812,7 @@ function openEditServiceModal(serviceId) {
 
         // Handle Senior/PWD Discount Upload Section
         const discountSection = document.getElementById('discountUploadSection');
-        if (data.senior_pwd_discount === "yes") {
+        if (data.senior_pwd_discount === "Yes") {
           discountSection.classList.remove('hidden');
           
           // Show existing discount ID if available
