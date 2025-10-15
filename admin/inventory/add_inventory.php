@@ -11,11 +11,17 @@ try {
         $category_id = intval($_POST['category_id'] ?? 0);
         $branch_id   = intval($_POST['branch_id'] ?? 0);
         $quantity    = intval($_POST['quantity'] ?? 0);
-        $price       = floatval($_POST['unitPrice'] ?? 0.00);
+        $price       = floatval($_POST['price'] ?? 0.00);
         $selling_price = floatval($_POST['sellingPrice'] ?? 0.00);
 
+        // Validate inputs
         if (empty($itemName) || $category_id <= 0 || $branch_id <= 0 || $quantity <= 0 || $selling_price <= 0) {
             throw new Exception("Please fill in all required fields with valid values.");
+        }
+
+        // Validate selling price > unit price
+        if ($selling_price <= $price && $price > 0) {
+            throw new Exception("Selling price must be greater than unit price.");
         }
 
         // Handle image (optional)
@@ -27,7 +33,7 @@ try {
                 throw new Exception("Uploaded file is not a valid image.");
             }
 
-            $uploadDir = '../uploads/inventory/';
+            $uploadDir = '../Uploads/inventory/';
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0755, true);
             }
@@ -40,10 +46,10 @@ try {
                 throw new Exception("Failed to move uploaded file.");
             }
 
-            $imagePath = 'uploads/inventory/' . $uniqueFilename;
+            $imagePath = 'Uploads/inventory/' . $uniqueFilename;
         }
 
-        // Step 1: Check if item already exists
+        // Check if item already exists
         $checkStmt = $conn->prepare("
             SELECT inventory_id, quantity 
             FROM inventory_tb 
@@ -55,7 +61,7 @@ try {
         $result = $checkStmt->get_result();
 
         if ($row = $result->fetch_assoc()) {
-            // Step 2: Update quantity
+            // Update quantity
             $newQuantity = $row['quantity'] + $quantity;
             $updateStmt = $conn->prepare("
                 UPDATE inventory_tb 
@@ -75,7 +81,7 @@ try {
 
             $updateStmt->close();
         } else {
-            // Step 3: Insert new item
+            // Insert new item
             $insertStmt = $conn->prepare("
                 INSERT INTO inventory_tb 
                 (item_name, category_id, quantity, price, selling_price, branch_id, inventory_img, status) 
@@ -96,7 +102,6 @@ try {
         }
 
         $checkStmt->close();
-
     } else {
         throw new Exception("Invalid request method.");
     }
