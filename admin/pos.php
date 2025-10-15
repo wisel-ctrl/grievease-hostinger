@@ -3338,7 +3338,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Update footer total display
   function updateFooterTotal() {
     const price = parseFloat(totalPriceInput.value) || 0;
-    footerTotalPrice.textContent = `₱${price.toFixed(2)}`;
+    footerTotalPrice.textContent = formatPrice(price);
   }
 
   // ID preview functionality
@@ -3427,7 +3427,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function updateFooterTotal() {
         const price = parseFloat(totalPriceInput.value) || 0;
-        footerTotalPrice.textContent = `₱${price.toFixed(2)}`;
+        footerTotalPrice.textContent = formatPrice(price);
     }
 
     // Apply discount function (from previous code)
@@ -3441,6 +3441,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize when modal opens
     window.initializeBasePrice = initializeBasePrice;
 });
+
+function formatPrice(amount) {
+    return "₱" + Number(amount).toLocaleString('en-PH', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+}
 </script>
   
   
