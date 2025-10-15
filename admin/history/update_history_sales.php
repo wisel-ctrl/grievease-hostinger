@@ -61,7 +61,7 @@ try {
         // Generate unique filename
         $fileExtension = pathinfo($deathCertFile['name'], PATHINFO_EXTENSION);
         $newFilename = uniqid() . '_' . time() . '.' . $fileExtension;
-        $uploadPath = '../../customer/booking/uploads/' . $newFilename;
+        $uploadPath = '../../customer/booking/uploads/death_cert_' . $newFilename;
         
         // Move uploaded file
         if (move_uploaded_file($deathCertFile['tmp_name'], $uploadPath)) {
@@ -91,7 +91,7 @@ try {
         // Generate unique filename
         $fileExtension = pathinfo($discountIdFile['name'], PATHINFO_EXTENSION);
         $newFilename = uniqid() . '_' . time() . '.' . $fileExtension;
-        $uploadPath = '../uploads/valid_ids/' . $newFilename;
+        $uploadPath = '../uploads/valid_ids/discount_id_' . $newFilename;
         
         // Move uploaded file
         if (move_uploaded_file($discountIdFile['tmp_name'], $uploadPath)) {
