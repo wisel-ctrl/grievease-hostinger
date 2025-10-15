@@ -989,11 +989,13 @@ if ($branchResult->num_rows > 0) {
         <div>
           <label for="sellingPrice" class="block mb-2 text-sm font-medium text-sidebar-text">Selling Price</label>
           <div class="relative">
-            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₱</span>
-            <input type="number" id="sellingPrice" name="sellingPrice" step="0.01" min="0" required
-                   class="w-full p-2.5 pl-8 border border-sidebar-border rounded-md focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent"
-                   placeholder="Enter selling price">
-          </div>
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <span class="text-gray-500">₱</span>
+            </div>
+            <input type="text" id="sellingPrice" name="sellingPrice" required 
+                   class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
+                   placeholder="0.00">
+        </div>
         </div>
 
         
@@ -1126,6 +1128,12 @@ function validateItemName(input) {
 
 // Unit Price Validation
 function validateUnitPrice(input) {
+  if (input.value < 0) {
+    input.value = '';
+  }
+}
+
+function validateSellingPrice(input) {
   if (input.value < 0) {
     input.value = '';
   }
@@ -1896,6 +1904,7 @@ function confirmArchive(inventoryId) {
     });
     return false; // Prevent default form submission
 }
+
 </script>
   <script src="inventory_functions.js"></script>
   <script src="script.js"></script>
