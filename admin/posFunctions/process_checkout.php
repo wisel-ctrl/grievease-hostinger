@@ -41,10 +41,33 @@ try {
     $sold_by = $_POST['sold_by'] ?? 1; // Default to admin ID 1
     $status = $_POST['status'] ?? 'Pending';
     
-    // Handle file upload
-    $death_cert_image = null;
+    $death_cert_path = null;
+    $upload_dir = '../../customer/booking/uploads/';
+
+    // Ensure the directory exists
+    if (!is_dir($upload_dir)) {
+        mkdir($upload_dir, 0777, true);
+    }
+
     if (isset($_FILES['deathCertificate']) && $_FILES['deathCertificate']['error'] === UPLOAD_ERR_OK) {
-        $death_cert_image = file_get_contents($_FILES['deathCertificate']['tmp_name']);
+        // Generate a unique filename
+        $dateNow = date('Ymd_His'); // e.g., 20251015_153045
+        $randomNum = mt_rand(100000, 999999);
+        
+        // Get the file extension (e.g., jpg, png)
+        $extension = pathinfo($_FILES['deathCertificate']['name'], PATHINFO_EXTENSION);
+        
+        // Final filename
+        $fileName = "death_cert_{$dateNow}_{$randomNum}." . $extension;
+        $filePath = $upload_dir . $fileName;
+        
+        // Move the uploaded file
+        if (move_uploaded_file($_FILES['deathCertificate']['tmp_name'], $filePath)) {
+            // Save only relative path in database
+            $death_cert_path = 'uploads/' . $fileName;
+        } else {
+            throw new Exception('Failed to move uploaded file.');
+        }
     }
 
     // Prepare SQL statement - including with_cremate
@@ -64,7 +87,7 @@ try {
         $fname_deceased, $mname_deceased, $lname_deceased, $suffix_deceased,
         $date_of_birth, $date_of_death, $date_of_burial, $deceased_address,
         $branch_id, $service_id, $payment_method, $initial_price, $discounted_price, 
-        $amount_paid, $balance, $status, $payment_status, $death_cert_image, $sold_by,
+        $amount_paid, $balance, $status, $payment_status, $death_cert_path, $sold_by,
         $with_cremate
     );
 
