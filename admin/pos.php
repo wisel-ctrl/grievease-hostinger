@@ -974,6 +974,20 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
   </div>
 </div>
+
+        <!-- Cremation Checklist Section -->
+        <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
+          <h4 class="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4 pb-2 border-b border-gray-200 flex items-center">
+            Additional Services
+          </h4>
+          <div class="space-y-3">
+              <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+                  <input type="checkbox" name="withCremation" id="withCremation" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+                  With Cremation <span class="ml-2 text-sidebar-accent font-semibold">(+₱45,000)</span>
+              </label>
+              <p class="text-sm text-gray-500 ml-8">Check this box if the service includes cremation</p>
+          </div>
+        </div>
   
         <!-- Payment Information -->
         <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
@@ -1058,19 +1072,7 @@ document.addEventListener('DOMContentLoaded', function() {
           </div>
         </div>
 
-        <!-- Cremation Checklist Section -->
-        <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
-          <h4 class="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4 pb-2 border-b border-gray-200 flex items-center">
-            Additional Services
-          </h4>
-          <div class="space-y-3">
-              <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
-                  <input type="checkbox" name="withCremation" id="withCremation" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-                  With Cremation <span class="ml-2 text-sidebar-accent font-semibold">(+₱45,000)</span>
-              </label>
-              <p class="text-sm text-gray-500 ml-8">Check this box if the service includes cremation</p>
-          </div>
-        </div>
+        
       </form>
     </div>
     
