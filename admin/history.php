@@ -4695,8 +4695,37 @@ function checkCustomerBeforeComplete(salesId, hasCustomer) {
         });
         return;
     }
-    openCompleteModal(salesId);
+
+    // ✅ Call PHP API to check pre-burial staff assignment
+    fetch('history/check_preburial.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ sales_id: salesId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            openCompleteModal(salesId);
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Pre-Burial Required',
+                text: data.message,
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK'
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Server Error',
+            text: 'Something went wrong. Please try again later.'
+        });
+    });
 }
+
 
 // Add CSS for disabled buttons
 const style = document.createElement('style');
