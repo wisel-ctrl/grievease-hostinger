@@ -1,9 +1,4 @@
 <?php
-ini_set('display_errors', 1);  // show errors on screen (optional)
-ini_set('log_errors', 1);      // enable logging
-ini_set('error_log', __DIR__ . '/error_log.txt'); // set custom log location
-error_reporting(E_ALL);  
-
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST');
@@ -30,7 +25,7 @@ if ($branch_id !== 1 && $branch_id !== 2) {
     exit;
 }
 
-// Function to calculate half-month salary based on date range and employee start date
+// Function to calculate monthly salary based on included half-months
 function calculateMonthlySalary($monthly_salary, $start_date, $end_date, $employee_start_date) {
     if (!$start_date || !$end_date) {
         return $monthly_salary; // Full month if no date range
@@ -50,54 +45,73 @@ function calculateMonthlySalary($monthly_salary, $start_date, $end_date, $employ
     
     if (!$emp_start) {
         error_log("Invalid employee start date: $employee_start_date");
-        $emp_start = $range_start; // Use range start if invalid employee date
+        $emp_start = $range_start;
     }
-    
-    // Get the month and year from the date range
-    $range_month = $range_start->format('m');
-    $range_year = $range_start->format('Y');
-    
-    // Create dates for 1st-15th and 16th-end of month
-    $first_half_start = DateTime::createFromFormat('Y-m-d', "$range_year-$range_month-01");
-    $first_half_end = DateTime::createFromFormat('Y-m-d', "$range_year-$range_month-15");
-    
-    // Get last day of month for second half
-    $last_day = $range_start->format('t');
-    $second_half_start = DateTime::createFromFormat('Y-m-d', "$range_year-$range_month-16");
-    $second_half_end = DateTime::createFromFormat('Y-m-d', "$range_year-$range_month-$last_day");
     
     $calculated_salary = 0;
     
-    error_log("First half: " . $first_half_start->format('Y-m-d') . " to " . $first_half_end->format('Y-m-d'));
-    error_log("Second half: " . $second_half_start->format('Y-m-d') . " to " . $second_half_end->format('Y-m-d'));
-    error_log("Date range: " . $range_start->format('Y-m-d') . " to " . $range_end->format('Y-m-d'));
-    error_log("Employee start: " . $emp_start->format('Y-m-d'));
+    // Create period for each month in the range
+    $period_start = clone $range_start;
+    $period_start->modify('first day of this month');
+    $period_end = clone $range_end;
+    $period_end->modify('last day of this month');
     
-    // Check first half (1st-15th)
-    $first_half_included = false;
-    $second_half_included = false;
+    $interval = DateInterval::createFromDateString('1 month');
+    $period = new DatePeriod($period_start, $interval, $period_end);
     
-    // Check if date range overlaps with first half
-    if ($range_start <= $first_half_end && $range_end >= $first_half_start) {
-        $first_half_included = true;
-        error_log("Date range INCLUDES first half");
-    }
-    
-    // Check if date range overlaps with second half
-    if ($range_start <= $second_half_end && $range_end >= $second_half_start) {
-        $second_half_included = true;
-        error_log("Date range INCLUDES second half");
-    }
-    
-    // Check if employee was employed during the included halves
-    if ($first_half_included && $emp_start <= $first_half_end) {
-        $calculated_salary += $monthly_salary / 2;
-        error_log("First half salary ADDED: " . ($monthly_salary / 2));
-    }
-    
-    if ($second_half_included && $emp_start <= $second_half_end) {
-        $calculated_salary += $monthly_salary / 2;
-        error_log("Second half salary ADDED: " . ($monthly_salary / 2));
+    foreach ($period as $dt) {
+        $current_month = $dt->format('Y-m');
+        $month_start = DateTime::createFromFormat('Y-m-d', $dt->format('Y-m-01'));
+        $month_end = DateTime::createFromFormat('Y-m-d', $dt->format('Y-m-t'));
+        
+        error_log("Processing month: $current_month");
+        
+        // Adjust for actual range boundaries
+        $effective_month_start = ($month_start < $range_start) ? $range_start : $month_start;
+        $effective_month_end = ($month_end > $range_end) ? $range_end : $month_end;
+        
+        // Skip if employee wasn't employed yet this month
+        if ($emp_start > $month_end) {
+            error_log("Employee started after this month, skipping");
+            continue;
+        }
+        
+        // Calculate days in each half for this specific month
+        $first_half_start = DateTime::createFromFormat('Y-m-d', $dt->format('Y-m-01'));
+        $first_half_end = DateTime::createFromFormat('Y-m-d', $dt->format('Y-m-15'));
+        $second_half_start = DateTime::createFromFormat('Y-m-d', $dt->format('Y-m-16'));
+        $second_half_end = DateTime::createFromFormat('Y-m-d', $dt->format('Y-m-t'));
+        
+        $first_half_included = false;
+        $second_half_included = false;
+        
+        // Check if effective range includes any days from first half
+        if ($effective_month_start <= $first_half_end && $effective_month_end >= $first_half_start) {
+            $first_half_included = true;
+            error_log("First half included for month $current_month");
+        }
+        
+        // Check if effective range includes any days from second half
+        if ($effective_month_start <= $second_half_end && $effective_month_end >= $second_half_start) {
+            $second_half_included = true;
+            error_log("Second half included for month $current_month");
+        }
+        
+        // Add salary for included halves (considering employee start date)
+        $month_salary = 0;
+        
+        if ($first_half_included && $emp_start <= $first_half_end) {
+            $month_salary += $monthly_salary / 2;
+            error_log("Added first half salary: " . ($monthly_salary / 2));
+        }
+        
+        if ($second_half_included && $emp_start <= $second_half_end) {
+            $month_salary += $monthly_salary / 2;
+            error_log("Added second half salary: " . ($monthly_salary / 2));
+        }
+        
+        $calculated_salary += $month_salary;
+        error_log("Month $current_month total: $month_salary");
     }
     
     error_log("Final calculated salary: $calculated_salary (Base: $monthly_salary)");
@@ -105,7 +119,7 @@ function calculateMonthlySalary($monthly_salary, $start_date, $end_date, $employ
     return $calculated_salary;
 }
 
-// Function to get employee payroll data with half-month salary calculation
+// Function to get employee payroll data with proper salary calculation
 function getEmployeePayrollData($conn, $branch_id, $start_date = null, $end_date = null) {
     // Default to current month if no date range provided
     $query_start_date = $start_date;
@@ -122,8 +136,6 @@ function getEmployeePayrollData($conn, $branch_id, $start_date = null, $end_date
     // Ensure dates have proper time components for commission query
     $commission_start_date = $query_start_date . ' 00:00:00';
     $commission_end_date = $query_end_date . ' 23:59:59';
-    
-    error_log("Commission query dates - Start: $commission_start_date, End: $commission_end_date");
     
     $query = "
         SELECT 
@@ -164,7 +176,7 @@ function getEmployeePayrollData($conn, $branch_id, $start_date = null, $end_date
     
     if ($result->num_rows > 0) {
         while($row = $result->fetch_assoc()) {
-            // Calculate monthly salary based on half-month system and employee start date
+            // Calculate monthly salary based on included half-months
             $monthly_salary = 0;
             if ($row['pay_structure'] == 'monthly' || $row['pay_structure'] == 'both') {
                 $monthly_salary = calculateMonthlySalary(
@@ -190,15 +202,6 @@ function getEmployeePayrollData($conn, $branch_id, $start_date = null, $end_date
             ];
             
             $employees[] = $employee_data;
-            
-            error_log("=== EMPLOYEE FINAL ===");
-            error_log("Employee: " . $row['full_name']);
-            error_log("Base Monthly: " . $row['base_monthly_salary']);
-            error_log("Calculated Monthly: " . $monthly_salary);
-            error_log("Commission: " . $row['commission_salary']);
-            error_log("Total: " . $total_salary);
-            error_log("Start Date: " . $row['date_created']);
-            error_log("=====================");
         }
     } else {
         error_log("No employees found for branch $branch_id");
@@ -207,9 +210,8 @@ function getEmployeePayrollData($conn, $branch_id, $start_date = null, $end_date
     return $employees;
 }
 
-// Function to get payroll summary with half-month salary calculation
+// Function to get payroll summary
 function getPayrollSummary($conn, $branch_id, $start_date = null, $end_date = null) {
-    // Get all employees first to calculate totals
     $employees = getEmployeePayrollData($conn, $branch_id, $start_date, $end_date);
     
     $total_employees = count($employees);
@@ -232,11 +234,9 @@ function getPayrollSummary($conn, $branch_id, $start_date = null, $end_date = nu
 }
 
 try {
-    // Get data from database with branch filter and date range
     $employees = getEmployeePayrollData($conn, $branch_id, $start_date, $end_date);
     $summary = getPayrollSummary($conn, $branch_id, $start_date, $end_date);
     
-    // Return JSON response
     echo json_encode([
         'success' => true,
         'branch_id' => $branch_id,

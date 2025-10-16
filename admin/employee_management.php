@@ -2875,30 +2875,41 @@ document.addEventListener('DOMContentLoaded', function() {
 
   let startDateFP, endDateFP;
 
-  // Initialize date pickers
   startDateFP = flatpickr(startDatePicker, {
       dateFormat: "Y-m-d",
-      maxDate: "today", // Prevent selecting future dates
+      maxDate: "today",
       onChange: function(selectedDates, dateStr, instance) {
           selectedDateRange.startDate = selectedDates[0];
-          // Set min date for end date picker
           if (selectedDates[0]) {
               endDateFP.set('minDate', selectedDates[0]);
+              // Auto-set end date to same month if start date is selected
+              autoSetEndDate(selectedDates[0]);
           }
       }
   });
 
   endDateFP = flatpickr(endDatePicker, {
       dateFormat: "Y-m-d",
-      maxDate: "today", // Prevent selecting future dates
+      maxDate: "today",
       onChange: function(selectedDates, dateStr, instance) {
           selectedDateRange.endDate = selectedDates[0];
-          // Set max date for start date picker
           if (selectedDates[0]) {
               startDateFP.set('maxDate', selectedDates[0]);
           }
       }
   });
+
+  // Auto-set end date to end of same month as start date
+  function autoSetEndDate(startDate) {
+      if (!selectedDateRange.endDate || 
+          selectedDateRange.endDate.getMonth() !== startDate.getMonth() ||
+          selectedDateRange.endDate.getFullYear() !== startDate.getFullYear()) {
+          
+          const endOfMonth = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0);
+          endDateFP.setDate(endOfMonth);
+          selectedDateRange.endDate = endOfMonth;
+      }
+  }
 
   // Function to reset date pickers
   function resetDatePickers() {
