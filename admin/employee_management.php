@@ -3026,8 +3026,13 @@ document.addEventListener('DOMContentLoaded', function() {
       // Add date range parameters if provided
       if (dateRange && dateRange.startDate && dateRange.endDate) {
           // Set start date to 00:00:00 and end date to 23:59:59
-          const startDateStr = dateRange.startDate.toISOString().split('T')[0] + ' 00:00:00';
-          const endDateStr = dateRange.endDate.toISOString().split('T')[0] + ' 23:59:59';
+          const startDateStr = dateRange.startDate.getFullYear() + '-' + 
+                              String(dateRange.startDate.getMonth() + 1).padStart(2, '0') + '-' + 
+                              String(dateRange.startDate.getDate()).padStart(2, '0');
+                              
+          const endDateStr = dateRange.endDate.getFullYear() + '-' + 
+                            String(dateRange.endDate.getMonth() + 1).padStart(2, '0') + '-' + 
+                            String(dateRange.endDate.getDate()).padStart(2, '0');
           
           url += `&start_date=${encodeURIComponent(startDateStr)}&end_date=${encodeURIComponent(endDateStr)}`;
           
