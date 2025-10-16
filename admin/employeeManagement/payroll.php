@@ -6,14 +6,15 @@ header('Access-Control-Allow-Headers: Content-Type');
 
 require_once('../../db_connect.php');
 
-date_default_timezone_set('Asia/Manila');
-
 // Get branch_id from request
 $branch_id = isset($_GET['branch_id']) ? intval($_GET['branch_id']) : 0;
 
-// Get date range from request and add time components
-$start_date = isset($_GET['start_date']) ? $_GET['start_date'] . ' 00:00:00' : null;
-$end_date = isset($_GET['end_date']) ? $_GET['end_date'] . ' 23:59:59' : null;
+// Get date range from request
+$start_date = isset($_GET['start_date']) ? $_GET['start_date'] : null;
+$end_date = isset($_GET['end_date']) ? $_GET['end_date'] : null;
+
+// Debug output
+error_log("Payroll API Called - Branch: $branch_id, Start: $start_date, End: $end_date");
 
 // Validate branch_id
 if ($branch_id !== 1 && $branch_id !== 2) {
@@ -24,13 +25,19 @@ if ($branch_id !== 1 && $branch_id !== 2) {
     exit;
 }
 
-// Function to get employee payroll data with branch filter and date range
+// Function to get employee payroll data
 function getEmployeePayrollData($conn, $branch_id, $start_date = null, $end_date = null) {
     // Default to current month if no date range provided
     if (!$start_date || !$end_date) {
         $start_date = date('Y-m-01 00:00:00');
         $end_date = date('Y-m-t 23:59:59');
+    } else {
+        // Ensure dates have proper time components
+        if (strpos($start_date, ' ') === false) $start_date .= ' 00:00:00';
+        if (strpos($end_date, ' ') === false) $end_date .= ' 23:59:59';
     }
+    
+    error_log("Query Dates - Start: $start_date, End: $end_date");
     
     $query = "
         SELECT 
@@ -73,13 +80,18 @@ function getEmployeePayrollData($conn, $branch_id, $start_date = null, $end_date
             e.base_salary
     ";
     
+    error_log("SQL Query: " . $query);
+    
     $result = $conn->query($query);
     $employees = [];
     
     if ($result->num_rows > 0) {
         while($row = $result->fetch_assoc()) {
             $employees[] = $row;
+            error_log("Employee: " . $row['full_name'] . " - Commission: " . $row['commission_salary']);
         }
+    } else {
+        error_log("No employees found for branch $branch_id");
     }
     
     return $employees;
