@@ -3025,7 +3025,6 @@ document.addEventListener('DOMContentLoaded', function() {
       
       // Add date range parameters if provided
       if (dateRange && dateRange.startDate && dateRange.endDate) {
-          // Set start date to 00:00:00 and end date to 23:59:59
           const startDateStr = dateRange.startDate.getFullYear() + '-' + 
                               String(dateRange.startDate.getMonth() + 1).padStart(2, '0') + '-' + 
                               String(dateRange.startDate.getDate()).padStart(2, '0');
@@ -3056,7 +3055,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const data = await response.json();
       
       if (data.success) {
-        populateEmployeeTable(data.employees, dateRange);
+        populateEmployeeTable(data.employees);
         updateSummary(data.summary);
       } else {
         console.error('Error loading payroll data:', data.message);
@@ -3068,32 +3067,19 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  // Populate employee table with prorated salaries
-  function populateEmployeeTable(employees, dateRange = null) {
+  // Populate employee table (no frontend calculation needed - backend handles it)
+  function populateEmployeeTable(employees) {
     const tableBody = document.getElementById('employeeTableBody');
     tableBody.innerHTML = '';
     
     employees.forEach(employee => {
-      // Calculate prorated salary if date range is provided
-      let displayMonthlySalary = parseFloat(employee.monthly_salary);
-      let displayTotalSalary = parseFloat(employee.total_salary);
-      
-      if (dateRange && dateRange.startDate && dateRange.endDate) {
-        const prorationFactor = calculateProrationFactor(dateRange.startDate, dateRange.endDate);
-        displayMonthlySalary = parseFloat(employee.monthly_salary) * prorationFactor;
-        
-        // Recalculate total salary with prorated monthly salary
-        const commissionSalary = parseFloat(employee.commission_salary);
-        displayTotalSalary = displayMonthlySalary + commissionSalary;
-      }
-      
       const row = document.createElement('tr');
       row.className = 'border-b border-amber-200 hover:bg-amber-50 transition';
       row.innerHTML = `
         <td class="px-4 py-3 text-gray-700">${employee.full_name}</td>
-        <td class="px-4 py-3 text-right text-gray-700">${formatCurrency(displayMonthlySalary)}</td>
+        <td class="px-4 py-3 text-right text-gray-700">${formatCurrency(parseFloat(employee.monthly_salary))}</td>
         <td class="px-4 py-3 text-right text-gray-700">${formatCurrency(parseFloat(employee.commission_salary))}</td>
-        <td class="px-4 py-3 text-right font-semibold text-gray-800">${formatCurrency(displayTotalSalary)}</td>
+        <td class="px-4 py-3 text-right font-semibold text-gray-800">${formatCurrency(parseFloat(employee.total_salary))}</td>
       `;
       tableBody.appendChild(row);
     });

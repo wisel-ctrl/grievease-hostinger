@@ -25,39 +25,61 @@ if ($branch_id !== 1 && $branch_id !== 2) {
     exit;
 }
 
-// Function to calculate proration factor
-function calculateProrationFactor($start_date, $end_date) {
+// Function to calculate half-month salary based on date range and employee start date
+function calculateMonthlySalary($monthly_salary, $start_date, $end_date, $employee_start_date) {
     if (!$start_date || !$end_date) {
-        return 1.0; // Full month if no date range
+        return $monthly_salary; // Full month if no date range
     }
     
     // Convert to DateTime objects
-    $start = DateTime::createFromFormat('Y-m-d', $start_date);
-    $end = DateTime::createFromFormat('Y-m-d', $end_date);
+    $range_start = DateTime::createFromFormat('Y-m-d', $start_date);
+    $range_end = DateTime::createFromFormat('Y-m-d', $end_date);
+    $emp_start = DateTime::createFromFormat('Y-m-d', $employee_start_date);
     
-    if (!$start || !$end) {
-        return 1.0;
+    if (!$range_start || !$range_end || !$emp_start) {
+        return $monthly_salary;
     }
     
-    // Calculate days in range (inclusive)
-    $interval = $start->diff($end);
-    $days_in_range = $interval->days + 1;
+    // Get the month and year from the date range
+    $range_month = $range_start->format('m');
+    $range_year = $range_start->format('Y');
     
-    // Get days in the month of start date
-    $days_in_month = $start->format('t');
+    // Create dates for 1st-15th and 16th-end of month
+    $first_half_start = DateTime::createFromFormat('Y-m-d', "$range_year-$range_month-01");
+    $first_half_end = DateTime::createFromFormat('Y-m-d', "$range_year-$range_month-15");
     
-    $proration_factor = $days_in_range / $days_in_month;
+    // Get last day of month for second half
+    $last_day = $range_start->format('t');
+    $second_half_start = DateTime::createFromFormat('Y-m-d', "$range_year-$range_month-16");
+    $second_half_end = DateTime::createFromFormat('Y-m-d', "$range_year-$range_month-$last_day");
     
-    error_log("Proration - Days in range: $days_in_range, Days in month: $days_in_month, Factor: $proration_factor");
+    $calculated_salary = 0;
     
-    return $proration_factor;
+    // Check if employee was employed during first half (1st-15th)
+    if ($emp_start <= $first_half_end) {
+        // Check if date range includes any day from first half
+        if ($range_start <= $first_half_end && $range_end >= $first_half_start) {
+            $calculated_salary += $monthly_salary / 2;
+            error_log("First half included - +" . ($monthly_salary / 2));
+        }
+    }
+    
+    // Check if employee was employed during second half (16th-end)
+    if ($emp_start <= $second_half_end) {
+        // Check if date range includes any day from second half
+        if ($range_start <= $second_half_end && $range_end >= $second_half_start) {
+            $calculated_salary += $monthly_salary / 2;
+            error_log("Second half included - +" . ($monthly_salary / 2));
+        }
+    }
+    
+    error_log("Salary calculation: Base: $monthly_salary, Calculated: $calculated_salary");
+    
+    return $calculated_salary;
 }
 
-// Function to get employee payroll data with prorated salaries
+// Function to get employee payroll data with half-month salary calculation
 function getEmployeePayrollData($conn, $branch_id, $start_date = null, $end_date = null) {
-    // Calculate proration factor
-    $proration_factor = calculateProrationFactor($start_date, $end_date);
-    
     // Default to current month if no date range provided
     $query_start_date = $start_date;
     $query_end_date = $end_date;
@@ -65,14 +87,13 @@ function getEmployeePayrollData($conn, $branch_id, $start_date = null, $end_date
     if (!$start_date || !$end_date) {
         $query_start_date = date('Y-m-01');
         $query_end_date = date('Y-m-t');
-        $proration_factor = 1.0; // Full month
     }
     
     // Ensure dates have proper time components for commission query
     $commission_start_date = $query_start_date . ' 00:00:00';
     $commission_end_date = $query_end_date . ' 23:59:59';
     
-    error_log("Query Dates - Start: $commission_start_date, End: $commission_end_date, Proration: $proration_factor");
+    error_log("Query Dates - Start: $commission_start_date, End: $commission_end_date");
     
     $query = "
         SELECT 
@@ -84,25 +105,13 @@ function getEmployeePayrollData($conn, $branch_id, $start_date = null, $end_date
                 COALESCE(e.suffix, '')
             ) AS full_name,
             e.pay_structure,
-            CASE 
-                WHEN e.pay_structure IN ('monthly', 'both') THEN 
-                    COALESCE(e.monthly_salary, 0) * $proration_factor
-                ELSE 0
-            END AS monthly_salary,
+            e.monthly_salary as base_monthly_salary,
+            e.date_created,
             CASE 
                 WHEN e.pay_structure IN ('commission', 'both') THEN COALESCE(e.base_salary, 0)
                 ELSE 0
             END AS base_salary,
-            COALESCE(SUM(esp.income), 0) AS commission_salary,
-            (
-                COALESCE(
-                    CASE 
-                        WHEN e.pay_structure IN ('monthly', 'both') THEN 
-                            e.monthly_salary * $proration_factor
-                        ELSE 0
-                    END, 0
-                ) + COALESCE(SUM(esp.income), 0)
-            ) AS total_salary
+            COALESCE(SUM(esp.income), 0) AS commission_salary
         FROM employee_tb e
         LEFT JOIN employee_service_payments esp 
             ON e.employeeID = esp.employeeID
@@ -114,7 +123,8 @@ function getEmployeePayrollData($conn, $branch_id, $start_date = null, $end_date
             e.fname, e.mname, e.lname, e.suffix,
             e.pay_structure,
             e.monthly_salary,
-            e.base_salary
+            e.base_salary,
+            e.date_created
     ";
     
     error_log("SQL Query: " . $query);
@@ -124,11 +134,39 @@ function getEmployeePayrollData($conn, $branch_id, $start_date = null, $end_date
     
     if ($result->num_rows > 0) {
         while($row = $result->fetch_assoc()) {
-            $employees[] = $row;
+            // Calculate monthly salary based on half-month system and employee start date
+            $monthly_salary = 0;
+            if ($row['pay_structure'] == 'monthly' || $row['pay_structure'] == 'both') {
+                $monthly_salary = calculateMonthlySalary(
+                    $row['base_monthly_salary'],
+                    $start_date,
+                    $end_date,
+                    $row['date_created']
+                );
+            }
+            
+            $total_salary = $monthly_salary + floatval($row['commission_salary']);
+            
+            $employee_data = [
+                'employeeID' => $row['employeeID'],
+                'full_name' => $row['full_name'],
+                'pay_structure' => $row['pay_structure'],
+                'monthly_salary' => $monthly_salary,
+                'base_salary' => $row['base_salary'],
+                'commission_salary' => $row['commission_salary'],
+                'total_salary' => $total_salary,
+                'date_created' => $row['date_created'],
+                'base_monthly_salary' => $row['base_monthly_salary']
+            ];
+            
+            $employees[] = $employee_data;
+            
             error_log("Employee: " . $row['full_name'] . 
-                     " - Monthly: " . $row['monthly_salary'] . 
+                     " - Base Monthly: " . $row['base_monthly_salary'] .
+                     " - Calculated Monthly: " . $monthly_salary . 
                      " - Commission: " . $row['commission_salary'] .
-                     " - Total: " . $row['total_salary']);
+                     " - Total: " . $total_salary .
+                     " - Start Date: " . $row['date_created']);
         }
     } else {
         error_log("No employees found for branch $branch_id");
@@ -137,69 +175,27 @@ function getEmployeePayrollData($conn, $branch_id, $start_date = null, $end_date
     return $employees;
 }
 
-// Function to get payroll summary with prorated salaries
+// Function to get payroll summary with half-month salary calculation
 function getPayrollSummary($conn, $branch_id, $start_date = null, $end_date = null) {
-    // Calculate proration factor
-    $proration_factor = calculateProrationFactor($start_date, $end_date);
+    // Get all employees first to calculate totals
+    $employees = getEmployeePayrollData($conn, $branch_id, $start_date, $end_date);
     
-    // Default to current month if no date range provided
-    $query_start_date = $start_date;
-    $query_end_date = $end_date;
+    $total_employees = count($employees);
+    $total_monthly_salary = 0;
+    $total_commission_salary = 0;
+    $total_salary = 0;
     
-    if (!$start_date || !$end_date) {
-        $query_start_date = date('Y-m-01');
-        $query_end_date = date('Y-m-t');
-        $proration_factor = 1.0; // Full month
-    }
-    
-    $commission_start_date = $query_start_date . ' 00:00:00';
-    $commission_end_date = $query_end_date . ' 23:59:59';
-    
-    $query = "
-        SELECT 
-            COUNT(e.employeeID) AS total_employees,
-            SUM(
-                CASE 
-                    WHEN e.pay_structure IN ('monthly', 'both') 
-                        THEN COALESCE(e.monthly_salary, 0) * $proration_factor
-                    ELSE 0
-                END
-            ) AS total_monthly_salary,
-            SUM(COALESCE(esp_month.commission_salary, 0)) AS total_commission_salary,
-            SUM(
-                COALESCE(
-                    CASE 
-                        WHEN e.pay_structure IN ('monthly', 'both') 
-                            THEN e.monthly_salary * $proration_factor
-                        ELSE 0
-                    END, 0
-                ) 
-                + COALESCE(esp_month.commission_salary, 0)
-            ) AS total_salary
-        FROM employee_tb e
-        LEFT JOIN (
-            SELECT 
-                employeeID, 
-                SUM(income) AS commission_salary
-            FROM employee_service_payments
-            WHERE payment_date BETWEEN '$commission_start_date' AND '$commission_end_date'
-            GROUP BY employeeID
-        ) esp_month ON e.employeeID = esp_month.employeeID
-        WHERE e.status = 'active'
-        AND e.branch_id = $branch_id
-    ";
-    
-    $result = $conn->query($query);
-    
-    if ($result->num_rows > 0) {
-        return $result->fetch_assoc();
+    foreach ($employees as $employee) {
+        $total_monthly_salary += $employee['monthly_salary'];
+        $total_commission_salary += $employee['commission_salary'];
+        $total_salary += $employee['total_salary'];
     }
     
     return [
-        'total_employees' => 0,
-        'total_monthly_salary' => 0,
-        'total_commission_salary' => 0,
-        'total_salary' => 0
+        'total_employees' => $total_employees,
+        'total_monthly_salary' => $total_monthly_salary,
+        'total_commission_salary' => $total_commission_salary,
+        'total_salary' => $total_salary
     ];
 }
 
@@ -214,7 +210,6 @@ try {
         'branch_id' => $branch_id,
         'start_date' => $start_date,
         'end_date' => $end_date,
-        'proration_factor' => calculateProrationFactor($start_date, $end_date),
         'employees' => $employees,
         'summary' => $summary
     ]);
