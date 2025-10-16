@@ -31,13 +31,21 @@ function calculateMonthlySalary($monthly_salary, $start_date, $end_date, $employ
         return $monthly_salary; // Full month if no date range
     }
     
+    error_log("Calculating salary: Monthly: $monthly_salary, Range: $start_date to $end_date, Emp Start: $employee_start_date");
+    
     // Convert to DateTime objects
     $range_start = DateTime::createFromFormat('Y-m-d', $start_date);
     $range_end = DateTime::createFromFormat('Y-m-d', $end_date);
     $emp_start = DateTime::createFromFormat('Y-m-d', $employee_start_date);
     
-    if (!$range_start || !$range_end || !$emp_start) {
+    if (!$range_start || !$range_end) {
+        error_log("Invalid date range provided");
         return $monthly_salary;
+    }
+    
+    if (!$emp_start) {
+        error_log("Invalid employee start date: $employee_start_date");
+        $emp_start = $range_start; // Use range start if invalid employee date
     }
     
     // Get the month and year from the date range
@@ -55,25 +63,39 @@ function calculateMonthlySalary($monthly_salary, $start_date, $end_date, $employ
     
     $calculated_salary = 0;
     
-    // Check if employee was employed during first half (1st-15th)
-    if ($emp_start <= $first_half_end) {
-        // Check if date range includes any day from first half
-        if ($range_start <= $first_half_end && $range_end >= $first_half_start) {
-            $calculated_salary += $monthly_salary / 2;
-            error_log("First half included - +" . ($monthly_salary / 2));
-        }
+    error_log("First half: " . $first_half_start->format('Y-m-d') . " to " . $first_half_end->format('Y-m-d'));
+    error_log("Second half: " . $second_half_start->format('Y-m-d') . " to " . $second_half_end->format('Y-m-d'));
+    error_log("Date range: " . $range_start->format('Y-m-d') . " to " . $range_end->format('Y-m-d'));
+    error_log("Employee start: " . $emp_start->format('Y-m-d'));
+    
+    // Check first half (1st-15th)
+    $first_half_included = false;
+    $second_half_included = false;
+    
+    // Check if date range overlaps with first half
+    if ($range_start <= $first_half_end && $range_end >= $first_half_start) {
+        $first_half_included = true;
+        error_log("Date range INCLUDES first half");
     }
     
-    // Check if employee was employed during second half (16th-end)
-    if ($emp_start <= $second_half_end) {
-        // Check if date range includes any day from second half
-        if ($range_start <= $second_half_end && $range_end >= $second_half_start) {
-            $calculated_salary += $monthly_salary / 2;
-            error_log("Second half included - +" . ($monthly_salary / 2));
-        }
+    // Check if date range overlaps with second half
+    if ($range_start <= $second_half_end && $range_end >= $second_half_start) {
+        $second_half_included = true;
+        error_log("Date range INCLUDES second half");
     }
     
-    error_log("Salary calculation: Base: $monthly_salary, Calculated: $calculated_salary");
+    // Check if employee was employed during the included halves
+    if ($first_half_included && $emp_start <= $first_half_end) {
+        $calculated_salary += $monthly_salary / 2;
+        error_log("First half salary ADDED: " . ($monthly_salary / 2));
+    }
+    
+    if ($second_half_included && $emp_start <= $second_half_end) {
+        $calculated_salary += $monthly_salary / 2;
+        error_log("Second half salary ADDED: " . ($monthly_salary / 2));
+    }
+    
+    error_log("Final calculated salary: $calculated_salary (Base: $monthly_salary)");
     
     return $calculated_salary;
 }
@@ -87,13 +109,16 @@ function getEmployeePayrollData($conn, $branch_id, $start_date = null, $end_date
     if (!$start_date || !$end_date) {
         $query_start_date = date('Y-m-01');
         $query_end_date = date('Y-m-t');
+        error_log("No date range provided, using current month: $query_start_date to $query_end_date");
+    } else {
+        error_log("Using provided date range: $query_start_date to $query_end_date");
     }
     
     // Ensure dates have proper time components for commission query
     $commission_start_date = $query_start_date . ' 00:00:00';
     $commission_end_date = $query_end_date . ' 23:59:59';
     
-    error_log("Query Dates - Start: $commission_start_date, End: $commission_end_date");
+    error_log("Commission query dates - Start: $commission_start_date, End: $commission_end_date");
     
     $query = "
         SELECT 
@@ -138,7 +163,7 @@ function getEmployeePayrollData($conn, $branch_id, $start_date = null, $end_date
             $monthly_salary = 0;
             if ($row['pay_structure'] == 'monthly' || $row['pay_structure'] == 'both') {
                 $monthly_salary = calculateMonthlySalary(
-                    $row['base_monthly_salary'],
+                    floatval($row['base_monthly_salary']),
                     $start_date,
                     $end_date,
                     $row['date_created']
@@ -161,12 +186,14 @@ function getEmployeePayrollData($conn, $branch_id, $start_date = null, $end_date
             
             $employees[] = $employee_data;
             
-            error_log("Employee: " . $row['full_name'] . 
-                     " - Base Monthly: " . $row['base_monthly_salary'] .
-                     " - Calculated Monthly: " . $monthly_salary . 
-                     " - Commission: " . $row['commission_salary'] .
-                     " - Total: " . $total_salary .
-                     " - Start Date: " . $row['date_created']);
+            error_log("=== EMPLOYEE FINAL ===");
+            error_log("Employee: " . $row['full_name']);
+            error_log("Base Monthly: " . $row['base_monthly_salary']);
+            error_log("Calculated Monthly: " . $monthly_salary);
+            error_log("Commission: " . $row['commission_salary']);
+            error_log("Total: " . $total_salary);
+            error_log("Start Date: " . $row['date_created']);
+            error_log("=====================");
         }
     } else {
         error_log("No employees found for branch $branch_id");
