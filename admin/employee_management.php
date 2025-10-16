@@ -3056,7 +3056,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const data = await response.json();
       
       if (data.success) {
-        populateEmployeeTable(data.employees);
+        populateEmployeeTable(data.employees, dateRange);
         updateSummary(data.summary);
       } else {
         console.error('Error loading payroll data:', data.message);
@@ -3067,23 +3067,56 @@ document.addEventListener('DOMContentLoaded', function() {
       alert('Error fetching payroll data. Please try again.');
     }
   }
-  
-  // Populate employee table
-  function populateEmployeeTable(employees) {
+
+  // Populate employee table with prorated salaries
+  function populateEmployeeTable(employees, dateRange = null) {
     const tableBody = document.getElementById('employeeTableBody');
     tableBody.innerHTML = '';
     
     employees.forEach(employee => {
+      // Calculate prorated salary if date range is provided
+      let displayMonthlySalary = parseFloat(employee.monthly_salary);
+      let displayTotalSalary = parseFloat(employee.total_salary);
+      
+      if (dateRange && dateRange.startDate && dateRange.endDate) {
+        const prorationFactor = calculateProrationFactor(dateRange.startDate, dateRange.endDate);
+        displayMonthlySalary = parseFloat(employee.monthly_salary) * prorationFactor;
+        
+        // Recalculate total salary with prorated monthly salary
+        const commissionSalary = parseFloat(employee.commission_salary);
+        displayTotalSalary = displayMonthlySalary + commissionSalary;
+      }
+      
       const row = document.createElement('tr');
       row.className = 'border-b border-amber-200 hover:bg-amber-50 transition';
       row.innerHTML = `
         <td class="px-4 py-3 text-gray-700">${employee.full_name}</td>
-        <td class="px-4 py-3 text-right text-gray-700">₱${parseFloat(employee.monthly_salary).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
-        <td class="px-4 py-3 text-right text-gray-700">₱${parseFloat(employee.commission_salary).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
-        <td class="px-4 py-3 text-right font-semibold text-gray-800">₱${parseFloat(employee.total_salary).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
+        <td class="px-4 py-3 text-right text-gray-700">${formatCurrency(displayMonthlySalary)}</td>
+        <td class="px-4 py-3 text-right text-gray-700">${formatCurrency(parseFloat(employee.commission_salary))}</td>
+        <td class="px-4 py-3 text-right font-semibold text-gray-800">${formatCurrency(displayTotalSalary)}</td>
       `;
       tableBody.appendChild(row);
     });
+  }
+
+  // Calculate proration factor based on date range
+  function calculateProrationFactor(startDate, endDate) {
+    // Calculate total days in the selected range
+    const timeDiff = endDate.getTime() - startDate.getTime();
+    const daysInRange = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1; // +1 to include both start and end dates
+    
+    // Get the number of days in the current month of the start date
+    const year = startDate.getFullYear();
+    const month = startDate.getMonth();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    
+    // Calculate proration factor
+    const prorationFactor = daysInRange / daysInMonth;
+    
+    console.log(`Date Range: ${startDate.toDateString()} to ${endDate.toDateString()}`);
+    console.log(`Days in range: ${daysInRange}, Days in month: ${daysInMonth}, Proration factor: ${prorationFactor}`);
+    
+    return prorationFactor;
   }
   
   // Update summary section
