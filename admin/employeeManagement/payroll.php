@@ -6,6 +6,8 @@ header('Access-Control-Allow-Headers: Content-Type');
 
 require_once('../../db_connect.php');
 
+date_default_timezone_set('Asia/Manila');
+
 // Get branch_id from request
 $branch_id = isset($_GET['branch_id']) ? intval($_GET['branch_id']) : 0;
 
