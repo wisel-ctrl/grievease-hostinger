@@ -1263,7 +1263,7 @@ echo "</tr>";
       <!-- Header -->
       <div class="bg-gradient-to-r from-[#D69E2E] to-[#B7791F] text-white p-6">
           <div class="flex justify-between items-center">
-              <h2 class="text-2xl font-bold">Monthly Payroll Record</h2>
+              <h2 class="text-2xl font-bold">Payroll Record</h2>
               <button id="closeModal" class="text-white hover:text-gray-200 transition">
                   <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -1272,15 +1272,24 @@ echo "</tr>";
           </div>
           <!-- Date Range Picker -->
           <div class="mt-4">
-              <label class="block text-amber-100 text-sm font-medium mb-2">Select Date Range</label>
+              <label class="block text-amber-100 text-sm font-medium mb-2">Select Payroll Period</label>
               <div class="flex flex-col sm:flex-row gap-2">
-                  <div class="flex-1">
-                      <input type="text" id="dateRangePicker" 
-                             class="w-full px-3 py-2 bg-white bg-opacity-20 border border-amber-300 rounded-lg text-white placeholder-amber-200 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-transparent"
-                             placeholder="Select date range...">
+                  <div class="flex-1 flex gap-2">
+                      <div class="flex-1">
+                          <label class="text-amber-100 text-xs block mb-1">From Date</label>
+                          <input type="text" id="startDatePicker" 
+                                 class="w-full px-3 py-2 bg-white bg-opacity-20 border border-amber-300 rounded-lg text-white placeholder-amber-200 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-transparent"
+                                 placeholder="Start date">
+                      </div>
+                      <div class="flex-1">
+                          <label class="text-amber-100 text-xs block mb-1">To Date</label>
+                          <input type="text" id="endDatePicker" 
+                                 class="w-full px-3 py-2 bg-white bg-opacity-20 border border-amber-300 rounded-lg text-white placeholder-amber-200 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-transparent"
+                                 placeholder="End date">
+                      </div>
                   </div>
                   <button id="applyDateRange" 
-                          class="px-4 py-2 bg-white bg-opacity-20 hover:bg-opacity-30 text-white rounded-lg transition border border-amber-300">
+                          class="px-4 py-2 bg-white bg-opacity-20 hover:bg-opacity-30 text-white rounded-lg transition border border-amber-300 self-end">
                       Apply
                   </button>
               </div>
@@ -2854,10 +2863,9 @@ document.addEventListener('DOMContentLoaded', function() {
   const closeModal = document.getElementById('closeModal');
   const cancelBtn = document.getElementById('cancelBtn');
   const recordExpenseBtn = document.getElementById('recordExpenseBtn');
-  const dateRangePicker = document.getElementById('dateRangePicker');
+  const startDatePicker = document.getElementById('startDatePicker');
+  const endDatePicker = document.getElementById('endDatePicker');
   const applyDateRangeBtn = document.getElementById('applyDateRange');
-
-  console.log("bat ayaw gumana pucha");
 
   let selectedBranchId = null;
   let selectedDateRange = {
@@ -2865,15 +2873,27 @@ document.addEventListener('DOMContentLoaded', function() {
       endDate: null
   };
 
-  // Initialize date range picker
-  flatpickr(dateRangePicker, {
-      mode: "range",
+  // Initialize date pickers
+  flatpickr(startDatePicker, {
       dateFormat: "Y-m-d",
       maxDate: "today", // Prevent selecting future dates
       onChange: function(selectedDates, dateStr, instance) {
-          if (selectedDates.length === 2) {
-              selectedDateRange.startDate = selectedDates[0];
-              selectedDateRange.endDate = selectedDates[1];
+          selectedDateRange.startDate = selectedDates[0];
+          // Set min date for end date picker
+          if (selectedDates[0]) {
+              endDatePicker._flatpickr.set('minDate', selectedDates[0]);
+          }
+      }
+  });
+
+  flatpickr(endDatePicker, {
+      dateFormat: "Y-m-d",
+      maxDate: "today", // Prevent selecting future dates
+      onChange: function(selectedDates, dateStr, instance) {
+          selectedDateRange.endDate = selectedDates[0];
+          // Set max date for start date picker
+          if (selectedDates[0]) {
+              startDatePicker._flatpickr.set('maxDate', selectedDates[0]);
           }
       }
   });
@@ -2900,7 +2920,11 @@ document.addEventListener('DOMContentLoaded', function() {
     modal.classList.remove('hidden');
     // Reset date range when opening modal
     selectedDateRange = { startDate: null, endDate: null };
-    dateRangePicker.value = '';
+    startDatePicker.value = '';
+    endDatePicker.value = '';
+    // Reset date picker constraints
+    startDatePicker._flatpickr.set('maxDate', null);
+    endDatePicker._flatpickr.set('minDate', null);
     loadPayrollData(branchId); // Pass branchId to load function
   }
   
@@ -2918,7 +2942,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (selectedDateRange.startDate && selectedDateRange.endDate) {
           loadPayrollData(selectedBranchId, selectedDateRange);
       } else {
-          alert('Please select a valid date range');
+          alert('Please select both start date and end date');
       }
   });
   
@@ -2989,9 +3013,18 @@ document.addEventListener('DOMContentLoaded', function() {
           const endDateStr = dateRange.endDate.toISOString().split('T')[0];
           url += `&start_date=${startDateStr}&end_date=${endDateStr}`;
           
-          // Update current month display to show date range
+          // Update display to show date range
+          const startFormatted = dateRange.startDate.toLocaleDateString('en-PH', { 
+              month: 'short', 
+              day: 'numeric' 
+          });
+          const endFormatted = dateRange.endDate.toLocaleDateString('en-PH', { 
+              month: 'short', 
+              day: 'numeric',
+              year: 'numeric'
+          });
           document.getElementById('currentMonth').textContent = 
-              `${startDateStr} to ${endDateStr}`;
+              `${startFormatted} - ${endFormatted}`;
       } else {
           updateCurrentMonth();
       }
@@ -3004,9 +3037,11 @@ document.addEventListener('DOMContentLoaded', function() {
         updateSummary(data.summary);
       } else {
         console.error('Error loading payroll data:', data.message);
+        alert('Error loading payroll data: ' + data.message);
       }
     } catch (error) {
       console.error('Error fetching payroll data:', error);
+      alert('Error fetching payroll data. Please try again.');
     }
   }
   
@@ -3051,7 +3086,6 @@ document.addEventListener('DOMContentLoaded', function() {
   window.closeBranchSelectionModal = closeBranchSelectionModal;
 });
 </script>
-
 
   
 </body>
