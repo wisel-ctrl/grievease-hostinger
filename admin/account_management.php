@@ -177,7 +177,7 @@ $customersResult = mysqli_query($conn, $customersQuery);
                             <div>
                                 <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
                                 <div class="space-y-1">
-                                    <div class="flex items-center cursor-pointer filter-option" data-sort="id_asc">
+                                    <div class="flex items-center cursor-pointer filter-option" data-sort="id_desc">
                                         <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
                                             Default
                                         </span>
@@ -249,7 +249,7 @@ $customersResult = mysqli_query($conn, $customersQuery);
                             <div class="space-y-2">
                                 <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
                                 <div class="space-y-1">
-                                    <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="id_asc">
+                                    <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="id_desc">
                                         <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
                                             Default
                                         </span>
@@ -404,7 +404,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const totalCount = document.getElementById('totalCount');
     
     let currentSearch = '';
-    let currentSort = 'id_asc';
+    let currentSort = 'id_desc';
     let currentPage = 1;
     let totalPages = 1;
 
@@ -1936,7 +1936,7 @@ if ($result->num_rows > 0) {
                             <div>
                                 <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
                                 <div class="space-y-1">
-                                    <div class="flex items-center cursor-pointer filter-option" data-sort="id_asc">
+                                    <div class="flex items-center cursor-pointer filter-option" data-sort="id_desc">
                                         <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
                                             Default
                                         </span>
@@ -2019,7 +2019,7 @@ if ($result->num_rows > 0) {
                             <div class="space-y-2">
                                 <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
                                 <div class="space-y-1">
-                                    <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="id_asc">
+                                    <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="id_desc">
                                         <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
                                             Default
                                         </span>
@@ -4185,7 +4185,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const empTotalCount = document.getElementById('empTotalCount');
     
     let currentEmpSearch = '';
-    let currentEmpSort = 'id_asc';
+    let currentEmpSort = 'id_desc';
     let currentEmpPage = 1;
     let totalEmpPages = 1;
 

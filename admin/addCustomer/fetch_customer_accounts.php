@@ -9,7 +9,7 @@ $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 
 // Initialize search and sorting variables
 $search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
-$sort = isset($_GET['sort']) ? $conn->real_escape_string($_GET['sort']) : 'id_asc';
+$sort = isset($_GET['sort']) ? $conn->real_escape_string($_GET['sort']) : 'id_desc';
 
 // Calculate offset
 $offset = ($page - 1) * $usersPerPage;
@@ -51,7 +51,7 @@ switch ($sort) {
         $orderBy = " ORDER BY email DESC";
         break;
     default:
-        $orderBy = " ORDER BY id ASC";
+        $orderBy = " ORDER BY id DESC";
 }
 
 // Count total rows

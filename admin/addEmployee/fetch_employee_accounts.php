@@ -4,7 +4,7 @@ require_once('../../db_connect.php');
 
 // Initialize variables
 $search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
-$sort = isset($_GET['sort']) ? $conn->real_escape_string($_GET['sort']) : 'id_asc';
+$sort = isset($_GET['sort']) ? $conn->real_escape_string($_GET['sort']) : 'id_desc';
 $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
 $perPage = 5;
 $offset = ($page - 1) * $perPage;
@@ -44,7 +44,7 @@ switch ($sort) {
         $orderBy = " ORDER BY created_at ASC";
         break;
     default:
-        $orderBy = " ORDER BY id ASC";
+        $orderBy = " ORDER BY id DESC";
 }
 
 // Count total rows
