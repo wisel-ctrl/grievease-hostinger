@@ -1266,6 +1266,21 @@ echo "</tr>";
                   </svg>
               </button>
           </div>
+          <!-- Date Range Picker -->
+          <div class="mt-4">
+              <label class="block text-amber-100 text-sm font-medium mb-2">Select Date Range</label>
+              <div class="flex flex-col sm:flex-row gap-2">
+                  <div class="flex-1">
+                      <input type="text" id="dateRangePicker" 
+                             class="w-full px-3 py-2 bg-white bg-opacity-20 border border-amber-300 rounded-lg text-white placeholder-amber-200 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-transparent"
+                             placeholder="Select date range...">
+                  </div>
+                  <button id="applyDateRange" 
+                          class="px-4 py-2 bg-white bg-opacity-20 hover:bg-opacity-30 text-white rounded-lg transition border border-amber-300">
+                      Apply
+                  </button>
+              </div>
+          </div>
           <p class="text-amber-100 mt-2" id="currentMonth">November 2024</p>
       </div>
 
@@ -2821,35 +2836,6 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <script>
-// Sample employee data - replace with your actual data source
-const employeeData = [
-    {
-        name: "John Doe",
-        monthlySalary: 25000,
-        commission: 3500
-    },
-    {
-        name: "Jane Smith",
-        monthlySalary: 28000,
-        commission: 4200
-    },
-    {
-        name: "Mike Johnson",
-        monthlySalary: 22000,
-        commission: 2800
-    },
-    {
-        name: "Sarah Wilson",
-        monthlySalary: 30000,
-        commission: 5100
-    },
-    {
-        name: "David Brown",
-        monthlySalary: 26000,
-        commission: 3900
-    }
-];
-
 // Function to format currency
 function formatCurrency(amount) {
     return '₱' + amount.toLocaleString('en-PH', {
@@ -2864,10 +2850,29 @@ document.addEventListener('DOMContentLoaded', function() {
   const closeModal = document.getElementById('closeModal');
   const cancelBtn = document.getElementById('cancelBtn');
   const recordExpenseBtn = document.getElementById('recordExpenseBtn');
+  const dateRangePicker = document.getElementById('dateRangePicker');
+  const applyDateRangeBtn = document.getElementById('applyDateRange');
 
   console.log("bat ayaw gumana pucha");
 
   let selectedBranchId = null;
+  let selectedDateRange = {
+      startDate: null,
+      endDate: null
+  };
+
+  // Initialize date range picker
+  flatpickr(dateRangePicker, {
+      mode: "range",
+      dateFormat: "Y-m-d",
+      maxDate: "today", // Prevent selecting future dates
+      onChange: function(selectedDates, dateStr, instance) {
+          if (selectedDates.length === 2) {
+              selectedDateRange.startDate = selectedDates[0];
+              selectedDateRange.endDate = selectedDates[1];
+          }
+      }
+  });
 
   // Function to show branch selection modal
   function selectBranchForPayroll() {
@@ -2889,6 +2894,9 @@ document.addEventListener('DOMContentLoaded', function() {
   // Function to open modal and load data
   function openPayrollModal(branchId) {
     modal.classList.remove('hidden');
+    // Reset date range when opening modal
+    selectedDateRange = { startDate: null, endDate: null };
+    dateRangePicker.value = '';
     loadPayrollData(branchId); // Pass branchId to load function
   }
   
@@ -2900,6 +2908,16 @@ document.addEventListener('DOMContentLoaded', function() {
   // Event listeners
   closeModal.addEventListener('click', closePayrollModal);
   cancelBtn.addEventListener('click', closePayrollModal);
+  
+  // Apply date range button
+  applyDateRangeBtn.addEventListener('click', function() {
+      if (selectedDateRange.startDate && selectedDateRange.endDate) {
+          loadPayrollData(selectedBranchId, selectedDateRange);
+      } else {
+          alert('Please select a valid date range');
+      }
+  });
+  
   // Event listener for recording expense
   recordExpenseBtn.addEventListener('click', async function() {
       // Get the grand total from the summary
@@ -2931,7 +2949,9 @@ document.addEventListener('DOMContentLoaded', function() {
               },
               body: JSON.stringify({
                   branch_id: branchId,
-                  grand_total: grandTotal
+                  grand_total: grandTotal,
+                  start_date: selectedDateRange.startDate ? selectedDateRange.startDate.toISOString().split('T')[0] : null,
+                  end_date: selectedDateRange.endDate ? selectedDateRange.endDate.toISOString().split('T')[0] : null
               })
           });
           
@@ -2955,15 +2975,29 @@ document.addEventListener('DOMContentLoaded', function() {
   });
   
   // Load payroll data from API
-  async function loadPayrollData(branchId) {
+  async function loadPayrollData(branchId, dateRange = null) {
     try {
-      const response = await fetch(`employeeManagement/payroll.php?branch_id=${branchId}`);
+      let url = `employeeManagement/payroll.php?branch_id=${branchId}`;
+      
+      // Add date range parameters if provided
+      if (dateRange && dateRange.startDate && dateRange.endDate) {
+          const startDateStr = dateRange.startDate.toISOString().split('T')[0];
+          const endDateStr = dateRange.endDate.toISOString().split('T')[0];
+          url += `&start_date=${startDateStr}&end_date=${endDateStr}`;
+          
+          // Update current month display to show date range
+          document.getElementById('currentMonth').textContent = 
+              `${startDateStr} to ${endDateStr}`;
+      } else {
+          updateCurrentMonth();
+      }
+      
+      const response = await fetch(url);
       const data = await response.json();
       
       if (data.success) {
         populateEmployeeTable(data.employees);
         updateSummary(data.summary);
-        updateCurrentMonth();
       } else {
         console.error('Error loading payroll data:', data.message);
       }

@@ -9,6 +9,10 @@ require_once('../../db_connect.php');
 // Get branch_id from request
 $branch_id = isset($_GET['branch_id']) ? intval($_GET['branch_id']) : 0;
 
+// Get date range from request
+$start_date = isset($_GET['start_date']) ? $_GET['start_date'] : null;
+$end_date = isset($_GET['end_date']) ? $_GET['end_date'] : null;
+
 // Validate branch_id
 if ($branch_id !== 1 && $branch_id !== 2) {
     echo json_encode([
@@ -18,8 +22,14 @@ if ($branch_id !== 1 && $branch_id !== 2) {
     exit;
 }
 
-// Function to get employee payroll data with branch filter
-function getEmployeePayrollData($conn, $branch_id) {
+// Function to get employee payroll data with branch filter and date range
+function getEmployeePayrollData($conn, $branch_id, $start_date = null, $end_date = null) {
+    // Default to current month if no date range provided
+    if (!$start_date || !$end_date) {
+        $start_date = date('Y-m-01');
+        $end_date = date('Y-m-t');
+    }
+    
     $query = "
         SELECT 
             e.employeeID,
@@ -50,8 +60,7 @@ function getEmployeePayrollData($conn, $branch_id) {
         FROM employee_tb e
         LEFT JOIN employee_service_payments esp 
             ON e.employeeID = esp.employeeID
-           AND YEAR(esp.payment_date) = YEAR(CURDATE())
-           AND MONTH(esp.payment_date) = MONTH(CURDATE())
+           AND esp.payment_date BETWEEN '$start_date' AND '$end_date'
         WHERE e.status = 'active'
         AND e.branch_id = $branch_id
         GROUP BY 
@@ -74,8 +83,14 @@ function getEmployeePayrollData($conn, $branch_id) {
     return $employees;
 }
 
-// Function to get payroll summary with branch filter
-function getPayrollSummary($conn, $branch_id) {
+// Function to get payroll summary with branch filter and date range
+function getPayrollSummary($conn, $branch_id, $start_date = null, $end_date = null) {
+    // Default to current month if no date range provided
+    if (!$start_date || !$end_date) {
+        $start_date = date('Y-m-01');
+        $end_date = date('Y-m-t');
+    }
+    
     $query = "
         SELECT 
             COUNT(e.employeeID) AS total_employees,
@@ -103,8 +118,7 @@ function getPayrollSummary($conn, $branch_id) {
                 employeeID, 
                 SUM(income) AS commission_salary
             FROM employee_service_payments
-            WHERE YEAR(payment_date) = YEAR(CURDATE())
-              AND MONTH(payment_date) = MONTH(CURDATE())
+            WHERE payment_date BETWEEN '$start_date' AND '$end_date'
             GROUP BY employeeID
         ) esp_month ON e.employeeID = esp_month.employeeID
         WHERE e.status = 'active'
@@ -126,14 +140,16 @@ function getPayrollSummary($conn, $branch_id) {
 }
 
 try {
-    // Get data from database with branch filter
-    $employees = getEmployeePayrollData($conn, $branch_id);
-    $summary = getPayrollSummary($conn, $branch_id);
+    // Get data from database with branch filter and date range
+    $employees = getEmployeePayrollData($conn, $branch_id, $start_date, $end_date);
+    $summary = getPayrollSummary($conn, $branch_id, $start_date, $end_date);
     
     // Return JSON response
     echo json_encode([
         'success' => true,
         'branch_id' => $branch_id,
+        'start_date' => $start_date,
+        'end_date' => $end_date,
         'employees' => $employees,
         'summary' => $summary
     ]);
