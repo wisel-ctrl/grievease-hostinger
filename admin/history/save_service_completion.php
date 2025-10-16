@@ -181,9 +181,9 @@ try {
             $types .= "d";
             $params[] = $newDiscountedPrice;
         } else if ($newBalance < $newDiscountedPrice) {
-            $updateFields[] = "payment_status = 'Partially Paid'";
+            $updateFields[] = "payment_status = 'With Balance'";
         } else {
-            $updateFields[] = "payment_status = 'Unpaid'";
+            $updateFields[] = "payment_status = 'With Balance'";
         }
     }
     
