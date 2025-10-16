@@ -13,6 +13,9 @@ require_once '../db_connect.php';
 $response = ['success' => false, 'message' => ''];
 
 try {
+    // Set timezone to Asia Pacific (using Singapore as an example)
+    date_default_timezone_set('Asia/Singapore');
+    
     $json = file_get_contents('php://input');
     if ($json === false) {
         throw new Exception('Failed to read input data');
@@ -33,10 +36,13 @@ try {
 
     $conn->begin_transaction();
 
+    // Get current timestamp in Asia Pacific timezone
+    $current_timestamp = date('Y-m-d H:i:s');
+    
     // Use a single prepared statement and execute multiple times
     $stmt = $conn->prepare("INSERT INTO employee_service_payments 
                            (sales_id, employeeID, service_stage, income, notes, payment_date) 
-                           VALUES (?, ?, ?, ?, ?, NOW())");
+                           VALUES (?, ?, ?, ?, ?, ?)");
     
     if ($stmt === false) {
         throw new Exception('Failed to prepare SQL statement: ' . $conn->error);
@@ -51,12 +57,13 @@ try {
         $service_stage = 'initial';
         $notes = $data['notes'] ?? '';
         
-        $stmt->bind_param("iisds", 
+        $stmt->bind_param("iisdss", 
             $data['sales_id'],
             $staff['employee_id'],
             $service_stage,
             $staff['salary'],
-            $notes
+            $notes,
+            $current_timestamp
         );
         
         if ($stmt->execute()) {
