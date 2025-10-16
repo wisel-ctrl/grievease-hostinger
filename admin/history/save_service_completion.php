@@ -50,6 +50,13 @@ try {
     $discountedPrice = $serviceData['discounted_price'];
     $service_id = $serviceData['service_id'];
 
+    // Calculate chapel cost and update discounted price
+    $chapelCost = 0;
+    if (!empty($data['used_chapel']) && $data['used_chapel'] === 'Yes' && !empty($data['chapel_days'])) {
+        $chapelCost = intval($data['chapel_days']) * 6000;
+        $discountedPrice += $chapelCost;
+    }
+
     // Get casket_id from services_tb
     $getCasketStmt = $conn->prepare("SELECT casket_id FROM services_tb WHERE service_id = ?");
     if ($getCasketStmt === false) {
@@ -125,6 +132,24 @@ try {
         $params[] = $data['interment_place'];
     }
     
+    // Add chapel information
+    if (!empty($data['used_chapel'])) {
+        $updateFields[] = "use_chapel = ?";
+        $types .= "s";
+        $params[] = $data['used_chapel'];
+    }
+    
+    if (!empty($data['chapel_days'])) {
+        $updateFields[] = "chapel_days = ?";
+        $types .= "i";
+        $params[] = intval($data['chapel_days']);
+    }
+    
+    // Update discounted price with chapel cost
+    $updateFields[] = "discounted_price = ?";
+    $types .= "d";
+    $params[] = $discountedPrice;
+    
     if (!empty($data['balance_settled'])) {
         $updateFields[] = "balance = 0";
         $updateFields[] = "payment_status = 'Fully Paid'";
@@ -132,7 +157,6 @@ try {
         $types .= "d";
         $params[] = $discountedPrice;
     }
-    
     
     $types .= "i";
     $params[] = $data['sales_id'];
@@ -198,9 +222,8 @@ try {
     $conn->commit();
     $response['success'] = true;
     $response['message'] = "Service completed successfully" . 
-                         (isset($successful_inserts) ? " with $successful_inserts staff records" : "");
-
-
+                         (isset($successful_inserts) ? " with $successful_inserts staff records" : "") .
+                         ($chapelCost > 0 ? " and chapel cost of ₱" . number_format($chapelCost) : "");
 
 } catch (Exception $e) {
     if (isset($conn) && method_exists($conn, 'rollback')) {

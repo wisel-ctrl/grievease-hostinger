@@ -2291,6 +2291,29 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
             <input type="date" id="completionDate" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
           </div>
         </div>
+
+        <!-- Funeral Chapel Section -->
+        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
+          <div class="flex items-center mb-2">
+            <input type="checkbox" id="usedFuneralChapel" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+            <label for="usedFuneralChapel" class="text-xs sm:text-sm text-gray-700 font-medium">
+              Did the customer use the funeral chapel? (₱6,000 per day)
+            </label>
+          </div>
+          
+          <!-- Chapel Days Input (Hidden by default) -->
+          <div id="chapelDaysContainer" class="hidden mt-3">
+            <label for="chapelDays" class="block text-xs font-medium text-gray-700 mb-1">
+              Number of Chapel Days
+            </label>
+            <div class="relative">
+              <input type="number" id="chapelDays" min="0" value="0" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+            </div>
+            <p class="text-xs text-gray-500 mt-1">
+              Total Chapel Cost: ₱<span id="chapelTotalCost">0</span>
+            </p>
+          </div>
+        </div>
         
         <div>
           <label for="completionNotes" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
@@ -4359,6 +4382,35 @@ function closeCompleteModal() {
   toggleBodyScroll(false);
 }
 
+document.addEventListener('DOMContentLoaded', function() {
+    const chapelCheckbox = document.getElementById('usedFuneralChapel');
+    const chapelDaysContainer = document.getElementById('chapelDaysContainer');
+    const chapelDaysInput = document.getElementById('chapelDays');
+    const chapelTotalCost = document.getElementById('chapelTotalCost');
+    
+    const CHAPEL_RATE_PER_DAY = 6000;
+    
+    // Toggle chapel days input visibility
+    chapelCheckbox.addEventListener('change', function() {
+        if (this.checked) {
+            chapelDaysContainer.classList.remove('hidden');
+            updateChapelTotalCost();
+        } else {
+            chapelDaysContainer.classList.add('hidden');
+            chapelDaysInput.value = '0';
+            updateChapelTotalCost();
+        }
+    });
+    
+    // Update total cost when chapel days change
+    chapelDaysInput.addEventListener('input', updateChapelTotalCost);
+    
+    function updateChapelTotalCost() {
+        const days = parseInt(chapelDaysInput.value) || 0;
+        const total = days * CHAPEL_RATE_PER_DAY;
+        chapelTotalCost.textContent = total.toLocaleString();
+    }
+});
 
 // Function to finalize service completion
 // Function to finalize service completion
@@ -4368,12 +4420,13 @@ function finalizeServiceCompletion() {
     const completionNotes = document.getElementById('completionNotes').value;
     const balanceSettled = document.getElementById('finalBalanceSettled').checked;
     const intermentPlace = document.getElementById('internmentPlace').value;
+    const usedChapel = document.getElementById('usedFuneralChapel').checked;
+    const chapelDays = document.getElementById('chapelDays').value || 0;
     
     if (!completionDateInput) {
         alert('Please specify a completion date.');
         return;
     }
-    
     
     // Get current time
     const now = new Date();
@@ -4409,7 +4462,9 @@ function finalizeServiceCompletion() {
                 service_stage: 'completion',
                 completion_date: completionDateTime, // Now includes time
                 balance_settled: balanceSettled,
-                interment_place: intermentPlace
+                interment_place: intermentPlace,
+                used_chapel: usedChapel ? 'Yes' : 'No',
+                chapel_days: chapelDays
             };
 
             console.log('Sending completion data:', completionData);
