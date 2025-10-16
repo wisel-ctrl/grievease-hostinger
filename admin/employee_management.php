@@ -2873,30 +2873,41 @@ document.addEventListener('DOMContentLoaded', function() {
       endDate: null
   };
 
+  let startDateFP, endDateFP;
+
   // Initialize date pickers
-  flatpickr(startDatePicker, {
+  startDateFP = flatpickr(startDatePicker, {
       dateFormat: "Y-m-d",
       maxDate: "today", // Prevent selecting future dates
       onChange: function(selectedDates, dateStr, instance) {
           selectedDateRange.startDate = selectedDates[0];
           // Set min date for end date picker
           if (selectedDates[0]) {
-              endDatePicker._flatpickr.set('minDate', selectedDates[0]);
+              endDateFP.set('minDate', selectedDates[0]);
           }
       }
   });
 
-  flatpickr(endDatePicker, {
+  endDateFP = flatpickr(endDatePicker, {
       dateFormat: "Y-m-d",
       maxDate: "today", // Prevent selecting future dates
       onChange: function(selectedDates, dateStr, instance) {
           selectedDateRange.endDate = selectedDates[0];
           // Set max date for start date picker
           if (selectedDates[0]) {
-              startDatePicker._flatpickr.set('maxDate', selectedDates[0]);
+              startDateFP.set('maxDate', selectedDates[0]);
           }
       }
   });
+
+  // Function to reset date pickers
+  function resetDatePickers() {
+      startDateFP.clear();
+      endDateFP.clear();
+      startDateFP.set('maxDate', null);
+      endDateFP.set('minDate', null);
+      selectedDateRange = { startDate: null, endDate: null };
+  }
 
   // Function to show branch selection modal
   function selectBranchForPayroll() {
@@ -2918,18 +2929,13 @@ document.addEventListener('DOMContentLoaded', function() {
   // Function to open modal and load data
   function openPayrollModal(branchId) {
     modal.classList.remove('hidden');
-    // Reset date range when opening modal
-    selectedDateRange = { startDate: null, endDate: null };
-    startDatePicker.value = '';
-    endDatePicker.value = '';
-    // Reset date picker constraints
-    startDatePicker._flatpickr.set('maxDate', null);
-    endDatePicker._flatpickr.set('minDate', null);
+    resetDatePickers();
     loadPayrollData(branchId); // Pass branchId to load function
   }
   
   // Function to close modal
   function closePayrollModal() {
+    resetDatePickers(); // Reset date pickers when closing modal
     modal.classList.add('hidden');
   }
   
@@ -2970,6 +2976,16 @@ document.addEventListener('DOMContentLoaded', function() {
           recordExpenseBtn.disabled = true;
           recordExpenseBtn.textContent = 'Recording...';
           
+          // Prepare date parameters with time
+          let startDateParam = null;
+          let endDateParam = null;
+          
+          if (selectedDateRange.startDate && selectedDateRange.endDate) {
+              // Set start date to 00:00:00 and end date to 23:59:59
+              startDateParam = selectedDateRange.startDate.toISOString().split('T')[0] + ' 00:00:00';
+              endDateParam = selectedDateRange.endDate.toISOString().split('T')[0] + ' 23:59:59';
+          }
+          
           const response = await fetch('employeeManagement/record_payroll_expense.php', {
               method: 'POST',
               headers: {
@@ -2978,8 +2994,8 @@ document.addEventListener('DOMContentLoaded', function() {
               body: JSON.stringify({
                   branch_id: branchId,
                   grand_total: grandTotal,
-                  start_date: selectedDateRange.startDate ? selectedDateRange.startDate.toISOString().split('T')[0] : null,
-                  end_date: selectedDateRange.endDate ? selectedDateRange.endDate.toISOString().split('T')[0] : null
+                  start_date: startDateParam,
+                  end_date: endDateParam
               })
           });
           
@@ -3009,9 +3025,11 @@ document.addEventListener('DOMContentLoaded', function() {
       
       // Add date range parameters if provided
       if (dateRange && dateRange.startDate && dateRange.endDate) {
-          const startDateStr = dateRange.startDate.toISOString().split('T')[0];
-          const endDateStr = dateRange.endDate.toISOString().split('T')[0];
-          url += `&start_date=${startDateStr}&end_date=${endDateStr}`;
+          // Set start date to 00:00:00 and end date to 23:59:59
+          const startDateStr = dateRange.startDate.toISOString().split('T')[0] + ' 00:00:00';
+          const endDateStr = dateRange.endDate.toISOString().split('T')[0] + ' 23:59:59';
+          
+          url += `&start_date=${encodeURIComponent(startDateStr)}&end_date=${encodeURIComponent(endDateStr)}`;
           
           // Update display to show date range
           const startFormatted = dateRange.startDate.toLocaleDateString('en-PH', { 

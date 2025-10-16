@@ -9,7 +9,7 @@ require_once('../../db_connect.php');
 // Get branch_id from request
 $branch_id = isset($_GET['branch_id']) ? intval($_GET['branch_id']) : 0;
 
-// Get date range from request
+// Get date range from request (now expecting datetime format)
 $start_date = isset($_GET['start_date']) ? $_GET['start_date'] : null;
 $end_date = isset($_GET['end_date']) ? $_GET['end_date'] : null;
 
@@ -26,8 +26,8 @@ if ($branch_id !== 1 && $branch_id !== 2) {
 function getEmployeePayrollData($conn, $branch_id, $start_date = null, $end_date = null) {
     // Default to current month if no date range provided
     if (!$start_date || !$end_date) {
-        $start_date = date('Y-m-01');
-        $end_date = date('Y-m-t');
+        $start_date = date('Y-m-01 00:00:00');
+        $end_date = date('Y-m-t 23:59:59');
     }
     
     $query = "
@@ -87,8 +87,8 @@ function getEmployeePayrollData($conn, $branch_id, $start_date = null, $end_date
 function getPayrollSummary($conn, $branch_id, $start_date = null, $end_date = null) {
     // Default to current month if no date range provided
     if (!$start_date || !$end_date) {
-        $start_date = date('Y-m-01');
-        $end_date = date('Y-m-t');
+        $start_date = date('Y-m-01 00:00:00');
+        $end_date = date('Y-m-t 23:59:59');
     }
     
     $query = "
