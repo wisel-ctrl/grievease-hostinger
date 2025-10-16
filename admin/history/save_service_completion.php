@@ -11,6 +11,7 @@ $updateStmt = null;
 $getServiceStmt = null;
 $getCasketStmt = null;
 $updateInventoryStmt = null;
+$getCurrentPaymentStmt = null;
 
 try {
     // Input validation
@@ -30,8 +31,8 @@ try {
 
     $conn->begin_transaction();
 
-    // Get service price and service_id
-    $getPriceStmt = $conn->prepare("SELECT discounted_price, service_id FROM sales_tb WHERE sales_id = ?");
+    // Get service price, service_id, and current payment details
+    $getPriceStmt = $conn->prepare("SELECT discounted_price, service_id, amount_paid, balance FROM sales_tb WHERE sales_id = ?");
     if ($getPriceStmt === false) {
         throw new Exception('Failed to prepare price query: ' . $conn->error);
     }
@@ -47,14 +48,24 @@ try {
     }
     
     $serviceData = $priceResult->fetch_assoc();
-    $discountedPrice = $serviceData['discounted_price'];
+    $originalDiscountedPrice = $serviceData['discounted_price'];
+    $currentAmountPaid = $serviceData['amount_paid'];
+    $currentBalance = $serviceData['balance'];
     $service_id = $serviceData['service_id'];
 
     // Calculate chapel cost and update discounted price
     $chapelCost = 0;
+    $newDiscountedPrice = $originalDiscountedPrice;
+    
     if (!empty($data['used_chapel']) && $data['used_chapel'] === 'Yes' && !empty($data['chapel_days'])) {
         $chapelCost = intval($data['chapel_days']) * 6000;
-        $discountedPrice += $chapelCost;
+        $newDiscountedPrice = $originalDiscountedPrice + $chapelCost;
+        
+        // Recalculate balance based on the new discounted price
+        $newBalance = $newDiscountedPrice - $currentAmountPaid;
+    } else {
+        // Keep the current balance if no chapel cost is added
+        $newBalance = $currentBalance;
     }
 
     // Get casket_id from services_tb
@@ -148,14 +159,32 @@ try {
     // Update discounted price with chapel cost
     $updateFields[] = "discounted_price = ?";
     $types .= "d";
-    $params[] = $discountedPrice;
+    $params[] = $newDiscountedPrice;
     
     if (!empty($data['balance_settled'])) {
+        // If balance is settled, set balance to 0 and amount_paid to the new discounted price
         $updateFields[] = "balance = 0";
         $updateFields[] = "payment_status = 'Fully Paid'";
         $updateFields[] = "amount_paid = ?";
         $types .= "d";
-        $params[] = $discountedPrice;
+        $params[] = $newDiscountedPrice;
+    } else {
+        // If balance is NOT settled, update the balance based on the new discounted price
+        $updateFields[] = "balance = ?";
+        $types .= "d";
+        $params[] = $newBalance;
+        
+        // Update payment status based on the new balance
+        if ($newBalance <= 0) {
+            $updateFields[] = "payment_status = 'Fully Paid'";
+            $updateFields[] = "amount_paid = ?";
+            $types .= "d";
+            $params[] = $newDiscountedPrice;
+        } else if ($newBalance < $newDiscountedPrice) {
+            $updateFields[] = "payment_status = 'Partially Paid'";
+        } else {
+            $updateFields[] = "payment_status = 'Unpaid'";
+        }
     }
     
     $types .= "i";
@@ -223,7 +252,9 @@ try {
     $response['success'] = true;
     $response['message'] = "Service completed successfully" . 
                          (isset($successful_inserts) ? " with $successful_inserts staff records" : "") .
-                         ($chapelCost > 0 ? " and chapel cost of ₱" . number_format($chapelCost) : "");
+                         ($chapelCost > 0 ? " and chapel cost of ₱" . number_format($chapelCost) : "") .
+                         " | New Total: ₱" . number_format($newDiscountedPrice) . 
+                         ($newBalance > 0 ? " | Balance: ₱" . number_format($newBalance) : " | Fully Paid");
 
 } catch (Exception $e) {
     if (isset($conn) && method_exists($conn, 'rollback')) {
