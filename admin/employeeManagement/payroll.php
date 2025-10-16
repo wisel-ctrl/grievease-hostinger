@@ -1,4 +1,9 @@
 <?php
+ini_set('display_errors', 1);  // show errors on screen (optional)
+ini_set('log_errors', 1);      // enable logging
+ini_set('error_log', __DIR__ . '/error_log.txt'); // set custom log location
+error_reporting(E_ALL);  
+
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST');
