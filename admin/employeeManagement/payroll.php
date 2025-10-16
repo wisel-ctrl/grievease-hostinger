@@ -9,9 +9,9 @@ require_once('../../db_connect.php');
 // Get branch_id from request
 $branch_id = isset($_GET['branch_id']) ? intval($_GET['branch_id']) : 0;
 
-// Get date range from request (now expecting datetime format)
-$start_date = isset($_GET['start_date']) ? $_GET['start_date'] : null;
-$end_date = isset($_GET['end_date']) ? $_GET['end_date'] : null;
+// Get date range from request and add time components
+$start_date = isset($_GET['start_date']) ? $_GET['start_date'] . ' 00:00:00' : null;
+$end_date = isset($_GET['end_date']) ? $_GET['end_date'] . ' 23:59:59' : null;
 
 // Validate branch_id
 if ($branch_id !== 1 && $branch_id !== 2) {
