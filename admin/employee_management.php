@@ -1257,48 +1257,51 @@ echo "</tr>";
     </div>
 </div>
 
+<!-- Replace your current modal with this improved version -->
 <div id="payrollModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-  <!-- Modal Content -->
-  <div class="bg-gradient-to-br from-yellow-50 to-amber-50 rounded-xl shadow-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-hidden">
-      <!-- Header -->
-      <div class="bg-gradient-to-r from-[#D69E2E] to-[#B7791F] text-white p-6">
+  <!-- Modal Content - Added flex column and height constraints -->
+  <div class="bg-gradient-to-br from-yellow-50 to-amber-50 rounded-xl shadow-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-hidden flex flex-col">
+      <!-- Header - Reduced padding -->
+      <div class="bg-gradient-to-r from-[#D69E2E] to-[#B7791F] text-white p-4 md:p-6 flex-shrink-0">
           <div class="flex justify-between items-center">
-              <h2 class="text-2xl font-bold">Payroll Record</h2>
+              <h2 class="text-xl md:text-2xl font-bold">Payroll Record</h2>
               <button id="closeModal" class="text-white hover:text-gray-200 transition">
                   <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                   </svg>
               </button>
           </div>
-          <!-- Date Range Picker -->
-          <div class="mt-4">
+          
+          <!-- Date Range Picker - More compact layout -->
+          <div class="mt-3 md:mt-4">
               <label class="block text-amber-100 text-sm font-medium mb-2">Select Payroll Period</label>
-              <div class="flex flex-col sm:flex-row gap-2">
-                  <div class="flex-1 flex gap-2">
+              <div class="flex flex-col md:flex-row gap-2">
+                  <div class="flex flex-col sm:flex-row gap-2 flex-1">
                       <div class="flex-1">
                           <label class="text-amber-100 text-xs block mb-1">From Date</label>
                           <input type="text" id="startDatePicker" 
-                                 class="w-full px-3 py-2 bg-white bg-opacity-20 border border-amber-300 rounded-lg text-white placeholder-amber-200 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-transparent"
+                                 class="w-full px-3 py-2 bg-white bg-opacity-20 border border-amber-300 rounded-lg text-white placeholder-amber-200 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-transparent text-sm"
                                  placeholder="Start date">
                       </div>
                       <div class="flex-1">
                           <label class="text-amber-100 text-xs block mb-1">To Date</label>
                           <input type="text" id="endDatePicker" 
-                                 class="w-full px-3 py-2 bg-white bg-opacity-20 border border-amber-300 rounded-lg text-white placeholder-amber-200 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-transparent"
+                                 class="w-full px-3 py-2 bg-white bg-opacity-20 border border-amber-300 rounded-lg text-white placeholder-amber-200 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-transparent text-sm"
                                  placeholder="End date">
                       </div>
                   </div>
                   <button id="applyDateRange" 
-                          class="px-4 py-2 bg-white bg-opacity-20 hover:bg-opacity-30 text-white rounded-lg transition border border-amber-300 self-end">
+                          class="px-4 py-2 bg-white bg-opacity-20 hover:bg-opacity-30 text-white rounded-lg transition border border-amber-300 md:self-end mt-2 md:mt-0 text-sm">
                       Apply
                   </button>
               </div>
           </div>
-          <p class="text-amber-100 mt-2" id="currentMonth">November 2024</p>
+          <p class="text-amber-100 mt-2 text-sm" id="currentMonth">November 2024</p>
       </div>
 
-      <!-- Content -->
-      <div class="p-6 max-h-[60vh] overflow-y-auto">
+      <!-- Content - Made scrollable with flex-1 -->
+      <div class="p-4 md:p-6 overflow-y-auto flex-1">
+          <!-- Your existing employee list and summary content remains the same -->
           <!-- Employee List -->
           <div class="mb-6">
               <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
@@ -1324,7 +1327,7 @@ echo "</tr>";
           </div>
 
           <!-- Summary Section -->
-          <div class="bg-gradient-to-r from-amber-100 to-yellow-100 rounded-lg p-6 border-2 border-[#D69E2E]">
+          <div class="bg-gradient-to-r from-amber-100 to-yellow-100 rounded-lg p-4 md:p-6 border-2 border-[#D69E2E]">
               <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
                   <span class="w-2 h-2 bg-[#D69E2E] rounded-full mr-2"></span>
                   Payroll Summary
@@ -1352,12 +1355,12 @@ echo "</tr>";
           </div>
       </div>
 
-      <!-- Footer -->
-      <div class="bg-gray-50 px-6 py-4 border-t flex justify-between items-center">
-          <div class="text-sm text-gray-500">
+      <!-- Footer - Made responsive (stacks on mobile) -->
+      <div class="bg-gray-50 px-4 md:px-6 py-3 md:py-4 border-t flex flex-col sm:flex-row justify-between items-center gap-3">
+          <div class="text-sm text-gray-500 text-center sm:text-left">
               Ready to record this expense in your books
           </div>
-          <div class="space-x-3">
+          <div class="flex space-x-3">
               <button id="cancelBtn" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition">
                   Cancel
               </button>
