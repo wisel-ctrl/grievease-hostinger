@@ -106,6 +106,10 @@ $totalPages = ceil($totalEmployees / $perPage);
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+<!-- Flatpickr JS -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <style>
       .modal-scroll-container {
     scrollbar-width: thin;
@@ -1253,24 +1257,51 @@ echo "</tr>";
     </div>
 </div>
 
+<!-- Replace your current modal with this improved version -->
 <div id="payrollModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-  <!-- Modal Content -->
-  <div class="bg-gradient-to-br from-yellow-50 to-amber-50 rounded-xl shadow-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-hidden">
-      <!-- Header -->
-      <div class="bg-gradient-to-r from-[#D69E2E] to-[#B7791F] text-white p-6">
+  <!-- Modal Content - Added flex column and height constraints -->
+  <div class="bg-gradient-to-br from-yellow-50 to-amber-50 rounded-xl shadow-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-hidden flex flex-col">
+      <!-- Header - Reduced padding -->
+      <div class="bg-gradient-to-r from-[#D69E2E] to-[#B7791F] text-white p-4 md:p-6 flex-shrink-0">
           <div class="flex justify-between items-center">
-              <h2 class="text-2xl font-bold">Monthly Payroll Record</h2>
+              <h2 class="text-xl md:text-2xl font-bold">Payroll Record</h2>
               <button id="closeModal" class="text-white hover:text-gray-200 transition">
                   <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                   </svg>
               </button>
           </div>
-          <p class="text-amber-100 mt-2" id="currentMonth">November 2024</p>
+          
+          <!-- Date Range Picker - More compact layout -->
+          <div class="mt-3 md:mt-4">
+              <label class="block text-amber-100 text-sm font-medium mb-2">Select Payroll Period</label>
+              <div class="flex flex-col md:flex-row gap-2">
+                  <div class="flex flex-col sm:flex-row gap-2 flex-1">
+                      <div class="flex-1">
+                          <label class="text-amber-100 text-xs block mb-1">From Date</label>
+                          <input type="text" id="startDatePicker" 
+                                 class="w-full px-3 py-2 bg-white bg-opacity-20 border border-amber-300 rounded-lg text-white placeholder-amber-200 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-transparent text-sm"
+                                 placeholder="Start date">
+                      </div>
+                      <div class="flex-1">
+                          <label class="text-amber-100 text-xs block mb-1">To Date</label>
+                          <input type="text" id="endDatePicker" 
+                                 class="w-full px-3 py-2 bg-white bg-opacity-20 border border-amber-300 rounded-lg text-white placeholder-amber-200 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-transparent text-sm"
+                                 placeholder="End date">
+                      </div>
+                  </div>
+                  <button id="applyDateRange" 
+                          class="px-4 py-2 bg-white bg-opacity-20 hover:bg-opacity-30 text-white rounded-lg transition border border-amber-300 md:self-end mt-2 md:mt-0 text-sm">
+                      Apply
+                  </button>
+              </div>
+          </div>
+          <p class="text-amber-100 mt-2 text-sm" id="currentMonth">November 2024</p>
       </div>
 
-      <!-- Content -->
-      <div class="p-6 max-h-[60vh] overflow-y-auto">
+      <!-- Content - Made scrollable with flex-1 -->
+      <div class="p-4 md:p-6 overflow-y-auto flex-1">
+          <!-- Your existing employee list and summary content remains the same -->
           <!-- Employee List -->
           <div class="mb-6">
               <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
@@ -1296,7 +1327,7 @@ echo "</tr>";
           </div>
 
           <!-- Summary Section -->
-          <div class="bg-gradient-to-r from-amber-100 to-yellow-100 rounded-lg p-6 border-2 border-[#D69E2E]">
+          <div class="bg-gradient-to-r from-amber-100 to-yellow-100 rounded-lg p-4 md:p-6 border-2 border-[#D69E2E]">
               <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
                   <span class="w-2 h-2 bg-[#D69E2E] rounded-full mr-2"></span>
                   Payroll Summary
@@ -1324,12 +1355,12 @@ echo "</tr>";
           </div>
       </div>
 
-      <!-- Footer -->
-      <div class="bg-gray-50 px-6 py-4 border-t flex justify-between items-center">
-          <div class="text-sm text-gray-500">
+      <!-- Footer - Made responsive (stacks on mobile) -->
+      <div class="bg-gray-50 px-4 md:px-6 py-3 md:py-4 border-t flex flex-col sm:flex-row justify-between items-center gap-3">
+          <div class="text-sm text-gray-500 text-center sm:text-left">
               Ready to record this expense in your books
           </div>
-          <div class="space-x-3">
+          <div class="flex space-x-3">
               <button id="cancelBtn" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition">
                   Cancel
               </button>
@@ -2821,35 +2852,6 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <script>
-// Sample employee data - replace with your actual data source
-const employeeData = [
-    {
-        name: "John Doe",
-        monthlySalary: 25000,
-        commission: 3500
-    },
-    {
-        name: "Jane Smith",
-        monthlySalary: 28000,
-        commission: 4200
-    },
-    {
-        name: "Mike Johnson",
-        monthlySalary: 22000,
-        commission: 2800
-    },
-    {
-        name: "Sarah Wilson",
-        monthlySalary: 30000,
-        commission: 5100
-    },
-    {
-        name: "David Brown",
-        monthlySalary: 26000,
-        commission: 3900
-    }
-];
-
 // Function to format currency
 function formatCurrency(amount) {
     return '₱' + amount.toLocaleString('en-PH', {
@@ -2864,10 +2866,62 @@ document.addEventListener('DOMContentLoaded', function() {
   const closeModal = document.getElementById('closeModal');
   const cancelBtn = document.getElementById('cancelBtn');
   const recordExpenseBtn = document.getElementById('recordExpenseBtn');
-
-  console.log("bat ayaw gumana pucha");
+  const startDatePicker = document.getElementById('startDatePicker');
+  const endDatePicker = document.getElementById('endDatePicker');
+  const applyDateRangeBtn = document.getElementById('applyDateRange');
 
   let selectedBranchId = null;
+  let selectedDateRange = {
+      startDate: null,
+      endDate: null
+  };
+
+  let startDateFP, endDateFP;
+
+  startDateFP = flatpickr(startDatePicker, {
+      dateFormat: "Y-m-d",
+      maxDate: "today",
+      onChange: function(selectedDates, dateStr, instance) {
+          selectedDateRange.startDate = selectedDates[0];
+          if (selectedDates[0]) {
+              endDateFP.set('minDate', selectedDates[0]);
+              // Auto-set end date to same month if start date is selected
+              autoSetEndDate(selectedDates[0]);
+          }
+      }
+  });
+
+  endDateFP = flatpickr(endDatePicker, {
+      dateFormat: "Y-m-d",
+      maxDate: "today",
+      onChange: function(selectedDates, dateStr, instance) {
+          selectedDateRange.endDate = selectedDates[0];
+          if (selectedDates[0]) {
+              startDateFP.set('maxDate', selectedDates[0]);
+          }
+      }
+  });
+
+  // Auto-set end date to end of same month as start date
+  function autoSetEndDate(startDate) {
+      if (!selectedDateRange.endDate || 
+          selectedDateRange.endDate.getMonth() !== startDate.getMonth() ||
+          selectedDateRange.endDate.getFullYear() !== startDate.getFullYear()) {
+          
+          const endOfMonth = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0);
+          endDateFP.setDate(endOfMonth);
+          selectedDateRange.endDate = endOfMonth;
+      }
+  }
+
+  // Function to reset date pickers
+  function resetDatePickers() {
+      startDateFP.clear();
+      endDateFP.clear();
+      startDateFP.set('maxDate', null);
+      endDateFP.set('minDate', null);
+      selectedDateRange = { startDate: null, endDate: null };
+  }
 
   // Function to show branch selection modal
   function selectBranchForPayroll() {
@@ -2889,17 +2943,29 @@ document.addEventListener('DOMContentLoaded', function() {
   // Function to open modal and load data
   function openPayrollModal(branchId) {
     modal.classList.remove('hidden');
+    resetDatePickers();
     loadPayrollData(branchId); // Pass branchId to load function
   }
   
   // Function to close modal
   function closePayrollModal() {
+    resetDatePickers(); // Reset date pickers when closing modal
     modal.classList.add('hidden');
   }
   
   // Event listeners
   closeModal.addEventListener('click', closePayrollModal);
   cancelBtn.addEventListener('click', closePayrollModal);
+  
+  // Apply date range button
+  applyDateRangeBtn.addEventListener('click', function() {
+      if (selectedDateRange.startDate && selectedDateRange.endDate) {
+          loadPayrollData(selectedBranchId, selectedDateRange);
+      } else {
+          alert('Please select both start date and end date');
+      }
+  });
+  
   // Event listener for recording expense
   recordExpenseBtn.addEventListener('click', async function() {
       // Get the grand total from the summary
@@ -2924,6 +2990,25 @@ document.addEventListener('DOMContentLoaded', function() {
           recordExpenseBtn.disabled = true;
           recordExpenseBtn.textContent = 'Recording...';
           
+          // FIXED: Prepare date parameters without timezone conversion issues
+          let startDateParam = null;
+          let endDateParam = null;
+          
+          if (selectedDateRange.startDate && selectedDateRange.endDate) {
+              // Use local date formatting to avoid timezone issues
+              const formatDateForAPI = (date) => {
+                  const year = date.getFullYear();
+                  const month = String(date.getMonth() + 1).padStart(2, '0');
+                  const day = String(date.getDate()).padStart(2, '0');
+                  return `${year}-${month}-${day}`;
+              };
+              
+              startDateParam = formatDateForAPI(selectedDateRange.startDate);
+              endDateParam = formatDateForAPI(selectedDateRange.endDate);
+              
+              console.log('Sending dates to server:', { startDateParam, endDateParam });
+          }
+          
           const response = await fetch('employeeManagement/record_payroll_expense.php', {
               method: 'POST',
               headers: {
@@ -2931,9 +3016,16 @@ document.addEventListener('DOMContentLoaded', function() {
               },
               body: JSON.stringify({
                   branch_id: branchId,
-                  grand_total: grandTotal
+                  grand_total: grandTotal,
+                  start_date: startDateParam,
+                  end_date: endDateParam
               })
           });
+          
+          // Check if response is OK before parsing JSON
+          if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+          }
           
           const data = await response.json();
           
@@ -2946,7 +3038,7 @@ document.addEventListener('DOMContentLoaded', function() {
           
       } catch (error) {
           console.error('Error recording expense:', error);
-          alert('Error recording expense. Please try again.');
+          alert('Error recording expense. Please check console for details and try again.');
       } finally {
           // Reset button state
           recordExpenseBtn.disabled = false;
@@ -2955,24 +3047,55 @@ document.addEventListener('DOMContentLoaded', function() {
   });
   
   // Load payroll data from API
-  async function loadPayrollData(branchId) {
+  async function loadPayrollData(branchId, dateRange = null) {
     try {
-      const response = await fetch(`employeeManagement/payroll.php?branch_id=${branchId}`);
+      let url = `employeeManagement/payroll.php?branch_id=${branchId}`;
+      
+      // Add date range parameters if provided
+      if (dateRange && dateRange.startDate && dateRange.endDate) {
+          const startDateStr = dateRange.startDate.getFullYear() + '-' + 
+                              String(dateRange.startDate.getMonth() + 1).padStart(2, '0') + '-' + 
+                              String(dateRange.startDate.getDate()).padStart(2, '0');
+                              
+          const endDateStr = dateRange.endDate.getFullYear() + '-' + 
+                            String(dateRange.endDate.getMonth() + 1).padStart(2, '0') + '-' + 
+                            String(dateRange.endDate.getDate()).padStart(2, '0');
+          
+          url += `&start_date=${encodeURIComponent(startDateStr)}&end_date=${encodeURIComponent(endDateStr)}`;
+          
+          // Update display to show date range
+          const startFormatted = dateRange.startDate.toLocaleDateString('en-PH', { 
+              month: 'short', 
+              day: 'numeric' 
+          });
+          const endFormatted = dateRange.endDate.toLocaleDateString('en-PH', { 
+              month: 'short', 
+              day: 'numeric',
+              year: 'numeric'
+          });
+          document.getElementById('currentMonth').textContent = 
+              `${startFormatted} - ${endFormatted}`;
+      } else {
+          updateCurrentMonth();
+      }
+      
+      const response = await fetch(url);
       const data = await response.json();
       
       if (data.success) {
         populateEmployeeTable(data.employees);
         updateSummary(data.summary);
-        updateCurrentMonth();
       } else {
         console.error('Error loading payroll data:', data.message);
+        alert('Error loading payroll data: ' + data.message);
       }
     } catch (error) {
       console.error('Error fetching payroll data:', error);
+      alert('Error fetching payroll data. Please try again.');
     }
   }
-  
-  // Populate employee table
+
+  // Populate employee table (no frontend calculation needed - backend handles it)
   function populateEmployeeTable(employees) {
     const tableBody = document.getElementById('employeeTableBody');
     tableBody.innerHTML = '';
@@ -2982,12 +3105,32 @@ document.addEventListener('DOMContentLoaded', function() {
       row.className = 'border-b border-amber-200 hover:bg-amber-50 transition';
       row.innerHTML = `
         <td class="px-4 py-3 text-gray-700">${employee.full_name}</td>
-        <td class="px-4 py-3 text-right text-gray-700">₱${parseFloat(employee.monthly_salary).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
-        <td class="px-4 py-3 text-right text-gray-700">₱${parseFloat(employee.commission_salary).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
-        <td class="px-4 py-3 text-right font-semibold text-gray-800">₱${parseFloat(employee.total_salary).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
+        <td class="px-4 py-3 text-right text-gray-700">${formatCurrency(parseFloat(employee.monthly_salary))}</td>
+        <td class="px-4 py-3 text-right text-gray-700">${formatCurrency(parseFloat(employee.commission_salary))}</td>
+        <td class="px-4 py-3 text-right font-semibold text-gray-800">${formatCurrency(parseFloat(employee.total_salary))}</td>
       `;
       tableBody.appendChild(row);
     });
+  }
+
+  // Calculate proration factor based on date range
+  function calculateProrationFactor(startDate, endDate) {
+    // Calculate total days in the selected range
+    const timeDiff = endDate.getTime() - startDate.getTime();
+    const daysInRange = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1; // +1 to include both start and end dates
+    
+    // Get the number of days in the current month of the start date
+    const year = startDate.getFullYear();
+    const month = startDate.getMonth();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    
+    // Calculate proration factor
+    const prorationFactor = daysInRange / daysInMonth;
+    
+    console.log(`Date Range: ${startDate.toDateString()} to ${endDate.toDateString()}`);
+    console.log(`Days in range: ${daysInRange}, Days in month: ${daysInMonth}, Proration factor: ${prorationFactor}`);
+    
+    return prorationFactor;
   }
   
   // Update summary section
@@ -3013,7 +3156,6 @@ document.addEventListener('DOMContentLoaded', function() {
   window.closeBranchSelectionModal = closeBranchSelectionModal;
 });
 </script>
-
 
   
 </body>

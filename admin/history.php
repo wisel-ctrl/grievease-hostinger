@@ -138,6 +138,20 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
     transform: rotate(180deg);
     transition: transform 0.2s ease;
 }
+
+  .suggestion-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #f3f4f6;
+  }
+
+  .suggestion-item:hover {
+    background-color: #f3f4f6;
+  }
+
+  .suggestion-item:last-child {
+    border-bottom: none;
+  }
   </style>
 </head>
 <body class="flex bg-gray-50">
@@ -376,7 +390,7 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
                 </th>
                 <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(4)">
                   <div class="flex items-center gap-1.5">
-                    <i class="fas fa-calendar text-sidebar-accent"></i> Date of Burial 
+                    <i class="fas fa-calendar text-sidebar-accent"></i> Interment Date 
                   </div>
                 </th>
                 <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(5)">
@@ -716,7 +730,7 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
                 </th>
                 <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(4)">
                   <div class="flex items-center gap-1.5">
-                    <i class="fas fa-calendar text-sidebar-accent"></i> Date of Burial
+                    <i class="fas fa-calendar text-sidebar-accent"></i> Interment Date
                   </div>
                 </th>
                 <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(5)">
@@ -965,7 +979,7 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
                             </th>
                             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortOutstandingTable(4)">
                                 <div class="flex items-center gap-1.5">
-                                    <i class="fas fa-calendar text-sidebar-accent"></i> Date of Burial 
+                                    <i class="fas fa-calendar text-sidebar-accent"></i> Interment Date
                                 </div>
                             </th>
                             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortOutstandingTable(5)">
@@ -1237,7 +1251,7 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
               </th>
               <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortCustomOngoingTable(4)">
                 <div class="flex items-center gap-1.5">
-                  <i class="fas fa-calendar text-sidebar-accent"></i> Date of Burial
+                  <i class="fas fa-calendar text-sidebar-accent"></i> Interment Date
                 </div>
               </th>
               <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortCustomOngoingTable(5)">
@@ -1407,7 +1421,7 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
               </th>
               <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortCustomFullyPaidTable(4)">
                 <div class="flex items-center gap-1.5">
-                  <i class="fas fa-calendar text-sidebar-accent"></i> Date of Burial
+                  <i class="fas fa-calendar text-sidebar-accent"></i> Interment Date
                 </div>
               </th>
               <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortCustomFullyPaidTable(5)">
@@ -1572,7 +1586,7 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
               </th>
               <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortCustomOutstandingTable(4)">
                 <div class="flex items-center gap-1.5">
-                  <i class="fas fa-calendar text-sidebar-accent"></i> Date of Burial
+                  <i class="fas fa-calendar text-sidebar-accent"></i> Interment Date
                 </div>
               </th>
               <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortCustomOutstandingTable(5)">
@@ -1985,7 +1999,7 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
               </div>
               <div class="form-group">
                 <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                  Date of Burial
+                  Interment Date
                 </label>
                 <input 
                   type="date" 
@@ -1995,14 +2009,34 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
               </div>
             </div>
 
-            <!-- Death Certificate Upload - Updated to match modal 2 -->
+            <!-- Death Certificate Upload with Preview -->
             <div class="form-group mt-4">
               <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                 Death Certificate
               </label>
-              <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg">
+              
+              <!-- Preview Section -->
+              <div id="deathCertPreview" class="mb-3 hidden">
+                <p class="text-xs text-gray-500 mb-2">Current Death Certificate:</p>
+                <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg border">
+                  <img id="deathCertPreviewImg" src="" alt="Death Certificate Preview" class="h-16 w-16 object-cover rounded border">
+                  <div class="flex-1">
+                    <p id="deathCertPreviewName" class="text-sm font-medium text-gray-700"></p>
+                    <button 
+                      type="button" 
+                      onclick="removeDeathCertificate()"
+                      class="text-xs text-red-600 hover:text-red-800 mt-1"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Upload Section -->
+              <div id="deathCertUpload" class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg">
                 <div class="space-y-1 text-center">
-                  <div class="flex text-sm text-gray-600">
+                  <div class="flex text-sm text-gray-600 justify-center">
                     <label for="deathCertificate" class="relative cursor-pointer bg-white rounded-md font-medium text-sidebar-accent hover:text-opacity-80 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-sidebar-accent">
                       <span>Upload a file</span>
                       <input 
@@ -2011,6 +2045,7 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
                         type="file" 
                         class="sr-only"
                         accept=".pdf,.jpg,.jpeg,.png"
+                        onchange="previewDeathCertificate(this)"
                       >
                     </label>
                     <p class="pl-1">or drag and drop</p>
@@ -2018,8 +2053,56 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
                   <p class="text-xs text-gray-500">PNG, JPG, PDF up to 10MB</p>
                 </div>
               </div>
-              <p id="file-name" class="mt-2 text-sm text-gray-500"></p>
+              <p id="death-cert-file-name" class="mt-2 text-sm text-gray-500"></p>
             </div>
+
+            <!-- Senior/PWD Discount ID Upload -->
+            <div id="discountUploadSection" class="form-group mt-4 hidden">
+              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                Senior/PWD Discount ID
+              </label>
+              
+              <!-- Preview Section -->
+              <div id="discountIdPreview" class="mb-3 hidden">
+                <p class="text-xs text-gray-500 mb-2">Current Discount ID:</p>
+                <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg border">
+                  <img id="discountIdPreviewImg" src="" alt="Discount ID Preview" class="h-16 w-16 object-cover rounded border">
+                  <div class="flex-1">
+                    <p id="discountIdPreviewName" class="text-sm font-medium text-gray-700"></p>
+                    <button 
+                      type="button" 
+                      onclick="removeDiscountId()"
+                      class="text-xs text-red-600 hover:text-red-800 mt-1"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Upload Section -->
+              <div id="discountIdUpload" class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg">
+                <div class="space-y-1 text-center">
+                  <div class="flex text-sm text-gray-600 justify-center">
+                    <label for="discountIdFile" class="relative cursor-pointer bg-white rounded-md font-medium text-sidebar-accent hover:text-opacity-80 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-sidebar-accent">
+                      <span>Upload Discount ID</span>
+                      <input 
+                        id="discountIdFile" 
+                        name="discountIdFile" 
+                        type="file" 
+                        class="sr-only"
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        onchange="previewDiscountId(this)"
+                      >
+                    </label>
+                    <p class="pl-1">or drag and drop</p>
+                  </div>
+                  <p class="text-xs text-gray-500">PNG, JPG, PDF up to 10MB</p>
+                </div>
+              </div>
+              <p id="discount-file-name" class="mt-2 text-sm text-gray-500"></p>
+            </div>
+
           </div>
         </form>
       </div>
@@ -2189,6 +2272,16 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
             <!-- Personnel will be populated here -->
           </div>
         </div>
+
+        <div>
+          <label for="internmentPlace" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Interment Place
+          </label>
+          <div class="relative">
+            <input type="text" id="internmentPlace" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Type to search cemetery..." autocomplete="off">
+            <div id="internmentSuggestions" class="absolute z-20 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto hidden"></div>
+          </div>
+        </div>
         
         <div>
           <label for="completionDate" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
@@ -2196,6 +2289,29 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
           </label>
           <div class="relative">
             <input type="date" id="completionDate" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+          </div>
+        </div>
+
+        <!-- Funeral Chapel Section -->
+        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
+          <div class="flex items-center mb-2">
+            <input type="checkbox" id="usedFuneralChapel" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+            <label for="usedFuneralChapel" class="text-xs sm:text-sm text-gray-700 font-medium">
+              Did the customer use the funeral chapel? (₱6,000 per day)
+            </label>
+          </div>
+          
+          <!-- Chapel Days Input (Hidden by default) -->
+          <div id="chapelDaysContainer" class="hidden mt-3">
+            <label for="chapelDays" class="block text-xs font-medium text-gray-700 mb-1">
+              Number of Chapel Days
+            </label>
+            <div class="relative">
+              <input type="number" id="chapelDays" min="0" value="0" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+            </div>
+            <p class="text-xs text-gray-500 mt-1">
+              Total Chapel Cost: ₱<span id="chapelTotalCost">0</span>
+            </p>
           </div>
         </div>
         
@@ -2277,13 +2393,18 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
             </div>
             
             <div class="space-y-1">
-              <label class="block text-xs font-medium text-gray-500">Date</label>
+              <label class="block text-xs font-medium text-gray-500">Interment Date</label>
               <div id="serviceDate" class="text-sm font-medium text-gray-800">-</div>
             </div>
             
             <div class="space-y-1">
               <label class="block text-xs font-medium text-gray-500">Status</label>
               <div id="serviceStatus" class="text-sm font-medium text-gray-800">-</div>
+            </div>
+
+            <div class="space-y-1 col-span-1 sm:col-span-2">
+              <label class="block text-xs font-medium text-gray-500">Interment Place</label>
+              <div id="serviceIntermentPlace" class="text-sm font-medium text-gray-800">-</div>
             </div>
             
             <div class="space-y-1 col-span-1 sm:col-span-2">
@@ -3189,7 +3310,7 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
             </div>
             
             <div class="space-y-1">
-              <label class="block text-xs font-medium text-gray-500">Date of Burial</label>
+              <label class="block text-xs font-medium text-gray-500">Interment Date</label>
               <div id="customServiceDate" class="text-sm font-medium text-gray-800">-</div>
             </div>
             
@@ -3547,6 +3668,88 @@ function toggleBodyScroll(isOpen) {
   }
 }
 
+// Preview Death Certificate
+function previewDeathCertificate(input) {
+  const preview = document.getElementById('deathCertPreview');
+  const previewImg = document.getElementById('deathCertPreviewImg');
+  const previewName = document.getElementById('deathCertPreviewName');
+  const uploadSection = document.getElementById('deathCertUpload');
+  const fileName = document.getElementById('death-cert-file-name');
+
+  if (input.files && input.files[0]) {
+    const file = input.files[0];
+    
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        previewImg.src = e.target.result;
+      }
+      reader.readAsDataURL(file);
+    } else {
+      previewImg.src = '../assets/icons/pdf-icon.png'; // Add a PDF icon
+    }
+    
+    previewName.textContent = file.name;
+    fileName.textContent = `Selected file: ${file.name}`;
+    preview.classList.remove('hidden');
+    uploadSection.classList.add('hidden');
+  }
+}
+
+// Remove Death Certificate
+function removeDeathCertificate() {
+  const input = document.getElementById('deathCertificate');
+  const preview = document.getElementById('deathCertPreview');
+  const uploadSection = document.getElementById('deathCertUpload');
+  const fileName = document.getElementById('death-cert-file-name');
+  
+  input.value = '';
+  preview.classList.add('hidden');
+  uploadSection.classList.remove('hidden');
+  fileName.textContent = '';
+}
+
+// Preview Discount ID
+function previewDiscountId(input) {
+  const preview = document.getElementById('discountIdPreview');
+  const previewImg = document.getElementById('discountIdPreviewImg');
+  const previewName = document.getElementById('discountIdPreviewName');
+  const uploadSection = document.getElementById('discountIdUpload');
+  const fileName = document.getElementById('discount-file-name');
+
+  if (input.files && input.files[0]) {
+    const file = input.files[0];
+    
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        previewImg.src = e.target.result;
+      }
+      reader.readAsDataURL(file);
+    } else {
+      previewImg.src = '../assets/icons/pdf-icon.png';
+    }
+    
+    previewName.textContent = file.name;
+    fileName.textContent = `Selected file: ${file.name}`;
+    preview.classList.remove('hidden');
+    uploadSection.classList.add('hidden');
+  }
+}
+
+// Remove Discount ID
+function removeDiscountId() {
+  const input = document.getElementById('discountIdFile');
+  const preview = document.getElementById('discountIdPreview');
+  const uploadSection = document.getElementById('discountIdUpload');
+  const fileName = document.getElementById('discount-file-name');
+  
+  input.value = '';
+  preview.classList.add('hidden');
+  uploadSection.classList.remove('hidden');
+  fileName.textContent = '';
+}
+
 // Function to open the Edit Service Modal
 function openEditServiceModal(serviceId) {
   
@@ -3617,6 +3820,38 @@ function openEditServiceModal(serviceId) {
         if (data.discounted_price) {
           document.getElementById('servicePrice').value = data.discounted_price;
         }
+
+        // Handle Death Certificate Preview
+        if (data.death_cert_image) {
+          const deathCertPath = `../customer/booking/${data.death_cert_image}`;
+          document.getElementById('deathCertPreviewImg').src = deathCertPath;
+          document.getElementById('deathCertPreviewName').textContent = 'Death Certificate';
+          document.getElementById('deathCertPreview').classList.remove('hidden');
+          document.getElementById('deathCertUpload').classList.add('hidden');
+        } else {
+          document.getElementById('deathCertPreview').classList.add('hidden');
+          document.getElementById('deathCertUpload').classList.remove('hidden');
+        }
+
+        // Handle Senior/PWD Discount Upload Section
+        const discountSection = document.getElementById('discountUploadSection');
+        if (data.senior_pwd_discount === "Yes") {
+          discountSection.classList.remove('hidden');
+          
+          // Show existing discount ID if available
+          if (data.discount_id_img) {
+            const discountPath = `${data.discount_id_img}`;
+            document.getElementById('discountIdPreviewImg').src = discountPath;
+            document.getElementById('discountIdPreviewName').textContent = 'Discount ID';
+            document.getElementById('discountIdPreview').classList.remove('hidden');
+            document.getElementById('discountIdUpload').classList.add('hidden');
+          } else {
+            document.getElementById('discountIdPreview').classList.add('hidden');
+            document.getElementById('discountIdUpload').classList.remove('hidden');
+          }
+        } else {
+          discountSection.classList.add('hidden');
+        }
         
         // Now fetch services for this branch
         fetchServicesForBranch(data.branch_id, data.service_id);
@@ -3672,60 +3907,100 @@ function closeEditServiceModal() {
 
 // Function to save changes to a service
 function saveServiceChanges() {
-  // Get all form values
-  const formData = {
-    sales_id: document.getElementById('salesId').value,
-    customer_id: document.getElementById('selectedCustomerId').value,
-    service_id: document.getElementById('serviceSelect').value,
-    service_price: document.getElementById('servicePrice').value,
-    firstName: document.getElementById('firstName').value,
-    middleName: document.getElementById('middleName').value,
-    lastName: document.getElementById('lastName').value,
-    nameSuffix: document.getElementById('nameSuffix').value,
-    email: document.getElementById('email').value,
-    phone: document.getElementById('phone').value,
-    deceasedFirstName: document.getElementById('deceasedFirstName').value,
-    deceasedMiddleName: document.getElementById('deceasedMiddleName').value,
-    deceasedLastName: document.getElementById('deceasedLastName').value,
-    deceasedSuffix: document.getElementById('deceasedSuffix').value,
-    birthDate: document.getElementById('birthDate').value,
-    deathDate: document.getElementById('deathDate').value,
-    burialDate: document.getElementById('burialDate').value,
-    deceasedAddress: document.getElementById('currentAddressDisplay').value,
-    branch: document.querySelector('input[name="branch"]:checked')?.value,
-    deathCertificate: document.getElementById('deathCertificate').files[0]?.name || 'No file selected'
-  };
+  // Check if selectedCustomerId is null or empty
+  const selectedCustomerId = document.getElementById('selectedCustomerId').value;
+  
+  if (!selectedCustomerId) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Customer Account Required',
+      text: 'You need to connect this to a customer account first before changing some details.',
+      confirmButtonColor: '#3085d6',
+      confirmButtonText: 'OK'
+    });
+    return; // Stop the function execution
+  }
+
+  // Create FormData object
+  const formData = new FormData();
+  
+  // Add all form data
+  formData.append('sales_id', document.getElementById('salesId').value);
+  formData.append('customer_id', selectedCustomerId);
+  formData.append('service_id', document.getElementById('serviceSelect').value);
+  formData.append('service_price', document.getElementById('servicePrice').value);
+  formData.append('firstName', document.getElementById('firstName').value);
+  formData.append('middleName', document.getElementById('middleName').value);
+  formData.append('lastName', document.getElementById('lastName').value);
+  formData.append('nameSuffix', document.getElementById('nameSuffix').value);
+  formData.append('email', document.getElementById('email').value);
+  formData.append('phone', document.getElementById('phone').value);
+  formData.append('deceasedFirstName', document.getElementById('deceasedFirstName').value);
+  formData.append('deceasedMiddleName', document.getElementById('deceasedMiddleName').value);
+  formData.append('deceasedLastName', document.getElementById('deceasedLastName').value);
+  formData.append('deceasedSuffix', document.getElementById('deceasedSuffix').value);
+  formData.append('birthDate', document.getElementById('birthDate').value);
+  formData.append('deathDate', document.getElementById('deathDate').value);
+  formData.append('burialDate', document.getElementById('burialDate').value);
+  formData.append('deceasedAddress', document.getElementById('currentAddressDisplay').value);
+  formData.append('branch', document.querySelector('input[name="branch"]:checked')?.value);
+
+  // Add files if they exist
+  const deathCertFile = document.getElementById('deathCertificate').files[0];
+  const discountIdFile = document.getElementById('discountIdFile').files[0];
+  
+  if (deathCertFile) {
+    formData.append('deathCertificate', deathCertFile);
+  }
+  
+  if (discountIdFile) {
+    formData.append('discountIdFile', discountIdFile);
+  }
 
   // Log the form data to console
-  console.log('Service Form Data:', formData);
+  console.log('Service Form Data:', Object.fromEntries(formData));
   
   fetch('history/update_history_sales.php', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify(formData)
-})
-.then(response => response.json())
-.then(data => {
-  console.log('Success:', data);
-  if (data.success) {
-    alert('Service updated successfully!');
-    closeEditServiceModal();
-    cancelAddressChange();
-    location.reload();
-  } else {
-    alert('Error: ' + data.message);
-  }
-})
-.catch(error => {
-  console.error('Error:', error);
-  alert('An error occurred while updating the service');
-});
-
-  // For demo purposes, just show an alert
-  alert('Service changes would be saved here. Check console for form data.');
-  closeEditServiceModal();
+    method: 'POST',
+    body: formData // Remove Content-Type header for FormData
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log('Success:', data);
+    if (data.success) {
+      Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: 'Service updated successfully!',
+        confirmButtonColor: '#3085d6',
+        confirmButtonText: 'OK'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          closeEditServiceModal();
+          cancelAddressChange();
+          location.reload();
+        }
+      });
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Error: ' + data.message,
+        confirmButtonColor: '#d33',
+        confirmButtonText: 'OK'
+      });
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'An error occurred while updating the service',
+      confirmButtonColor: '#d33',
+      confirmButtonText: 'OK'
+    });
+  });
 }
 
 // Function to open the Assign Staff Modal
@@ -3917,6 +4192,7 @@ function openCompleteModal(serviceId) {
   const day = String(today.getDate()).padStart(2, '0');
   document.getElementById('completionDate').value = `${year}-${month}-${day}`;
   document.getElementById('completionNotes').value = '';
+  document.getElementById('internmentPlace').value = '';
   document.getElementById('finalBalanceSettled').checked = false;
   
   // Fetch the branch_id and employees via AJAX
@@ -3936,6 +4212,132 @@ function openCompleteModal(serviceId) {
       alert('An error occurred while fetching employee data');
     });
 }
+
+// Cemetery data array
+const cemeteryData = [
+  { district: '3', municipality: 'San Pablo', cemetery: 'San Pablo City Municipal Cemetery', location: 'M. Leonor Ext., San Pablo City' },
+  { district: '3', municipality: 'San Pablo', cemetery: 'San Gabriel Memorial Garden', location: 'Brgy. San Gabriel, San Pablo' },
+  { district: '3', municipality: 'San Pablo', cemetery: 'Pines Memorial Garden', location: 'San Pablo' },
+  { district: '3', municipality: 'Alaminos', cemetery: 'Alaminos Municipal Cemetery', location: 'Alaminos town proper' },
+  { district: '3', municipality: 'Alaminos', cemetery: 'Mulberry Garden Memorial Park', location: 'Brgy. San Juan, Alaminos' },
+  { district: '3', municipality: 'Alaminos', cemetery: 'Roloma Memorial Park', location: 'Alaminos' },
+  { district: '3', municipality: 'Calauan', cemetery: 'Calauan Municipal Cemetery', location: 'Calauan town proper / Balayhangin area' },
+  { district: '3', municipality: 'Calauan', cemetery: 'Amani Heritage Gardens / Memorial Gardens', location: 'Provincial Road, Lamot 2, Calauan' },
+  { district: '3', municipality: 'Liliw', cemetery: 'Liliw Municipal Cemetery', location: 'Liliw' },
+  { district: '3', municipality: 'Liliw', cemetery: 'Golden Haven / Memorial Park (Laguna area)', location: 'near Liliw area' },
+  { district: '3', municipality: 'Nagcarlan', cemetery: 'Nagcarlan Underground Cemetery', location: 'Brgy. Bambang, Nagcarlan' },
+  { district: '3', municipality: 'Nagcarlan', cemetery: 'Nagcarlan Municipal Cemetery', location: 'Nagcarlan' },
+  { district: '3', municipality: 'Rizal', cemetery: 'Rizal Municipal Cemetery', location: 'Rizal, Talaga area' },
+  { district: '3', municipality: 'Victoria', cemetery: 'Victoria Municipal Cemetery', location: 'JP Riza St., Brgy. Nanhaya, Victoria' },
+  { district: '3', municipality: 'Victoria', cemetery: 'Garden of Angels / Victoria', location: 'Garden of Angels, Victoria' },
+  { district: '4', municipality: 'Santa Cruz', cemetery: 'Santa Cruz Municipal Cemetery', location: 'Santa Cruz' },
+  { district: '4', municipality: 'Cavinti', cemetery: 'Cavinti Municipal Cemetery', location: 'Cavinti' },
+  { district: '4', municipality: 'Famy', cemetery: 'Famy Municipal Cemetery', location: 'Famy' },
+  { district: '4', municipality: 'Kalayaan', cemetery: 'Kalayaan Municipal Cemetery', location: 'Kalayaan' },
+  { district: '4', municipality: 'Luisiana', cemetery: 'Luisiana Municipal Cemetery', location: 'Luisiana' },
+  { district: '4', municipality: 'Lumban', cemetery: 'Lumban Municipal Cemetery', location: 'Lumban' },
+  { district: '4', municipality: 'Mabitac', cemetery: 'Mabitac Municipal Cemetery', location: 'Mabitac' },
+  { district: '4', municipality: 'Magdalena', cemetery: 'Magdalena Municipal Cemetery', location: 'Magdalena' },
+  { district: '4', municipality: 'Majayjay', cemetery: 'Majayjay Municipal Cemetery', location: 'Majayjay' },
+  { district: '4', municipality: 'Paete', cemetery: 'Paete Municipal Cemetery', location: 'Paete' },
+  { district: '4', municipality: 'Pagsanjan', cemetery: 'Pagsanjan Municipal Cemetery', location: 'Pagsanjan' },
+  { district: '4', municipality: 'Pakil', cemetery: 'Pakil (Catholic / Municipal) Cemetery', location: 'Pakil' },
+  { district: '4', municipality: 'Pangil', cemetery: 'Pangil Municipal Cemetery', location: 'Pangil' },
+  { district: '4', municipality: 'Pila', cemetery: 'Pila Municipal Cemetery', location: 'Pila' },
+  { district: '4', municipality: 'Santa Maria', cemetery: 'Santa Maria Municipal Cemetery', location: 'Santa Maria' },
+  { district: '4', municipality: 'Siniloan', cemetery: 'Siniloan Municipal Cemetery', location: 'Siniloan' }
+];
+
+// Function to filter cemeteries based on search input
+function filterCemeteries(searchTerm) {
+  if (!searchTerm) return [];
+  
+  const lowerSearchTerm = searchTerm.toLowerCase();
+  return cemeteryData.filter(cemetery => 
+    cemetery.cemetery.toLowerCase().includes(lowerSearchTerm) ||
+    cemetery.municipality.toLowerCase().includes(lowerSearchTerm) ||
+    cemetery.location.toLowerCase().includes(lowerSearchTerm)
+  );
+}
+
+// Function to show suggestions
+function showSuggestions(suggestions) {
+  const suggestionsContainer = document.getElementById('internmentSuggestions');
+  suggestionsContainer.innerHTML = '';
+  
+  if (suggestions.length === 0) {
+    suggestionsContainer.classList.add('hidden');
+    return;
+  }
+  
+  suggestions.forEach(cemetery => {
+    const suggestionItem = document.createElement('div');
+    suggestionItem.className = 'suggestion-item';
+    suggestionItem.innerHTML = `
+      <div class="font-medium text-sm">${cemetery.cemetery}</div>
+      <div class="text-xs text-gray-600">${cemetery.municipality} - ${cemetery.location}</div>
+    `;
+    suggestionItem.addEventListener('click', () => {
+      document.getElementById('internmentPlace').value = `${cemetery.cemetery}, ${cemetery.municipality}`;
+      suggestionsContainer.classList.add('hidden');
+    });
+    suggestionsContainer.appendChild(suggestionItem);
+  });
+  
+  suggestionsContainer.classList.remove('hidden');
+}
+
+// Add event listeners for the internment place input
+document.addEventListener('DOMContentLoaded', function() {
+  const internmentInput = document.getElementById('internmentPlace');
+  const suggestionsContainer = document.getElementById('internmentSuggestions');
+  
+  if (internmentInput) {
+    internmentInput.addEventListener('input', function() {
+      const searchTerm = this.value;
+      const suggestions = filterCemeteries(searchTerm);
+      showSuggestions(suggestions);
+    });
+    
+    // Hide suggestions when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!internmentInput.contains(e.target) && !suggestionsContainer.contains(e.target)) {
+        suggestionsContainer.classList.add('hidden');
+      }
+    });
+    
+    // Handle keyboard navigation
+    internmentInput.addEventListener('keydown', function(e) {
+      const suggestions = suggestionsContainer.querySelectorAll('.suggestion-item');
+      const activeSuggestion = suggestionsContainer.querySelector('.suggestion-item.active');
+      
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (!activeSuggestion) {
+          suggestions[0]?.classList.add('active');
+        } else {
+          const next = activeSuggestion.nextElementSibling;
+          if (next) {
+            activeSuggestion.classList.remove('active');
+            next.classList.add('active');
+          }
+        }
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (activeSuggestion) {
+          const prev = activeSuggestion.previousElementSibling;
+          if (prev) {
+            activeSuggestion.classList.remove('active');
+            prev.classList.add('active');
+          }
+        }
+      } else if (e.key === 'Enter' && activeSuggestion) {
+        e.preventDefault();
+        activeSuggestion.click();
+      }
+    });
+  }
+});
 
 function populateCompleteEmployeeSection(sectionId, position, employees) {
   const section = document.getElementById(sectionId);
@@ -3980,6 +4382,35 @@ function closeCompleteModal() {
   toggleBodyScroll(false);
 }
 
+document.addEventListener('DOMContentLoaded', function() {
+    const chapelCheckbox = document.getElementById('usedFuneralChapel');
+    const chapelDaysContainer = document.getElementById('chapelDaysContainer');
+    const chapelDaysInput = document.getElementById('chapelDays');
+    const chapelTotalCost = document.getElementById('chapelTotalCost');
+    
+    const CHAPEL_RATE_PER_DAY = 6000;
+    
+    // Toggle chapel days input visibility
+    chapelCheckbox.addEventListener('change', function() {
+        if (this.checked) {
+            chapelDaysContainer.classList.remove('hidden');
+            updateChapelTotalCost();
+        } else {
+            chapelDaysContainer.classList.add('hidden');
+            chapelDaysInput.value = '0';
+            updateChapelTotalCost();
+        }
+    });
+    
+    // Update total cost when chapel days change
+    chapelDaysInput.addEventListener('input', updateChapelTotalCost);
+    
+    function updateChapelTotalCost() {
+        const days = parseInt(chapelDaysInput.value) || 0;
+        const total = days * CHAPEL_RATE_PER_DAY;
+        chapelTotalCost.textContent = total.toLocaleString();
+    }
+});
 
 // Function to finalize service completion
 // Function to finalize service completion
@@ -3988,12 +4419,14 @@ function finalizeServiceCompletion() {
     const completionDateInput = document.getElementById('completionDate').value;
     const completionNotes = document.getElementById('completionNotes').value;
     const balanceSettled = document.getElementById('finalBalanceSettled').checked;
+    const intermentPlace = document.getElementById('internmentPlace').value;
+    const usedChapel = document.getElementById('usedFuneralChapel').checked;
+    const chapelDays = document.getElementById('chapelDays').value || 0;
     
     if (!completionDateInput) {
         alert('Please specify a completion date.');
         return;
     }
-    
     
     // Get current time
     const now = new Date();
@@ -4028,7 +4461,10 @@ function finalizeServiceCompletion() {
                 notes: completionNotes,
                 service_stage: 'completion',
                 completion_date: completionDateTime, // Now includes time
-                balance_settled: balanceSettled
+                balance_settled: balanceSettled,
+                interment_place: intermentPlace,
+                used_chapel: usedChapel ? 'Yes' : 'No',
+                chapel_days: chapelDays
             };
 
             console.log('Sending completion data:', completionData);
@@ -4082,11 +4518,12 @@ function viewServiceDetails(serviceId) {
         document.getElementById('serviceClientName').textContent = 
           `${data.fname} ${data.mname ? data.mname + ' ' : ''}${data.lname}${data.suffix ? ' ' + data.suffix : ''}`;
         document.getElementById('serviceServiceType').textContent = data.service_name || 'N/A';
-        document.getElementById('branchName').textContent = data.branch_name || 'N/A';
+        document.getElementById('branchName').textContent = data.branch_name ? toProperCase(data.branch_name) : 'N/A';
         document.getElementById('serviceDate').textContent = data.date_of_burial ? formatDate(data.date_of_burial) : 'N/A';
         document.getElementById('serviceStatus').textContent = data.status || 'N/A';
+        document.getElementById('serviceIntermentPlace').textContent = data.interment_place || 'N/A';
         document.getElementById('serviceOutstandingBalance').textContent = 
-          data.balance ? `₱${parseFloat(data.balance).toFixed(2)}` : '₱0.00';
+          data.balance ? `${formatCurrency(data.balance)}` : '₱0.00';
 
         // Populate initial staff section
         if (data.initial_staff) {
@@ -4258,8 +4695,37 @@ function checkCustomerBeforeComplete(salesId, hasCustomer) {
         });
         return;
     }
-    openCompleteModal(salesId);
+
+    // ✅ Call PHP API to check pre-burial staff assignment
+    fetch('history/check_preburial.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ sales_id: salesId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            openCompleteModal(salesId);
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Pre-Burial Required',
+                text: data.message,
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK'
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Server Error',
+            text: 'Something went wrong. Please try again later.'
+        });
+    });
 }
+
 
 // Add CSS for disabled buttons
 const style = document.createElement('style');
@@ -6096,8 +6562,13 @@ function validateDates() {
 }
 
 // Price validation function
-function validatePrice() {
-  const price = parseFloat(document.getElementById('editCustomServicePrice').value);
+function validateCustomPrice() {
+  let rawPrice = document.getElementById('editCustomServicePrice').value.trim();
+  console.log('raw price:', rawPrice);
+  const cleanedPrice = rawPrice.replace(/[^0-9.]/g, ''); // strip out anything except digits and dot
+  
+  const price = parseFloat(cleanedPrice);
+  console.log('Parsed price:', price);
   
   if (price <= 0 || isNaN(price)) {
     Swal.fire({
@@ -6116,7 +6587,7 @@ document.getElementById('editCustomServiceForm').addEventListener('submit', func
   e.preventDefault();
   
   // Validate price first
-  if (!validatePrice()) {
+  if (!validateCustomPrice()) {
     return;
   }
   
@@ -7191,6 +7662,14 @@ function formatCurrency(amount) {
     
     return `₱ ${formattedAmount}`;
 }
+
+function toProperCase(str) {
+  if (!str) return '';
+  return str
+    .toLowerCase()               // make everything lowercase first
+    .replace(/\b\w/g, c => c.toUpperCase()); // capitalize each word’s first letter
+}
+
 
 function sendPaymentReminder(salesId) {
   Swal.fire({

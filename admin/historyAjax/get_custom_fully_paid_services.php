@@ -46,7 +46,10 @@ switch ($sort) {
 
 $query = "SELECT cs.customsales_id, u.first_name AS fname, u.middle_name AS mname, u.last_name AS lname, u.suffix,
                  cs.fname_deceased, cs.mname_deceased, cs.lname_deceased, cs.suffix_deceased,
-                 cs.date_of_burial, cs.balance, cs.status, cs.with_cremate
+                 CASE 
+                 WHEN cs.date_of_burial IS NULL OR cs.date_of_burial = '0000-00-00' THEN 'Unknown'
+                 ELSE DATE_FORMAT(cs.date_of_burial, '%M %d, %Y')
+                 END AS date_of_burial, cs.balance, cs.status, cs.with_cremate
           FROM customsales_tb cs
           LEFT JOIN users u ON cs.customer_id = u.id
           $whereClause

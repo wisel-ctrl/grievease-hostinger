@@ -95,6 +95,7 @@ function generateInventoryRow($row) {
   $html .= '</td>';
   
   $html .= '<td class="p-4 text-sm font-medium text-sidebar-text" data-sort-value="' . $row["price"] . '">₱' . number_format($row["price"], 2) . '</td>';
+  $html .= '<td class="p-4 text-sm font-medium text-sidebar-text" data-sort-value="' . $row["selling_price"] . '">₱' . number_format($row["selling_price"], 2) . '</td>';
   $html .= '<td class="p-4 text-sm font-medium text-sidebar-text" data-sort-value="' . $row["total_value"] . '">₱' . number_format($row["total_value"], 2) . '</td>';
  $html .= '<td class="p-2 text-sm align-middle">';
 $html .= '<div class="flex space-x-2 h-full items-center">'; // Ensure vertical centering
@@ -448,6 +449,7 @@ if ($branchResult->num_rows > 0) {
       c.category_name, 
       i.quantity, 
       i.price, 
+      i.selling_price,
       (i.quantity * i.price) AS total_value
       FROM inventory_tb i
       JOIN inventory_category c ON i.category_id = c.category_id
@@ -691,7 +693,15 @@ if ($branchResult->num_rows > 0) {
                  
               </div>
             </th>
+            
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(<?php echo $branchId; ?>, 5)">
+              <div class="flex items-center gap-1.5">
+                <i class="fas fa-peso-sign text-sidebar-accent"></i> Selling Price 
+              </div>
+            </th>
+        
+            
+            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(<?php echo $branchId; ?>, 6)">
               <div class="flex items-center gap-1.5">
                 <i class="fas fa-peso-sign text-sidebar-accent"></i> Total Value 
                  
@@ -712,7 +722,7 @@ if ($branchResult->num_rows > 0) {
                   }
               } else {
                   echo '<tr>';
-                  echo '<td colspan="7" class="p-6 text-sm text-center">';
+                  echo '<td colspan="8" class="p-6 text-sm text-center">';
                   echo '<div class="flex flex-col items-center">';
                   echo '<i class="fas fa-box-open text-gray-300 text-4xl mb-3"></i>';
                   echo '<p class="text-gray-500">No inventory items found for this branch</p>';
@@ -975,6 +985,20 @@ if ($branchResult->num_rows > 0) {
           </div>
         </div>
         
+        <!-- Selling Price Input (add after Unit Price input) -->
+        <div>
+          <label for="sellingPrice" class="block mb-2 text-sm font-medium text-sidebar-text">Selling Price</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <span class="text-gray-500">₱</span>
+            </div>
+            <input type="text" id="sellingPrice" name="sellingPrice" required 
+                   class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
+                   placeholder="0.00">
+        </div>
+        </div>
+
+        
         <!-- File Upload -->
         <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
           <label for="itemImage" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
@@ -1104,6 +1128,12 @@ function validateItemName(input) {
 
 // Unit Price Validation
 function validateUnitPrice(input) {
+  if (input.value < 0) {
+    input.value = '';
+  }
+}
+
+function validateSellingPrice(input) {
   if (input.value < 0) {
     input.value = '';
   }
@@ -1388,16 +1418,17 @@ function loadPage(branchId, page) {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
-            return response.text();
+            return response.text(); // This expects text/HTML
         })
         .then(data => {
             // Update the table content
             document.getElementById(`inventoryTable_${branchId}`).innerHTML = data;
             
             // Update URL without reloading
-            const url = new URL(window.location);
-            url.searchParams.set(`page_${branchId}`, page);
-            window.history.pushState({ branchId, page }, '', url);
+            // const url = new URL(window.location);
+            // url.searchParams.set(`page_${branchId}`, page);
+            // window.history.pushState({ branchId, page }, '', url);
+
             
             // Update pagination info with correct total items
             updatePaginationInfo(branchId, page, totalItems, itemsPerPage);
@@ -1654,21 +1685,23 @@ function updatePaginationActiveState(branchId, currentPage) {
     });
 }
 
-// Add this to handle browser back/forward navigation
-window.addEventListener('popstate', function(event) {
-    if (event.state) {
-        // When navigating back/forward, reload the current page state
-        const { branchId, page } = event.state;
-        loadPage(branchId, page);
-    } else {
-        // Initial page load - load all branches with their current page
-        document.querySelectorAll('.branch-container').forEach(container => {
-            const branchId = container.dataset.branchId;
-            const urlParams = new URLSearchParams(window.location.search);
-            const currentPage = urlParams.get(`page_${branchId}`) || 1;
-            loadPage(branchId, currentPage);
-        });
-    }
+// In loadPage function, replace URL modification with:
+sessionStorage.setItem(`page_${branchId}`, page);
+
+// And modify the initialization to use sessionStorage:
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.branch-container').forEach(container => {
+        const branchId = container.dataset.branchId;
+        // Try sessionStorage first, then URL, then default to 1
+        const currentPage = sessionStorage.getItem(`page_${branchId}`) || 
+                          (new URLSearchParams(window.location.search)).get(`page_${branchId}`) || 
+                          1;
+        const totalItems = parseInt(container.dataset.totalItems);
+        const totalPages = Math.ceil(totalItems / 5);
+        
+        updatePaginationInfo(branchId, currentPage, totalItems, 5);
+        updatePaginationControls(branchId, currentPage, totalPages);
+    });
 });
 
 // Initialize pagination on page load
@@ -1745,6 +1778,7 @@ function updatePaginationActiveState(branchId, currentPage) {
 document.addEventListener('DOMContentLoaded', function() {
     // Attach currency formatter to Unit Price fields
   attachCurrencyFormatter(document.getElementById('unitPrice'));      // Add modal
+  attachCurrencyFormatter(document.getElementById('sellingPrice'));
   attachCurrencyFormatter(document.getElementById('editUnitPrice'));  // Edit modal
   
     // Get the data from PHP
@@ -1873,6 +1907,7 @@ function confirmArchive(inventoryId) {
     });
     return false; // Prevent default form submission
 }
+
 </script>
   <script src="inventory_functions.js"></script>
   <script src="script.js"></script>

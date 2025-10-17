@@ -177,7 +177,7 @@ $customersResult = mysqli_query($conn, $customersQuery);
                             <div>
                                 <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
                                 <div class="space-y-1">
-                                    <div class="flex items-center cursor-pointer filter-option" data-sort="id_asc">
+                                    <div class="flex items-center cursor-pointer filter-option" data-sort="id_desc">
                                         <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
                                             Default
                                         </span>
@@ -249,7 +249,7 @@ $customersResult = mysqli_query($conn, $customersQuery);
                             <div class="space-y-2">
                                 <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
                                 <div class="space-y-1">
-                                    <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="id_asc">
+                                    <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="id_desc">
                                         <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
                                             Default
                                         </span>
@@ -404,7 +404,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const totalCount = document.getElementById('totalCount');
     
     let currentSearch = '';
-    let currentSort = 'id_asc';
+    let currentSort = 'id_desc';
     let currentPage = 1;
     let totalPages = 1;
 
@@ -929,41 +929,41 @@ document.addEventListener('DOMContentLoaded', function() {
 </div>
 
 <!-- OTP Verification Modal -->
-<div id="otpVerificationModal" class="fixed inset-0 bg-black bg-opacity-60 z-50 hidden overflow-y-auto flex items-center justify-center p-4 w-full h-full">
-  <div class="bg-white rounded-xl shadow-xl w-full max-w-md mx-2">
+<!--<div id="otpVerificationModal" class="fixed inset-0 bg-black bg-opacity-60 z-50 hidden overflow-y-auto flex items-center justify-center p-4 w-full h-full">-->
+<!--  <div class="bg-white rounded-xl shadow-xl w-full max-w-md mx-2">-->
     <!-- Modal Header -->
-    <div class="bg-gradient-to-r from-sidebar-accent to-darkgold flex justify-between items-center p-6 flex-shrink-0 rounded-t-xl">
-      <h3 class="text-xl font-bold text-white"><i class="fas fa-shield-alt"></i> Email Verification</h3>
-      <button onclick="closeOtpModal()" class="bg-black bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 text-white hover:text-white transition-all duration-200">
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
+    <!--<div class="bg-gradient-to-r from-sidebar-accent to-darkgold flex justify-between items-center p-6 flex-shrink-0 rounded-t-xl">-->
+    <!--  <h3 class="text-xl font-bold text-white"><i class="fas fa-shield-alt"></i> Email Verification</h3>-->
+    <!--  <button onclick="closeOtpModal()" class="bg-black bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 text-white hover:text-white transition-all duration-200">-->
+    <!--    <i class="fas fa-times"></i>-->
+    <!--  </button>-->
+    <!--</div>-->
     
-    <div class="p-6">
-      <p class="text-gray-700 mb-4">A verification code has been sent to <span id="otpEmail" class="font-medium"></span>. Please enter the code below.</p>
-      <div class="flex justify-center gap-2 mb-4">
-        <input type="text" class="otp-input w-12 h-12 border border-gray-300 rounded-md text-center text-xl font-bold" maxlength="1" autocomplete="off">
-        <input type="text" class="otp-input w-12 h-12 border border-gray-300 rounded-md text-center text-xl font-bold" maxlength="1" autocomplete="off">
-        <input type="text" class="otp-input w-12 h-12 border border-gray-300 rounded-md text-center text-xl font-bold" maxlength="1" autocomplete="off">
-        <input type="text" class="otp-input w-12 h-12 border border-gray-300 rounded-md text-center text-xl font-bold" maxlength="1" autocomplete="off">
-        <input type="text" class="otp-input w-12 h-12 border border-gray-300 rounded-md text-center text-xl font-bold" maxlength="1" autocomplete="off">
-        <input type="text" class="otp-input w-12 h-12 border border-gray-300 rounded-md text-center text-xl font-bold" maxlength="1" autocomplete="off">
-      </div>
-      <div id="otpError" class="text-red-500 text-center text-sm mb-4 hidden"></div>
-      <p class="text-sm text-gray-500 text-center">Didn't receive the code? <button type="button" onclick="resendOTP()" class="text-sidebar-accent hover:underline">Resend</button></p>
-    </div>
+    <!--<div class="p-6">-->
+    <!--  <p class="text-gray-700 mb-4">A verification code has been sent to <span id="otpEmail" class="font-medium"></span>. Please enter the code below.</p>-->
+    <!--  <div class="flex justify-center gap-2 mb-4">-->
+    <!--    <input type="text" class="otp-input w-12 h-12 border border-gray-300 rounded-md text-center text-xl font-bold" maxlength="1" autocomplete="off">-->
+    <!--    <input type="text" class="otp-input w-12 h-12 border border-gray-300 rounded-md text-center text-xl font-bold" maxlength="1" autocomplete="off">-->
+    <!--    <input type="text" class="otp-input w-12 h-12 border border-gray-300 rounded-md text-center text-xl font-bold" maxlength="1" autocomplete="off">-->
+    <!--    <input type="text" class="otp-input w-12 h-12 border border-gray-300 rounded-md text-center text-xl font-bold" maxlength="1" autocomplete="off">-->
+    <!--    <input type="text" class="otp-input w-12 h-12 border border-gray-300 rounded-md text-center text-xl font-bold" maxlength="1" autocomplete="off">-->
+    <!--    <input type="text" class="otp-input w-12 h-12 border border-gray-300 rounded-md text-center text-xl font-bold" maxlength="1" autocomplete="off">-->
+    <!--  </div>-->
+    <!--  <div id="otpError" class="text-red-500 text-center text-sm mb-4 hidden"></div>-->
+    <!--  <p class="text-sm text-gray-500 text-center">Didn't receive the code? <button type="button" onclick="resendOTP()" class="text-sidebar-accent hover:underline">Resend</button></p>-->
+    <!--</div>-->
     
     <!-- Modal Footer -->
-    <div class="p-6 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white rounded-b-xl">
-      <button onclick="closeOtpModal()" class="px-5 py-3 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-semibold hover:bg-navy transition-colors">
-        Cancel
-      </button>
-      <button onclick="verifyOTP()" class="px-6 py-3 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-semibold hover:bg-darkgold transition-colors flex items-center">
-        <i class="fas fa-check-circle mr-2"></i> Verify
-      </button>
-    </div>
-  </div>
-</div>
+<!--    <div class="p-6 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white rounded-b-xl">-->
+<!--      <button onclick="closeOtpModal()" class="px-5 py-3 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-semibold hover:bg-navy transition-colors">-->
+<!--        Cancel-->
+<!--      </button>-->
+<!--      <button onclick="verifyOTP()" class="px-6 py-3 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-semibold hover:bg-darkgold transition-colors flex items-center">-->
+<!--        <i class="fas fa-check-circle mr-2"></i> Verify-->
+<!--      </button>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</div>-->
 
 <script>
 
@@ -1281,6 +1281,7 @@ function togglePassword() {
 }
 
 
+/* CUSTOMER OTP FUNCTIONS - COMMENTED OUT
 // Show OTP modal and send OTP
 function showOTPModal() {
   // Set the email in the OTP modal
@@ -1311,7 +1312,7 @@ function showOTPModal() {
       } else {
         Swal.fire({
           title: 'Error Occurred',
-          text: response.message || 'Something went wrong', // Fallback if message is empty
+          text: response.message || 'Something went wrong',
           icon: 'error',
           confirmButtonText: 'OK',
           confirmButtonColor: '#d33'
@@ -1338,6 +1339,7 @@ function closeOtpModal() {
   // Hide error message
   document.getElementById('otpError').classList.add('hidden');
 }
+*/
 
 // Resend OTP
 function resendOtp(accountType) {
@@ -1430,6 +1432,7 @@ function enableResendButton() {
     }
 }
 
+/*
 // Verify OTP and submit form
 function verifyOTP() {
   // Collect OTP from inputs
@@ -1469,7 +1472,9 @@ function verifyOTP() {
   
   xhr.send(formData);
 }
+*/
 
+/* CUSTOMER OTP INPUT EVENT LISTENERS - COMMENTED OUT
 // Handle OTP input functionality
 document.addEventListener('DOMContentLoaded', function() {
   const otpInputs = document.querySelectorAll('.otp-input');
@@ -1497,6 +1502,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 });
+*/
 
 // Add this function to check phone number availability before submission
 function checkCustomerPhoneAvailability() {
@@ -1645,7 +1651,7 @@ function submitCustomerForm() {
                   validatePhoneNumber() && 
                   validateBranchLocation();
 
-                  if (isValid) {
+  if (isValid) {
     // Generate password if not already generated
     if (document.getElementById('generatedPassword').value === '') {
       generatePassword();
@@ -1654,8 +1660,8 @@ function submitCustomerForm() {
     // First check if phone number is available
     checkCustomerPhoneAvailability()
       .then(() => {
-        // If phone is available, show OTP verification modal
-        showOTPModal();
+        // If phone is available, submit directly without OTP
+        actuallySubmitForm();
       })
       .catch((error) => {
         console.error("Phone validation error:", error);
@@ -1663,6 +1669,7 @@ function submitCustomerForm() {
       });
   }
 }
+
 // Add this new function for actual submission after OTP verification
 function actuallySubmitForm() {
   const form = document.getElementById('addCustomerAccountForm');
@@ -1673,36 +1680,65 @@ function actuallySubmitForm() {
   
   xhr.onload = function() {
     if (this.status === 200) {
-      const response = JSON.parse(this.responseText);
-      if (response.success) {
-          closeOtpModal(); // Close OTP modal
+      try {
+        const response = JSON.parse(this.responseText);
+        if (response.success) {
+          // Close the modal first
+          closeAddCustomerAccountModal();
           
+          // Show success message
           Swal.fire({
-              title: 'Success!',
-              text: 'Customer account created successfully!',
-              icon: 'success',
-              confirmButtonColor: '#28a745',
-              showCancelButton: false,
-              confirmButtonText: 'OK',
-              allowOutsideClick: false,
-              willClose: () => {
-                  closeAddCustomerAccountModal(); // Close the main modal after user clicks OK
-                  // Optionally refresh customer list or perform other actions
-              }
+            title: 'Success!',
+            text: 'Customer account created successfully!',
+            icon: 'success',
+            confirmButtonColor: '#28a745',
+            showCancelButton: false,
+            confirmButtonText: 'OK',
+            allowOutsideClick: false
+          }).then((result) => {
+            if (result.isConfirmed) {
+              // Reload the page after user clicks OK
+              location.reload();
+            }
           });
-      } else {
+        } else {
           Swal.fire({
-              title: 'Error!',
-              html: `<div style="color: #721c24; background-color: #f8d7da; padding: 10px; border-radius: 5px; border-left: 4px solid #f5c6cb;">
-                        ${response.message || 'Failed to create account'}
-                    </div>`,
-              icon: 'error',
-              confirmButtonColor: '#dc3545',
-              confirmButtonText: 'Try Again',
-              allowOutsideClick: false
+            title: 'Error!',
+            html: `<div style="color: #721c24; background-color: #f8d7da; padding: 10px; border-radius: 5px; border-left: 4px solid #f5c6cb;">
+                      ${response.message || 'Failed to create account'}
+                  </div>`,
+            icon: 'error',
+            confirmButtonColor: '#dc3545',
+            confirmButtonText: 'Try Again',
+            allowOutsideClick: false
           });
+        }
+      } catch (e) {
+        console.error('Error parsing response:', e);
+        Swal.fire({
+          title: 'Error!',
+          text: 'Error processing server response',
+          icon: 'error',
+          confirmButtonColor: '#dc3545'
+        });
       }
+    } else {
+      Swal.fire({
+        title: 'Error!',
+        text: 'Server error occurred',
+        icon: 'error',
+        confirmButtonColor: '#dc3545'
+      });
     }
+  };
+  
+  xhr.onerror = function() {
+    Swal.fire({
+      title: 'Network Error!',
+      text: 'Failed to connect to server',
+      icon: 'error',
+      confirmButtonColor: '#dc3545'
+    });
   };
   
   xhr.send(formData);
@@ -1900,7 +1936,7 @@ if ($result->num_rows > 0) {
                             <div>
                                 <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
                                 <div class="space-y-1">
-                                    <div class="flex items-center cursor-pointer filter-option" data-sort="id_asc">
+                                    <div class="flex items-center cursor-pointer filter-option" data-sort="id_desc">
                                         <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
                                             Default
                                         </span>
@@ -1983,7 +2019,7 @@ if ($result->num_rows > 0) {
                             <div class="space-y-2">
                                 <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
                                 <div class="space-y-1">
-                                    <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="id_asc">
+                                    <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="id_desc">
                                         <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
                                             Default
                                         </span>
@@ -4149,7 +4185,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const empTotalCount = document.getElementById('empTotalCount');
     
     let currentEmpSearch = '';
-    let currentEmpSort = 'id_asc';
+    let currentEmpSort = 'id_desc';
     let currentEmpPage = 1;
     let totalEmpPages = 1;
 

@@ -1299,9 +1299,6 @@ document.addEventListener('DOMContentLoaded', function() {
             <button class="service-tab px-4 py-2 text-navy font-medium border-b-2 border-yellow-600" data-tab="traditional-booking">
                 Traditional Funeral
             </button>
-            <button class="service-tab px-4 py-2 text-gray-500 font-medium mx-2" data-tab="custom-booking">
-                Custom Package
-            </button>
             <button class="service-tab px-4 py-2 text-gray-500 font-medium mx-2" data-tab="lifeplan-booking">
                 Life Plan
             </button>
@@ -7234,6 +7231,46 @@ document.addEventListener('DOMContentLoaded', function() {
             this.disabled = false;
         });
     });
+});
+
+// Auto-populate content when sidebar tabs are clicked (My Bookings/Payment History)
+document.addEventListener('DOMContentLoaded', function() {
+    const sidebarTabs = document.querySelectorAll('.profile-tab[data-tab]');
+    
+    sidebarTabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            const tabId = this.getAttribute('data-tab');
+            
+            // Hide all tab contents first
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.style.display = 'none';
+            });
+            
+            // Show the target tab content
+            const targetContent = document.getElementById(tabId);
+            if (targetContent) {
+                targetContent.style.display = 'block';
+            }
+            
+            // Auto-populate based on tab
+            if (tabId === 'bookings') {
+                // For My Bookings: Trigger the default sub-tab (Traditional Funeral) and load
+                const defaultSubTab = document.querySelector('#bookings .service-tab[data-tab="traditional-booking"]');
+                if (defaultSubTab) {
+                    defaultSubTab.click();  // This triggers loadBookings('traditional', 1)
+                }
+            } else if (tabId === 'transaction-logs') {
+                // For Payment History: Trigger the default sub-tab (Traditional Funeral) and populate
+                const defaultSubTab = document.querySelector('#transaction-logs .service-tab[data-tab="traditional-funeral"]');
+                if (defaultSubTab) {
+                    defaultSubTab.click();  // This triggers populateServiceCards('traditional-funeral-content', servicesData)
+                }
+            }
+        });
+    });
+    
+    // Ensure default tab (personal-info) shows on load
+    document.getElementById('personal-info').style.display = 'block';
 });
 
  function previewImage(input, previewId) {

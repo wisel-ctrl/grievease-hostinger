@@ -14,7 +14,11 @@ if ($conn->connect_error) {
 }
 
 // Get the POST data
-$data = json_decode(file_get_contents('php://input'), true);
+$input = file_get_contents('php://input');
+$data = json_decode($input, true);
+
+// Log the received data for debugging
+error_log("Received payroll data: " . print_r($data, true));
 
 // Validate required fields
 if (!isset($data['branch_id']) || !isset($data['grand_total'])) {
@@ -24,6 +28,8 @@ if (!isset($data['branch_id']) || !isset($data['grand_total'])) {
 
 $branch_id = intval($data['branch_id']);
 $grand_total = floatval($data['grand_total']);
+$start_date = isset($data['start_date']) ? $data['start_date'] : null;
+$end_date = isset($data['end_date']) ? $data['end_date'] : null;
 
 // Validate data
 if ($branch_id <= 0 || $grand_total <= 0) {
@@ -31,10 +37,25 @@ if ($branch_id <= 0 || $grand_total <= 0) {
     exit;
 }
 
-// Get current month and year for expense_name and notes
-$current_month = date('F Y');
-$expense_name = $current_month . "'s salary";
-$notes = "This is the Salary for " . $current_month . " for branch " . $branch_id;
+// Create expense name based on date range or current month
+if ($start_date && $end_date) {
+    // FIXED: Handle date formatting properly
+    $start_date_obj = DateTime::createFromFormat('Y-m-d', $start_date);
+    $end_date_obj = DateTime::createFromFormat('Y-m-d', $end_date);
+    
+    if (!$start_date_obj || !$end_date_obj) {
+        echo json_encode(['success' => false, 'message' => 'Invalid date format']);
+        exit;
+    }
+    
+    $expense_name = $start_date_obj->format('M j') . ' - ' . $end_date_obj->format('M j, Y') . ' Salary';
+    $notes = "Salary for period " . $start_date . " to " . $end_date . " for branch " . $branch_id;
+} else {
+    $current_month = date('F Y');
+    $expense_name = $current_month . "'s Salary";
+    $notes = "This is the Salary for " . $current_month . " for branch " . $branch_id;
+}
+
 $date = date('Y-m-d H:i:s');
 
 try {
@@ -71,6 +92,7 @@ try {
     $stmt->close();
     
 } catch (Exception $e) {
+    error_log("Payroll expense error: " . $e->getMessage());
     echo json_encode(['success' => false, 'message' => 'Error recording expense: ' . $e->getMessage()]);
 }
 

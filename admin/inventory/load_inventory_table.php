@@ -31,6 +31,7 @@ $sql = "SELECT
             c.category_name, 
             i.quantity, 
             i.price, 
+            i.selling_price,
             (i.quantity * i.price) AS total_value
         FROM inventory_tb i
         JOIN inventory_category c ON i.category_id = c.category_id
@@ -95,6 +96,7 @@ function generateInventoryRow($row) {
     $html .= '</td>';
     
     $html .= '<td class="p-4 text-sm font-medium text-sidebar-text" data-sort-value="' . $row["price"] . '">₱' . number_format($row["price"], 2) . '</td>';
+      $html .= '<td class="p-4 text-sm font-medium text-sidebar-text" data-sort-value="' . $row["selling_price"] . '">₱' . number_format($row["selling_price"], 2) . '</td>';
     $html .= '<td class="p-4 text-sm font-medium text-sidebar-text" data-sort-value="' . $row["total_value"] . '">₱' . number_format($row["total_value"], 2) . '</td>';
     $html .= '<td class="p-2 text-sm align-middle">';
 $html .= '<div class="flex space-x-2 h-full items-center">'; // Ensure vertical centering

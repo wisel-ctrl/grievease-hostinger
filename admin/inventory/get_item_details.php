@@ -23,6 +23,7 @@ $sql = "SELECT
   c.category_name,
   i.quantity,
   i.price,
+  i.selling_price, 
   i.inventory_img,
   (i.quantity * i.price) AS total_value,
   i.updated_at,
@@ -77,14 +78,14 @@ if ($result && $result->num_rows > 0) {
         </div>
     </div>
 
-    <!-- Row 2: Quantity, Price, Total Value -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+    <!-- Row 2: Quantity, Price, Selling Price, Total Value -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4"> 
         <div>
             <label for="quantity" class="block text-sm font-medium text-gold">Quantity</label>
             <input type="number" id="quantity" name="quantity" min="0" class="mt-1 block w-full px-3 py-2 bg-white border border-gold rounded-md shadow-sm text-gray-700 focus:outline-none focus:ring-dark-gold focus:border-dark-gold" value="<?php echo $item["quantity"]; ?>">
             <div id="quantity_error" class="text-red-500 text-xs mt-1 hidden">Quantity must be 0 or more</div>
         </div>
-
+    
         <div>
             <label for="price" class="block text-sm font-medium text-gold">Unit Price</label>
             <div class="mt-1 relative rounded-md shadow-sm">
@@ -95,7 +96,18 @@ if ($result && $result->num_rows > 0) {
             </div>
             <div id="price_error" class="text-red-500 text-xs mt-1 hidden">Price must be 0.00 or more</div>
         </div>
-
+    
+        <div>
+            <label for="selling_price" class="block text-sm font-medium text-gold">Selling Price</label>
+            <div class="mt-1 relative rounded-md shadow-sm">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <span class="text-dark-gold">₱</span>
+                </div>
+                <input type="number" id="selling_price" name="selling_price" min="0" step="0.01" class="pl-7 block w-full px-3 py-2 bg-white border border-gold rounded-md shadow-sm text-gray-700 focus:outline-none focus:ring-dark-gold focus:border-dark-gold" value="<?php echo $item["selling_price"]; ?>">
+            </div>
+            <div id="selling_price_error" class="text-red-500 text-xs mt-1 hidden">Selling Price must be 0.00 or more</div>
+        </div>
+    
         <div>
             <label for="total_value" class="block text-sm font-medium text-gold">Total Value</label>
             <div class="mt-1 relative rounded-md shadow-sm">
@@ -133,6 +145,20 @@ document.addEventListener('DOMContentLoaded', function() {
     // Item Name validation
     const itemNameInput = document.getElementById('item_name');
     const itemNameError = document.getElementById('item_name_error');
+    
+    // Selling Price validation
+    const sellingPriceInput = document.getElementById('selling_price');
+    const sellingPriceError = document.getElementById('selling_price_error');
+    
+    sellingPriceInput.addEventListener('change', function() {
+        if (parseFloat(this.value) < 0) {
+            sellingPriceError.classList.remove('hidden');
+            this.value = 0.00;
+        } else {
+            sellingPriceError.classList.add('hidden');
+        }
+        // Optional: You could add a check if selling_price >= price, but that's business logic
+    });
     
     itemNameInput.addEventListener('input', function(e) {
         // Clean input: remove numbers and symbols, allow only letters and single spaces
