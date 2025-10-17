@@ -2990,14 +2990,23 @@ document.addEventListener('DOMContentLoaded', function() {
           recordExpenseBtn.disabled = true;
           recordExpenseBtn.textContent = 'Recording...';
           
-          // Prepare date parameters with time
+          // FIXED: Prepare date parameters without timezone conversion issues
           let startDateParam = null;
           let endDateParam = null;
           
           if (selectedDateRange.startDate && selectedDateRange.endDate) {
-              // Set start date to 00:00:00 and end date to 23:59:59
-              startDateParam = selectedDateRange.startDate.toISOString().split('T')[0] + ' 00:00:00';
-              endDateParam = selectedDateRange.endDate.toISOString().split('T')[0] + ' 23:59:59';
+              // Use local date formatting to avoid timezone issues
+              const formatDateForAPI = (date) => {
+                  const year = date.getFullYear();
+                  const month = String(date.getMonth() + 1).padStart(2, '0');
+                  const day = String(date.getDate()).padStart(2, '0');
+                  return `${year}-${month}-${day}`;
+              };
+              
+              startDateParam = formatDateForAPI(selectedDateRange.startDate);
+              endDateParam = formatDateForAPI(selectedDateRange.endDate);
+              
+              console.log('Sending dates to server:', { startDateParam, endDateParam });
           }
           
           const response = await fetch('employeeManagement/record_payroll_expense.php', {
@@ -3013,6 +3022,11 @@ document.addEventListener('DOMContentLoaded', function() {
               })
           });
           
+          // Check if response is OK before parsing JSON
+          if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          
           const data = await response.json();
           
           if (data.success) {
@@ -3024,7 +3038,7 @@ document.addEventListener('DOMContentLoaded', function() {
           
       } catch (error) {
           console.error('Error recording expense:', error);
-          alert('Error recording expense. Please try again.');
+          alert('Error recording expense. Please check console for details and try again.');
       } finally {
           // Reset button state
           recordExpenseBtn.disabled = false;
