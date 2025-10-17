@@ -2305,6 +2305,10 @@ function populateServiceCards(containerId, services) {
                             class="bg-navy/5 text-navy px-3 py-1 rounded hover:bg-navy/10 transition text-sm">
                             <i class="fas fa-file-alt mr-1"></i> View History
                         </button>
+                        <a href="feedback.php?service_id=${escapeHtml(service.sales_id)}&service_type=traditional-funeral" 
+                            class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition text-sm inline-flex items-center">
+                            <i class="fas fa-comment-dots mr-1"></i> Feedback
+                        </a>
                         ${service.balance > 0 ? `
                             <button onclick="openTraditionalPaymentModal('${escapeHtml(service.sales_id)}')" 
                                 class="bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition text-sm">
@@ -2672,6 +2676,10 @@ function populateCustomPackageCards(containerId, packages) {
                             class="bg-navy/5 text-navy px-3 py-1 rounded hover:bg-navy/10 transition text-sm">
                             <i class="fas fa-file-alt mr-1"></i> View History
                         </button>
+                        <a href="feedback.php?service_id=${escapeHtml(pkg.customsales_id)}&service_type=custom-package" 
+                            class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition text-sm inline-flex items-center">
+                            <i class="fas fa-comment-dots mr-1"></i> Feedback
+                        </a>
                         ${pkg.balance > 0 ? `
                             <button onclick="openCustomPaymentModal('${escapeHtml(pkg.customsales_id)}')" 
                                 class="bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition text-sm">
@@ -2775,6 +2783,10 @@ function populateLifePlanCards(containerId, lifeplans) {
                             class="bg-blue-600/5 text-blue-600 px-3 py-1 rounded hover:bg-blue-600/10 transition text-sm">
                             <i class="fas fa-file-alt mr-1"></i> View History
                         </button>
+                        <a href="feedback.php?service_id=${escapeHtml(plan.lifeplan_id)}&service_type=life-plan" 
+                            class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition text-sm inline-flex items-center">
+                            <i class="fas fa-comment-dots mr-1"></i> Feedback
+                        </a>
                         ${plan.balance > 0 ? `
                             <button onclick="openLifeplanPaymentModal('${escapeHtml(plan.lifeplan_id)}')" 
                                 class="bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition text-sm">
