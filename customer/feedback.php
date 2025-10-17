@@ -24,6 +24,34 @@ if ($_SESSION['user_type'] != 3) {
     exit();
 }
 
+// Get user data
+require_once '../db_connect.php';
+$user_id = $_SESSION['user_id'];
+
+// Get user information
+$query = "SELECT first_name, last_name, email, profile_picture FROM users WHERE id = ?";
+$stmt = $conn->prepare($query);
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$user_data = $result->fetch_assoc();
+$first_name = $user_data['first_name'];
+$last_name = $user_data['last_name'];
+$email = $user_data['email'];
+$profile_picture = $user_data['profile_picture'];
+$stmt->close();
+
+// Get notification count
+$notifications_count = 0;
+$notif_query = "SELECT COUNT(*) as count FROM booking_tb WHERE customerID = ? AND status = 'Pending'";
+$notif_stmt = $conn->prepare($notif_query);
+$notif_stmt->bind_param("i", $user_id);
+$notif_stmt->execute();
+$notif_result = $notif_stmt->get_result();
+$notif_data = $notif_result->fetch_assoc();
+$notifications_count = $notif_data['count'];
+$notif_stmt->close();
+
 // Handle form submission
 $success = false;
 $error = '';
@@ -31,15 +59,12 @@ $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $rating = $_POST['rating'] ?? 0;
     $feedback = trim($_POST['feedback'] ?? '');
-    $user_id = $_SESSION['user_id'];
     
     if ($rating < 1 || $rating > 5) {
         $error = 'Please select a rating between 1 and 5';
     } elseif (empty($feedback)) {
         $error = 'Please provide your feedback';
     } else {
-        require_once '../db_connect.php';
-        
         $stmt = $conn->prepare("INSERT INTO feedback (user_id, rating, feedback, created_at) VALUES (?, ?, ?, NOW())");
         $stmt->bind_param("iis", $user_id, $rating, $feedback);
         
@@ -50,9 +75,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         
         $stmt->close();
-        $conn->close();
     }
 }
+
+$conn->close();
 ?>
 
 <!DOCTYPE html>
@@ -61,134 +87,451 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Feedback - GrieveEase</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <?php include 'faviconLogo.php'; ?>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="../tailwind.js"></script>
     <style>
         :root {
-            --navbar-height: 4rem;
+            --navbar-height: 64px;
         }
+        
         body {
-            padding-top: var(--navbar-height);
-            background-color: #f5f5dc; /* Cream background */
+            font-family: 'Inter', sans-serif;
+            background-color: #F9F6F0;
         }
+        
+        .main-content {
+            padding-top: var(--navbar-height);
+        }
+        
+        .rating-container {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
         .rating-input {
             display: none;
         }
+        
         .rating-label {
-            font-size: 2rem;
+            font-size: 3rem;
             color: #d1d5db;
             cursor: pointer;
-            transition: color 0.2s;
+            transition: all 0.3s ease;
+            position: relative;
         }
-        .rating-input:checked ~ .rating-label,
+        
         .rating-label:hover,
         .rating-label:hover ~ .rating-label {
-            color: #f59e0b; /* Yellow color for selected/hovered stars */
+            color: #fbbf24;
+            transform: scale(1.1);
         }
+        
         .rating-input:checked ~ .rating-label {
             color: #f59e0b;
+            animation: starPulse 0.3s ease;
         }
-        .btn-primary {
-            background-color: #1e3a8a; /* Navy blue */
-            color: white;
-            transition: background-color 0.3s;
+        
+        @keyframes starPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
         }
-        .btn-primary:hover {
-            background-color: #1e40af; /* Darker navy blue on hover */
+        
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease forwards;
+            opacity: 0;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .delay-1 { animation-delay: 0.2s; }
+        .delay-2 { animation-delay: 0.4s; }
+        .delay-3 { animation-delay: 0.6s; }
+        
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .pulse-slow {
+            animation: pulseSlow 3s infinite;
+        }
+        
+        @keyframes pulseSlow {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(202, 138, 4, 0.4);
+            }
+            70% {
+                transform: scale(1.03);
+                box-shadow: 0 0 0 15px rgba(202, 138, 4, 0);
+            }
+        }
+        
+        .text-shadow-lg {
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
         }
     </style>
 </head>
-<body class="font-sans">
-    <!-- Navigation Bar (same as profile.php) -->
+<body class="bg-cream overflow-x-hidden w-full max-w-full m-0 p-0 font-hedvig">
+    <!-- Fixed Navigation Bar -->
     <nav class="bg-black text-white shadow-md w-full fixed top-0 left-0 z-50 px-4 sm:px-6 lg:px-8" style="height: var(--navbar-height);">
         <div class="flex justify-between items-center h-16">
+            <!-- Left side: Logo and Text with Link -->
             <a href="index.php" class="flex items-center space-x-2">
                 <img src="../Landing_Page/Landing_images/logo.png" alt="Logo" class="h-[42px] w-[38px]">
                 <span class="text-yellow-600 text-3xl">GrieveEase</span>
             </a>
-            <div class="flex items-center space-x-6">
-                <a href="profile.php" class="text-white hover:text-yellow-500 transition-colors">
-                    <i class="fas fa-user-circle text-2xl"></i>
+            
+            <!-- Center: Navigation Links (Hidden on small screens) -->
+            <div class="hidden md:flex space-x-6">
+                <a href="index.php" class="text-white hover:text-gray-300 transition relative group">
+                    Home
+                    <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></span>
                 </a>
+                <a href="about.php" class="text-white hover:text-gray-300 transition relative group">
+                    About
+                    <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></span>
+                </a>
+                <a href="lifeplan.php" class="text-white hover:text-gray-300 transition relative group">
+                    Life Plan
+                    <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></span>
+                </a>
+                <a href="traditional_funeral.php" class="text-white hover:text-gray-300 transition relative group">
+                    Traditional Funeral
+                    <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></span>
+                </a>
+                <a href="packages.php" class="text-white hover:text-gray-300 transition relative group">
+                    Packages
+                    <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></span>
+                </a>
+                <a href="faqs.php" class="text-white hover:text-gray-300 transition relative group">
+                    FAQs
+                    <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></span>
+                </a>
+            </div>
+            
+            <!-- User Menu -->
+            <div class="hidden md:flex items-center space-x-4">
+                <a href="notification.php" class="relative text-white hover:text-yellow-600 transition-colors">
+                    <i class="fas fa-bell"></i>
+                    <?php if ($notifications_count > 0): ?>
+                    <span class="absolute -top-2 -right-2 bg-yellow-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                        <?php echo $notifications_count; ?>
+                    </span>
+                    <?php endif; ?>
+                </a>
+                
+                <div class="relative group">
+                    <button class="flex items-center space-x-2">
+                        <div class="w-8 h-8 rounded-full bg-yellow-600 flex items-center justify-center text-sm overflow-hidden">
+                            <?php if ($profile_picture && file_exists('../profile_picture/' . $profile_picture)): ?>
+                                <img src="../profile_picture/<?php echo htmlspecialchars($profile_picture); ?>" 
+                                     alt="Profile Picture" 
+                                     class="w-full h-full object-cover">
+                            <?php else: ?>
+                                <?php 
+                                    $initials = strtoupper(substr($first_name, 0, 1) . substr($last_name, 0, 1)); 
+                                    echo htmlspecialchars($initials);
+                                ?>
+                            <?php endif; ?>
+                        </div>
+                        <span class="hidden md:inline text-sm">
+                            <?php echo htmlspecialchars(ucwords($first_name . ' ' . $last_name)); ?>
+                        </span>
+                        <i class="fas fa-chevron-down text-xs"></i>
+                    </button>
+                    
+                    <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-card overflow-hidden invisible group-hover:visible transition-all duration-300 opacity-0 group-hover:opacity-100">
+                        <div class="p-3 border-b border-gray-100">
+                            <p class="text-sm font-medium text-navy"><?php echo htmlspecialchars(ucwords($first_name . ' ' . $last_name)); ?></p>
+                            <p class="text-xs text-gray-500"><?php echo htmlspecialchars($email); ?></p>
+                        </div>
+                        <div class="py-1">
+                            <a href="profile.php" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">My Profile</a>
+                            <a href="../logout.php" class="block px-4 py-2 text-sm text-error hover:bg-gray-100">Sign Out</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Mobile menu header -->
+            <div class="md:hidden flex justify-between items-center px-4 py-3 border-b border-gray-700">
+                <div class="flex items-center space-x-4">
+                    <a href="notification.php" class="relative text-white hover:text-yellow-600 transition-colors">
+                        <i class="fas fa-bell"></i>
+                        <?php if ($notifications_count > 0): ?>
+                        <span class="absolute -top-2 -right-2 bg-yellow-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                            <?php echo $notifications_count; ?>
+                        </span>
+                        <?php endif; ?>
+                    </a>
+                    <button onclick="toggleMenu()" class="focus:outline-none text-white">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden fixed left-0 right-0 top-[--navbar-height] bg-black/90 backdrop-blur-md p-4 z-40 max-h-[calc(100vh-var(--navbar-height))] overflow-y-auto">
+            <div class="space-y-2">
+                <a href="index.php" class="block text-white py-3 px-4 hover:bg-gray-800 rounded-lg transition-colors duration-300 relative group">
+                    <div class="flex justify-between items-center">
+                        <span>Home</span>
+                        <i class="fas fa-home text-yellow-600 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                    </div>
+                    <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></span>
+                </a>
+                <a href="about.php" class="block text-white py-3 px-4 hover:bg-gray-800 rounded-lg transition-colors duration-300 relative group">
+                    <div class="flex justify-between items-center">
+                        <span>About</span>
+                        <i class="fas fa-info-circle text-yellow-600 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                    </div>
+                    <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></span>
+                </a>
+                <a href="lifeplan.php" class="block text-white py-3 px-4 hover:bg-gray-800 rounded-lg transition-colors duration-300 relative group">
+                    <div class="flex justify-between items-center">
+                        <span>Life Plan</span>
+                        <i class="fas fa-calendar-alt text-yellow-600 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                    </div>
+                    <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></span>
+                </a>
+                <a href="traditional_funeral.php" class="block text-white py-3 px-4 hover:bg-gray-800 rounded-lg transition-colors duration-300 relative group">
+                    <div class="flex justify-between items-center">
+                        <span>Traditional Funeral</span>
+                        <i class="fas fa-briefcase text-yellow-600 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                    </div>
+                    <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></span>
+                </a>
+                <a href="packages.php" class="block text-white py-3 px-4 hover:bg-gray-800 rounded-lg transition-colors duration-300 relative group">
+                    <div class="flex justify-between items-center">
+                        <span>Packages</span>
+                        <i class="fa-solid fa-cube text-yellow-600 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                    </div>
+                    <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></span>
+                </a>
+                <a href="faqs.php" class="block text-white py-3 px-4 hover:bg-gray-800 rounded-lg transition-colors duration-300 relative group">
+                    <div class="flex justify-between items-center">
+                        <span>FAQs</span>
+                        <i class="fas fa-question-circle text-yellow-600 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                    </div>
+                    <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></span>
+                </a>
+            </div>
+            
+            <div class="mt-6 border-t border-gray-700 pt-4">
+                <div class="space-y-2">
+                    <a href="profile.php" class="flex items-center justify-between text-white py-3 px-4 hover:bg-gray-800 rounded-lg transition-colors duration-300">
+                        <span>My Profile</span>
+                        <i class="fas fa-user text-yellow-600"></i>
+                    </a>
+                    <a href="../logout.php" class="flex items-center justify-between text-red-400 py-3 px-4 hover:bg-gray-800 rounded-lg transition-colors duration-300">
+                        <span>Sign Out</span>
+                        <i class="fas fa-sign-out-alt text-red-400"></i>
+                    </a>
+                </div>
             </div>
         </div>
     </nav>
 
     <!-- Main Content -->
-    <div class="container mx-auto px-4 py-8 max-w-4xl">
-        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-            <!-- Header -->
-            <div class="bg-navy p-6 border-b border-gray-100">
-                <h1 class="text-2xl font-bold text-white">Share Your Feedback</h1>
-                <p class="text-blue-100 mt-1">We value your opinion and would love to hear about your experience.</p>
+    <main class="max-w-screen-xl mx-auto px-4 sm:px-6 py-8 mt-[var(--navbar-height)]">
+        <!-- Welcome Section -->
+        <div class="bg-gradient-to-r from-navy/90 to-navy/40 rounded-xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+            <!-- Background Pattern -->
+            <div class="absolute inset-0 bg-center bg-cover bg-no-repeat transition-transform duration-10000 ease-in-out hover:scale-105"
+                 style="background-image: url('../Landing_Page/Landing_images/black-bg-image.jpg');">
+                <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-black/80"></div>
             </div>
-
-            <!-- Feedback Form -->
-            <div class="p-6">
-                <?php if ($success): ?>
-                    <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded relative mb-6" role="alert">
-                        <strong class="font-bold">Thank You!</strong>
-                        <span class="block sm:inline"> Your feedback has been submitted successfully.</span>
-                        <div class="mt-2">
-                            <a href="profile.php" class="text-blue-600 hover:underline">← Back to Profile</a>
-                        </div>
+            
+            <div class="relative z-10 max-w-3xl">
+                <div class="flex items-center mb-4 fade-in-up">
+                    <i class="fas fa-comment-dots text-yellow-600 text-4xl mr-4"></i>
+                    <div>
+                        <h1 class="font-hedvig text-3xl md:text-4xl text-white text-shadow-lg">Share Your Feedback</h1>
+                        <p class="text-white/80 mt-1">We value your opinion and would love to hear about your experience.</p>
                     </div>
-                <?php else: ?>
-                    <?php if ($error): ?>
-                        <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative mb-6" role="alert">
-                            <strong class="font-bold">Error!</strong>
-                            <span class="block sm:inline"><?php echo htmlspecialchars($error); ?></span>
-                        </div>
-                    <?php endif; ?>
-
-                    <form action="" method="POST" class="space-y-6">
-                        <!-- Rating -->
-                        <div>
-                            <label class="block text-gray-700 text-sm font-medium mb-2">
-                                How would you rate your experience? <span class="text-red-500">*</span>
-                            </label>
-                            <div class="flex items-center space-x-2">
-                                <?php for ($i = 5; $i >= 1; $i--): ?>
-                                    <input type="radio" id="star<?php echo $i; ?>" name="rating" value="<?php echo $i; ?>" class="rating-input" <?php echo (isset($_POST['rating']) && $_POST['rating'] == $i) ? 'checked' : ''; ?>>
-                                    <label for="star<?php echo $i; ?>" class="rating-label" title="<?php echo $i; ?> stars">★</label>
-                                <?php endfor; ?>
-                            </div>
-                        </div>
-
-                        <!-- Feedback -->
-                        <div>
-                            <label for="feedback" class="block text-gray-700 text-sm font-medium mb-2">
-                                Your Feedback <span class="text-red-500">*</span>
-                            </label>
-                            <textarea id="feedback" name="feedback" rows="6" 
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                placeholder="Please share your thoughts about our service..."
-                                required><?php echo htmlspecialchars($_POST['feedback'] ?? ''); ?></textarea>
-                        </div>
-
-                        <!-- Buttons -->
-                        <div class="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4">
-                            <a href="profile.php" class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 text-center">
-                                Cancel
-                            </a>
-                            <button type="submit" class="px-6 py-2 rounded-md text-white bg-navy hover:bg-blue-800 transition-colors">
-                                Submit Feedback
-                            </button>
-                        </div>
-                    </form>
-                <?php endif; ?>
+                </div>
             </div>
         </div>
-    </div>
+        
+        <!-- Feedback Form Card -->
+        <div class="max-w-4xl mx-auto">
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden dashboard-card transition-all duration-300">
+                <div class="p-6 sm:p-8">
+                    <?php if ($success): ?>
+                        <div class="bg-gradient-to-r from-green-50 to-green-100 border-l-4 border-green-500 text-green-700 px-6 py-5 rounded-lg mb-6 fade-in-up" role="alert">
+                            <div class="flex items-center mb-3">
+                                <i class="fas fa-check-circle text-3xl mr-3"></i>
+                                <div>
+                                    <strong class="font-bold text-lg">Thank You!</strong>
+                                    <p class="text-sm mt-1">Your feedback has been submitted successfully.</p>
+                                </div>
+                            </div>
+                            <div class="flex flex-wrap gap-3 mt-4">
+                                <a href="profile.php" class="inline-flex items-center bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-lg text-sm font-medium transition-colors">
+                                    <i class="fas fa-user mr-2"></i> View Profile
+                                </a>
+                                <a href="index.php" class="inline-flex items-center bg-white hover:bg-gray-50 text-green-700 border border-green-300 px-5 py-2 rounded-lg text-sm font-medium transition-colors">
+                                    <i class="fas fa-home mr-2"></i> Back to Home
+                                </a>
+                            </div>
+                        </div>
+                    <?php else: ?>
+                        <?php if ($error): ?>
+                            <div class="bg-gradient-to-r from-red-50 to-red-100 border-l-4 border-red-500 text-red-700 px-6 py-4 rounded-lg mb-6 fade-in-up" role="alert">
+                                <div class="flex items-center">
+                                    <i class="fas fa-exclamation-circle text-2xl mr-3"></i>
+                                    <div>
+                                        <strong class="font-bold">Error!</strong>
+                                        <span class="block text-sm mt-1"><?php echo htmlspecialchars($error); ?></span>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+
+                        <form action="" method="POST" class="space-y-8">
+                            <!-- Rating Section -->
+                            <div class="bg-gradient-to-br from-yellow-50 to-orange-50 p-6 rounded-xl border border-yellow-200">
+                                <label class="block text-navy text-lg font-hedvig mb-4 text-center">
+                                    <i class="fas fa-star text-yellow-600 mr-2"></i>
+                                    How would you rate your experience?
+                                    <span class="text-red-500">*</span>
+                                </label>
+                                <div class="rating-container py-4">
+                                    <?php for ($i = 5; $i >= 1; $i--): ?>
+                                        <input type="radio" id="star<?php echo $i; ?>" name="rating" value="<?php echo $i; ?>" class="rating-input" <?php echo (isset($_POST['rating']) && $_POST['rating'] == $i) ? 'checked' : ''; ?> required>
+                                        <label for="star<?php echo $i; ?>" class="rating-label" title="<?php echo $i; ?> stars">★</label>
+                                    <?php endfor; ?>
+                                </div>
+                                <p class="text-center text-sm text-gray-600 mt-2">Click on the stars to rate your experience</p>
+                            </div>
+
+                            <!-- Feedback Section -->
+                            <div>
+                                <label for="feedback" class="block text-navy text-lg font-hedvig mb-3">
+                                    <i class="fas fa-pen text-yellow-600 mr-2"></i>
+                                    Your Feedback
+                                    <span class="text-red-500">*</span>
+                                </label>
+                                <textarea id="feedback" name="feedback" rows="8" 
+                                    class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-yellow-600 transition-all"
+                                    placeholder="Please share your thoughts about our service. Your feedback helps us improve and serve you better..."
+                                    required><?php echo htmlspecialchars($_POST['feedback'] ?? ''); ?></textarea>
+                                <p class="text-sm text-gray-500 mt-2"><i class="fas fa-info-circle mr-1"></i>Please provide detailed feedback to help us understand your experience better.</p>
+                            </div>
+
+                            <!-- Buttons -->
+                            <div class="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4 pt-4 border-t border-gray-200">
+                                <a href="profile.php" class="inline-flex items-center justify-center px-6 py-3 border-2 border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 font-medium transition-all duration-300">
+                                    <i class="fas fa-times mr-2"></i> Cancel
+                                </a>
+                                <button type="submit" class="inline-flex items-center justify-center px-6 py-3 rounded-lg text-white bg-yellow-600 hover:bg-darkgold font-medium transition-all duration-300 shadow-lg hover:shadow-xl pulse-slow">
+                                    <i class="fas fa-paper-plane mr-2"></i> Submit Feedback
+                                </button>
+                            </div>
+                        </form>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-black font-playfair text-white py-12 mt-12">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- Company Info -->
+                <div>
+                    <h3 class="text-yellow-600 text-2xl mb-4">GrieveEase</h3>
+                    <p class="text-gray-300 mb-4">Providing dignified funeral services with compassion and respect since 1980.</p>
+                </div>
+                
+                <!-- Quick Links -->
+                <div>
+                    <h3 class="text-lg mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="index.php" class="text-gray-300 hover:text-white transition">Home</a></li>
+                        <li><a href="about.php" class="text-gray-300 hover:text-white transition">About</a></li>
+                        <li><a href="lifeplan.php" class="text-gray-300 hover:text-white transition">Life Plan</a></li>
+                        <li><a href="traditional_funeral.php" class="text-gray-300 hover:text-white transition">Traditional Funeral</a></li>
+                        <li><a href="faqs.php" class="text-gray-300 hover:text-white transition">FAQs</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Services -->
+                <div>
+                    <h3 class="text-lg mb-4">Our Services</h3>
+                    <ul class="space-y-2">
+                        <li><a href="traditional_funeral.php" class="text-gray-300 hover:text-white transition">Traditional Funeral</a></li>
+                        <li><a href="lifeplan.php" class="text-gray-300 hover:text-white transition">Life Plan</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Contact Info -->
+                <div>
+                    <h3 class="text-lg mb-4">Contact Us</h3>
+                    <ul class="space-y-2">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt mt-1 mr-2 text-yellow-600"></i>
+                            <span>#6 J.P Rizal St. Brgy. Sta Clara Sur, (Pob) Pila, Laguna</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone-alt mr-2 text-yellow-600"></i>
+                            <span>(0956) 814-3000 <br> (0961) 345-4283</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope mr-2 text-yellow-600"></i>
+                            <span>GrievEase@gmail.com</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-clock mr-2 text-yellow-600"></i>
+                            <span>Available 24/7</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400 text-sm">
+                <p class="text-yellow-600">&copy; 2025 Vjay Relova Funeral Services. All rights reserved.</p>
+                <div class="mt-2">
+                    <a href="../privacy_policy.php" class="text-gray-400 hover:text-white transition mx-2">Privacy Policy</a>
+                    <a href="../termsofservice.php" class="text-gray-400 hover:text-white transition mx-2">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
 
     <script>
+        // Toggle mobile menu
+        function toggleMenu() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        }
+        
         // Make star rating interactive
         document.addEventListener('DOMContentLoaded', function() {
-            const stars = document.querySelectorAll('.rating-input');
+            const stars = document.querySelectorAll('.rating-label');
             
             stars.forEach(star => {
-                star.addEventListener('change', function() {
-                    // Optional: You can add visual feedback when a star is selected
+                star.addEventListener('click', function() {
+                    // Visual feedback when a star is selected
+                    const ratingText = this.getAttribute('title');
+                    console.log('Rating selected: ' + ratingText);
                 });
             });
         });
