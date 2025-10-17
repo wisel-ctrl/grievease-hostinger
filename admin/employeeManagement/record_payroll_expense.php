@@ -52,7 +52,7 @@ if ($start_date && $end_date) {
     $notes = "Salary for period " . $start_date . " to " . $end_date . " for branch " . $branch_id;
 } else {
     $current_month = date('F Y');
-    $expense_name = $current_month . "'s salary'";
+    $expense_name = $current_month . "'s Salary";
     $notes = "This is the Salary for " . $current_month . " for branch " . $branch_id;
 }
 
