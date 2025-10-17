@@ -1,84 +1,14 @@
 <?php
-session_start();
+// Mock data for UI display only
+$first_name = "John";
+$last_name = "Doe";
+$email = "john.doe@example.com";
+$profile_picture = null; // Set to null to show initials
+$notifications_count = 3; // Mock notification count
 
-// Check if user is logged in
-if (!isset($_SESSION['user_id'])) {
-    // Redirect to login page
-    header("Location: ../Landing_Page/login.php");
-    exit();
-}
-
-// Check if user is a customer
-if ($_SESSION['user_type'] != 3) {
-    // Redirect to appropriate dashboard
-    switch ($_SESSION['user_type']) {
-        case 1:
-            header("Location: ../admin/index.php");
-            break;
-        case 2:
-            header("Location: ../employee/index.php");
-            break;
-        default:
-            header("Location: ../Landing_Page/login.php");
-    }
-    exit();
-}
-
-// Get user data
-require_once '../db_connect.php';
-$user_id = $_SESSION['user_id'];
-
-// Get user information
-$query = "SELECT first_name, last_name, email, profile_picture FROM users WHERE id = ?";
-$stmt = $conn->prepare($query);
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$result = $stmt->get_result();
-$user_data = $result->fetch_assoc();
-$first_name = $user_data['first_name'];
-$last_name = $user_data['last_name'];
-$email = $user_data['email'];
-$profile_picture = $user_data['profile_picture'];
-$stmt->close();
-
-// Get notification count
-$notifications_count = 0;
-$notif_query = "SELECT COUNT(*) as count FROM booking_tb WHERE customerID = ? AND status = 'Pending'";
-$notif_stmt = $conn->prepare($notif_query);
-$notif_stmt->bind_param("i", $user_id);
-$notif_stmt->execute();
-$notif_result = $notif_stmt->get_result();
-$notif_data = $notif_result->fetch_assoc();
-$notifications_count = $notif_data['count'];
-$notif_stmt->close();
-
-// Handle form submission
+// No backend logic - purely for UI demonstration
 $success = false;
 $error = '';
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $rating = $_POST['rating'] ?? 0;
-    $feedback = trim($_POST['feedback'] ?? '');
-    
-    if ($rating < 1 || $rating > 5) {
-        $error = 'Please select a rating between 1 and 5';
-    } elseif (empty($feedback)) {
-        $error = 'Please provide your feedback';
-    } else {
-        $stmt = $conn->prepare("INSERT INTO feedback (user_id, rating, feedback, created_at) VALUES (?, ?, ?, NOW())");
-        $stmt->bind_param("iis", $user_id, $rating, $feedback);
-        
-        if ($stmt->execute()) {
-            $success = true;
-        } else {
-            $error = 'Failed to submit feedback. Please try again.';
-        }
-        
-        $stmt->close();
-    }
-}
-
-$conn->close();
 ?>
 
 <!DOCTYPE html>
@@ -373,38 +303,38 @@ $conn->close();
         <div class="max-w-4xl mx-auto">
             <div class="bg-white rounded-xl shadow-lg overflow-hidden dashboard-card transition-all duration-300">
                 <div class="p-6 sm:p-8">
-                    <?php if ($success): ?>
-                        <div class="bg-gradient-to-r from-green-50 to-green-100 border-l-4 border-green-500 text-green-700 px-6 py-5 rounded-lg mb-6 fade-in-up" role="alert">
-                            <div class="flex items-center mb-3">
-                                <i class="fas fa-check-circle text-3xl mr-3"></i>
-                                <div>
-                                    <strong class="font-bold text-lg">Thank You!</strong>
-                                    <p class="text-sm mt-1">Your feedback has been submitted successfully.</p>
-                                </div>
-                            </div>
-                            <div class="flex flex-wrap gap-3 mt-4">
-                                <a href="profile.php" class="inline-flex items-center bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-lg text-sm font-medium transition-colors">
-                                    <i class="fas fa-user mr-2"></i> View Profile
-                                </a>
-                                <a href="index.php" class="inline-flex items-center bg-white hover:bg-gray-50 text-green-700 border border-green-300 px-5 py-2 rounded-lg text-sm font-medium transition-colors">
-                                    <i class="fas fa-home mr-2"></i> Back to Home
-                                </a>
+                    <!-- Success Message (Hidden by default, shown via JS) -->
+                    <div id="success-message" class="hidden bg-gradient-to-r from-green-50 to-green-100 border-l-4 border-green-500 text-green-700 px-6 py-5 rounded-lg mb-6 fade-in-up" role="alert">
+                        <div class="flex items-center mb-3">
+                            <i class="fas fa-check-circle text-3xl mr-3"></i>
+                            <div>
+                                <strong class="font-bold text-lg">Thank You!</strong>
+                                <p class="text-sm mt-1">Your feedback has been submitted successfully.</p>
                             </div>
                         </div>
-                    <?php else: ?>
-                        <?php if ($error): ?>
-                            <div class="bg-gradient-to-r from-red-50 to-red-100 border-l-4 border-red-500 text-red-700 px-6 py-4 rounded-lg mb-6 fade-in-up" role="alert">
-                                <div class="flex items-center">
-                                    <i class="fas fa-exclamation-circle text-2xl mr-3"></i>
-                                    <div>
-                                        <strong class="font-bold">Error!</strong>
-                                        <span class="block text-sm mt-1"><?php echo htmlspecialchars($error); ?></span>
-                                    </div>
-                                </div>
-                            </div>
-                        <?php endif; ?>
+                        <div class="flex flex-wrap gap-3 mt-4">
+                            <a href="profile.php" class="inline-flex items-center bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-lg text-sm font-medium transition-colors">
+                                <i class="fas fa-user mr-2"></i> View Profile
+                            </a>
+                            <a href="index.php" class="inline-flex items-center bg-white hover:bg-gray-50 text-green-700 border border-green-300 px-5 py-2 rounded-lg text-sm font-medium transition-colors">
+                                <i class="fas fa-home mr-2"></i> Back to Home
+                            </a>
+                        </div>
+                    </div>
 
-                        <form action="" method="POST" class="space-y-8">
+                    <!-- Error Message (Hidden by default, shown via JS) -->
+                    <div id="error-message" class="hidden bg-gradient-to-r from-red-50 to-red-100 border-l-4 border-red-500 text-red-700 px-6 py-4 rounded-lg mb-6 fade-in-up" role="alert">
+                        <div class="flex items-center">
+                            <i class="fas fa-exclamation-circle text-2xl mr-3"></i>
+                            <div>
+                                <strong class="font-bold">Error!</strong>
+                                <span id="error-text" class="block text-sm mt-1"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Feedback Form -->
+                    <form id="feedback-form" class="space-y-8">
                             <!-- Rating Section -->
                             <div class="bg-gradient-to-br from-yellow-50 to-orange-50 p-6 rounded-xl border border-yellow-200">
                                 <label class="block text-navy text-lg font-hedvig mb-4 text-center">
@@ -413,10 +343,20 @@ $conn->close();
                                     <span class="text-red-500">*</span>
                                 </label>
                                 <div class="rating-container py-4">
-                                    <?php for ($i = 5; $i >= 1; $i--): ?>
-                                        <input type="radio" id="star<?php echo $i; ?>" name="rating" value="<?php echo $i; ?>" class="rating-input" <?php echo (isset($_POST['rating']) && $_POST['rating'] == $i) ? 'checked' : ''; ?> required>
-                                        <label for="star<?php echo $i; ?>" class="rating-label" title="<?php echo $i; ?> stars">★</label>
-                                    <?php endfor; ?>
+                                    <input type="radio" id="star5" name="rating" value="5" class="rating-input" required>
+                                    <label for="star5" class="rating-label" title="5 stars">★</label>
+                                    
+                                    <input type="radio" id="star4" name="rating" value="4" class="rating-input">
+                                    <label for="star4" class="rating-label" title="4 stars">★</label>
+                                    
+                                    <input type="radio" id="star3" name="rating" value="3" class="rating-input">
+                                    <label for="star3" class="rating-label" title="3 stars">★</label>
+                                    
+                                    <input type="radio" id="star2" name="rating" value="2" class="rating-input">
+                                    <label for="star2" class="rating-label" title="2 stars">★</label>
+                                    
+                                    <input type="radio" id="star1" name="rating" value="1" class="rating-input">
+                                    <label for="star1" class="rating-label" title="1 star">★</label>
                                 </div>
                                 <p class="text-center text-sm text-gray-600 mt-2">Click on the stars to rate your experience</p>
                             </div>
@@ -431,21 +371,20 @@ $conn->close();
                                 <textarea id="feedback" name="feedback" rows="8" 
                                     class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-yellow-600 transition-all"
                                     placeholder="Please share your thoughts about our service. Your feedback helps us improve and serve you better..."
-                                    required><?php echo htmlspecialchars($_POST['feedback'] ?? ''); ?></textarea>
+                                    required></textarea>
                                 <p class="text-sm text-gray-500 mt-2"><i class="fas fa-info-circle mr-1"></i>Please provide detailed feedback to help us understand your experience better.</p>
                             </div>
 
                             <!-- Buttons -->
                             <div class="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4 pt-4 border-t border-gray-200">
-                                <a href="profile.php" class="inline-flex items-center justify-center px-6 py-3 border-2 border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 font-medium transition-all duration-300">
+                                <button type="button" onclick="window.history.back()" class="inline-flex items-center justify-center px-6 py-3 border-2 border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 font-medium transition-all duration-300">
                                     <i class="fas fa-times mr-2"></i> Cancel
-                                </a>
+                                </button>
                                 <button type="submit" class="inline-flex items-center justify-center px-6 py-3 rounded-lg text-white bg-yellow-600 hover:bg-darkgold font-medium transition-all duration-300 shadow-lg hover:shadow-xl pulse-slow">
                                     <i class="fas fa-paper-plane mr-2"></i> Submit Feedback
                                 </button>
                             </div>
                         </form>
-                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -523,16 +462,81 @@ $conn->close();
             mobileMenu.classList.toggle('hidden');
         }
         
-        // Make star rating interactive
+        // Handle form submission (UI Only - No Backend)
         document.addEventListener('DOMContentLoaded', function() {
-            const stars = document.querySelectorAll('.rating-label');
+            const form = document.getElementById('feedback-form');
+            const successMessage = document.getElementById('success-message');
+            const errorMessage = document.getElementById('error-message');
+            const errorText = document.getElementById('error-text');
             
+            // Star rating interaction
+            const stars = document.querySelectorAll('.rating-label');
             stars.forEach(star => {
                 star.addEventListener('click', function() {
-                    // Visual feedback when a star is selected
                     const ratingText = this.getAttribute('title');
                     console.log('Rating selected: ' + ratingText);
                 });
+            });
+            
+            // Form submission handler
+            form.addEventListener('submit', function(e) {
+                e.preventDefault(); // Prevent actual form submission
+                
+                // Get form data
+                const rating = document.querySelector('input[name="rating"]:checked');
+                const feedback = document.getElementById('feedback').value.trim();
+                
+                // Validate form
+                if (!rating) {
+                    // Show error
+                    errorText.textContent = 'Please select a rating between 1 and 5';
+                    errorMessage.classList.remove('hidden');
+                    successMessage.classList.add('hidden');
+                    
+                    // Scroll to error
+                    errorMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    
+                    // Hide error after 5 seconds
+                    setTimeout(() => {
+                        errorMessage.classList.add('hidden');
+                    }, 5000);
+                    return;
+                }
+                
+                if (!feedback) {
+                    // Show error
+                    errorText.textContent = 'Please provide your feedback';
+                    errorMessage.classList.remove('hidden');
+                    successMessage.classList.add('hidden');
+                    
+                    // Scroll to error
+                    errorMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    
+                    // Hide error after 5 seconds
+                    setTimeout(() => {
+                        errorMessage.classList.add('hidden');
+                    }, 5000);
+                    return;
+                }
+                
+                // Success - Show success message
+                console.log('Feedback submitted (UI Demo):', {
+                    rating: rating.value,
+                    feedback: feedback
+                });
+                
+                // Hide form and show success
+                form.classList.add('hidden');
+                errorMessage.classList.add('hidden');
+                successMessage.classList.remove('hidden');
+                
+                // Scroll to success message
+                successMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                // Optional: Reset form after showing success
+                setTimeout(() => {
+                    form.reset();
+                }, 1000);
             });
         });
     </script>
