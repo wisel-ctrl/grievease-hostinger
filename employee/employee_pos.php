@@ -1208,6 +1208,7 @@ document.getElementById('deceasedRegion').addEventListener('change', function() 
         <input type="hidden" id="lp-branch-id" name="branch_id" value="">
         <input type="hidden" id="lp-sold_by" name="sold_by" value="<?php echo htmlspecialchars($_SESSION['user_id']); ?>">
         <input type="hidden" id="beneficiaryAddress" name="lp-address" value="">
+        <input type="hidden" id="comakerAddress" name="comakerAddress" value="">
 
         <!-- Client Information Section -->
         <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
@@ -2513,8 +2514,9 @@ function confirmLifeplanCheckout() {
   // Create a FormData object from the form
   const formData = new FormData(form);
 
-  // Add beneficiary address
+  // Add beneficiary address and comaker address
   updateBeneficiaryCombinedAddress();
+  updateComakerCombinedAddress();
   
   // Show loading state on confirm button
   const confirmBtn = document.getElementById('lp-confirm-btn');
