@@ -3296,6 +3296,81 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('comakerZip').addEventListener('input', updateComakerCombinedAddress);
 });
   
+// Function to handle ID image upload preview
+document.addEventListener('DOMContentLoaded', function() {
+  const comakerIdImage = document.getElementById('comakerIdImage');
+  const comakerIdPreview = document.getElementById('comakerIdPreview');
+  const comakerIdPreviewImage = document.getElementById('comakerIdPreviewImage');
+  const comakerIdFileName = document.getElementById('comakerIdFileName');
+  const comakerIdFileSize = document.getElementById('comakerIdFileSize');
+  const comakerIdRemove = document.getElementById('comakerIdRemove');
+  
+  if (comakerIdImage) {
+    comakerIdImage.addEventListener('change', function(event) {
+      const file = event.target.files[0];
+      if (file) {
+        // Check file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+          alert('File size exceeds 5MB limit. Please choose a smaller file.');
+          this.value = '';
+          return;
+        }
+        
+        // Check file type
+        const validTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+        if (!validTypes.includes(file.type)) {
+          alert('Please select a JPG, PNG, or PDF file.');
+          this.value = '';
+          return;
+        }
+        
+        // Display file info
+        comakerIdFileName.textContent = file.name;
+        comakerIdFileSize.textContent = formatFileSize(file.size);
+        
+        // Create preview for images
+        if (file.type.includes('image')) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            // Clear previous preview
+            comakerIdPreviewImage.innerHTML = '';
+            
+            // Create image element
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.alt = "ID Preview";
+            img.className = "w-16 h-16 object-cover rounded";
+            
+            // Add to preview container
+            comakerIdPreviewImage.appendChild(img);
+          };
+          reader.readAsDataURL(file);
+        } else {
+          // For PDF files, show a document icon
+          comakerIdPreviewImage.innerHTML = '<i class="fas fa-file-pdf text-3xl text-red-500"></i>';
+        }
+        
+        comakerIdPreview.classList.remove('hidden');
+      }
+    });
+  }
+  
+  if (comakerIdRemove) {
+    comakerIdRemove.addEventListener('click', function() {
+      comakerIdImage.value = '';
+      comakerIdPreview.classList.add('hidden');
+      comakerIdPreviewImage.innerHTML = '';
+    });
+  }
+  
+  function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
+});
 </script>
 
 </body>
