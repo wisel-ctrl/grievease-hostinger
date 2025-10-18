@@ -168,10 +168,10 @@ try {
             with_cremate, payment_method, payment_duration,
             initial_price, custom_price, amount_paid, balance, payment_status,
             created_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         
         $stmt = $conn->prepare($lifeplanQuery);
-        $stmt->bind_param("iiissssssssssssssssssssssssssiddddsss",
+        $stmt->bind_param("iiissssssssssssssssssssssssssiddddss",
             $serviceId, $branchId, $soldBy,
             $clientFirstName, $clientMiddleName, $clientLastName, $clientSuffix, 
             $clientEmail, $clientPhone,
