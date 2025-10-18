@@ -59,7 +59,7 @@ try {
     $beneficiaryDob = !empty($_POST['beneficiaryDateOfBirth']) ? $_POST['beneficiaryDateOfBirth'] : null;
     $beneficiaryRelationship = trim($_POST['beneficiaryRelationship']);
     
-    $beneficiaryAddress = trim($_POST['beneficiaryAddress']);
+    $beneficiaryAddress = trim($_POST['lp-address']);
     $beneficiaryRegion = trim($_POST['beneficiaryRegion']);
     $beneficiaryProvince = trim($_POST['beneficiaryProvince']);
     $beneficiaryCity = trim($_POST['beneficiaryCity']);
