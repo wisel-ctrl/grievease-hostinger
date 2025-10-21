@@ -2451,7 +2451,7 @@ function openTraditionalCheckout() {
   const servicePrice = serviceTypeModal.dataset.servicePrice;
   const branchId = serviceTypeModal.dataset.branchId;
 
-  initializePrices();
+  initializePrices(servicePrice);
 
   // Set the service details in the form
   document.getElementById('service-id').value = serviceId;
