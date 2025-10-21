@@ -708,13 +708,16 @@ $servicesJson = json_encode($allServices);
             Additional Services
           </h4>
           <div class="space-y-3">
-            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
-              <input type="checkbox" name="withCremation" id="withCremation" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-              With Cremation
+            <label class="flex items-center justify-between bg-white p-3 rounded-md hover:bg-gray-50 transition-colors cursor-pointer border border-gray-200">
+              <div class="flex items-center">
+                <input type="checkbox" name="withCremation" id="withCremation" class="mr-3 text-sidebar-accent focus:ring-sidebar-accent">
+                <span class="font-medium text-gray-800">With Cremation</span>
+              </div>
+              <span class="font-bold text-sidebar-accent bg-amber-50 px-3 py-1 rounded-lg border border-amber-200">+₱45,000</span>
             </label>
-            <p class="text-sm text-gray-500 ml-8">Check this box if the service includes cremation</p>
+            <p class="text-sm text-gray-500 ml-6">Check this box if the service includes cremation</p>
           </div>
-        </div>              
+        </div>            
 
         <!-- Payment Information -->
         <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
