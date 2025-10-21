@@ -3440,12 +3440,22 @@ document.addEventListener('DOMContentLoaded', function() {
   let isCremationApplied = false;
   let isDiscountApplied = false;
 
-  // Initialize base price when modal opens
-  function initializePrices() {
-    basePrice = parseFloat(totalPriceInput.value) || 0;
+  // Initialize base price when modal opens - pass the actual price
+  function initializePrices(initialPrice) {
+    basePrice = parseFloat(initialPrice) || 0;
     isCremationApplied = false;
     isDiscountApplied = false;
+    
+    // Reset checkboxes
+    discountCheckbox.checked = false;
+    cremationCheckbox.checked = false;
+    idUploadSection.classList.add('hidden');
+    
+    // Set the initial price
+    totalPriceInput.value = basePrice.toFixed(2);
     updateFooterTotal();
+    
+    console.log('Initialized with base price:', basePrice);
   }
 
   // Toggle ID upload section and handle discount
@@ -3482,6 +3492,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     totalPriceInput.value = calculatedPrice.toFixed(2);
     updateFooterTotal();
+    
+    console.log('Recalculated - Base:', basePrice, 'Cremation:', isCremationApplied, 'Discount:', isDiscountApplied, 'Final:', calculatedPrice);
   }
 
   // Update footer total display
@@ -3514,6 +3526,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Only update base price if neither discount nor cremation is applied
     if (!discountCheckbox.checked && !cremationCheckbox.checked) {
       basePrice = parseFloat(this.value) || 0;
+      console.log('Base price updated to:', basePrice);
     }
   });
 
