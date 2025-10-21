@@ -3436,7 +3436,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const removeIdPreviewBtn = document.getElementById('removeIdPreviewBtn');
 
   const CREMATION_FEE = 45000;
-  let basePrice = totalPriceInput.value;
+  let basePrice = 0;
   let isCremationApplied = false;
   let isDiscountApplied = false;
 
