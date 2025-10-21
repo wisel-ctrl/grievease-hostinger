@@ -769,6 +769,44 @@ $servicesJson = json_encode($allServices);
           </div>
         </div>
 
+        <!-- Senior Citizen/PWD Discount Section -->
+        <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
+          <h4 class="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4 pb-2 border-b border-gray-200 flex items-center">
+            Discount Information
+          </h4>
+          <div class="space-y-3 sm:space-y-4">
+            <!-- Discount Checkbox -->
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="checkbox" name="senior_pwd_discount" id="seniorPwdDiscount" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              Apply Senior Citizen/PWD Discount (20% Off)
+            </label>
+            <p class="text-sm text-gray-500 ml-4">Check this box if you're eligible for Senior Citizen or PWD discount</p>
+            
+            <!-- ID Upload Section -->
+            <div id="idUploadSection" class="hidden mt-3">
+              <label for="seniorPwdId" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                Senior Citizen ID or PWD ID 
+                <span class="text-xs text-gray-500 ml-1">(Optional)</span>
+              </label>
+              <div class="relative">
+                <div class="flex items-center border border-gray-300 rounded-lg px-3 py-2 focus-within:ring-1 focus-within:ring-sidebar-accent focus-within:border-sidebar-accent transition-all duration-200">
+                  <input type="file" id="seniorPwdId" name="discount_id_img" accept="image/*,.pdf" class="w-full focus:outline-none">
+                </div>
+                <!-- Image preview container -->
+                <div id="idPreview" class="mt-2 hidden">
+                  <div class="relative inline-block">
+                    <img id="idPreviewImage" src="#" alt="ID Preview" class="max-h-40 rounded-lg border border-gray-200">
+                    <button type="button" id="removeIdPreviewBtn" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors">
+                      <i class="fas fa-times text-xs"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">Upload a clear photo of your valid Senior Citizen ID or PWD ID</p>
+            </div>
+          </div>
+        </div>
+
       </form>
     </div>
     
