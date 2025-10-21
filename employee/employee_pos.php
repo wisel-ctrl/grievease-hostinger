@@ -701,7 +701,21 @@ $servicesJson = json_encode($allServices);
             </div>
           </div>
         </div>
-  
+                      
+        <!-- Cremation Checklist Section -->
+        <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
+          <h4 class="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4 pb-2 border-b border-gray-200 flex items-center">
+            Additional Services
+          </h4>
+          <div class="space-y-3">
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="checkbox" name="withCremation" id="withCremation" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              With Cremation
+            </label>
+            <p class="text-sm text-gray-500 ml-8">Check this box if the service includes cremation</p>
+          </div>
+        </div>              
+
         <!-- Payment Information -->
         <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
           <h4 class="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4 pb-2 border-b border-gray-200 flex items-center">
@@ -755,19 +769,6 @@ $servicesJson = json_encode($allServices);
           </div>
         </div>
 
-        <!-- Cremation Checklist Section -->
-        <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
-          <h4 class="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4 pb-2 border-b border-gray-200 flex items-center">
-            Additional Services
-          </h4>
-          <div class="space-y-3">
-            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
-              <input type="checkbox" name="withCremation" id="withCremation" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-              With Cremation
-            </label>
-            <p class="text-sm text-gray-500 ml-8">Check this box if the service includes cremation</p>
-          </div>
-        </div>
       </form>
     </div>
     
@@ -3306,6 +3307,11 @@ document.addEventListener('DOMContentLoaded', function() {
   const comakerIdFileName = document.getElementById('comakerIdFileName');
   const comakerIdFileSize = document.getElementById('comakerIdFileSize');
   const comakerIdRemove = document.getElementById('comakerIdRemove');
+
+  document.getElementById('removeImageBtn')?.addEventListener('click', function() {
+    document.getElementById('deathCertificate').value = '';
+    document.getElementById('deathCertificatePreview').classList.add('hidden');
+  });
   
   if (comakerIdImage) {
     comakerIdImage.addEventListener('change', function(event) {
