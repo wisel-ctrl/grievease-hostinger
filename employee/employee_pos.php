@@ -2483,6 +2483,10 @@ function confirmCheckout() {
   const soldBy = document.getElementById('sold_by').value;
   formData.append('sold_by', soldBy);
 
+  // Add senior/PWD discount status
+  const seniorPwdDiscount = document.getElementById('seniorPwdDiscount').checked ? 'yes' : 'no';
+  formData.append('senior_pwd_discount', seniorPwdDiscount);
+
   const address = document.getElementById('deceasedAddress').value;
   console.log("newAddress:", address);
   

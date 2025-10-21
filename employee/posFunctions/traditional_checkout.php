@@ -83,6 +83,9 @@ try {
     $amountPaid = floatval($_POST['amountPaid']);
     $initial_price = floatval($_POST['service_price']);
     $withCremation = isset($_POST['withCremation']) ? 'yes' : 'no';
+    
+    // Discount information
+    $seniorPwdDiscount = isset($_POST['senior_pwd_discount']) && $_POST['senior_pwd_discount'] === 'yes' ? 'yes' : 'no';
 
     // Service and branch info
     $serviceId = intval($_POST['service_id']);
@@ -121,7 +124,8 @@ try {
             'method' => $paymentMethod,
             'total_price' => $totalPrice,
             'amount_paid' => $amountPaid,
-            'with_cremation' => $withCremation
+            'with_cremation' => $withCremation,
+            'senior_pwd_discount' => $seniorPwdDiscount
         ],
         'service_info' => [
             'service_id' => $serviceId,
@@ -156,14 +160,85 @@ try {
         throw new Exception("Initial payment must be at least 5% of the total price. Required: $minimumPayment, Provided: $amountPaid");
     }
 
-    // Handle file upload (death certificate)
-    $deathCertificateImage = null;
+    // Handle death certificate file upload
+    $deathCertificatePath = null;
     if (isset($_FILES['deathCertificate']) && $_FILES['deathCertificate']['error'] === UPLOAD_ERR_OK) {
-        $deathCertificateImage = file_get_contents($_FILES['deathCertificate']['tmp_name']);
-        file_put_contents(__DIR__ . '/order_processing_debug.log', "\nDeath certificate uploaded. Size: " . $_FILES['deathCertificate']['size'] . " bytes", FILE_APPEND);
+        $deathCertificate = $_FILES['deathCertificate'];
+        
+        // Validate file type
+        $allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
+        if (!in_array($deathCertificate['type'], $allowedTypes)) {
+            throw new Exception("Invalid file type for death certificate. Allowed: JPG, JPEG, PNG, PDF");
+        }
+        
+        // Validate file size (max 5MB)
+        if ($deathCertificate['size'] > 5 * 1024 * 1024) {
+            throw new Exception("Death certificate file size too large. Maximum size is 5MB.");
+        }
+        
+        // Create upload directory if it doesn't exist
+        $uploadDir = '../../customer/booking/uploads/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+        
+        // Generate unique filename
+        $timestamp = date('Ymd_His');
+        $randomNumber = mt_rand(1000, 9999);
+        $fileExtension = pathinfo($deathCertificate['name'], PATHINFO_EXTENSION);
+        $newFilename = 'death_cert_' . $timestamp . '_' . $randomNumber . '.' . $fileExtension;
+        $uploadPath = $uploadDir . $newFilename;
+        $deathcertDBpath = 'uploads/' . $newFilename;
+        
+        // Move uploaded file
+        if (move_uploaded_file($deathCertificate['tmp_name'], $uploadPath)) {
+            $deathCertificatePath = $deathcertDBpath;
+            file_put_contents(__DIR__ . '/order_processing_debug.log', "\nDeath certificate uploaded successfully: " . $deathCertificatePath, FILE_APPEND);
+        } else {
+            throw new Exception("Failed to upload death certificate file.");
+        }
     } else {
         $uploadError = isset($_FILES['deathCertificate']) ? $_FILES['deathCertificate']['error'] : 'No file uploaded';
         file_put_contents(__DIR__ . '/order_processing_debug.log', "\nDeath certificate upload status: $uploadError", FILE_APPEND);
+    }
+
+    // Handle discount ID image upload
+    $discountIdImgPath = null;
+    if (isset($_FILES['discount_id_img']) && $_FILES['discount_id_img']['error'] === UPLOAD_ERR_OK && $seniorPwdDiscount === 'yes') {
+        $discountIdImg = $_FILES['discount_id_img'];
+        
+        // Validate file type
+        $allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
+        if (!in_array($discountIdImg['type'], $allowedTypes)) {
+            throw new Exception("Invalid file type for discount ID. Allowed: JPG, JPEG, PNG, PDF");
+        }
+        
+        // Validate file size (max 5MB)
+        if ($discountIdImg['size'] > 5 * 1024 * 1024) {
+            throw new Exception("Discount ID file size too large. Maximum size is 5MB.");
+        }
+        
+        // Create upload directory if it doesn't exist
+        $uploadDir = '../../admin/uploads/valid_ids/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+        
+        // Generate unique filename
+        $timestamp = date('Ymd_His');
+        $randomNumber = mt_rand(1000, 9999);
+        $fileExtension = pathinfo($discountIdImg['name'], PATHINFO_EXTENSION);
+        $newFilename = 'discount_id_' . $timestamp . '_' . $randomNumber . '.' . $fileExtension;
+        $uploadPath = $uploadDir . $newFilename;
+        $discountDBpath = 'uploads/valid_ids/' . $newFilename;
+        
+        // Move uploaded file
+        if (move_uploaded_file($discountIdImg['tmp_name'], $uploadPath)) {
+            $discountIdImgPath = $discountDBpath;
+            file_put_contents(__DIR__ . '/order_processing_debug.log', "\nDiscount ID image uploaded successfully: " . $discountIdImgPath, FILE_APPEND);
+        } else {
+            throw new Exception("Failed to upload discount ID image.");
+        }
     }
 
     // Calculate balance and payment status
@@ -186,7 +261,7 @@ try {
     $conn->begin_transaction();
 
     try {
-        // Insert into sales_tb (using structure from code 2)
+        // Insert into sales_tb (updated with new columns)
         $stmt = $conn->prepare("
             INSERT INTO sales_tb (
                 customerID, fname, mname, lname, suffix, phone, email,
@@ -194,14 +269,14 @@ try {
                 date_of_birth, date_of_death, date_of_burial, sold_by, branch_id,
                 service_id, payment_method, initial_price, discounted_price,
                 amount_paid, balance, status, payment_status, death_cert_image,
-                deceased_address, with_cremate,get_timestamp
+                deceased_address, with_cremate, get_timestamp, senior_pwd_discount, discount_id_img
             ) VALUES (
                 ?, ?, ?, ?, ?, ?, ?,
                 ?, ?, ?, ?,
                 ?, ?, ?, ?, ?,
                 ?, ?, ?, ?,
                 ?, ?, ?, ?, ?,
-                ?, ?, ?
+                ?, ?, ?, ?, ?
             )
         ");
         
@@ -217,13 +292,13 @@ try {
         $discountedPrice = $initial_price; // discounted_price same as initial for now
         
         $stmt->bind_param(
-            "isssssssssssssiiisddddssssss",
+            "isssssssssssssiiisddddssssssss",
             $customerID, $clientFirstName, $clientMiddleName, $clientLastName, $clientSuffix, $clientPhone, $clientEmail,
             $deceasedFirstName, $deceasedMiddleName, $deceasedLastName, $deceasedSuffix,
             $dateOfBirth, $dateOfDeath, $dateOfBurial, $soldBy, $branchId,
             $serviceId, $paymentMethod, $discountedPrice, $totalPrice,
-            $amountPaid, $balance, $status, $paymentStatus, $deathCertificateImage,
-            $deceasedAddress1, $withCremation, $defaultTime
+            $amountPaid, $balance, $status, $paymentStatus, $deathCertificatePath,
+            $deceasedAddress1, $withCremation, $defaultTime, $seniorPwdDiscount, $discountIdImgPath
         );
         
         // Execute the statement
