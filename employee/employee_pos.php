@@ -3421,9 +3421,10 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <script>
-// Senior Citizen/PWD Discount functionality
+// Combined functionality for both discount and cremation
 document.addEventListener('DOMContentLoaded', function() {
   const discountCheckbox = document.getElementById('seniorPwdDiscount');
+  const cremationCheckbox = document.getElementById('withCremation');
   const idUploadSection = document.getElementById('idUploadSection');
   const totalPriceInput = document.getElementById('totalPrice');
   const footerTotalPrice = document.getElementById('footer-total-price');
@@ -3432,37 +3433,52 @@ document.addEventListener('DOMContentLoaded', function() {
   const idPreviewImage = document.getElementById('idPreviewImage');
   const removeIdPreviewBtn = document.getElementById('removeIdPreviewBtn');
 
-  let originalPrice = 0;
+  const CREMATION_FEE = 45000;
+  let basePrice = 0;
+  let isCremationApplied = false;
+  let isDiscountApplied = false;
 
-  // Track original price when modal opens
-  function trackOriginalPrice() {
-    originalPrice = parseFloat(totalPriceInput.value) || 0;
-  }
-
-  // Toggle ID upload section
-  discountCheckbox.addEventListener('change', function() {
-    if (this.checked) {
-      idUploadSection.classList.remove('hidden');
-      applyDiscount();
-    } else {
-      idUploadSection.classList.add('hidden');
-      removeDiscount();
-    }
-  });
-
-  // Apply 20% discount
-  function applyDiscount() {
-    const currentPrice = parseFloat(totalPriceInput.value) || originalPrice;
-    originalPrice = currentPrice; // Store current price as original
-    
-    const discountedPrice = currentPrice * 0.8;
-    totalPriceInput.value = discountedPrice.toFixed(2);
+  // Initialize base price when modal opens
+  function initializePrices() {
+    basePrice = parseFloat(totalPriceInput.value) || 0;
+    isCremationApplied = false;
+    isDiscountApplied = false;
     updateFooterTotal();
   }
 
-  // Remove discount
-  function removeDiscount() {
-    totalPriceInput.value = originalPrice.toFixed(2);
+  // Toggle ID upload section and handle discount
+  discountCheckbox.addEventListener('change', function() {
+    if (this.checked) {
+      idUploadSection.classList.remove('hidden');
+      isDiscountApplied = true;
+    } else {
+      idUploadSection.classList.add('hidden');
+      isDiscountApplied = false;
+    }
+    recalculateTotalPrice();
+  });
+
+  // Handle cremation checkbox change
+  cremationCheckbox.addEventListener('change', function() {
+    isCremationApplied = this.checked;
+    recalculateTotalPrice();
+  });
+
+  // Recalculate total price based on current state
+  function recalculateTotalPrice() {
+    let calculatedPrice = basePrice;
+
+    // Apply cremation fee if checked
+    if (isCremationApplied) {
+      calculatedPrice += CREMATION_FEE;
+    }
+
+    // Apply discount if checked (20% off the current calculated price)
+    if (isDiscountApplied) {
+      calculatedPrice *= 0.8;
+    }
+
+    totalPriceInput.value = calculatedPrice.toFixed(2);
     updateFooterTotal();
   }
 
@@ -3491,93 +3507,23 @@ document.addEventListener('DOMContentLoaded', function() {
     idPreview.classList.add('hidden');
   });
 
-  // Update original price when total price changes
+  // Update base price when total price changes manually
   totalPriceInput.addEventListener('input', function() {
-    if (!discountCheckbox.checked) {
-      originalPrice = parseFloat(this.value) || 0;
+    // Only update base price if neither discount nor cremation is applied
+    if (!discountCheckbox.checked && !cremationCheckbox.checked) {
+      basePrice = parseFloat(this.value) || 0;
     }
   });
 
-  // Initialize when modal opens (you'll need to call this from your openCheckoutModal function)
-  window.trackOriginalPrice = trackOriginalPrice;
-});
-
-// Cremation fee functionality
-document.addEventListener('DOMContentLoaded', function() {
-    const cremationCheckbox = document.getElementById('withCremation');
-    const totalPriceInput = document.getElementById('totalPrice');
-    const footerTotalPrice = document.getElementById('footer-total-price');
-    const discountCheckbox = document.getElementById('seniorPwdDiscount');
-    
-    const CREMATION_FEE = 45000;
-    let basePrice = 0;
-    let isCremationAdded = false;
-
-    // Initialize base price when modal opens
-    function initializeBasePrice() {
-        basePrice = parseFloat(totalPriceInput.value) || 0;
-        isCremationAdded = false;
-    }
-
-    // Handle cremation checkbox change
-    cremationCheckbox.addEventListener('change', function() {
-        if (this.checked) {
-            addCremationFee();
-        } else {
-            removeCremationFee();
-        }
-        updateFooterTotal();
-    });
-
-    function addCremationFee() {
-        if (!isCremationAdded) {
-            basePrice = parseFloat(totalPriceInput.value) || 0;
-            const newPrice = basePrice + CREMATION_FEE;
-            totalPriceInput.value = newPrice.toFixed(2);
-            isCremationAdded = true;
-            
-            // Re-apply discount if checkbox is checked
-            if (discountCheckbox.checked) {
-                applyDiscount();
-            }
-        }
-    }
-
-    function removeCremationFee() {
-        if (isCremationAdded) {
-            const newPrice = basePrice;
-            totalPriceInput.value = newPrice.toFixed(2);
-            isCremationAdded = false;
-            
-            // Re-apply discount if checkbox is checked
-            if (discountCheckbox.checked) {
-                applyDiscount();
-            }
-        }
-    }
-
-    function updateFooterTotal() {
-        const price = parseFloat(totalPriceInput.value) || 0;
-        footerTotalPrice.textContent = formatPrice(price);
-    }
-
-    // Apply discount function (from previous code)
-    function applyDiscount() {
-        const currentPrice = parseFloat(totalPriceInput.value) || 0;
-        const discountedPrice = currentPrice * 0.8;
-        totalPriceInput.value = discountedPrice.toFixed(2);
-        updateFooterTotal();
-    }
-
-    // Initialize when modal opens
-    window.initializeBasePrice = initializeBasePrice;
+  // Initialize when modal opens
+  window.initializePrices = initializePrices;
 });
 
 function formatPrice(amount) {
-    return "₱" + Number(amount).toLocaleString('en-PH', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    });
+  return "₱" + Number(amount).toLocaleString('en-PH', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
 }
 </script>
 
