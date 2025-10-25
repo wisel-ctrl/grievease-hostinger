@@ -2649,6 +2649,7 @@ function openEditServiceModal(serviceId) {
           // Construct the full path for death certificate
           const deathCertPath = '../../customer/booking/' + data.death_cert_image;
           deathCertPreview.src = deathCertPath;
+          deathCertPreview.setAttribute('data-original-src', deathCertPath);
           deathCertContainer.classList.remove('hidden');
           deathCertPreviewLabel.textContent = 'Current Death Certificate:';
           
@@ -2685,6 +2686,7 @@ function openEditServiceModal(serviceId) {
             // Construct the full path for discount ID
             const discountIdPath = '../../admin/' + data.discount_id_img;
             discountIdPreview.src = discountIdPath;
+            discountIdPreview.setAttribute('data-original-src', discountIdPath);
             discountPreviewContainer.classList.remove('hidden');
             discountIdPreviewLabel.textContent = 'Current Discount ID:';
             
@@ -2815,6 +2817,8 @@ document.getElementById('removeDeathCertBtn').addEventListener('click', function
   // Reset preview to original image
   // Note: We would need to store the original image URL to revert back
   // For now, we'll just hide the overlay and indicators
+  const originalImageSrc = deathCertPreview.getAttribute('data-original-src') || '';
+  deathCertPreview.src = originalImageSrc;
   deathCertOverlay.classList.add('hidden');
   deathCertNewIndicator.classList.add('hidden');
   deathCertPreviewLabel.textContent = 'Current Death Certificate:';
@@ -2851,6 +2855,9 @@ document.getElementById('removeDiscountIdBtn').addEventListener('click', functio
   // Reset the view button to original functionality
   const viewDiscountIdBtn = document.getElementById('viewDiscountIdBtn');
   viewDiscountIdBtn.onclick = null;
+
+  const originalImageSrc = discountIdPreview.getAttribute('data-original-src') || '';
+  discountIdPreview.src = originalImageSrc
   
   discountIdFileChanged = false;
 });
