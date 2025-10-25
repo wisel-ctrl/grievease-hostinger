@@ -1591,6 +1591,18 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
             <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
               Death Certificate
             </label>
+            
+            <!-- Death Certificate Preview -->
+            <div id="deathCertPreviewContainer" class="mb-3 hidden">
+              <p class="text-xs text-gray-500 mb-1">Current Death Certificate:</p>
+              <div class="flex items-center space-x-2">
+                <img id="deathCertPreview" src="" alt="Death Certificate Preview" class="max-h-32 border rounded">
+                <button type="button" id="viewDeathCertBtn" class="text-xs text-sidebar-accent hover:text-darkgold transition-colors">
+                  View Full Size
+                </button>
+              </div>
+            </div>
+            
             <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg">
               <div class="space-y-1 text-center">
                 <div class="flex text-sm text-gray-600">
@@ -1610,6 +1622,44 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
               </div>
             </div>
             <p id="edit-file-name" class="mt-2 text-sm text-gray-500"></p>
+          </div>
+
+          <!-- Discount ID Image Upload (Conditional) -->
+          <div id="discountIdContainer" class="form-group mt-4 hidden">
+            <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              Discount ID Image
+            </label>
+            
+            <!-- Discount ID Preview -->
+            <div id="discountIdPreviewContainer" class="mb-3 hidden">
+              <p class="text-xs text-gray-500 mb-1">Current Discount ID:</p>
+              <div class="flex items-center space-x-2">
+                <img id="discountIdPreview" src="" alt="Discount ID Preview" class="max-h-32 border rounded">
+                <button type="button" id="viewDiscountIdBtn" class="text-xs text-sidebar-accent hover:text-darkgold transition-colors">
+                  View Full Size
+                </button>
+              </div>
+            </div>
+            
+            <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg">
+              <div class="space-y-1 text-center">
+                <div class="flex text-sm text-gray-600">
+                  <label for="editDiscountIdImage" class="relative cursor-pointer bg-white rounded-md font-medium text-sidebar-accent hover:text-opacity-80 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-sidebar-accent">
+                    <span>Upload a file</span>
+                    <input 
+                      id="editDiscountIdImage" 
+                      name="editDiscountIdImage" 
+                      type="file" 
+                      class="sr-only"
+                      accept=".pdf,.jpg,.jpeg,.png"
+                    >
+                  </label>
+                  <p class="pl-1">or drag and drop</p>
+                </div>
+                <p class="text-xs text-gray-500">PNG, JPG, PDF up to 10MB</p>
+              </div>
+            </div>
+            <p id="edit-discount-file-name" class="mt-2 text-sm text-gray-500"></p>
           </div>
         </div>
       </form>
@@ -2502,7 +2552,6 @@ function cancelAddressChange() {
 }
 
 // Function to open the Edit Service Modal
-// Function to open the Edit Service Modal and populate with service details
 function openEditServiceModal(serviceId) {
   // Fetch service details via AJAX
   fetch(`../admin/get_service_details.php?sales_id=${serviceId}`)
@@ -2555,6 +2604,52 @@ function openEditServiceModal(serviceId) {
           document.getElementById('currentAddressDisplay').value = data.deceased_address;
         }
         
+        // Handle Death Certificate Preview
+        const deathCertContainer = document.getElementById('deathCertPreviewContainer');
+        const deathCertPreview = document.getElementById('deathCertPreview');
+        const viewDeathCertBtn = document.getElementById('viewDeathCertBtn');
+        
+        if (data.death_cert_image) {
+          // Construct the full path for death certificate
+          const deathCertPath = '../../customer/booking/' + data.death_cert_image;
+          deathCertPreview.src = deathCertPath;
+          deathCertContainer.classList.remove('hidden');
+          
+          // Set up view button
+          viewDeathCertBtn.onclick = function() {
+            window.open(deathCertPath, '_blank');
+          };
+        } else {
+          deathCertContainer.classList.add('hidden');
+        }
+        
+        // Handle Discount ID Image (Conditional)
+        const discountIdContainer = document.getElementById('discountIdContainer');
+        const discountPreviewContainer = document.getElementById('discountIdPreviewContainer');
+        const discountIdPreview = document.getElementById('discountIdPreview');
+        const viewDiscountIdBtn = document.getElementById('viewDiscountIdBtn');
+        
+        // Show discount ID section if senior/PWD discount is "Yes"
+        if (data.senior_pwd_discount === 'Yes') {
+          discountIdContainer.classList.remove('hidden');
+          
+          if (data.discount_id_img) {
+            // Construct the full path for discount ID
+            const discountIdPath = '../../admin/' + data.discount_id_img;
+            discountIdPreview.src = discountIdPath;
+            discountPreviewContainer.classList.remove('hidden');
+            
+            // Set up view button
+            viewDiscountIdBtn.onclick = function() {
+              window.open(discountIdPath, '_blank');
+            };
+          } else {
+            discountPreviewContainer.classList.add('hidden');
+          }
+        } else {
+          discountIdContainer.classList.add('hidden');
+        }
+        
         // Show the modal
         document.getElementById('editServiceModal').classList.remove('hidden');
         toggleBodyScroll(true);
@@ -2571,6 +2666,17 @@ function openEditServiceModal(serviceId) {
       alert('An error occurred while fetching service details');
     });
 }
+
+// Additional helper functions for file handling
+document.getElementById('editDeathCertificate').addEventListener('change', function(e) {
+  const fileName = e.target.files[0] ? e.target.files[0].name : 'No file chosen';
+  document.getElementById('edit-file-name').textContent = fileName;
+});
+
+document.getElementById('editDiscountIdImage').addEventListener('change', function(e) {
+  const fileName = e.target.files[0] ? e.target.files[0].name : 'No file chosen';
+  document.getElementById('edit-discount-file-name').textContent = fileName;
+});
 
 // Function to load services for a specific branch
 function loadServicesForBranch(branchId, currentServiceId) {
