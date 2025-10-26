@@ -2976,7 +2976,7 @@ async function saveServiceChanges() {
             alert('Service updated successfully!');
             closeEditServiceModal();
             // Optionally refresh the page or update the table
-            // location.reload();
+            location.reload();
         } else {
             alert('Error: ' + data.message);
         }
