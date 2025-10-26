@@ -189,7 +189,7 @@ function uploadDeathCertificate($file) {
 }
 
 function uploadDiscountIdImage($file) {
-    $uploadDir = '../../customer/booking/uploads/valid_ids/';
+    $uploadDir = '../../admin/uploads/valid_ids/';
     
     // Create directory if it doesn't exist
     if (!file_exists($uploadDir)) {
