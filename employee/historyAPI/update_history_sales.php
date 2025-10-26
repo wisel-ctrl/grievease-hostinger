@@ -114,7 +114,7 @@ try {
 
     // Add file fields to query if they are set
     $params = array();
-    $types = "issssssssssssssisi";
+    $types = "issssssssssssssid";
     
     if ($deathCertPath !== null) {
         $query .= ", death_cert_image = ?";
@@ -176,6 +176,7 @@ try {
 
     // Add sales_id as the last parameter
     $bindParams[] = $_POST['sales_id'];
+    $types .= "i";
 
     logDebug("Bind parameters: " . print_r($bindParams, true));
 
