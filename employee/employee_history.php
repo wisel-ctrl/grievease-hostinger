@@ -2905,49 +2905,72 @@ function loadServicesForBranch(branchId, currentServiceId) {
 }
 
 // Function to save changes to a service
-function saveServiceChanges() {
+async function saveServiceChanges() {
     // Get all form values
-    const formData = {
-        sales_id: document.getElementById('salesId').value,
-        customer_id: document.getElementById('editSelectedCustomerId').value || null,
-        service_id: document.getElementById('editServiceType').value,
-        service_price: document.getElementById('editServicePrice').value,
-        firstName: document.getElementById('editFirstName').value,
-        middleName: document.getElementById('editMiddleName').value,
-        lastName: document.getElementById('editLastName').value,
-        nameSuffix: document.getElementById('editNameSuffix').value,
-        email: document.getElementById('editEmail').value,
-        phone: document.getElementById('editPhone').value,
-        deceasedFirstName: document.getElementById('editDeceasedFirstName').value,
-        deceasedMiddleName: document.getElementById('editDeceasedMiddleName').value,
-        deceasedLastName: document.getElementById('editDeceasedLastName').value,
-        deceasedSuffix: document.getElementById('editDeceasedSuffix').value,
-        birthDate: document.getElementById('editBirthDate').value,
-        deathDate: document.getElementById('editDeathDate').value,
-        burialDate: document.getElementById('editBurialDate').value,
-        deceased_address: document.getElementById('currentAddressDisplay').value,
-        deathCertificate: document.getElementById('editDeathCertificate').files[0]?.name || ''
-    };
+    const formData = new FormData();
+    
+    // Basic form data
+    formData.append('sales_id', document.getElementById('salesId').value);
+    formData.append('customer_id', document.getElementById('editSelectedCustomerId').value || '');
+    formData.append('service_id', document.getElementById('editServiceType').value);
+    formData.append('service_price', document.getElementById('editServicePrice').value);
+    formData.append('firstName', document.getElementById('editFirstName').value);
+    formData.append('middleName', document.getElementById('editMiddleName').value);
+    formData.append('lastName', document.getElementById('editLastName').value);
+    formData.append('nameSuffix', document.getElementById('editNameSuffix').value);
+    formData.append('email', document.getElementById('editEmail').value);
+    formData.append('phone', document.getElementById('editPhone').value);
+    formData.append('deceasedFirstName', document.getElementById('editDeceasedFirstName').value);
+    formData.append('deceasedMiddleName', document.getElementById('editDeceasedMiddleName').value);
+    formData.append('deceasedLastName', document.getElementById('editDeceasedLastName').value);
+    formData.append('deceasedSuffix', document.getElementById('editDeceasedSuffix').value);
+    formData.append('birthDate', document.getElementById('editBirthDate').value);
+    formData.append('deathDate', document.getElementById('editDeathDate').value);
+    formData.append('burialDate', document.getElementById('editBurialDate').value);
+    formData.append('deceased_address', document.getElementById('currentAddressDisplay').value);
+    
+    // Add flags for file changes
+    formData.append('death_cert_changed', deathCertFileChanged ? '1' : '0');
+    formData.append('discount_id_changed', discountIdFileChanged ? '1' : '0');
+    
+    // Add death certificate file if changed
+    const deathCertFile = document.getElementById('editDeathCertificate').files[0];
+    if (deathCertFileChanged && deathCertFile) {
+        formData.append('death_certificate', deathCertFile);
+    }
+    
+    // Add discount ID file if changed and container is visible
+    const discountIdContainer = document.getElementById('discountIdContainer');
+    const discountIdFile = document.getElementById('editDiscountIdImage').files[0];
+    if (!discountIdContainer.classList.contains('hidden') && discountIdFileChanged && discountIdFile) {
+        formData.append('discount_id_image', discountIdFile);
+    }
 
-    console.log('Saving service changes with data:', formData);
+    console.log('Saving service changes with data...');
 
     // Validate required fields
-    if (!formData.firstName || !formData.lastName || !formData.deceasedFirstName || 
-        !formData.deceasedLastName || !formData.burialDate || !formData.service_id) {
+    const firstName = document.getElementById('editFirstName').value;
+    const lastName = document.getElementById('editLastName').value;
+    const deceasedFirstName = document.getElementById('editDeceasedFirstName').value;
+    const deceasedLastName = document.getElementById('editDeceasedLastName').value;
+    const burialDate = document.getElementById('editBurialDate').value;
+    const serviceId = document.getElementById('editServiceType').value;
+
+    if (!firstName || !lastName || !deceasedFirstName || 
+        !deceasedLastName || !burialDate || !serviceId) {
         alert('Please fill in all required fields');
         return;
     }
 
-    // Send data to server
-    fetch('historyAPI/update_history_sales.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData)
-    })
-    .then(response => response.json())
-    .then(data => {
+    try {
+        // Send data to server
+        const response = await fetch('historyAPI/update_history_sales.php', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        
         if (data.success) {
             alert('Service updated successfully!');
             closeEditServiceModal();
@@ -2956,11 +2979,10 @@ function saveServiceChanges() {
         } else {
             alert('Error: ' + data.message);
         }
-    })
-    .catch(error => {
+    } catch (error) {
         console.error('Error:', error);
         alert('An error occurred while updating the service');
-    });
+    }
 }
 
 
