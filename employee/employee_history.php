@@ -2937,6 +2937,7 @@ async function saveServiceChanges() {
     const deathCertFile = document.getElementById('editDeathCertificate').files[0];
     if (deathCertFileChanged && deathCertFile) {
         formData.append('death_certificate', deathCertFile);
+        console.log('Death certificate file added:', deathCertFile.name);
     }
     
     // Add discount ID file if changed and container is visible
@@ -2975,7 +2976,7 @@ async function saveServiceChanges() {
             alert('Service updated successfully!');
             closeEditServiceModal();
             // Optionally refresh the page or update the table
-            location.reload();
+            // location.reload();
         } else {
             alert('Error: ' + data.message);
         }
