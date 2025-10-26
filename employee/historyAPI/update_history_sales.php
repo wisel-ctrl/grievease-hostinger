@@ -19,11 +19,19 @@ require_once '../../db_connect.php';
 // Prepare the response array
 $response = array('success' => false, 'message' => '');
 
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 try {
     // Validate required fields
     if (empty($_POST['sales_id'])) {
         throw new Exception('Service ID is required');
     }
+
+    // Debug: Check what files are received
+    error_log("Files received: " . print_r($_FILES, true));
+    error_log("POST data: " . print_r($_POST, true));
 
     // Handle file uploads
     $deathCertPath = null;
@@ -33,20 +41,28 @@ try {
     if (isset($_POST['death_cert_changed']) && $_POST['death_cert_changed'] === '1') {
         if (isset($_FILES['death_certificate']) && $_FILES['death_certificate']['error'] === UPLOAD_ERR_OK) {
             $deathCertPath = uploadDeathCertificate($_FILES['death_certificate']);
+            error_log("Death certificate uploaded to: " . $deathCertPath);
         } else {
             // If file was removed but flag is set, set to empty string to remove existing file
             $deathCertPath = '';
+            error_log("Death certificate removed");
         }
+    } else {
+        error_log("Death certificate not changed");
     }
 
     // Upload discount ID image if changed and exists
     if (isset($_POST['discount_id_changed']) && $_POST['discount_id_changed'] === '1') {
         if (isset($_FILES['discount_id_image']) && $_FILES['discount_id_image']['error'] === UPLOAD_ERR_OK) {
             $discountIdPath = uploadDiscountIdImage($_FILES['discount_id_image']);
+            error_log("Discount ID uploaded to: " . $discountIdPath);
         } else {
             // If file was removed but flag is set, set to empty string to remove existing file
             $discountIdPath = '';
+            error_log("Discount ID removed");
         }
+    } else {
+        error_log("Discount ID not changed");
     }
 
     // Prepare the SQL query
@@ -87,7 +103,14 @@ try {
 
     $query .= " WHERE sales_id = ?";
 
+    error_log("SQL Query: " . $query);
+    error_log("Parameter types: " . $types);
+
     $stmt = $conn->prepare($query);
+
+    if (!$stmt) {
+        throw new Exception('Prepare failed: ' . $conn->error);
+    }
 
     // Handle null customerID (when no customer is selected)
     $customerID = !empty($_POST['customer_id']) ? $_POST['customer_id'] : NULL;
@@ -127,6 +150,8 @@ try {
     // Add sales_id as the last parameter
     $bindParams[] = $_POST['sales_id'];
 
+    error_log("Bind parameters: " . print_r($bindParams, true));
+
     // Bind parameters
     $stmt->bind_param($types, ...$bindParams);
 
@@ -134,15 +159,14 @@ try {
     if ($stmt->execute()) {
         $response['success'] = true;
         $response['message'] = 'Service updated successfully';
-        
-        // If files were uploaded, you might want to delete old files here
-        // to avoid cluttering the server with unused files
+        error_log("Update successful");
     } else {
         throw new Exception('Failed to update service: ' . $stmt->error);
     }
 
     $stmt->close();
 } catch (Exception $e) {
+    error_log("Error: " . $e->getMessage());
     $response['message'] = $e->getMessage();
 }
 
@@ -184,7 +208,7 @@ function uploadDeathCertificate($file) {
     if (move_uploaded_file($file['tmp_name'], $uploadPath)) {
         return 'uploads/' . $newFilename;
     } else {
-        throw new Exception('Failed to upload death certificate');
+        throw new Exception('Failed to upload death certificate. Upload error: ' . $file['error']);
     }
 }
 
@@ -218,7 +242,7 @@ function uploadDiscountIdImage($file) {
     if (move_uploaded_file($file['tmp_name'], $uploadPath)) {
         return 'uploads/valid_ids/' . $newFilename;
     } else {
-        throw new Exception('Failed to upload discount ID');
+        throw new Exception('Failed to upload discount ID. Upload error: ' . $file['error']);
     }
 }
 ?>
