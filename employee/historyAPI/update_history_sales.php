@@ -2,13 +2,40 @@
 // update_history_sales.php
 session_start();
 
+// Define error log file path
+$errorLogFile = '../../error_log.txt';
+
+// Custom error logging function
+function logError($message) {
+    global $errorLogFile;
+    $timestamp = date('Y-m-d H:i:s');
+    $logMessage = "[$timestamp] ERROR: $message" . PHP_EOL;
+    file_put_contents($errorLogFile, $logMessage, FILE_APPEND | LOCK_EX);
+}
+
+// Custom debug logging function
+function logDebug($message) {
+    global $errorLogFile;
+    $timestamp = date('Y-m-d H:i:s');
+    $logMessage = "[$timestamp] DEBUG: $message" . PHP_EOL;
+    file_put_contents($errorLogFile, $logMessage, FILE_APPEND | LOCK_EX);
+}
+
+// Create error log file if it doesn't exist and set permissions
+if (!file_exists($errorLogFile)) {
+    file_put_contents($errorLogFile, "Error Log Created: " . date('Y-m-d H:i:s') . PHP_EOL);
+    chmod($errorLogFile, 0644);
+}
+
 // Check if user is logged in and is an employee
 if (!isset($_SESSION['user_id'])) {
+    logError("Unauthorized access attempt - User not logged in");
     header("Location: ../../Landing_Page/login.php");
     exit();
 }
 
 if ($_SESSION['user_type'] != 2) {
+    logError("Unauthorized access attempt - User type invalid. User ID: " . $_SESSION['user_id'] . ", User Type: " . $_SESSION['user_type']);
     header("Location: ../../Landing_Page/login.php");
     exit();
 }
@@ -30,8 +57,8 @@ try {
     }
 
     // Debug: Check what files are received
-    error_log("Files received: " . print_r($_FILES, true));
-    error_log("POST data: " . print_r($_POST, true));
+    logDebug("Files received: " . print_r($_FILES, true));
+    logDebug("POST data: " . print_r($_POST, true));
 
     // Handle file uploads
     $deathCertPath = null;
@@ -41,28 +68,28 @@ try {
     if (isset($_POST['death_cert_changed']) && $_POST['death_cert_changed'] === '1') {
         if (isset($_FILES['death_certificate']) && $_FILES['death_certificate']['error'] === UPLOAD_ERR_OK) {
             $deathCertPath = uploadDeathCertificate($_FILES['death_certificate']);
-            error_log("Death certificate uploaded to: " . $deathCertPath);
+            logDebug("Death certificate uploaded to: " . $deathCertPath);
         } else {
             // If file was removed but flag is set, set to empty string to remove existing file
             $deathCertPath = '';
-            error_log("Death certificate removed");
+            logDebug("Death certificate removed");
         }
     } else {
-        error_log("Death certificate not changed");
+        logDebug("Death certificate not changed");
     }
 
     // Upload discount ID image if changed and exists
     if (isset($_POST['discount_id_changed']) && $_POST['discount_id_changed'] === '1') {
         if (isset($_FILES['discount_id_image']) && $_FILES['discount_id_image']['error'] === UPLOAD_ERR_OK) {
             $discountIdPath = uploadDiscountIdImage($_FILES['discount_id_image']);
-            error_log("Discount ID uploaded to: " . $discountIdPath);
+            logDebug("Discount ID uploaded to: " . $discountIdPath);
         } else {
             // If file was removed but flag is set, set to empty string to remove existing file
             $discountIdPath = '';
-            error_log("Discount ID removed");
+            logDebug("Discount ID removed");
         }
     } else {
-        error_log("Discount ID not changed");
+        logDebug("Discount ID not changed");
     }
 
     // Prepare the SQL query
@@ -103,8 +130,8 @@ try {
 
     $query .= " WHERE sales_id = ?";
 
-    error_log("SQL Query: " . $query);
-    error_log("Parameter types: " . $types);
+    logDebug("SQL Query: " . $query);
+    logDebug("Parameter types: " . $types);
 
     $stmt = $conn->prepare($query);
 
@@ -150,7 +177,7 @@ try {
     // Add sales_id as the last parameter
     $bindParams[] = $_POST['sales_id'];
 
-    error_log("Bind parameters: " . print_r($bindParams, true));
+    logDebug("Bind parameters: " . print_r($bindParams, true));
 
     // Bind parameters
     $stmt->bind_param($types, ...$bindParams);
@@ -159,14 +186,14 @@ try {
     if ($stmt->execute()) {
         $response['success'] = true;
         $response['message'] = 'Service updated successfully';
-        error_log("Update successful");
+        logDebug("Update successful for sales_id: " . $_POST['sales_id']);
     } else {
         throw new Exception('Failed to update service: ' . $stmt->error);
     }
 
     $stmt->close();
 } catch (Exception $e) {
-    error_log("Error: " . $e->getMessage());
+    logError("Exception caught: " . $e->getMessage());
     $response['message'] = $e->getMessage();
 }
 
@@ -183,7 +210,10 @@ function uploadDeathCertificate($file) {
     
     // Create directory if it doesn't exist
     if (!file_exists($uploadDir)) {
-        mkdir($uploadDir, 0777, true);
+        if (!mkdir($uploadDir, 0777, true)) {
+            logError("Failed to create death certificate upload directory: " . $uploadDir);
+            throw new Exception('Failed to create upload directory');
+        }
     }
     
     // Generate unique filename
@@ -194,11 +224,13 @@ function uploadDeathCertificate($file) {
     // Validate file type
     $allowedExtensions = ['jpg', 'jpeg', 'png', 'pdf'];
     if (!in_array($fileExtension, $allowedExtensions)) {
+        logError("Invalid death certificate file type: " . $fileExtension . " for file: " . $file['name']);
         throw new Exception('Invalid file type for death certificate. Allowed: JPG, PNG, PDF');
     }
     
     // Validate file size (10MB max)
     if ($file['size'] > 10 * 1024 * 1024) {
+        logError("Death certificate file too large: " . $file['size'] . " bytes for file: " . $file['name']);
         throw new Exception('Death certificate file size too large. Maximum 10MB allowed.');
     }
     
@@ -206,9 +238,12 @@ function uploadDeathCertificate($file) {
     $uploadPath = $uploadDir . $newFilename;
     
     if (move_uploaded_file($file['tmp_name'], $uploadPath)) {
+        logDebug("Death certificate successfully uploaded: " . $uploadPath);
         return 'uploads/' . $newFilename;
     } else {
-        throw new Exception('Failed to upload death certificate. Upload error: ' . $file['error']);
+        $errorMsg = 'Failed to upload death certificate. Upload error: ' . $file['error'];
+        logError($errorMsg . " for file: " . $file['name']);
+        throw new Exception($errorMsg);
     }
 }
 
@@ -217,7 +252,10 @@ function uploadDiscountIdImage($file) {
     
     // Create directory if it doesn't exist
     if (!file_exists($uploadDir)) {
-        mkdir($uploadDir, 0777, true);
+        if (!mkdir($uploadDir, 0777, true)) {
+            logError("Failed to create discount ID upload directory: " . $uploadDir);
+            throw new Exception('Failed to create upload directory');
+        }
     }
     
     // Generate unique filename
@@ -228,11 +266,13 @@ function uploadDiscountIdImage($file) {
     // Validate file type
     $allowedExtensions = ['jpg', 'jpeg', 'png', 'pdf'];
     if (!in_array($fileExtension, $allowedExtensions)) {
+        logError("Invalid discount ID file type: " . $fileExtension . " for file: " . $file['name']);
         throw new Exception('Invalid file type for discount ID. Allowed: JPG, PNG, PDF');
     }
     
     // Validate file size (10MB max)
     if ($file['size'] > 10 * 1024 * 1024) {
+        logError("Discount ID file too large: " . $file['size'] . " bytes for file: " . $file['name']);
         throw new Exception('Discount ID file size too large. Maximum 10MB allowed.');
     }
     
@@ -240,9 +280,12 @@ function uploadDiscountIdImage($file) {
     $uploadPath = $uploadDir . $newFilename;
     
     if (move_uploaded_file($file['tmp_name'], $uploadPath)) {
+        logDebug("Discount ID successfully uploaded: " . $uploadPath);
         return 'uploads/valid_ids/' . $newFilename;
     } else {
-        throw new Exception('Failed to upload discount ID. Upload error: ' . $file['error']);
+        $errorMsg = 'Failed to upload discount ID. Upload error: ' . $file['error'];
+        logError($errorMsg . " for file: " . $file['name']);
+        throw new Exception($errorMsg);
     }
 }
 ?>
