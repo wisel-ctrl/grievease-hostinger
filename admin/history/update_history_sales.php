@@ -104,6 +104,7 @@ try {
     // Step 3: Compute balance
     $service_price = (float)$data['service_price'];
     $balance = $service_price - $amount_paid;
+    $customer_id = !empty($data['customer_id']) ? $data['customer_id'] : NULL;
 
     // Step 4: Update sales record with balance and file paths included
     $sql = "UPDATE sales_tb SET
@@ -136,7 +137,7 @@ try {
     }
 
     $stmt->bind_param("issssssssssssssiiddssi",
-        $data['customer_id'],
+        $customer_id,
         $data['firstName'],
         $data['middleName'],
         $data['lastName'],
