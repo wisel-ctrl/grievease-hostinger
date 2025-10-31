@@ -3910,7 +3910,7 @@ function saveServiceChanges() {
   // Check if selectedCustomerId is null or empty
   const selectedCustomerId = document.getElementById('selectedCustomerId').value;
   
-  if (!selectedCustomerId) {
+ /* if (!selectedCustomerId) {
     Swal.fire({
       icon: 'warning',
       title: 'Customer Account Required',
@@ -3919,7 +3919,7 @@ function saveServiceChanges() {
       confirmButtonText: 'OK'
     });
     return; // Stop the function execution
-  }
+  } */
 
   // Create FormData object
   const formData = new FormData();
