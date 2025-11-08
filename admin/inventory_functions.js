@@ -363,90 +363,66 @@ function closeViewItemModal() {
 
 function saveItemChanges() {
   const form = document.getElementById('editInventoryForm');
-  const formData = new FormData(form);
+    const unitPrice = parseFloat(document.getElementById('price').value) || 0;
+    const sellingPrice = parseFloat(document.getElementById('selling_price').value) || 0;
 
-  for (let pair of formData.entries()) {
-    console.log(pair[0] + ': ' + pair[1]);
-  }
-
-  Swal.fire({
-    title: 'Confirm Update',
-    text: 'Are you sure you want to update this inventory item?',
-    icon: 'question',
-    showCancelButton: true,
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33',
-    confirmButtonText: 'Yes, update it!',
-    cancelButtonText: 'No, cancel',
-    customClass: {
-      container: '!font-sans',
+  if (sellingPrice <= unitPrice && sellingPrice > 0) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Invalid Price',
+            text: 'Selling Price must be greater than Unit Price.',
+            confirmButtonColor: '#d33'
+        });
+        return;
     }
-  }).then((result) => {
-    if (result.isConfirmed) {
-      fetch('inventory/update_inventory_item.php', {
+  const formData = new FormData(form);
+    const submitBtn = document.querySelector('#editInventoryModal button[onclick="saveItemChanges()"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<span class="loading-spinner"></span> Saving...';
+    submitBtn.disabled = true;
+
+    fetch('inventory/update_inventory_item.php', {
         method: 'POST',
         body: formData
       })
       .then(response => {
         if (!response.ok) {
           return response.text().then(text => {
-            throw new Error('Network response was not ok: ' + text);
-          });
+                throw new Error(text || 'Server error');
+            });
         }
         return response.text();
       })
-      .then(data => {
-        if (data === 'success') {
-          Swal.fire({
-            position: 'top-end',
-            title: 'Success!',
-            html: `
-              <div class="flex items-start">
-                <div class="mr-4 mt-1 flex-shrink-0">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-green-500" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                  </svg>
-                </div>
-                <div>
-                  <div class="text-gray-600">Your inventory item has been updated successfully!</div>
-                </div>
-              </div>
-            `,
-            timer: 2500,
-            timerProgressBar: true,
-            width: 500,
-            padding: '1.5em',
-            showConfirmButton: false,
-            backdrop: false,
-            customClass: {
-              popup: '!rounded-xl !bg-gray-50 !shadow-lg !font-sans !p-4',
-              progressbar: '!h-1 !bg-green-500'
-            },
-            willClose: () => {
-              closeEditInventoryModal();
-              location.reload();
-            }
-          });
+    .then(data => {
+        if (data.trim() === 'success') {
+            Swal.fire({
+                position: 'top-end',
+                icon: 'success',
+                title: 'Updated!',
+                text: 'Item saved successfully.',
+                timer: 2000,
+                showConfirmButton: false
+            }).then(() => {
+                closeEditInventoryModal();
+                location.reload();
+            });
         } else {
-          throw new Error('Unexpected response: ' + data);
+          throw new Error(data);
         }
       })
       .catch(error => {
         console.error('Error:', error);
         Swal.fire({
-          title: 'Error!',
-          text: 'Error updating item: ' + error.message,
           icon: 'error',
-          customClass: {
-            container: '!font-sans',
-            popup: '!rounded-xl'
-          }
+            title: 'Error',
+            text: error.message,
+            confirmButtonColor: '#d33'
         });
-      });
-    }
-  });
-
-  return false;
+})
+    .finally(() => {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    });
 }
 
 $(document).ready(function() {
