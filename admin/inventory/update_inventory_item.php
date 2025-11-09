@@ -16,26 +16,7 @@ $categoryId = isset($_POST['category_id']) ? (int)$_POST['category_id'] : 0;
 $newQuantity = isset($_POST['quantity']) ? (int)$_POST['quantity'] : 0;
 $price = isset($_POST['price']) ? floatval($_POST['price']) : 0;
 $sellingPrice = isset($_POST['selling_price']) ? floatval($_POST['selling_price']) : 0;
-$userId = (int)$_SESSION['user_id'];
-
-// === CLIENT + SERVER VALIDATION ===
-if ($inventoryId <= 0) {
-    http_response_code(400);
-    echo "Error: Invalid inventory ID";
-    exit;
-}
-
-if (empty($itemName) || strlen($itemName) < 2) {
-    http_response_code(400);
-    echo "Error: Item name must be at least 2 characters";
-    exit;
-}
-
-if ($categoryId <= 0) {
-    http_response_code(400);
-    echo "Error: Please select a valid category";
-    exit;
-}
+$userId = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : 0;
 
 if ($newQuantity < 0) {
     http_response_code(400);
@@ -75,31 +56,12 @@ if ($categoryId <= 0) {
 }
 
 // Validate data
-if ($newQuantity < 0) {
-    http_response_code(400);
+if ($inventoryId <= 0 || empty($itemName) || $categoryId <= 0) {
+    echo "Error: Invalid input data";
     exit;
 }
 
-if ($price < 0) {
-    http_response_code(400);
-    echo "Error: Unit Price cannot be negative";
-    exit;
-}
-
-if ($sellingPrice < 0) {
-    http_response_code(400);
-    echo "Error: Selling Price cannot be negative";
-    exit;
-}
-
-// CRITICAL: SELLING PRICE MUST BE > UNIT PRICE
-if ($sellingPrice <= $price && $sellingPrice > 0) {
-    http_response_code(400);
-    echo "Error: Selling Price must be greater than Unit Price (₱" . number_format($price, 2) . ")";
-    exit;
-}
-
-// === START TRANSACTION ===
+// Start transaction
 $conn->begin_transaction();
 
 try {
@@ -110,7 +72,7 @@ try {
     $result = $stmt->get_result();
     
     if ($result->num_rows === 0) {
-        throw new Exception("Item not found or already archived");
+        throw new Exception("Item not found");
     }
     
     $currentItem = $result->fetch_assoc();
@@ -140,10 +102,7 @@ try {
                 updated_at = NOW()
             WHERE inventory_id = ?");
     $stmt->bind_param("siddii", $itemName, $newQuantity, $price, $sellingPrice, $categoryId, $inventoryId);
-    
-    if (!$stmt->execute()) {
-        throw new Exception("Failed to update inventory: " . $stmt->error);
-    }
+    $stmt->execute();
     $stmt->close();
 
     // Log the inventory change
@@ -164,7 +123,6 @@ try {
 } catch (Exception $e) {
     $conn->rollback();
     http_response_code(500);
-    error_log("Inventory Update Error: " . $e->getMessage());
     echo "Error: " . $e->getMessage();
 }
 
