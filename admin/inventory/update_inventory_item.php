@@ -1,6 +1,7 @@
 <?php
 include '../../db_connect.php';
 
+
 session_start();
 
 if ($conn->connect_error) {
@@ -23,12 +24,12 @@ $categoryId = isset($_POST['category_id']) ? (int)$_POST['category_id'] : 0;
 $newQuantity = isset($_POST['quantity']) ? (int)$_POST['quantity'] : 0;
 $price = isset($_POST['price']) ? floatval($_POST['price']) : 0;
 $sellingPrice = isset($_POST['selling_price']) ? floatval($_POST['selling_price']) : 0;
-$userId = (int)$_SESSION['user_id'];
+$userId = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : 0;
 
-// === CLIENT + SERVER VALIDATION ===
-if ($inventoryId <= 0) {
+// Validate data
+if ($inventoryId <= 0 || empty($itemName) || $categoryId <= 0) {
     http_response_code(400);
-    echo "Error: Invalid inventory ID";
+    echo "Error: Invalid input data";
     exit;
 }
 
@@ -79,7 +80,7 @@ try {
     $stmt->execute();
     $result = $stmt->get_result();
     if ($result->num_rows === 0) {
-        throw new Exception("Item not found or already archived");
+        throw new Exception("Item not found");
     }
     $currentItem = $result->fetch_assoc();
     $stmt->close();
@@ -99,6 +100,7 @@ try {
     }
 
     // Update inventory item
+    // Update inventory item
     $stmt = $conn->prepare("UPDATE inventory_tb 
             SET item_name = ?, 
                 quantity = ?, 
@@ -108,12 +110,10 @@ try {
                 updated_at = NOW()
             WHERE inventory_id = ?");
     $stmt->bind_param("siddii", $itemName, $newQuantity, $price, $sellingPrice, $categoryId, $inventoryId);
-    
-    if (!$stmt->execute()) {
-        throw new Exception("Failed to update inventory: " . $stmt->error);
-    }
+    $stmt->execute();
     $stmt->close();
 
+    // Log the inventory change
     // Log the inventory change
     $stmt = $conn->prepare("INSERT INTO inventory_logs 
             (inventory_id, branch_id, old_quantity, new_quantity, quantity_change, 
@@ -127,6 +127,7 @@ try {
     $stmt->close();
 
     // Commit transaction
+    // Commit transaction
     $conn->commit();
     http_response_code(200);
     echo "success";
@@ -134,7 +135,6 @@ try {
 } catch (Exception $e) {
     $conn->rollback();
     http_response_code(500);
-    error_log("Inventory Update Error: " . $e->getMessage());
     echo "Error: " . $e->getMessage();
 }
 
