@@ -270,8 +270,9 @@
     </div>
 </nav>
 
+
 <!-- Full-Page Hero Section with Background Image -->
-<div id="home" class="relative w-full h-screen overflow-hidden" style="margin-top: calc(var(--navbar-height) + 48px);">
+<div id="home" class="relative w-full h-screen overflow-hidden">
     <!-- Background Image with Advanced Gradient Overlay -->
     <div class="absolute inset-0 bg-center bg-cover bg-no-repeat transition-transform duration-10000 ease-in-out hover:scale-105"
          style="background-image: url('Landing_Page/Landing_images/black-bg-image.jpg');">
