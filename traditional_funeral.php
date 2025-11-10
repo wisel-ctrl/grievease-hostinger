@@ -12,6 +12,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="tailwind.js"></script>
     <style>
+        :root {
+            --navbar-height: 64px; /* Define the height of the navbar */
+        }
         .modal {
             transition: opacity 0.3s ease-in-out;
             pointer-events: none;
