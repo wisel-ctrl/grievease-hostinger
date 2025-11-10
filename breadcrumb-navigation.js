@@ -40,34 +40,45 @@
         const currentPage = getCurrentPage();
         let history = getNavigationHistory();
         
+        console.log('Current Page:', currentPage);
+        console.log('Previous History:', [...history]);
+        
         // If this is the home page, reset the history
         if (currentPage === 'index.php') {
             history = ['index.php'];
+            saveNavigationHistory(history);
+            console.log('Reset to Home. New History:', [...history]);
+            return history;
+        }
+        
+        // Check if current page already exists in history
+        const existingIndex = history.indexOf(currentPage);
+        
+        if (existingIndex !== -1) {
+            // Page exists in history - user is going back
+            // Remove all pages after this one (trim the trail)
+            console.log('Page found at index:', existingIndex, '- Trimming history');
+            history = history.slice(0, existingIndex + 1);
+            console.log('Trimmed History:', [...history]);
         } else {
-            // Check if current page already exists in history
-            const existingIndex = history.indexOf(currentPage);
+            // New page - add to the end
+            console.log('New page - adding to history');
+            // Ensure home is always at the beginning
+            if (history.length === 0 || history[0] !== 'index.php') {
+                history = ['index.php'];
+            }
             
-            if (existingIndex !== -1) {
-                // Page exists in history - user is going back
-                // Remove all pages after this one (trim the trail)
-                history = history.slice(0, existingIndex + 1);
-            } else {
-                // New page - add to the end
-                history.push(currentPage);
-                
-                // Keep only last 5 pages to prevent breadcrumb from getting too long
-                if (history.length > 5) {
-                    history = history.slice(-5);
-                }
-                
-                // Ensure home is always at the beginning if not present
+            history.push(currentPage);
+            
+            // Keep only last 5 pages to prevent breadcrumb from getting too long
+            if (history.length > 5) {
+                history = history.slice(-5);
+                // Re-ensure home is at the beginning after slicing
                 if (history[0] !== 'index.php') {
-                    history.unshift('index.php');
-                    if (history.length > 5) {
-                        history = history.slice(0, 5);
-                    }
+                    history = ['index.php'].concat(history.slice(1));
                 }
             }
+            console.log('Updated History:', [...history]);
         }
         
         saveNavigationHistory(history);
