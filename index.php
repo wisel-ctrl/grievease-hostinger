@@ -271,7 +271,7 @@
 </nav>
 
 <!-- Breadcrumb Navigation -->
-<div class="bg-white border-b border-gray-200 fixed top-[var(--navbar-height)] left-0 right-0 z-40">
+<div class="bg-black border-b border-gray-800 fixed top-[var(--navbar-height)] left-0 right-0 z-40 shadow-md">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-3">
         <nav class="flex items-center text-sm" aria-label="Breadcrumb">
             <ol id="dynamic-breadcrumb" class="flex items-center space-x-2">

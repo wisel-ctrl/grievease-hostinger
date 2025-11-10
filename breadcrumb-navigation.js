@@ -104,7 +104,7 @@
             if (!isFirst) {
                 breadcrumbHTML += `
                     <li class="flex items-center">
-                        <i class="fas fa-chevron-right text-gray-400 mx-2 text-xs"></i>
+                        <i class="fas fa-chevron-right text-gray-500 mx-2 text-xs"></i>
                     </li>
                 `;
             }
@@ -118,12 +118,12 @@
                 // Current page - not clickable
                 breadcrumbHTML += `
                     ${isFirst && pageInfo.icon ? `<i class="fas ${pageInfo.icon} text-yellow-600 mr-2"></i>` : ''}
-                    <span class="text-navy font-medium">${pageInfo.name}</span>
+                    <span class="text-white font-medium">${pageInfo.name}</span>
                 `;
             } else {
                 // Previous pages - clickable
                 breadcrumbHTML += `
-                    <a href="${page}" class="text-gray-600 hover:text-yellow-600 transition-colors flex items-center">
+                    <a href="${page}" class="text-gray-300 hover:text-yellow-600 transition-colors flex items-center">
                         ${isFirst && pageInfo.icon ? `<i class="fas ${pageInfo.icon} mr-2"></i>` : ''}
                         <span>${pageInfo.name}</span>
                     </a>
