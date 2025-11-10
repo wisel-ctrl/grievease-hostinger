@@ -738,5 +738,7 @@
 </script>
 
     <?php include 'footer.php' ?>
+    <?php include 'faq-accordion.js' ?>
+
 </body>
 </html>
