@@ -70,13 +70,8 @@
         
         // Initialize history if empty
         if (history.length === 0) {
-            // If starting from home page
-            if (currentPage === 'index.php') {
-                history = ['index.php'];
-            } else {
-                // Started from a different page, add home first
-                history = ['index.php', currentPage];
-            }
+            // First page visit - just track this page
+            history = [currentPage];
             saveNavigationHistory(history);
             console.log('Initialized History:', [...history]);
             return history;
@@ -115,10 +110,9 @@
             console.log('Forward navigation - Added to History:', [...history]);
             
             // Keep only last 6 pages to prevent breadcrumb from getting too long
-            // (Home + 5 other pages)
             if (history.length > 6) {
-                // Keep home and the last 5 pages
-                history = ['index.php'].concat(history.slice(-5));
+                // Keep the last 6 pages only
+                history = history.slice(-6);
                 console.log('History trimmed to 6 pages:', [...history]);
             }
         }
@@ -136,8 +130,8 @@
         
         if (!breadcrumbContainer) return;
         
-        // Hide breadcrumb if only home page is in history
-        if (history.length <= 1 && history[0] === 'index.php') {
+        // Hide breadcrumb if only 1 page is in history (no trail to show)
+        if (history.length <= 1) {
             if (breadcrumbWrapper) {
                 breadcrumbWrapper.style.display = 'none';
                 // Adjust content margin when breadcrumb is hidden
