@@ -1208,10 +1208,20 @@ document.addEventListener('DOMContentLoaded', function() {
             question.addEventListener('click', function() {
                 const answer = this.nextElementSibling;
                 const icon = this.querySelector('.fa-chevron-down');
+                const isOpening = answer.classList.contains('hidden');
+                
+                // Close all other open answers first
+                document.querySelectorAll('.faq-answer:not(.hidden)').forEach(openAnswer => {
+                    if (openAnswer !== answer) {
+                        openAnswer.classList.add('hidden');
+                        const openIcon = openAnswer.previousElementSibling.querySelector('.fa-chevron-down');
+                        openIcon.classList.remove('rotate-180');
+                    }
+                });
                 
                 // Toggle current answer
                 answer.classList.toggle('hidden');
-                icon.classList.toggle('rotate-180');
+                icon.classList.toggle('rotate-180', !answer.classList.contains('hidden'));
             });
         });
     }
