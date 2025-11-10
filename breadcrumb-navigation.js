@@ -44,22 +44,28 @@
         if (currentPage === 'index.php') {
             history = ['index.php'];
         } else {
-            // Remove the current page if it already exists in history
-            history = history.filter(page => page !== currentPage);
+            // Check if current page already exists in history
+            const existingIndex = history.indexOf(currentPage);
             
-            // Add current page to the end
-            history.push(currentPage);
-            
-            // Keep only last 5 pages to prevent breadcrumb from getting too long
-            if (history.length > 5) {
-                history = history.slice(-5);
-            }
-            
-            // Ensure home is always at the beginning if not present
-            if (history[0] !== 'index.php') {
-                history.unshift('index.php');
+            if (existingIndex !== -1) {
+                // Page exists in history - user is going back
+                // Remove all pages after this one (trim the trail)
+                history = history.slice(0, existingIndex + 1);
+            } else {
+                // New page - add to the end
+                history.push(currentPage);
+                
+                // Keep only last 5 pages to prevent breadcrumb from getting too long
                 if (history.length > 5) {
-                    history = history.slice(0, 5);
+                    history = history.slice(-5);
+                }
+                
+                // Ensure home is always at the beginning if not present
+                if (history[0] !== 'index.php') {
+                    history.unshift('index.php');
+                    if (history.length > 5) {
+                        history = history.slice(0, 5);
+                    }
                 }
             }
         }
