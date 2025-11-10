@@ -2850,7 +2850,7 @@ const imageUrl = service.image_url && service.image_url.trim() !== '' ?
       <div>
         <div class="text-lg font-bold mb-2.5 text-sidebar-text">${service.service_name}</div>
         <div class="flex items-center mb-4">
-          <span class="text-gray-500 text-sm mr-3"><i class="fas fa-map-marker-alt mr-1"></i> ${service.branch_name}</span>
+          <span class="text-gray-500 text-sm mr-3"><i class="fas fa-map-marker-alt mr-1"></i> ${service.branch_name.charAt(0).toUpperCase() + service.branch_name.slice(1).toLowerCase()}</span>
           <span class="text-gray-500 text-sm"><i class="fas fa-tag mr-1"></i> ${service.service_category_name}</span>
         </div>
         <div class="text-lg font-bold text-sidebar-accent mb-4">₱${parseFloat(service.selling_price).toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
