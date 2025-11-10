@@ -270,16 +270,7 @@
     </div>
 </nav>
 
-<!-- Breadcrumb Navigation -->
-<div class="bg-white border-b border-gray-200 fixed top-[var(--navbar-height)] left-0 right-0 z-40" style="display: none;">
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-3">
-        <nav class="flex items-center text-sm" aria-label="Breadcrumb">
-            <ol id="dynamic-breadcrumb" class="flex items-center space-x-2">
-                <!-- Breadcrumb will be populated by JavaScript -->
-            </ol>
-        </nav>
-    </div>
-</div>
+
 <script src="breadcrumb-navigation.js"></script>
 
 <!-- Full-Page Hero Section with Background Image -->
