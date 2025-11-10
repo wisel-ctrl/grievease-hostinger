@@ -270,9 +270,6 @@
     </div>
 </nav>
 
-
-<script src="breadcrumb-navigation.js"></script>
-
 <!-- Full-Page Hero Section with Background Image -->
 <div id="home" class="relative w-full h-screen overflow-hidden" style="margin-top: calc(var(--navbar-height) + 48px);">
     <!-- Background Image with Advanced Gradient Overlay -->
