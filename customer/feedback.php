@@ -1,10 +1,166 @@
 <?php
-// Mock data for UI display only
-$first_name = "John";
-$last_name = "Doe";
-$email = "john.doe@example.com";
-$profile_picture = null; // Set to null to show initials
-$notifications_count = 3; // Mock notification count
+session_start();
+
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    // Redirect to login page
+    header("Location: ../Landing_Page/login.php");
+    exit();
+}
+
+// Check for correct user type based on which directory we're in
+$current_directory = basename(dirname($_SERVER['PHP_SELF']));
+$allowed_user_type = null;
+
+switch ($current_directory) {
+    case 'admin':
+        $allowed_user_type = 1;
+        break;
+    case 'employee':
+        $allowed_user_type = 2;
+        break;
+    case 'customer':
+        $allowed_user_type = 3;
+        break;
+}
+
+// Optional: Check for session timeout (30 minutes)
+$session_timeout = 1800; // 30 minutes in seconds
+if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > $session_timeout)) {
+    // Session has expired
+    session_unset();
+    session_destroy();
+    header("Location: ../Landing_Page/login.php?timeout=1");
+    exit();
+}
+
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+
+// If user is not the correct type for this page, redirect to appropriate page
+if ($_SESSION['user_type'] != $allowed_user_type) {
+    switch ($_SESSION['user_type']) {
+        case 1:
+            header("Location: ../admin/index.php");
+            break;
+        case 2:
+            header("Location: ../employee/index.php");
+            break;
+        case 3:
+            header("Location: ../customer/index.php");
+            break;
+        default:
+            // Invalid user_type
+            session_destroy();
+            header("Location: ../Landing_Page/login.php");
+    }
+    exit();
+}
+
+require_once '../db_connect.php'; // Database connection
+
+                // Get user's first name from database
+                $user_id = $_SESSION['user_id'];
+                $query = "SELECT first_name , last_name , email , birthdate FROM users WHERE id = ?";
+                $stmt = $conn->prepare($query);
+                $stmt->bind_param("i", $user_id);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                $row = $result->fetch_assoc();
+                $first_name = $row['first_name']; // We're confident user_id exists
+                $last_name = $row['last_name'];
+                $email = $row['email'];
+                
+                // Get notification count for the current user
+                $notifications_count = [
+                    'total' => 0,
+                    'pending' => 0,
+                    'accepted' => 0,
+                    'declined' => 0,
+                    'id_pending' => 0,
+                    'id_accepted' => 0,
+                    'id_declined' => 0
+                ];
+                
+                // Get user's life plan bookings from database (notifications)
+                $lifeplan_query = "SELECT * FROM lifeplan_booking_tb WHERE customer_id = ? ORDER BY initial_date DESC";
+                $lifeplan_stmt = $conn->prepare($lifeplan_query);
+                $lifeplan_stmt->bind_param("i", $user_id);
+                $lifeplan_stmt->execute();
+                $lifeplan_result = $lifeplan_stmt->get_result();
+                $lifeplan_bookings = [];
+                
+                while ($lifeplan_booking = $lifeplan_result->fetch_assoc()) {
+                    $lifeplan_bookings[] = $lifeplan_booking;
+                    
+                    switch ($lifeplan_booking['booking_status']) {
+                        case 'pending':
+                            $notifications_count['total']++;
+                            $notifications_count['pending']++;
+                            break;
+                        case 'accepted':
+                            $notifications_count['total']++;
+                            $notifications_count['accepted']++;
+                            break;
+                        case 'decline':
+                            $notifications_count['total']++;
+                            $notifications_count['declined']++;
+                            break;
+                    }
+                }
+                
+                if (isset($_SESSION['user_id'])) {
+                    $user_id = $_SESSION['user_id'];
+                    $query = "SELECT status FROM booking_tb WHERE customerID = ?";
+                    $stmt = $conn->prepare($query);
+                    $stmt->bind_param("i", $user_id);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    
+                    while ($booking = $result->fetch_assoc()) {
+                        $notifications_count['total']++;
+                        
+                        switch ($booking['status']) {
+                            case 'Pending':
+                                $notifications_count['pending']++;
+                                break;
+                            case 'Accepted':
+                                $notifications_count['accepted']++;
+                                break;
+                            case 'Declined':
+                                $notifications_count['declined']++;
+                                break;
+                        }
+                    }
+                    $stmt->close();
+                    
+                    $query = "SELECT is_validated FROM valid_id_tb WHERE id = ?";
+                    $stmt = $conn->prepare($query);
+                    $stmt->bind_param("i", $user_id);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    
+                    if ($id_validation = $result->fetch_assoc()) {
+                        if ($id_validation['is_validated'] == 'no') {
+                            $notifications_count['id_validation']++;
+                            $notifications_count['total']++;
+                        }
+                    }
+                    $stmt->close();
+                    }
+                
+                
+                $profile_query = "SELECT profile_picture FROM users WHERE id = ?";
+                $profile_stmt = $conn->prepare($profile_query);
+                $profile_stmt->bind_param("i", $user_id);
+                $profile_stmt->execute();
+                $profile_result = $profile_stmt->get_result();
+                $profile_data = $profile_result->fetch_assoc();
+                
+                $profile_picture = $profile_data['profile_picture'];
+                
+                $conn->close();
 
 // No backend logic - purely for UI demonstration
 $success = false;
@@ -156,30 +312,31 @@ $error = '';
             <div class="hidden md:flex items-center space-x-4">
                 <a href="notification.php" class="relative text-white hover:text-yellow-600 transition-colors">
                     <i class="fas fa-bell"></i>
-                    <?php if ($notifications_count > 0): ?>
+                    <?php if ($notifications_count['pending'] > 0 || $notifications_count['id_validation'] > 0): ?>
                     <span class="absolute -top-2 -right-2 bg-yellow-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                        <?php echo $notifications_count; ?>
+                        <?php echo $notifications_count['pending'] + $notifications_count['id_validation']; ?>
                     </span>
                     <?php endif; ?>
                 </a>
                 
                 <div class="relative group">
                     <button class="flex items-center space-x-2">
-                        <div class="w-8 h-8 rounded-full bg-yellow-600 flex items-center justify-center text-sm overflow-hidden">
-                            <?php if ($profile_picture && file_exists('../profile_picture/' . $profile_picture)): ?>
-                                <img src="../profile_picture/<?php echo htmlspecialchars($profile_picture); ?>" 
-                                     alt="Profile Picture" 
-                                     class="w-full h-full object-cover">
-                            <?php else: ?>
-                                <?php 
-                                    $initials = strtoupper(substr($first_name, 0, 1) . substr($last_name, 0, 1)); 
-                                    echo htmlspecialchars($initials);
-                                ?>
-                            <?php endif; ?>
-                        </div>
-                        <span class="hidden md:inline text-sm">
-                            <?php echo htmlspecialchars(ucwords($first_name . ' ' . $last_name)); ?>
-                        </span>
+                    <div class="w-8 h-8 rounded-full bg-yellow-600 flex items-center justify-center text-sm overflow-hidden">
+                        <?php if ($profile_picture && file_exists('../profile_picture/' . $profile_picture)): ?>
+                            <img src="../profile_picture/<?php echo htmlspecialchars($profile_picture); ?>" 
+                                 alt="Profile Picture" 
+                                 class="w-full h-full object-cover">
+                        <?php else: ?>
+                            <?php 
+                                $initials = strtoupper(substr($first_name, 0, 1) . substr($last_name, 0, 1)); 
+                                echo htmlspecialchars($initials);
+                            ?>
+                        <?php endif; ?>
+                    </div>
+                    <span class="hidden md:inline text-sm">
+                    <?php echo htmlspecialchars(ucwords($first_name . ' ' . $last_name)); ?>
+                    </span>
+
                         <i class="fas fa-chevron-down text-xs"></i>
                     </button>
                     
