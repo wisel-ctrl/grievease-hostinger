@@ -119,8 +119,8 @@
         
         if (!breadcrumbContainer) return;
         
-        // Hide breadcrumb if only home page is in history
-        if (history.length <= 1 && history[0] === 'index.php') {
+        // Hide breadcrumb if on home page OR if only home page is in history
+        if (currentPage === 'index.php' || (history.length <= 1 && history[0] === 'index.php')) {
             if (breadcrumbWrapper) {
                 breadcrumbWrapper.style.display = 'none';
                 // Adjust content margin when breadcrumb is hidden
@@ -129,7 +129,7 @@
             return;
         }
         
-        // Show breadcrumb if there's navigation history
+        // Show breadcrumb if there's navigation history and not on home page
         if (breadcrumbWrapper) {
             breadcrumbWrapper.style.display = 'block';
             // Adjust content margin when breadcrumb is shown
