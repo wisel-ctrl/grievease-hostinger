@@ -11,7 +11,7 @@
 </head>
 <body class="bg-cream text-dark font-playfair">
     <!-- Breadcrumb Navigation -->
-    <div class="bg-white border-b border-gray-200">
+    <div class="bg-white border-b border-gray-200 fixed top-0 left-0 right-0 z-40">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-3">
             <nav class="flex items-center text-sm" aria-label="Breadcrumb">
                 <ol id="dynamic-breadcrumb" class="flex items-center space-x-2">
@@ -23,7 +23,7 @@
     <script src="breadcrumb-navigation.js"></script>
 
     <!-- Header Banner -->
-    <div class="bg-black text-white py-16 px-6">
+    <div class="bg-black text-white py-16 px-6" style="margin-top: 48px;">
         <div class="container mx-auto max-w-4xl text-center">
             <h1 class="font-hedvig text-4xl md:text-5xl mb-4">Terms of Service</h1>
             <p class="text-yellow-600 font-alexbrush text-2xl">Our commitment to you</p>

@@ -117,7 +117,7 @@
     <?php include 'navbar.php' ?>
 
     <!-- Breadcrumb Navigation -->
-    <div class="bg-white border-b border-gray-200" style="margin-top: var(--navbar-height);">
+    <div class="bg-white border-b border-gray-200 fixed top-[var(--navbar-height)] left-0 right-0 z-40">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-3">
             <nav class="flex items-center text-sm" aria-label="Breadcrumb">
                 <ol id="dynamic-breadcrumb" class="flex items-center space-x-2">
@@ -129,7 +129,7 @@
     <script src="breadcrumb-navigation.js"></script>
 
  <!-- Cremation Services Main Content -->
-<div class="bg-cream py-20">
+<div class="bg-cream py-20" style="margin-top: calc(var(--navbar-height) + 48px);">
     <div class="container mx-auto px-6 max-w-6xl">
         <!-- Hero Section -->
         <div class="relative rounded-2xl overflow-hidden mb-16 shadow-xl">

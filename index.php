@@ -271,7 +271,7 @@
 </nav>
 
 <!-- Breadcrumb Navigation -->
-<div class="bg-white border-b border-gray-200 mt-[var(--navbar-height)]">
+<div class="bg-white border-b border-gray-200 fixed top-[var(--navbar-height)] left-0 right-0 z-40">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-3">
         <nav class="flex items-center text-sm" aria-label="Breadcrumb">
             <ol id="dynamic-breadcrumb" class="flex items-center space-x-2">
@@ -283,7 +283,7 @@
 <script src="breadcrumb-navigation.js"></script>
 
 <!-- Full-Page Hero Section with Background Image -->
-<div id="home" class="relative w-full h-screen overflow-hidden">
+<div id="home" class="relative w-full h-screen overflow-hidden" style="margin-top: calc(var(--navbar-height) + 48px);">
     <!-- Background Image with Advanced Gradient Overlay -->
     <div class="absolute inset-0 bg-center bg-cover bg-no-repeat transition-transform duration-10000 ease-in-out hover:scale-105"
          style="background-image: url('Landing_Page/Landing_images/black-bg-image.jpg');">
