@@ -128,19 +128,26 @@
     </div>
     <script src="breadcrumb-navigation.js"></script>
 
-<!-- Lifeplan Main Content -->
-<div class="bg-cream pt-20 pb-0" style="margin-top: calc(var(--navbar-height) + 48px);">
-    <!-- Hero Section -->
-    <div class="relative w-full">
-        <div class="h-80 w-full bg-cover bg-center" style="background-image: url('Landing_Page/Landing_images/black-bg-image.jpg');">
-            <div class="absolute inset-0 bg-black/50"></div>
-            <div class="relative max-w-6xl mx-auto px-6 h-full flex items-center">
-                <div class="text-white max-w-3xl">
-                    <h1 class="text-4xl md:text-5xl font-hedvig font-bold mb-4">Lifeplan</h1>
-                    <p class="text-lg md:text-xl">Taking the time to plan now means peace of mind for both you and your loved ones later.</p>
+ <!-- Cremation Services Main Content -->
+<div class="bg-cream py-20" style="margin-top: calc(var(--navbar-height) + 48px);">
+    <div class="container mx-auto px-6 max-w-6xl">
+        <!-- Hero Section -->
+        <div class="relative rounded-2xl overflow-hidden mb-16 shadow-xl">
+            <div class="h-64 bg-cover bg-center" style="background-image: url('Landing_Page/Landing_images/black-bg-image.jpg');">
+                <div class="absolute inset-0 bg-black/50"></div>
+                <div class="absolute inset-0 flex flex-col justify-center items-center text-white p-8">
+                    <h1 class="text-5xl font-hedvig text-center mb-6">Lifeplan</h1>
+                    <p class="text-lg max-w-3xl text-center">Taking the time to plan now means peace of mind for both you and your loved ones later.</p>
                 </div>
             </div>
         </div>
+
+        <!-- Benefits Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+            <!-- Benefit 1 -->
+            <div class="bg-white rounded-lg shadow-lg p-8 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                <div class="bg-yellow-600/10 w-16 h-16 rounded-full flex items-center justify-center mb-6 mx-auto">
+                    <i class="fas fa-heart text-yellow-600 text-2xl"></i>
                 </div>
                 <h3 class="text-xl font-hedvig text-navy text-center mb-4">Emotional Peace</h3>
                 <p class="text-dark text-sm text-center">Relieve your loved ones of the burden of making difficult decisions during their time of grief.</p>
