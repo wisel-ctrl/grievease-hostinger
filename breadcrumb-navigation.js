@@ -1,211 +1,155 @@
-// Dynamic Breadcrumb Navigation System
-// Tracks user's navigation history and displays it in breadcrumbs
+// Simple Breadcrumb Navigation System
+// Tracks ONLY the pages you actually visit in sequence
 
 (function() {
     'use strict';
     
-    // Configuration for page names and URLs
-    const pageConfig = {
-        'index.php': { name: 'Home', icon: 'fa-home' },
-        'about.php': { name: 'About', icon: null },
-        'services.php': { name: 'Services & Packages', icon: null },
-        'faqs.php': { name: 'FAQs', icon: null },
-        'traditional_funeral.php': { name: 'Traditional Funeral', icon: null },
-        'lifeplan.php': { name: 'Life Plan', icon: null },
-        'privacy_policy.php': { name: 'Privacy Policy', icon: null },
-        'termsofservice.php': { name: 'Terms of Service', icon: null },
-        'memorial.php': { name: 'Memorials', icon: null }
+    // Page display names
+    const PAGE_NAMES = {
+        'index.php': 'Home',
+        'about.php': 'About',
+        'services.php': 'Services & Packages',
+        'faqs.php': 'FAQs',
+        'traditional_funeral.php': 'Traditional Funeral',
+        'lifeplan.php': 'Life Plan',
+        'cremation_service.php': 'Cremation Service',
+        'privacy_policy.php': 'Privacy Policy',
+        'termsofservice.php': 'Terms of Service',
+        'memorial.php': 'Memorials'
     };
     
-    // Get current page filename
+    const STORAGE_KEY = 'breadcrumbTrail';
+    const MAX_TRAIL_LENGTH = 6;
+    
+    // Get current page
     function getCurrentPage() {
         const path = window.location.pathname;
-        const filename = path.substring(path.lastIndexOf('/') + 1) || 'index.php';
-        return filename;
+        return path.substring(path.lastIndexOf('/') + 1) || 'index.php';
     }
     
-    // Get navigation history from sessionStorage
-    function getNavigationHistory() {
-        const history = sessionStorage.getItem('navigationHistory');
-        return history ? JSON.parse(history) : [];
-    }
-    
-    // Save navigation history to sessionStorage
-    function saveNavigationHistory(history) {
-        sessionStorage.setItem('navigationHistory', JSON.stringify(history));
-    }
-    
-    // Adjust content margin based on breadcrumb visibility
-    function adjustContentMargin(showBreadcrumb) {
-        // Find main content elements that need margin adjustment
-        const mainContent = document.querySelector('[style*="margin-top: calc(var(--navbar-height) + 48px)"]');
-        const heroSection = document.querySelector('#home');
-        
-        if (showBreadcrumb) {
-            // With breadcrumb: navbar + breadcrumb height
-            if (mainContent && mainContent !== heroSection) {
-                mainContent.style.marginTop = 'calc(var(--navbar-height) + 48px)';
-            }
-            if (heroSection) {
-                heroSection.style.marginTop = 'calc(var(--navbar-height) + 48px)';
-            }
-        } else {
-            // Without breadcrumb: only navbar height
-            if (mainContent && mainContent !== heroSection) {
-                mainContent.style.marginTop = 'var(--navbar-height)';
-            }
-            if (heroSection) {
-                heroSection.style.marginTop = 'var(--navbar-height)';
-            }
+    // Get breadcrumb trail from storage
+    function getTrail() {
+        try {
+            const stored = sessionStorage.getItem(STORAGE_KEY);
+            return stored ? JSON.parse(stored) : [];
+        } catch (e) {
+            return [];
         }
     }
     
-    // Add current page to navigation history
-    function updateNavigationHistory() {
+    // Save trail to storage
+    function saveTrail(trail) {
+        sessionStorage.setItem(STORAGE_KEY, JSON.stringify(trail));
+    }
+    
+    // Update trail with current page
+    function updateTrail() {
         const currentPage = getCurrentPage();
-        let history = getNavigationHistory();
+        let trail = getTrail();
         
-        console.log('Current Page:', currentPage);
-        console.log('Previous History:', [...history]);
+        // Get last visited page
+        const lastPage = trail[trail.length - 1];
         
-        // Initialize history if empty
-        if (history.length === 0) {
-            // First page visit - just track this page
-            history = [currentPage];
-            saveNavigationHistory(history);
-            console.log('Initialized History:', [...history]);
-            return history;
-        }
-        
-        // Get the last page in history
-        const lastPage = history[history.length - 1];
-        
-        // If current page is the same as the last page, don't add it again
-        // (This handles page refreshes)
+        // Same page? Skip (page refresh)
         if (currentPage === lastPage) {
-            console.log('Same page as last visit - no change needed');
-            return history;
+            return trail;
         }
         
-        // Special handling for home page
-        if (currentPage === 'index.php') {
-            // User explicitly navigated back to home, reset history
-            history = ['index.php'];
-            saveNavigationHistory(history);
-            console.log('Navigated to Home - Reset History:', [...history]);
-            return history;
-        }
-        
-        // Check if user clicked a breadcrumb link to go back
-        const existingIndex = history.indexOf(currentPage);
-        
-        if (existingIndex !== -1 && existingIndex < history.length - 1) {
-            // User clicked a breadcrumb to go back
-            // Trim everything after the clicked page
-            history = history.slice(0, existingIndex + 1);
-            console.log('Navigated back via breadcrumb - Trimmed History:', [...history]);
+        // Check if going back via breadcrumb
+        const pageIndex = trail.indexOf(currentPage);
+        if (pageIndex !== -1) {
+            // Going back - trim trail to that point
+            trail = trail.slice(0, pageIndex + 1);
         } else {
-            // New forward navigation - add to history
-            history.push(currentPage);
-            console.log('Forward navigation - Added to History:', [...history]);
+            // New page - add to trail
+            trail.push(currentPage);
             
-            // Keep only last 6 pages to prevent breadcrumb from getting too long
-            if (history.length > 6) {
-                // Keep the last 6 pages only
-                history = history.slice(-6);
-                console.log('History trimmed to 6 pages:', [...history]);
+            // Limit trail length
+            if (trail.length > MAX_TRAIL_LENGTH) {
+                trail = trail.slice(-MAX_TRAIL_LENGTH);
             }
         }
         
-        saveNavigationHistory(history);
-        return history;
+        saveTrail(trail);
+        return trail;
     }
     
-    // Build breadcrumb HTML
-    function buildBreadcrumb() {
-        const history = getNavigationHistory();
+    // Render breadcrumb HTML
+    function renderBreadcrumb() {
+        const trail = getTrail();
         const currentPage = getCurrentPage();
-        const breadcrumbContainer = document.getElementById('dynamic-breadcrumb');
-        const breadcrumbWrapper = breadcrumbContainer?.closest('div[class*="fixed"]');
+        const container = document.getElementById('dynamic-breadcrumb');
+        const wrapper = container?.closest('div[class*="fixed"]');
         
-        if (!breadcrumbContainer) return;
+        if (!container) return;
         
-        // Hide breadcrumb if only 1 page is in history (no trail to show)
-        if (history.length <= 1) {
-            if (breadcrumbWrapper) {
-                breadcrumbWrapper.style.display = 'none';
-                // Adjust content margin when breadcrumb is hidden
-                adjustContentMargin(false);
-            }
+        // Hide if only 1 page (no trail to show)
+        if (trail.length <= 1) {
+            if (wrapper) wrapper.style.display = 'none';
+            adjustMargin(false);
             return;
         }
         
-        // Show breadcrumb if there's navigation history
-        if (breadcrumbWrapper) {
-            breadcrumbWrapper.style.display = 'block';
-            // Adjust content margin when breadcrumb is shown
-            adjustContentMargin(true);
-        }
+        // Show breadcrumb
+        if (wrapper) wrapper.style.display = 'block';
+        adjustMargin(true);
         
-        let breadcrumbHTML = '';
-        
-        history.forEach((page, index) => {
-            const pageInfo = pageConfig[page] || { name: page, icon: null };
-            const isCurrentPage = page === currentPage;
-            const isFirst = index === 0;
+        // Build HTML
+        let html = '';
+        trail.forEach((page, i) => {
+            const pageName = PAGE_NAMES[page] || page;
+            const isCurrent = (page === currentPage);
             
-            // Add separator before each item except the first
-            if (!isFirst) {
-                breadcrumbHTML += `
-                    <li class="flex items-center">
-                      <i class="fas fa-chevron-right text-gray-400 mx-2 text-xs"></i>
-                      </li>
-                `;
+            // Separator
+            if (i > 0) {
+                html += '<li class="flex items-center"><i class="fas fa-chevron-right text-gray-400 mx-2 text-xs"></i></li>';
             }
             
-            // Build breadcrumb item
-            breadcrumbHTML += `
-                <li class="flex items-center">
-            `;
-            
-            if (isCurrentPage) {
-                // Current page - not clickable
-                breadcrumbHTML += `
-                    ${isFirst && pageInfo.icon ? `<i class="fas ${pageInfo.icon} text-yellow-600 mr-2"></i>` : ''}
-                    <span class="text-navy font-medium">${pageInfo.name}</span>
-                `;
+            // Breadcrumb item
+            html += '<li class="flex items-center">';
+            if (isCurrent) {
+                html += `<span class="text-navy font-medium">${pageName}</span>`;
             } else {
-                // Previous pages - clickable
-                breadcrumbHTML += `
-                    <a href="${page}" class="text-gray-600 hover:text-yellow-600 transition-colors flex items-center">
-
-                        ${isFirst && pageInfo.icon ? `<i class="fas ${pageInfo.icon} mr-2"></i>` : ''}
-                        <span>${pageInfo.name}</span>
-                    </a>
-                `;
+                html += `<a href="${page}" class="text-gray-600 hover:text-yellow-600 transition-colors">${pageName}</a>`;
             }
-            
-            breadcrumbHTML += `
-                </li>
-            `;
+            html += '</li>';
         });
         
-        breadcrumbContainer.innerHTML = breadcrumbHTML;
+        container.innerHTML = html;
     }
     
-    // Initialize breadcrumb system
-    function initBreadcrumb() {
-        // Update navigation history with current page
-        updateNavigationHistory();
+    // Adjust page margin
+    function adjustMargin(showBreadcrumb) {
+        const mainContent = document.querySelector('[style*="margin-top: calc(var(--navbar-height) + 48px)"]');
+        const heroSection = document.querySelector('#home');
         
-        // Build and display breadcrumb
-        buildBreadcrumb();
+        const margin = showBreadcrumb ? 'calc(var(--navbar-height) + 48px)' : 'var(--navbar-height)';
+        
+        if (mainContent && mainContent !== heroSection) {
+            mainContent.style.marginTop = margin;
+        }
+        if (heroSection) {
+            heroSection.style.marginTop = margin;
+        }
     }
     
-    // Run when DOM is ready
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initBreadcrumb);
-    } else {
-        initBreadcrumb();
+    // Initialize
+    function init() {
+        updateTrail();
+        renderBreadcrumb();
     }
+    
+    // Run on page load
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+    
+    // Expose reset function globally (optional)
+    window.resetBreadcrumbs = function() {
+        sessionStorage.removeItem(STORAGE_KEY);
+        location.reload();
+    };
+    
 })();
