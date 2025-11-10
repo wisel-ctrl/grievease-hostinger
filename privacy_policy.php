@@ -10,6 +10,26 @@
     <script src="tailwind.js"></script>
 </head>
 <body class="bg-cream text-dark font-playfair">
+    <!-- Breadcrumb Navigation -->
+    <div class="bg-white border-b border-gray-200">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-3">
+            <nav class="flex items-center text-sm" aria-label="Breadcrumb">
+                <ol class="flex items-center space-x-2">
+                    <li class="flex items-center">
+                        <a href="index.php" class="text-gray-600 hover:text-yellow-600 transition-colors flex items-center">
+                            <i class="fas fa-home mr-2"></i>
+                            <span>Home</span>
+                        </a>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-chevron-right text-gray-400 mx-2 text-xs"></i>
+                        <span class="text-navy font-medium">Privacy Policy</span>
+                    </li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
     <!-- Header Banner -->
     <div class="bg-black text-white py-16 px-6">
         <div class="container mx-auto max-w-4xl text-center">

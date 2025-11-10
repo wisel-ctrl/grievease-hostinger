@@ -18,6 +18,26 @@
 </head>
 <?php include 'navbar.php' ?>
 <body class="bg-cream overflow-x-hidden w-full max-w-full m-0 p-0 font-hedvig mt-[var(--navbar-height)]">
+    <!-- Breadcrumb Navigation -->
+    <div class="bg-white border-b border-gray-200">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-3">
+            <nav class="flex items-center text-sm" aria-label="Breadcrumb">
+                <ol class="flex items-center space-x-2">
+                    <li class="flex items-center">
+                        <a href="index.php" class="text-gray-600 hover:text-yellow-600 transition-colors flex items-center">
+                            <i class="fas fa-home mr-2"></i>
+                            <span>Home</span>
+                        </a>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-chevron-right text-gray-400 mx-2 text-xs"></i>
+                        <span class="text-navy font-medium">FAQs</span>
+                    </li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
     <!-- Hero Section -->
     <div class="relative w-full h-64 overflow-hidden">
         <!-- Background Image with Gradient Overlay -->
