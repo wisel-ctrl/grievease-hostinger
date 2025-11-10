@@ -627,20 +627,6 @@
 
     <!-- JavaScript for FAQ Accordion -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const faqQuestions = document.querySelectorAll('.faq-question');
-            
-            faqQuestions.forEach(question => {
-                question.addEventListener('click', function() {
-                    const answer = this.nextElementSibling;
-                    const icon = this.querySelector('.fa-chevron-down');
-                    
-                    // Toggle current answer
-                    answer.classList.toggle('hidden');
-                    icon.classList.toggle('rotate-180');
-                });
-            });
-        })
         // FAQ accordion toggle
         document.querySelectorAll('.faq-question').forEach(question => {
             question.addEventListener('click', function() {
@@ -662,6 +648,7 @@
                 icon.classList.toggle('rotate-180', !answer.classList.contains('hidden'));
             });
         });
+        
     </script>
     
     <!-- Loading Animation Overlay -->
