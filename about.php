@@ -123,12 +123,17 @@
     </div>
     <script src="breadcrumb-navigation.js"></script>
 
-    <div class="bg-cream py-20" style="margin-top: calc(var(--navbar-height) + 48px);">
-    <div class="container mx-auto px-6 max-w-6xl">
+    <div class="bg-cream pt-20 pb-0" style="margin-top: calc(var(--navbar-height) + 48px);">
         <!-- Hero Section -->
-        <div class="relative rounded-2xl overflow-hidden mb-16 shadow-xl">
-            <div class="h-64 bg-cover bg-center" style="background-image: url('../Landing_Page/Landing_images/black-bg-image.jpg')">
+        <div class="relative w-full">
+            <div class="h-80 w-full bg-cover bg-center" style="background-image: url('../Landing_Page/Landing_images/black-bg-image.jpg')">
                 <div class="absolute inset-0 bg-black/50"></div>
+                <div class="relative max-w-6xl mx-auto px-6 h-full flex items-center">
+                    <div class="text-white max-w-3xl">
+                        <h1 class="text-4xl md:text-5xl font-hedvig font-bold mb-4">About Us</h1>
+                        <p class="text-lg md:text-xl">Compassionate care during life's most difficult moments</p>
+                    </div>
+                </div>
                 <div class="absolute inset-0 flex flex-col justify-center items-center text-white p-8">
                     <h1 class="text-5xl md:text-6xl font-hedvig text-center mb-6">About Us</h1>
                 </div>
