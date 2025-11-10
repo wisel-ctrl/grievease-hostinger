@@ -68,42 +68,59 @@
         console.log('Current Page:', currentPage);
         console.log('Previous History:', [...history]);
         
-        // If this is the home page, reset the history
-        if (currentPage === 'index.php') {
-            history = ['index.php'];
+        // Initialize history if empty
+        if (history.length === 0) {
+            // If starting from home page
+            if (currentPage === 'index.php') {
+                history = ['index.php'];
+            } else {
+                // Started from a different page, add home first
+                history = ['index.php', currentPage];
+            }
             saveNavigationHistory(history);
-            console.log('Reset to Home. New History:', [...history]);
+            console.log('Initialized History:', [...history]);
             return history;
         }
         
-        // Check if current page already exists in history
+        // Get the last page in history
+        const lastPage = history[history.length - 1];
+        
+        // If current page is the same as the last page, don't add it again
+        // (This handles page refreshes)
+        if (currentPage === lastPage) {
+            console.log('Same page as last visit - no change needed');
+            return history;
+        }
+        
+        // Special handling for home page
+        if (currentPage === 'index.php') {
+            // User explicitly navigated back to home, reset history
+            history = ['index.php'];
+            saveNavigationHistory(history);
+            console.log('Navigated to Home - Reset History:', [...history]);
+            return history;
+        }
+        
+        // Check if user clicked a breadcrumb link to go back
         const existingIndex = history.indexOf(currentPage);
         
-        if (existingIndex !== -1) {
-            // Page exists in history - user is going back
-            // Remove all pages after this one (trim the trail)
-            console.log('Page found at index:', existingIndex, '- Trimming history');
+        if (existingIndex !== -1 && existingIndex < history.length - 1) {
+            // User clicked a breadcrumb to go back
+            // Trim everything after the clicked page
             history = history.slice(0, existingIndex + 1);
-            console.log('Trimmed History:', [...history]);
+            console.log('Navigated back via breadcrumb - Trimmed History:', [...history]);
         } else {
-            // New page - add to the end
-            console.log('New page - adding to history');
-            // Ensure home is always at the beginning
-            if (history.length === 0 || history[0] !== 'index.php') {
-                history = ['index.php'];
-            }
-            
+            // New forward navigation - add to history
             history.push(currentPage);
+            console.log('Forward navigation - Added to History:', [...history]);
             
-            // Keep only last 5 pages to prevent breadcrumb from getting too long
-            if (history.length > 5) {
-                history = history.slice(-5);
-                // Re-ensure home is at the beginning after slicing
-                if (history[0] !== 'index.php') {
-                    history = ['index.php'].concat(history.slice(1));
-                }
+            // Keep only last 6 pages to prevent breadcrumb from getting too long
+            // (Home + 5 other pages)
+            if (history.length > 6) {
+                // Keep home and the last 5 pages
+                history = ['index.php'].concat(history.slice(-5));
+                console.log('History trimmed to 6 pages:', [...history]);
             }
-            console.log('Updated History:', [...history]);
         }
         
         saveNavigationHistory(history);
@@ -119,8 +136,8 @@
         
         if (!breadcrumbContainer) return;
         
-        // Hide breadcrumb if on home page OR if only home page is in history
-        if (currentPage === 'index.php' || (history.length <= 1 && history[0] === 'index.php')) {
+        // Hide breadcrumb if only home page is in history
+        if (history.length <= 1 && history[0] === 'index.php') {
             if (breadcrumbWrapper) {
                 breadcrumbWrapper.style.display = 'none';
                 // Adjust content margin when breadcrumb is hidden
@@ -129,7 +146,7 @@
             return;
         }
         
-        // Show breadcrumb if there's navigation history and not on home page
+        // Show breadcrumb if there's navigation history
         if (breadcrumbWrapper) {
             breadcrumbWrapper.style.display = 'block';
             // Adjust content margin when breadcrumb is shown
