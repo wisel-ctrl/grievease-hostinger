@@ -150,6 +150,47 @@ document.addEventListener('DOMContentLoaded', function() {
     const sellingPriceInput = document.getElementById('selling_price');
     const sellingPriceError = document.getElementById('selling_price_error');
     
+    // Price input
+    const priceInput = document.getElementById('price');
+    
+    // Quantity validation
+    const quantityInput = document.getElementById('quantity');
+    const quantityError = document.getElementById('quantity_error');
+    
+    // Price error
+    const priceError = document.getElementById('price_error');
+
+    // Real-time selling price validation
+    function validateSellingPrice() {
+        const sellingPrice = parseFloat(sellingPriceInput.value) || 0;
+        const price = parseFloat(priceInput.value) || 0;
+        
+        if (sellingPrice <= price) {
+            sellingPriceInput.classList.add('border-red-500', 'bg-red-50');
+            // Show error message
+            if (!document.getElementById('sellingPriceValidationError')) {
+                const errorDiv = document.createElement('div');
+                errorDiv.id = 'sellingPriceValidationError';
+                errorDiv.className = 'text-red-500 text-xs mt-1';
+                errorDiv.textContent = `Selling Price must be greater than Unit Price (₱${price.toFixed(2)})`;
+                sellingPriceInput.parentNode.appendChild(errorDiv);
+            }
+        } else {
+            sellingPriceInput.classList.remove('border-red-500', 'bg-red-50');
+            const errorDiv = document.getElementById('sellingPriceValidationError');
+            if (errorDiv) {
+                errorDiv.remove();
+            }
+        }
+    }
+    
+    // Real-time validation
+    sellingPriceInput.addEventListener('input', validateSellingPrice);
+    priceInput.addEventListener('input', validateSellingPrice);
+    
+    // Initial validation
+    validateSellingPrice();
+    
     sellingPriceInput.addEventListener('change', function() {
         if (parseFloat(this.value) < 0) {
             sellingPriceError.classList.remove('hidden');
@@ -157,7 +198,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             sellingPriceError.classList.add('hidden');
         }
-        // Optional: You could add a check if selling_price >= price, but that's business logic
+        validateSellingPrice();
     });
     
     itemNameInput.addEventListener('input', function(e) {
@@ -210,10 +251,6 @@ document.addEventListener('DOMContentLoaded', function() {
         e.target.dispatchEvent(new Event('input'));
     });
     
-    // Quantity validation
-    const quantityInput = document.getElementById('quantity');
-    const quantityError = document.getElementById('quantity_error');
-    
     quantityInput.addEventListener('change', function() {
         if (parseFloat(this.value) < 0) {
             quantityError.classList.remove('hidden');
@@ -224,10 +261,6 @@ document.addEventListener('DOMContentLoaded', function() {
         calculateTotalValue();
     });
     
-    // Price validation
-    const priceInput = document.getElementById('price');
-    const priceError = document.getElementById('price_error');
-    
     priceInput.addEventListener('change', function() {
         if (parseFloat(this.value) < 0) {
             priceError.classList.remove('hidden');
@@ -236,6 +269,7 @@ document.addEventListener('DOMContentLoaded', function() {
             priceError.classList.add('hidden');
         }
         calculateTotalValue();
+        validateSellingPrice(); // Re-validate selling price when price changes
     });
     
     // Calculate total value when quantity or price changes

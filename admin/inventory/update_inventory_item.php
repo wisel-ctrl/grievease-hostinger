@@ -18,40 +18,39 @@ $price = isset($_POST['price']) ? floatval($_POST['price']) : 0;
 $sellingPrice = isset($_POST['selling_price']) ? floatval($_POST['selling_price']) : 0;
 $userId = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : 0;
 
+// ========== SERVER-SIDE VALIDATION ==========
+$errors = [];
+
+// Basic validations
 if ($newQuantity < 0) {
-    http_response_code(400);
-    echo "Error: Quantity cannot be negative";
-    exit;
+    $errors[] = "Quantity cannot be negative";
 }
 
 if ($price < 0) {
-    http_response_code(400);
-    echo "Error: Unit Price cannot be negative";
-    exit;
+    $errors[] = "Unit Price cannot be negative";
 }
 
 if ($sellingPrice < 0) {
-    http_response_code(400);
-    echo "Error: Selling Price cannot be negative";
-    exit;
-}
-
-// CRITICAL: SELLING PRICE MUST BE > UNIT PRICE
-if ($sellingPrice <= $price && $sellingPrice > 0) {
-    http_response_code(400);
-    echo "Error: Selling Price must be greater than Unit Price (₱" . number_format($price, 2) . ")";
-    exit;
+    $errors[] = "Selling Price cannot be negative";
 }
 
 if (empty($itemName) || strlen($itemName) < 2) {
-    http_response_code(400);
-    echo "Error: Item name must be at least 2 characters";
-    exit;
+    $errors[] = "Item name must be at least 2 characters";
 }
 
 if ($categoryId <= 0) {
-    http_response_code(400);
-    echo "Error: Please select a valid category";
+    $errors[] = "Please select a valid category";
+}
+
+// CRITICAL: Selling Price must be greater than Unit Price
+if ($sellingPrice <= $price) {
+    $errors[] = "Selling Price (₱" . number_format($sellingPrice, 2) . ") must be greater than Unit Price (₱" . number_format($price, 2) . ")";
+}
+
+// If there are validation errors, return them with 200 status
+if (!empty($errors)) {
+    http_response_code(200); // Force 200 status
+    echo "error:" . implode(", ", $errors);
     exit;
 }
 

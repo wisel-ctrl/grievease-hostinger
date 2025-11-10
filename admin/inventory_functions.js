@@ -362,12 +362,80 @@ function closeViewItemModal() {
 }
 
 function saveItemChanges() {
-  const form = document.getElementById('editInventoryForm');
-  const formData = new FormData(form);
-
-  for (let pair of formData.entries()) {
-    console.log(pair[0] + ': ' + pair[1]);
+  console.log('saveItemChanges function started'); // Add this line
+    
+    const form = document.getElementById('editInventoryForm');
+    
+    // Check if form exists
+    if (!form) {
+      console.error('Form not found!');
+      Swal.fire('Error', 'Form not found', 'error');
+      return false;
+    }
+  
+  // Get values directly from the actual DOM elements
+  const sellingPriceInput = document.getElementById('selling_price');
+  const priceInput = document.getElementById('price');
+  const itemNameInput = document.getElementById('item_name');
+  const quantityInput = document.getElementById('quantity');
+  
+  // Get the CURRENT values from the inputs
+  const sellingPrice = parseFloat(sellingPriceInput.value) || 0;
+  const price = parseFloat(priceInput.value) || 0;
+  const itemName = itemNameInput.value.trim();
+  const quantity = parseInt(quantityInput.value) || 0;
+  
+  console.log('=== VALIDATION VALUES ===');
+  console.log('Selling Price:', sellingPrice);
+  console.log('Unit Price:', price);
+  console.log('Item Name:', itemName);
+  console.log('Quantity:', quantity);
+  
+  // Client-side validation
+  let validationErrors = [];
+  
+  // Item name validation
+  if (itemName.length < 2) {
+    validationErrors.push('Item name must be at least 2 characters long');
   }
+  
+  // Quantity validation
+  if (quantity < 0) {
+    validationErrors.push('Quantity cannot be negative');
+  }
+  
+  // Price validation
+  if (price < 0) {
+    validationErrors.push('Unit Price cannot be negative');
+  }
+  
+  // Selling Price validation
+  if (sellingPrice < 0) {
+    validationErrors.push('Selling Price cannot be negative');
+  }
+  
+  // CRITICAL: Selling Price must be greater than Unit Price
+  if (sellingPrice <= price) {
+    validationErrors.push(`Selling Price (₱${sellingPrice.toFixed(2)}) must be greater than Unit Price (₱${price.toFixed(2)})`);
+  }
+  
+  // If there are validation errors, show them and stop
+  if (validationErrors.length > 0) {
+    console.log('VALIDATION FAILED:', validationErrors);
+    Swal.fire({
+      title: 'Validation Error',
+      html: validationErrors.join('<br>'),
+      icon: 'error',
+      confirmButtonColor: '#3085d6',
+      confirmButtonText: 'OK'
+    });
+    return false;
+  }
+
+  console.log('VALIDATION PASSED - Proceeding with form submission');
+  
+  // Only if validation passes, create FormData and proceed
+  const formData = new FormData(form);
 
   Swal.fire({
     title: 'Confirm Update',
@@ -377,25 +445,35 @@ function saveItemChanges() {
     confirmButtonColor: '#3085d6',
     cancelButtonColor: '#d33',
     confirmButtonText: 'Yes, update it!',
-    cancelButtonText: 'No, cancel',
-    customClass: {
-      container: '!font-sans',
-    }
+    cancelButtonText: 'No, cancel'
   }).then((result) => {
     if (result.isConfirmed) {
+      // Show loading state
+      Swal.fire({
+        title: 'Updating...',
+        text: 'Please wait while we update the item',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+
+      // SIMPLIFIED FETCH - This should work
       fetch('inventory/update_inventory_item.php', {
         method: 'POST',
         body: formData
-    })
-    .then(response => {
-        if (!response.ok) {
-          return response.text().then(text => {
-            throw new Error('Network response was not ok: ' + text);
-          });
-        }
+      })
+      .then(response => {
+        console.log('Response status:', response.status);
+        console.log('Response ok:', response.ok);
         return response.text();
       })
       .then(data => {
+        console.log('Raw server response:', data);
+        console.log('Starts with error?:', data.startsWith('error:'));
+        
+        Swal.close(); // Close loading dialog
+        
         if (data === 'success') {
           Swal.fire({
             position: 'top-end',
@@ -414,33 +492,38 @@ function saveItemChanges() {
             `,
             timer: 2500,
             timerProgressBar: true,
-            width: 500,
-            padding: '1.5em',
             showConfirmButton: false,
-            backdrop: false,
-            customClass: {
-              popup: '!rounded-xl !bg-gray-50 !shadow-lg !font-sans !p-4',
-              progressbar: '!h-1 !bg-green-500'
-            },
             willClose: () => {
               closeEditInventoryModal();
               location.reload();
             }
           });
+        } else if (data.startsWith('error:')) {
+          // Handle server-side validation errors
+          const errorMessage = data.substring(6);
+          Swal.fire({
+            title: 'Validation Error',
+            text: errorMessage,
+            icon: 'error',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'OK'
+          });
         } else {
-          throw new Error('Unexpected response: ' + data);
+          Swal.fire({
+            title: 'Update Failed',
+            text: 'Unexpected response: ' + data,
+            icon: 'error',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'OK'
+          });
         }
-    })
-    .catch(error => {
-        Swal.fire({
-          title: 'Error!',
-          text: 'Error updating item: ' + error.message,
-          icon: 'error',
-          customClass: {
-            container: '!font-sans',
-            popup: '!rounded-xl'
-          }
-        });
+      })
+      .catch(error => {
+        Swal.close();
+        console.error('Error in saveItemChanges:', error);
+        Swal.fire('JavaScript Error', 'There is an error in the code: ' + error.message, 'error');
+        return false;
+        console.error('Update error:', error);
       });
     }
   });
@@ -692,9 +775,6 @@ const itemPerformanceChart = new Chart(document.getElementById('itemPerformanceC
   }
 });
 
-function closeEditInventoryModal() {
-document.getElementById('editInventoryModal').classList.add('hidden');
-}
 
 // Form Submission Handling
 document.getElementById('addInventoryForm').addEventListener('submit', function (e) {
