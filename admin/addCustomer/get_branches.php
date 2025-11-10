@@ -14,7 +14,7 @@ if ($result) {
     while ($row = $result->fetch_assoc()) {
         $branches[] = [
             'branch_id' => $row['branch_id'],
-            'branch_name' => $row['branch_name']
+            'branch_name' => ucwords(strtolower($row['branch_name']))
         ];
     }
     
