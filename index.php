@@ -341,7 +341,7 @@
                     <i class="fas fa-list-alt text-white text-xl"></i>
                 </div>
                 <h3 class="font-hedvig font-semibold text-xl text-navy mb-3">2. Choose a Service</h3>
-                <p class="text-dark/80 text-m mb-4">Browse our services and select the one that best honors your loved one's memory.</p>
+                <p class="text-dark/80 text-m mb-4">Browse our comprehensive range of services and select the one that best honors your loved one's memory.</p>
                 <a href="services.php" class="text-yellow-600 hover:text-yellow-700 inline-flex items-center text-m">
                     View services
                     <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
