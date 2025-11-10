@@ -35,6 +35,31 @@
         sessionStorage.setItem('navigationHistory', JSON.stringify(history));
     }
     
+    // Adjust content margin based on breadcrumb visibility
+    function adjustContentMargin(showBreadcrumb) {
+        // Find main content elements that need margin adjustment
+        const mainContent = document.querySelector('[style*="margin-top: calc(var(--navbar-height) + 48px)"]');
+        const heroSection = document.querySelector('#home');
+        
+        if (showBreadcrumb) {
+            // With breadcrumb: navbar + breadcrumb height
+            if (mainContent && mainContent !== heroSection) {
+                mainContent.style.marginTop = 'calc(var(--navbar-height) + 48px)';
+            }
+            if (heroSection) {
+                heroSection.style.marginTop = 'calc(var(--navbar-height) + 48px)';
+            }
+        } else {
+            // Without breadcrumb: only navbar height
+            if (mainContent && mainContent !== heroSection) {
+                mainContent.style.marginTop = 'var(--navbar-height)';
+            }
+            if (heroSection) {
+                heroSection.style.marginTop = 'var(--navbar-height)';
+            }
+        }
+    }
+    
     // Add current page to navigation history
     function updateNavigationHistory() {
         const currentPage = getCurrentPage();
@@ -90,8 +115,26 @@
         const history = getNavigationHistory();
         const currentPage = getCurrentPage();
         const breadcrumbContainer = document.getElementById('dynamic-breadcrumb');
+        const breadcrumbWrapper = breadcrumbContainer?.closest('div[class*="fixed"]');
         
         if (!breadcrumbContainer) return;
+        
+        // Hide breadcrumb if only home page is in history
+        if (history.length <= 1 && history[0] === 'index.php') {
+            if (breadcrumbWrapper) {
+                breadcrumbWrapper.style.display = 'none';
+                // Adjust content margin when breadcrumb is hidden
+                adjustContentMargin(false);
+            }
+            return;
+        }
+        
+        // Show breadcrumb if there's navigation history
+        if (breadcrumbWrapper) {
+            breadcrumbWrapper.style.display = 'block';
+            // Adjust content margin when breadcrumb is shown
+            adjustContentMargin(true);
+        }
         
         let breadcrumbHTML = '';
         
