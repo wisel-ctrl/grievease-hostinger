@@ -859,7 +859,7 @@ echo "</tr>";
               <label class="flex items-center space-x-2 cursor-pointer">
                 <input type="radio" name="branch" value="<?php echo $branch['branch_id']; ?>" required class="hidden peer">
                 <div class="w-5 h-5 rounded-full border-2 border-gold flex items-center justify-center peer-checked:bg-gold peer-checked:border-darkgold transition-colors"></div>
-                <span class="text-gray-700 font-medium"><?php echo htmlspecialchars($branch['branch_name']); ?></span>
+                <span class="text-gray-700 font-medium"><?php echo htmlspecialchars(ucfirst($branch['branch_name'])); ?></span>
               </label>
             <?php endforeach; ?>
           </div>
@@ -1093,7 +1093,7 @@ echo "</tr>";
               <label class="flex items-center space-x-2 cursor-pointer">
                 <input type="radio" name="branch" value="<?php echo $branch['branch_id']; ?>" required class="hidden peer editBranchRadio" id="editBranch<?php echo $branch['branch_id']; ?>">
                 <div class="w-5 h-5 rounded-full border-2 border-gold flex items-center justify-center peer-checked:bg-gold peer-checked:border-darkgold transition-colors"></div>
-                <span class="text-gray-700 font-medium"><?php echo htmlspecialchars($branch['branch_name']); ?></span>
+                <span class="text-gray-700 font-medium"><?php echo htmlspecialchars(ucfirst($branch['branch_name'])); ?></span>
               </label>
             <?php endforeach; ?>
           </div>
