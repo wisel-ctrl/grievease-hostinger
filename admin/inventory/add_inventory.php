@@ -33,7 +33,7 @@ try {
                 throw new Exception("Uploaded file is not a valid image.");
             }
 
-            $uploadDir = '../Uploads/inventory/';
+            $uploadDir = '../uploads/inventory/';
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0755, true);
             }
@@ -46,7 +46,7 @@ try {
                 throw new Exception("Failed to move uploaded file.");
             }
 
-            $imagePath = 'Uploads/inventory/' . $uniqueFilename;
+            $imagePath = 'uploads/inventory/' . $uniqueFilename;
         }
 
         // Check if item already exists
