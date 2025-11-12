@@ -899,6 +899,7 @@ if ($branchResult->num_rows > 0) {
             <input type="text" id="itemName" name="itemName" required 
                    class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
                    placeholder="Item Name"
+                   maxlength="30"
                    oninput="validateItemName(this)">
             <div id="itemNameError" class="text-red-500 text-xs mt-1 hidden">Item name cannot start with space or have consecutive spaces</div>
           </div>
@@ -965,7 +966,9 @@ if ($branchResult->num_rows > 0) {
             Quantity <span class="text-red-500">*</span>
           </label>
           <div class="relative">
-            <input type="number" id="quantity" name="quantity" min="1" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Quantity">
+            <input type="number" id="quantity" name="quantity" min="1" max="999999999" required 
+                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
+                   placeholder="Quantity">
           </div>
         </div>
         
@@ -978,14 +981,15 @@ if ($branchResult->num_rows > 0) {
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <span class="text-gray-500">₱</span>
             </div>
-            <input type="text" id="unitPrice" name="unitPrice"  required 
+            <input type="text" id="unitPrice" name="unitPrice" required 
                    class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
                    placeholder="0.00"
+                   maxlength="15"
                    oninput="validateUnitPrice(this)">
           </div>
         </div>
         
-        <!-- Selling Price Input (add after Unit Price input) -->
+        <!-- Selling Price Input -->
         <div>
           <label for="sellingPrice" class="block mb-2 text-sm font-medium text-sidebar-text">Selling Price</label>
           <div class="relative">
@@ -994,8 +998,9 @@ if ($branchResult->num_rows > 0) {
             </div>
             <input type="text" id="sellingPrice" name="sellingPrice" required 
                    class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
-                   placeholder="0.00">
-        </div>
+                   placeholder="0.00"
+                   maxlength="15">
+          </div>
         </div>
 
         
