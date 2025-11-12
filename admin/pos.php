@@ -3279,9 +3279,11 @@ function closeConfirmationModal() {
 
 // Function to start a new order
 function startNewOrder() {
+  const idInput = document.getElementById('seniorPwdId');
+  const idPreview = document.getElementById('idPreview');
   
-  
-  // Close all modals
+  idInput.value = '';
+  idPreview.classList.add('hidden');
   
   document.getElementById('confirmation-modal').classList.add('hidden');
   
