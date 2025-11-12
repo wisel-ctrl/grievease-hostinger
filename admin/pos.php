@@ -3020,7 +3020,7 @@ function confirmLifeplanCheckout() {
   const submitBtn = document.getElementById('lp-confirm-btn');
   let originalBtnText = submitBtn.innerHTML;
   
-  // Set loading state
+  // Set loading state with spinner
   submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
   submitBtn.disabled = true;
 
@@ -3037,7 +3037,7 @@ function confirmLifeplanCheckout() {
     if (!field || !field.value.trim()) {
       submitBtn.innerHTML = originalBtnText;
       submitBtn.disabled = false;
-      alert(`Please fill in ${field.labels[0]?.textContent || fieldId}`);
+      swal('Error', `Please fill in ${field.labels[0]?.textContent || fieldId}`, 'error');
       if (field) field.focus();
       return;
     }
@@ -3048,7 +3048,7 @@ function confirmLifeplanCheckout() {
   if (!idImageInput.files || !idImageInput.files[0]) {
     submitBtn.innerHTML = originalBtnText;
     submitBtn.disabled = false;
-    alert('Please upload a valid ID image for the co-maker');
+    swal('Error', 'Please upload a valid ID image for the co-maker', 'error');
     return;
   }
 
@@ -3091,16 +3091,18 @@ function confirmLifeplanCheckout() {
   })
   .then(data => {
     if (data.success) {
-      alert('Transaction successfully saved!');
-      form.reset();
-      closeLifeplanCheckoutModal();
+      swal('Success', 'Transaction successfully saved!', 'success')
+        .then(() => {
+          // Reload page after success
+          location.reload();
+        });
     } else {
       throw new Error(data.message || 'Error processing your request.');
     }
   })
   .catch(error => {
     console.error('Error:', error);
-    alert(error.message || 'An error occurred while saving the data.');
+    swal('Error', error.message || 'An error occurred while saving the data.', 'error');
   })
   .finally(() => {
     submitBtn.innerHTML = originalBtnText;
