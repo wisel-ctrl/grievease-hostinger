@@ -5154,6 +5154,8 @@ function loadOngoingServices(page = 1) {
                 tableBody.innerHTML = data.records.map(row => {
                     const clientName = `${row.fname} ${row.mname ? row.mname + ' ' : ''}${row.lname}${row.suffix ? ' ' + row.suffix : ''}`;
                     const deceasedName = `${row.fname_deceased} ${row.mname_deceased ? row.mname_deceased + ' ' : ''}${row.lname_deceased}${row.suffix_deceased ? ' ' + row.suffix_deceased : ''}`;
+                    const isDisabled = !row.customerID;
+                    
                     return `
                         <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
                             <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">#${row.sales_id}</td>
@@ -5177,23 +5179,23 @@ function loadOngoingServices(page = 1) {
                                         <i class="fas fa-edit"></i>
                                     </button>
                                     ${row.staff_assigned == 0 ? `
-                                        <button class="p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-all tooltip assign-staff-btn" 
-                                                title="Assign Staff"
-                                                onclick="checkCustomerBeforeAssign('${row.sales_id}', ${row.customerID ? 'true' : 'false'})"
-                                                ${!row.customerID ? 'disabled' : ''}>
+                                        <button class="p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-all tooltip assign-staff-btn ${isDisabled ? 'opacity-40 cursor-not-allowed' : ''}" 
+                                                title="${isDisabled ? 'Connect to customer account first' : 'Assign Staff'}"
+                                                onclick="${isDisabled ? '' : `checkCustomerBeforeAssign('${row.sales_id}', true)`}"
+                                                ${isDisabled ? 'disabled' : ''}>
                                             <i class="fas fa-users"></i>
                                         </button>
                                     ` : ''}
-                                    <button class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip complete-btn" 
-                                            title="Complete Service"
-                                            onclick="checkCustomerBeforeComplete('${row.sales_id}', ${row.customerID ? 'true' : 'false'})"
-                                            ${!row.customerID ? 'disabled' : ''}>
+                                    <button class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip complete-btn ${isDisabled ? 'opacity-40 cursor-not-allowed' : ''}" 
+                                            title="${isDisabled ? 'Connect to customer account first' : 'Complete Service'}"
+                                            onclick="${isDisabled ? '' : `checkCustomerBeforeComplete('${row.sales_id}', true)`}"
+                                            ${isDisabled ? 'disabled' : ''}>
                                         <i class="fas fa-check"></i>
                                     </button>
-                                    <button class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip payment-btn" 
-                                            title="Record Payment"
-                                            onclick="openRecordPaymentModal('${row.sales_id}', '${clientName.replace(/'/g, "\\'")}', ${row.balance || 0})"
-                                            ${!row.customerID ? 'disabled' : ''}>
+                                    <button class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip payment-btn ${isDisabled ? 'opacity-40 cursor-not-allowed grayscale' : ''}" 
+                                            title="${isDisabled ? 'Connect to customer account first' : 'Record Payment'}"
+                                            onclick="${isDisabled ? '' : `openRecordPaymentModal('${row.sales_id}', '${clientName.replace(/'/g, "\\'")}', ${row.balance || 0})`}"
+                                            ${isDisabled ? 'disabled' : ''}>
                                         <i class="fas fa-money-bill"></i>
                                     </button>
                                 </div>
