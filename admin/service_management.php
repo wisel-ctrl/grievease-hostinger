@@ -1761,8 +1761,11 @@ window.addEventListener('popstate', function(event) {
       <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeEditServiceModal()">
         Cancel
       </button>
-      <button class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="updateService()">
-        Update Service
+      <button id="updateServiceBtn" class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="updateService()">
+          <span id="updateServiceText">Update Service</span>
+          <div id="updateServiceSpinner" class="hidden ml-2">
+              <i class="fas fa-spinner fa-spin"></i>
+          </div>
       </button>
     </div>
   </div>
@@ -2533,51 +2536,88 @@ function fetchEditItemsByBranch(branchId, selectedCasketId = null, selectedUrnId
 }
 
 // Function to update service
-function updateService() {
+async function updateService() {
+    const submitBtn = document.getElementById('updateServiceBtn');
+    const btnText = document.getElementById('updateServiceText');
+    const btnSpinner = document.getElementById('updateServiceSpinner');
     const form = document.getElementById('editServiceForm');
-    const formData = new FormData(form);
 
-    // Log the FormData to the console
-    console.log('FormData being sent:');
-    for (let [key, value] of formData.entries()) {
-        console.log(`${key}:`, value);
-    }
+    try {
+        // Set loading state
+        submitBtn.disabled = true;
+        btnText.textContent = 'Updating Service...';
+        btnSpinner.classList.remove('hidden');
+        submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
 
-    // Convert status to "Active" or "Inactive"
-    const status = formData.get('status') === '1' ? 'Active' : 'Inactive';
-    formData.set('status', status);
+        const formData = new FormData(form);
 
-    // Combine inclusions into a single string
-    const inclusions = formData.getAll('inclusions').join(', ');
-    formData.set('inclusions', inclusions);
+        // Log the FormData to the console (for debugging)
+        console.log('FormData being sent:');
+        for (let [key, value] of formData.entries()) {
+            console.log(`${key}:`, value);
+        }
 
-    // Log the updated FormData
-    console.log('Updated FormData being sent:');
-    for (let [key, value] of formData.entries()) {
-        console.log(`${key}:`, value);
-    }
+        // Convert status to "Active" or "Inactive"
+        const status = formData.get('status') === '1' ? 'Active' : 'Inactive';
+        formData.set('status', status);
 
-    fetch('servicesManagement/update_service.php', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
+        // Combine inclusions into a single string
+        const inclusions = formData.getAll('inclusions').join(', ');
+        formData.set('inclusions', inclusions);
+
+        // Log the updated FormData
+        console.log('Updated FormData being sent:');
+        for (let [key, value] of formData.entries()) {
+            console.log(`${key}:`, value);
+        }
+
+        const response = await fetch('servicesManagement/update_service.php', {
+            method: 'POST',
+            body: formData
+        });
+
+        const data = await response.json();
+
         if (data.status === 'success') {
             console.log('Service updated successfully:', data);
-            alert('Service updated successfully');
-            location.reload();
+            
+            await Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: 'Service updated successfully',
+                confirmButtonColor: '#10b981',
+                timer: 2000,
+                timerProgressBar: true,
+                showConfirmButton: true
+            });
+
+            // Close modal and reload
             closeEditServiceModal();
-            // Optionally, refresh the service list or perform other actions
+            location.reload();
+            
         } else {
             console.error('Error updating service:', data.message);
-            alert('Error updating service: ' + data.message);
+            throw new Error(data.message || 'Failed to update service');
         }
-    })
-    .catch(error => {
+
+    } catch (error) {
         console.error('Error:', error);
-        alert('Error updating service');
-    });
+        
+        await Swal.fire({
+            icon: 'error',
+            title: 'Update Failed!',
+            html: `Error updating service: <strong>${error.message}</strong>`,
+            confirmButtonColor: '#d33',
+            showConfirmButton: true
+        });
+        
+    } finally {
+        // Reset loading state
+        submitBtn.disabled = false;
+        btnText.textContent = 'Update Service';
+        btnSpinner.classList.add('hidden');
+        submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+    }
 }
 </script>
 
