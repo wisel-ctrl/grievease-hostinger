@@ -771,58 +771,65 @@ document.addEventListener('DOMContentLoaded', function() {
     <!-- Modal Body with Custom Scrollbar -->
     <div class="px-4 sm:px-6 py-4 sm:py-5 overflow-y-auto modal-scroll-container">
       <form id="addCustomerAccountForm" method="post" action="addCustomer/add_customer.php" class="space-y-3 sm:space-y-4">
-        <!-- Personal Information Section -->
-        <!-- First Name and Middle Name Row -->
-        <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
-          <div class="w-full sm:flex-1">
-            <label for="firstName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              First Name <span class="text-red-500">*</span>
-            </label>
-            <div class="relative">
-              <input type="text" id="firstName" name="firstName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="First Name" required>
-            </div>
-            <p id="firstNameError" class="text-red-500 text-xs mt-1 hidden"></p>
+        <div>
+          <label for="firstName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            First Name <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
+            <input type="text" id="firstName" name="firstName" 
+                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
+                   placeholder="First Name" 
+                   pattern="[-A-Za-z']{2,}" 
+                   title="Only letters, apostrophes and hyphens allowed (minimum 2 characters)"
+                   required>
           </div>
-          
-          <div class="w-full sm:flex-1">
-            <label for="middleName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              Middle Name
-            </label>
-            <div class="relative">
-              <input type="text" id="middleName" name="middleName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Middle Name">
-            </div>
-            <p id="middleNameError" class="text-red-500 text-xs mt-1 hidden"></p>
-          </div>
+          <p id="firstNameError" class="text-red-500 text-xs mt-1 hidden"></p>
         </div>
         
-        <!-- Last Name and Suffix Row -->
-        <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
-          <div class="w-full sm:flex-1">
-            <label for="lastName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              Last Name <span class="text-red-500">*</span>
-            </label>
-            <div class="relative">
-              <input type="text" id="lastName" name="lastName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Last Name" required>
-            </div>
-            <p id="lastNameError" class="text-red-500 text-xs mt-1 hidden"></p>
+        <div>
+          <label for="lastName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Last Name <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
+            <input type="text" id="lastName" name="lastName" 
+                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
+                   placeholder="Last Name" 
+                   pattern="[-A-Za-z']{2,}" 
+                   title="Only letters, apostrophes and hyphens allowed (minimum 2 characters)"
+                   required>
           </div>
-          
-          <div class="w-full sm:flex-1">
-            <label for="suffix" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              Suffix
-            </label>
-            <div class="relative">
-              <select id="suffix" name="suffix" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
-                <option value="">Select Suffix</option>
-                <option value="Jr">Jr</option>
-                <option value="Sr">Sr</option>
-                <option value="I">I</option>
-                <option value="II">II</option>
-                <option value="III">III</option>
-                <option value="IV">IV</option>
-                <option value="V">V</option>
-              </select>
-            </div>
+          <p id="lastNameError" class="text-red-500 text-xs mt-1 hidden"></p>
+        </div>
+        
+        <div>
+          <label for="middleName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Middle Name
+          </label>
+          <div class="relative">
+            <input type="text" id="middleName" name="middleName" 
+                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
+                   placeholder="Middle Name"
+                   pattern="[A-Za-z'-]*"
+                   title="Only letters, apostrophes and hyphens allowed">
+          </div>
+          <p id="middleNameError" class="text-red-500 text-xs mt-1 hidden"></p>
+        </div>
+        
+        <div>
+          <label for="suffix" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Suffix
+          </label>
+          <div class="relative">
+            <select id="suffix" name="suffix" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              <option value="">Select Suffix</option>
+              <option value="Jr">Jr</option>
+              <option value="Sr">Sr</option>
+              <option value="I">I</option>
+              <option value="II">II</option>
+              <option value="III">III</option>
+              <option value="IV">IV</option>
+              <option value="V">V</option>
+            </select>
           </div>
         </div>
         
@@ -832,8 +839,9 @@ document.addEventListener('DOMContentLoaded', function() {
           </label>
           <div class="relative">
             <input type="date" id="birthdate" name="birthdate" 
-              class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
-              max="<?php echo date('Y-m-d'); ?>" required>
+                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
+                   max="<?php echo date('Y-m-d'); ?>" 
+                   required>
           </div>
           <p id="birthdateError" class="text-red-500 text-xs mt-1 hidden"></p>
         </div>
@@ -843,7 +851,9 @@ document.addEventListener('DOMContentLoaded', function() {
             Branch Location <span class="text-red-500">*</span>
           </label>
           <div class="relative">
-            <select id="branchLocation" name="branchLocation" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+            <select id="branchLocation" name="branchLocation" 
+                    class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
+                    required>
               <option value="">Select Branch</option>
               <!-- Branch options will be populated by AJAX -->
             </select>
@@ -851,15 +861,20 @@ document.addEventListener('DOMContentLoaded', function() {
           <p id="branchError" class="text-red-500 text-xs mt-1 hidden">Please select a branch</p>
         </div>
         
-        <!-- Contact Information Section -->
         <div>
           <label for="customerEmail" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
             Email Address <span class="text-red-500">*</span>
           </label>
           <div class="relative">
-            <input type="email" id="customerEmail" name="customerEmail" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="example@email.com" required>
+            <input type="email" id="customerEmail" name="customerEmail" 
+                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
+                   placeholder="example@email.com" 
+                   pattern="[^@\s]+@[^@\s]+\.[^@\s]+" 
+                   title="Please enter a valid email address (no spaces allowed)"
+                   required>
           </div>
           <p id="emailError" class="text-red-500 text-xs mt-1 hidden"></p>
+          <p id="emailExistsError" class="text-red-500 text-xs mt-1 hidden"></p>
         </div>
         
         <div>
@@ -867,9 +882,16 @@ document.addEventListener('DOMContentLoaded', function() {
             Phone Number <span class="text-red-500">*</span>
           </label>
           <div class="relative">
-            <input type="tel" id="customerPhone" name="customerPhone" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Phone Number" required>
+            <input type="tel" id="customerPhone" name="customerPhone" 
+                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
+                   placeholder="09123456789" 
+                   pattern="09\d{9}" 
+                   maxlength="11"
+                   title="Philippine number must start with 09 and be 11 digits total"
+                   required>
           </div>
           <p id="phoneError" class="text-red-500 text-xs mt-1 hidden"></p>
+          <p id="phoneExistsError" class="text-red-500 text-xs mt-1 hidden"></p>
         </div>
         
         <div>
@@ -877,7 +899,9 @@ document.addEventListener('DOMContentLoaded', function() {
             Generated Password
           </label>
           <div class="relative">
-            <input type="password" id="generatedPassword" name="password" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200 bg-gray-100" readonly>
+            <input type="password" id="generatedPassword" name="password" 
+                   class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
+                   readonly>
             <button type="button" class="absolute right-2 top-2 text-gray-500 hover:text-gray-700" onclick="togglePassword()">
               <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 sm:w-6 sm:h-6">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 12s2.947-5.455 8.02-5.455S20.02 12 20.02 12s-2.947 5.455-8.02 5.455S3.98 12 3.98 12z" />
