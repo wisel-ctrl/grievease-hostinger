@@ -3274,6 +3274,7 @@ function showConfirmation(orderId) {
 // Function to close confirmation modal
 function closeConfirmationModal() {
   document.getElementById('confirmation-modal').classList.add('hidden');
+  startNewOrder();
 }
 
 // Function to start a new order
