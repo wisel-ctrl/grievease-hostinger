@@ -77,24 +77,17 @@ $end = min($start + $usersPerPage - 1, $totalRows);
 if ($result->num_rows > 0) {
     // Create table rows with actual data
     while($row = $result->fetch_assoc()) {
-        // Determine status based on is_verified
-        $status = $row['is_verified'] == 1 ? 
-            '<span class="px-2 py-1 bg-green-100 text-green-600 rounded-full text-xs">Active</span>' : 
-            '<span class="px-2 py-1 bg-yellow-100 text-yellow-600 rounded-full text-xs">Pending</span>';
-        
         // Format customer ID
         $customerId = "#CUST-" . str_pad($row['id'], 3, '0', STR_PAD_LEFT);
         
         // Format full name
         $fullName = ucfirst(strtolower($row['first_name'])) . ' ' . ucfirst(strtolower($row['last_name']));
         
-        // Create table row
+        // Create table row - REMOVED ROLE AND STATUS COLUMNS
         $tableContent .= '<tr class="border-b border-sidebar-border hover:bg-sidebar-hover">
             <td class="p-4 text-sm text-sidebar-text font-medium">' . $customerId . '</td>
             <td class="p-4 text-sm text-sidebar-text">' . htmlspecialchars($fullName) . '</td>
             <td class="p-4 text-sm text-sidebar-text">' . htmlspecialchars($row['email']) . '</td>
-            <td class="p-4 text-sm text-sidebar-text">Customer</td>
-            <td class="p-4 text-sm">' . $status . '</td>
             <td class="p-4 text-sm">
               <div class="flex space-x-2">
                 <button class="p-1.5 bg-yellow-100 text-yellow-600 rounded hover:bg-yellow-200 transition-all" onclick="openEditCustomerAccountModal(' . $row['id'] . ')">
@@ -108,9 +101,9 @@ if ($result->num_rows > 0) {
           </tr>';
     }
 } else {
-    // If no customers found, display a message
+    // If no customers found, display a message - UPDATED COLSPAN FROM 6 TO 4
     $tableContent = '<tr class="border-b border-sidebar-border">
-        <td colspan="6" class="p-4 text-sm text-center text-gray-500">No customer accounts found</td>
+        <td colspan="4" class="p-4 text-sm text-center text-gray-500">No customer accounts found</td>
     </tr>';
     
     // Reset start and end when no results

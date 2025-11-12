@@ -1,5 +1,5 @@
 <?php
-// Fetch empoyee accounts
+// Fetch employee accounts
 require_once('../../db_connect.php');
 
 // Initialize variables
@@ -72,15 +72,11 @@ if ($result->num_rows > 0) {
         // Format full name
         $fullName = $row['first_name'] . ' ' . $row['last_name'];
         
-        // Create table row
+        // Create table row - REMOVED ROLE AND STATUS COLUMNS
         $tableContent .= '<tr class="border-b border-sidebar-border hover:bg-sidebar-hover">
             <td class="p-4 text-sm text-sidebar-text font-medium">' . $employeeId . '</td>
             <td class="p-4 text-sm text-sidebar-text">' . htmlspecialchars($fullName) . '</td>
             <td class="p-4 text-sm text-sidebar-text">' . htmlspecialchars($row['email']) . '</td>
-            <td class="p-4 text-sm text-sidebar-text">Employee</td>
-            <td class="p-4 text-sm">
-                <span class="px-2 py-1 bg-green-100 text-green-600 rounded-full text-xs">Active</span>
-            </td>
             <td class="p-4 text-sm">
               <div class="flex space-x-2">
                 <button class="p-1.5 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-all" onclick="openEditEmployeeAccountModal(' . $row['id'] . ')">
@@ -101,9 +97,9 @@ if ($result->num_rows > 0) {
     // Update pagination info
     $paginationInfo = "Showing $start - $end of $totalRows employee accounts";
 } else {
-    // If no employees found, display a message
+    // If no employees found, display a message - UPDATED COLSPAN FROM 6 TO 4
     $tableContent = '<tr class="border-b border-sidebar-border">
-        <td colspan="6" class="p-4 text-sm text-center text-gray-500">No employee accounts found</td>
+        <td colspan="4" class="p-4 text-sm text-center text-gray-500">No employee accounts found</td>
     </tr>';
     
     // Set pagination info for empty results
