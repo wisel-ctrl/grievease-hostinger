@@ -3284,9 +3284,12 @@ function startNewOrder() {
   const idInput = document.getElementById('seniorPwdId');
   const idPreview = document.getElementById('idPreview');
   const deathCertPreview = document.getElementById('deathCertificatePreview');
+  const idUploadSection = document.getElementById('idUploadSection');
   
   idInput.value = '';
   idPreview.classList.add('hidden');
+
+  idUploadSection.classList.add('hidden');
 
   deathCertPreview.classList.add('hidden');
   
