@@ -114,6 +114,19 @@ header("Pragma: no-cache");
     background-color: #d4a933;
     border-radius: 6px;
 }
+
+/* Add to your CSS file */
+.cursor-not-allowed {
+    cursor: not-allowed;
+}
+
+.opacity-50 {
+    opacity: 0.5;
+}
+
+.hidden {
+    display: none;
+}
     </style>
   
 </head>
@@ -1218,7 +1231,7 @@ window.addEventListener('popstate', function(event) {
               Description
             </label>
             <div class="relative">
-              <textarea id="serviceDescription" name="serviceDescription" rows="3" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"></textarea>
+              <textarea id="serviceDescription" name="serviceDescription" rows="3" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required></textarea>
             </div>
           </div>
           
@@ -1447,8 +1460,11 @@ window.addEventListener('popstate', function(event) {
       <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeAddServiceModal()">
         Cancel
       </button>
-      <button class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="addService()">
-        Add Service
+      <button id="addServiceBtn" class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="addService()">
+          <span id="addServiceText">Add Service</span>
+          <div id="addServiceSpinner" class="hidden ml-2">
+              <i class="fas fa-spinner fa-spin"></i>
+          </div>
       </button>
     </div>
   </div>
@@ -2651,63 +2667,145 @@ function fetchItemsByBranch(branchId) {
       document.getElementById('addServiceModal').style.display = 'none';
     }
 
-    // Function to add a new service
-    function addService() {
-    // Create a FormData object
+    // Function to add a new service with validation and loading state
+async function addService() {
+    const submitBtn = document.getElementById('addServiceBtn');
+    const btnText = document.getElementById('addServiceText');
+    const btnSpinner = document.getElementById('addServiceSpinner');
     const form = document.getElementById('serviceForm');
-    const formData = new FormData(form);
+
+    // Validate required fields
+    const requiredFields = [
+        'serviceName', 'serviceDescription', 'capitalPrice', 
+        'sellingPrice', 'serviceCategory'
+    ];
     
-    // Get selected branch (assuming it's a radio button with name="branch_id")
+    const missingFields = [];
+    requiredFields.forEach(field => {
+        const element = document.getElementById(field);
+        if (!element.value.trim()) {
+            missingFields.push(field.replace(/([A-Z])/g, ' $1').toLowerCase());
+        }
+    });
+
+    // Check if branch is selected
     const selectedBranch = document.querySelector('input[name="branch_id"]:checked');
-    if (selectedBranch) {
-        formData.append('branch_id', selectedBranch.value);
+    if (!selectedBranch) {
+        missingFields.push('branch');
     }
 
-    // Get all checked flower designs
-    document.querySelectorAll('input[name="flowerDesign"]:checked').forEach(checkbox => {
-        formData.append('flowerDesign[]', checkbox.value);
-    });
-    
-    // Get all checked essential services
-    document.querySelectorAll('input[name="essentialServices"]:checked').forEach(checkbox => {
-        formData.append('essentialServices[]', checkbox.value);
-    });
-    
-    // Debug: Log form data
-    console.log("Submitting form data:");
-    for (let pair of formData.entries()) {
-        console.log(pair[0] + ': ' + pair[1]);
+    if (missingFields.length > 0) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Missing Information',
+            html: `Please fill in the following required fields:<br><strong>${missingFields.join(', ')}</strong>`,
+            confirmButtonColor: '#3085d6'
+        });
+        return;
     }
+
+    // Validate prices
+    const capitalPrice = parseFloat(document.getElementById('capitalPrice').value);
+    const sellingPrice = parseFloat(document.getElementById('sellingPrice').value);
     
-    // Send the form data
-    fetch('servicesManagement/add_service_handler.php', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => {
-        console.log("Response status:", response.status);
-        return response.json();
-    })
-    .then(data => {
-        console.log("Response data:", data);
-        
-        if (data.status === 'success') {
-            // Show simple alert
-            alert('Service added successfully');
-            // Reload the page
-            location.reload();
-        } else {
-            // Show error alert
-            alert('Error: ' + (data.message || 'Something went wrong'));
+    if (capitalPrice < 0 || sellingPrice < 0) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Invalid Prices',
+            text: 'Prices cannot be negative',
+            confirmButtonColor: '#d33'
+        });
+        return;
+    }
+
+    if (sellingPrice < capitalPrice) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Price Warning',
+            text: 'Selling price is lower than capital price. This may result in a loss.',
+            confirmButtonColor: '#f59e0b',
+            showCancelButton: true,
+            confirmButtonText: 'Continue Anyway',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                submitForm();
+            }
+        });
+        return;
+    }
+
+    // If all validations pass, submit the form
+    await submitForm();
+
+    async function submitForm() {
+        try {
+            // Set loading state
+            submitBtn.disabled = true;
+            btnText.textContent = 'Adding Service...';
+            btnSpinner.classList.remove('hidden');
+            submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+            // Create FormData object
+            const formData = new FormData(form);
+            
+            // Add branch_id
+            if (selectedBranch) {
+                formData.append('branch_id', selectedBranch.value);
+            }
+
+            // Add flower designs
+            document.querySelectorAll('input[name="flowerDesign"]:checked').forEach(checkbox => {
+                formData.append('flowerDesign[]', checkbox.value);
+            });
+            
+            // Add essential services
+            document.querySelectorAll('input[name="essentialServices"]:checked').forEach(checkbox => {
+                formData.append('essentialServices[]', checkbox.value);
+            });
+
+            // Send the form data
+            const response = await fetch('servicesManagement/add_service_handler.php', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                await Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: 'Service added successfully',
+                    confirmButtonColor: '#10b981',
+                    timer: 2000,
+                    timerProgressBar: true
+                });
+                
+                // Reload the page after success
+                location.reload();
+            } else {
+                throw new Error(data.message || 'Something went wrong');
+            }
+            
+        } catch (error) {
+            console.error('Error:', error);
+            
+            await Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: error.message || 'Failed to add service. Please try again.',
+                confirmButtonColor: '#d33'
+            });
+            
+        } finally {
+            // Reset loading state
+            submitBtn.disabled = false;
+            btnText.textContent = 'Add Service';
+            btnSpinner.classList.add('hidden');
+            submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
         }
-    })
-    .catch(error => {
-        console.error('Fetch error:', error);
-        alert('Error: Failed to communicate with the server');
-    });
-    
-    // Close the modal
-    closeAddServiceModal();
+    }
 }
     // Function to save changes to a service
     function saveServiceChanges() {
