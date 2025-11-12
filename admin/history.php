@@ -5190,6 +5190,12 @@ function loadOngoingServices(page = 1) {
                                             ${!row.customerID ? 'disabled' : ''}>
                                         <i class="fas fa-check"></i>
                                     </button>
+                                    <button class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip payment-btn" 
+                                            title="Record Payment"
+                                            onclick="openRecordPaymentModal('${row.sales_id}', '${clientName.replace(/'/g, "\\'")}', ${row.balance || 0})"
+                                            ${!row.customerID ? 'disabled' : ''}>
+                                        <i class="fas fa-money-bill"></i>
+                                    </button>
                                 </div>
                             </td>
                         </tr>
