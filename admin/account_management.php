@@ -321,16 +321,6 @@ $customersResult = mysqli_query($conn, $customersQuery);
                                 <i class="fas fa-envelope text-sidebar-accent"></i> Email 
                             </div>
                         </th>
-                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable('role')">
-                            <div class="flex items-center gap-1.5">
-                                <i class="fas fa-id-badge text-sidebar-accent"></i> Role 
-                            </div>
-                        </th>
-                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable('status')">
-                            <div class="flex items-center gap-1.5">
-                                <i class="fas fa-toggle-on text-sidebar-accent"></i> Status 
-                            </div>
-                        </th>
                         <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
                             <div class="flex items-center gap-1.5">
                                 <i class="fas fa-cogs text-sidebar-accent"></i> Actions
@@ -2098,16 +2088,6 @@ if ($result->num_rows > 0) {
                         <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
                             <div class="flex items-center gap-1.5">
                                 <i class="fas fa-envelope text-sidebar-accent"></i> Email 
-                            </div>
-                        </th>
-                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
-                            <div class="flex items-center gap-1.5">
-                                <i class="fas fa-id-badge text-sidebar-accent"></i> Role 
-                            </div>
-                        </th>
-                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
-                            <div class="flex items-center gap-1.5">
-                                <i class="fas fa-toggle-on text-sidebar-accent"></i> Status 
                             </div>
                         </th>
                         <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
