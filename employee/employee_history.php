@@ -6412,6 +6412,36 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    const chapelCheckbox = document.getElementById('usedFuneralChapel');
+    const chapelDaysContainer = document.getElementById('chapelDaysContainer');
+    const chapelDaysInput = document.getElementById('chapelDays');
+    const chapelTotalCost = document.getElementById('chapelTotalCost');
+    
+    const CHAPEL_RATE_PER_DAY = 6000;
+    
+    // Toggle chapel days input visibility
+    chapelCheckbox.addEventListener('change', function() {
+        if (this.checked) {
+            chapelDaysContainer.classList.remove('hidden');
+            updateChapelTotalCost();
+        } else {
+            chapelDaysContainer.classList.add('hidden');
+            chapelDaysInput.value = '0';
+            updateChapelTotalCost();
+        }
+    });
+    
+    // Update total cost when chapel days change
+    chapelDaysInput.addEventListener('input', updateChapelTotalCost);
+    
+    function updateChapelTotalCost() {
+        const days = parseInt(chapelDaysInput.value) || 0;
+        const total = days * CHAPEL_RATE_PER_DAY;
+        chapelTotalCost.textContent = total.toLocaleString();
+    }
+});
 </script>
 
 </body> 
