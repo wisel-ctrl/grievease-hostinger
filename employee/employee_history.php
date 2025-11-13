@@ -6286,5 +6286,133 @@ function goToCustomOutstandingPage(page) {
 }
 </script>
 
+<script>
+// Cemetery data array
+const cemeteryData = [
+  { district: '3', municipality: 'San Pablo', cemetery: 'San Pablo City Municipal Cemetery', location: 'M. Leonor Ext., San Pablo City' },
+  { district: '3', municipality: 'San Pablo', cemetery: 'San Gabriel Memorial Garden', location: 'Brgy. San Gabriel, San Pablo' },
+  { district: '3', municipality: 'San Pablo', cemetery: 'Pines Memorial Garden', location: 'San Pablo' },
+  { district: '3', municipality: 'Alaminos', cemetery: 'Alaminos Municipal Cemetery', location: 'Alaminos town proper' },
+  { district: '3', municipality: 'Alaminos', cemetery: 'Mulberry Garden Memorial Park', location: 'Brgy. San Juan, Alaminos' },
+  { district: '3', municipality: 'Alaminos', cemetery: 'Roloma Memorial Park', location: 'Alaminos' },
+  { district: '3', municipality: 'Calauan', cemetery: 'Calauan Municipal Cemetery', location: 'Calauan town proper / Balayhangin area' },
+  { district: '3', municipality: 'Calauan', cemetery: 'Amani Heritage Gardens / Memorial Gardens', location: 'Provincial Road, Lamot 2, Calauan' },
+  { district: '3', municipality: 'Liliw', cemetery: 'Liliw Municipal Cemetery', location: 'Liliw' },
+  { district: '3', municipality: 'Liliw', cemetery: 'Golden Haven / Memorial Park (Laguna area)', location: 'near Liliw area' },
+  { district: '3', municipality: 'Nagcarlan', cemetery: 'Nagcarlan Underground Cemetery', location: 'Brgy. Bambang, Nagcarlan' },
+  { district: '3', municipality: 'Nagcarlan', cemetery: 'Nagcarlan Municipal Cemetery', location: 'Nagcarlan' },
+  { district: '3', municipality: 'Rizal', cemetery: 'Rizal Municipal Cemetery', location: 'Rizal, Talaga area' },
+  { district: '3', municipality: 'Victoria', cemetery: 'Victoria Municipal Cemetery', location: 'JP Riza St., Brgy. Nanhaya, Victoria' },
+  { district: '3', municipality: 'Victoria', cemetery: 'Garden of Angels / Victoria', location: 'Garden of Angels, Victoria' },
+  { district: '4', municipality: 'Santa Cruz', cemetery: 'Santa Cruz Municipal Cemetery', location: 'Santa Cruz' },
+  { district: '4', municipality: 'Cavinti', cemetery: 'Cavinti Municipal Cemetery', location: 'Cavinti' },
+  { district: '4', municipality: 'Famy', cemetery: 'Famy Municipal Cemetery', location: 'Famy' },
+  { district: '4', municipality: 'Kalayaan', cemetery: 'Kalayaan Municipal Cemetery', location: 'Kalayaan' },
+  { district: '4', municipality: 'Luisiana', cemetery: 'Luisiana Municipal Cemetery', location: 'Luisiana' },
+  { district: '4', municipality: 'Lumban', cemetery: 'Lumban Municipal Cemetery', location: 'Lumban' },
+  { district: '4', municipality: 'Mabitac', cemetery: 'Mabitac Municipal Cemetery', location: 'Mabitac' },
+  { district: '4', municipality: 'Magdalena', cemetery: 'Magdalena Municipal Cemetery', location: 'Magdalena' },
+  { district: '4', municipality: 'Majayjay', cemetery: 'Majayjay Municipal Cemetery', location: 'Majayjay' },
+  { district: '4', municipality: 'Paete', cemetery: 'Paete Municipal Cemetery', location: 'Paete' },
+  { district: '4', municipality: 'Pagsanjan', cemetery: 'Pagsanjan Municipal Cemetery', location: 'Pagsanjan' },
+  { district: '4', municipality: 'Pakil', cemetery: 'Pakil (Catholic / Municipal) Cemetery', location: 'Pakil' },
+  { district: '4', municipality: 'Pangil', cemetery: 'Pangil Municipal Cemetery', location: 'Pangil' },
+  { district: '4', municipality: 'Pila', cemetery: 'Pila Municipal Cemetery', location: 'Pila' },
+  { district: '4', municipality: 'Santa Maria', cemetery: 'Santa Maria Municipal Cemetery', location: 'Santa Maria' },
+  { district: '4', municipality: 'Siniloan', cemetery: 'Siniloan Municipal Cemetery', location: 'Siniloan' }
+];
+
+// Function to filter cemeteries based on search input
+function filterCemeteries(searchTerm) {
+  if (!searchTerm) return [];
+  
+  const lowerSearchTerm = searchTerm.toLowerCase();
+  return cemeteryData.filter(cemetery => 
+    cemetery.cemetery.toLowerCase().includes(lowerSearchTerm) ||
+    cemetery.municipality.toLowerCase().includes(lowerSearchTerm) ||
+    cemetery.location.toLowerCase().includes(lowerSearchTerm)
+  );
+}
+
+// Function to show suggestions
+function showSuggestions(suggestions) {
+  const suggestionsContainer = document.getElementById('internmentSuggestions');
+  suggestionsContainer.innerHTML = '';
+  
+  if (suggestions.length === 0) {
+    suggestionsContainer.classList.add('hidden');
+    return;
+  }
+  
+  suggestions.forEach(cemetery => {
+    const suggestionItem = document.createElement('div');
+    suggestionItem.className = 'suggestion-item';
+    suggestionItem.innerHTML = `
+      <div class="font-medium text-sm">${cemetery.cemetery}</div>
+      <div class="text-xs text-gray-600">${cemetery.municipality} - ${cemetery.location}</div>
+    `;
+    suggestionItem.addEventListener('click', () => {
+      document.getElementById('internmentPlace').value = `${cemetery.cemetery}, ${cemetery.municipality}`;
+      suggestionsContainer.classList.add('hidden');
+    });
+    suggestionsContainer.appendChild(suggestionItem);
+  });
+  
+  suggestionsContainer.classList.remove('hidden');
+}
+
+// Add event listeners for the internment place input
+document.addEventListener('DOMContentLoaded', function() {
+  const internmentInput = document.getElementById('internmentPlace');
+  const suggestionsContainer = document.getElementById('internmentSuggestions');
+  
+  if (internmentInput) {
+    internmentInput.addEventListener('input', function() {
+      const searchTerm = this.value;
+      const suggestions = filterCemeteries(searchTerm);
+      showSuggestions(suggestions);
+    });
+    
+    // Hide suggestions when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!internmentInput.contains(e.target) && !suggestionsContainer.contains(e.target)) {
+        suggestionsContainer.classList.add('hidden');
+      }
+    });
+    
+    // Handle keyboard navigation
+    internmentInput.addEventListener('keydown', function(e) {
+      const suggestions = suggestionsContainer.querySelectorAll('.suggestion-item');
+      const activeSuggestion = suggestionsContainer.querySelector('.suggestion-item.active');
+      
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (!activeSuggestion) {
+          suggestions[0]?.classList.add('active');
+        } else {
+          const next = activeSuggestion.nextElementSibling;
+          if (next) {
+            activeSuggestion.classList.remove('active');
+            next.classList.add('active');
+          }
+        }
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (activeSuggestion) {
+          const prev = activeSuggestion.previousElementSibling;
+          if (prev) {
+            activeSuggestion.classList.remove('active');
+            prev.classList.add('active');
+          }
+        }
+      } else if (e.key === 'Enter' && activeSuggestion) {
+        e.preventDefault();
+        activeSuggestion.click();
+      }
+    });
+  }
+});
+</script>
+
 </body> 
 </html>
