@@ -3157,6 +3157,9 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
+<footer class="bg-white rounded-lg shadow-sidebar border border-sidebar-border p-4 text-center text-sm text-gray-500 mt-8">
+    <p>© 2025 GrievEase.</p>
+  </footer>
   
 </body>
 </html>
