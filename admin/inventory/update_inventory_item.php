@@ -21,21 +21,32 @@ $userId = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : 0;
 // ========== SERVER-SIDE VALIDATION ==========
 $errors = [];
 
-// Basic validations
-if ($newQuantity < 0) {
-    $errors[] = "Quantity cannot be negative";
-}
-
-if ($price < 0) {
-    $errors[] = "Unit Price cannot be negative";
-}
-
-if ($sellingPrice < 0) {
-    $errors[] = "Selling Price cannot be negative";
-}
-
+// Item name validation (max 30 characters)
 if (empty($itemName) || strlen($itemName) < 2) {
     $errors[] = "Item name must be at least 2 characters";
+} elseif (strlen($itemName) > 30) {
+    $errors[] = "Item name cannot exceed 30 characters";
+}
+
+// Quantity validation (max 100,000)
+if ($newQuantity < 0) {
+    $errors[] = "Quantity cannot be negative";
+} elseif ($newQuantity > 100000) {
+    $errors[] = "Quantity cannot exceed 100,000";
+}
+
+// Price validation (max 100,000,000)
+if ($price < 0) {
+    $errors[] = "Unit Price cannot be negative";
+} elseif ($price > 100000000) {
+    $errors[] = "Unit Price cannot exceed ₱100,000,000";
+}
+
+// Selling price validation (max 100,000,000)
+if ($sellingPrice < 0) {
+    $errors[] = "Selling Price cannot be negative";
+} elseif ($sellingPrice > 100000000) {
+    $errors[] = "Selling Price cannot exceed ₱100,000,000";
 }
 
 if ($categoryId <= 0) {

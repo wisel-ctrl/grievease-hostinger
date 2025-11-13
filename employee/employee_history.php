@@ -2315,7 +2315,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         customerResults.classList.add('hidden');
                         
                         // You can also populate other customer fields here if needed
-                        populateCustomerDetails(customer.id);
+                        // populateCustomerDetails(customer.id);
                     });
                     customerResults.appendChild(div);
                 });

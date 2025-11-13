@@ -54,6 +54,15 @@ if ($result->num_rows > 0) {
                         $row['lname_deceased'] . 
                         ($row['suffix_deceased'] ? ' ' . $row['suffix_deceased'] : ''));
         
+        // Determine button classes based on customerID
+        $assignStaffClass = $row['customerID'] ? 
+            'p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-all tooltip assign-staff-btn' : 
+            'p-2 bg-gray-100 text-gray-400 rounded-lg cursor-not-allowed tooltip assign-staff-btn';
+            
+        $completeClass = $row['customerID'] ? 
+            'p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip complete-btn' : 
+            'p-2 bg-gray-100 text-gray-400 rounded-lg cursor-not-allowed tooltip complete-btn';
+        
         $html .= '<tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
             <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">#'.$row['sales_id'].'</td>
             <td class="px-4 py-3.5 text-sm text-sidebar-text">'.$clientName.'</td>
@@ -77,17 +86,17 @@ if ($result->num_rows > 0) {
                 </button>';
                 
         if ($row['staff_assigned'] == 0) {
-            $html .= '<button class="p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-all tooltip assign-staff-btn" 
-                      title="Assign Staff"
-                      onclick="checkCustomerBeforeAssign(\''.$row['sales_id'].'\', '.($row['customerID'] ? 'true' : 'false').')"
+            $html .= '<button class="'.$assignStaffClass.'" 
+                      title="'.($row['customerID'] ? 'Assign Staff' : 'Add customer first to assign staff').'"
+                      '.($row['customerID'] ? 'onclick="checkCustomerBeforeAssign(\''.$row['sales_id'].'\', '.($row['customerID'] ? 'true' : 'false').')"' : 'disabled').'
                       data-has-customer="'.($row['customerID'] ? 'true' : 'false').'">
                     <i class="fas fa-users"></i>
                   </button>';
         }
         
-        $html .= '<button class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip complete-btn" 
-                  title="Complete Service"
-                  onclick="checkCustomerBeforeComplete(\''.$row['sales_id'].'\', '.($row['customerID'] ? 'true' : 'false').')"
+        $html .= '<button class="'.$completeClass.'" 
+                  title="'.($row['customerID'] ? 'Complete Service' : 'Add customer first to complete service').'"
+                  '.($row['customerID'] ? 'onclick="checkCustomerBeforeComplete(\''.$row['sales_id'].'\', '.($row['customerID'] ? 'true' : 'false').')"' : 'disabled').'
                   data-has-customer="'.($row['customerID'] ? 'true' : 'false').'">
                 <i class="fas fa-check"></i>
               </button>
