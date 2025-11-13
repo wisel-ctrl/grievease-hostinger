@@ -3287,6 +3287,9 @@ function finalizeServiceCompletion() {
   const completionDateInput = document.getElementById('completionDate').value;
   const completionNotes = document.getElementById('completionNotes').value;
   const balanceSettled = document.getElementById('finalBalanceSettled').checked;
+  const intermentPlace = document.getElementById('internmentPlace').value;
+  const usedChapel = document.getElementById('usedFuneralChapel').checked;
+  const chapelDays = document.getElementById('chapelDays').value || 0;
   
   if (!completionDateInput) {
     alert('Please specify a completion date.');
@@ -3326,7 +3329,10 @@ function finalizeServiceCompletion() {
         notes: completionNotes,
         service_stage: 'completion',
         completion_date: completionDateTime,
-        balance_settled: balanceSettled
+        balance_settled: balanceSettled,
+        interment_place: intermentPlace,
+        used_chapel: usedChapel ? 'Yes' : 'No',
+        chapel_days: chapelDays
       };
 
       // Send data to server
