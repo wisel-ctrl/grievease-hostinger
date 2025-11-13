@@ -72,7 +72,7 @@ if ($result->num_rows > 0) {
                 '.htmlspecialchars($row['service_name']).'
               </span>
             </td>
-            <td class="px-4 py-3.5 text-sm text-sidebar-text">'.htmlspecialchars($row['date_of_burial']).'</td>
+            <td class="px-4 py-3.5 text-sm text-sidebar-text">'.(empty($row['date_of_burial']) || $row['date_of_burial'] == '0000-00-00' ? 'To follow' : htmlspecialchars($row['date_of_burial'])).'</td>
             <td class="px-4 py-3.5 text-sm">
               <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-500 border border-orange-200">
                 <i class="fas fa-pause-circle mr-1"></i> '.htmlspecialchars($row['status']).'
