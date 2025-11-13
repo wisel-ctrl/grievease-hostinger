@@ -776,6 +776,10 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
   </div>
 </div>
 
+<footer class="bg-white rounded-lg shadow-sidebar border border-sidebar-border p-4 text-center text-sm text-gray-500 mt-8">
+      <p>© 2025 GrievEase.</p>
+  </footer>
+
 <!-- Traditional Payment Modal -->
 <div id="traditionalModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
   <!-- Modal Backdrop -->
