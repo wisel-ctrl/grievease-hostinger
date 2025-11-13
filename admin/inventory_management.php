@@ -826,7 +826,13 @@ if ($branchResult->num_rows > 0) {
     // Close connection
     $conn->close();
     ?>
+    
+    <footer class="bg-white rounded-lg shadow-sidebar border border-sidebar-border p-4 text-center text-sm text-gray-500 mt-8">
+      <p>© 2025 GrievEase.</p>
+  </footer>
 </div>
+
+
 
 <!-- View Item Modal -->
 <div id="viewItemModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
