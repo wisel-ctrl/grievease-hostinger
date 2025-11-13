@@ -1852,6 +1852,16 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
             <!-- Personnel will be populated here -->
           </div>
         </div>
+
+        <div>
+          <label for="internmentPlace" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Interment Place
+          </label>
+          <div class="relative">
+            <input type="text" id="internmentPlace" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Type to search cemetery..." autocomplete="off">
+            <div id="internmentSuggestions" class="absolute z-20 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto hidden"></div>
+          </div>
+        </div>
         
         <div>
           <label for="completionDate" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
@@ -1859,6 +1869,28 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
           </label>
           <div class="relative">
             <input type="date" id="completionDate" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+          </div>
+        </div>
+
+        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
+          <div class="flex items-center mb-2">
+            <input type="checkbox" id="usedFuneralChapel" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+            <label for="usedFuneralChapel" class="text-xs sm:text-sm text-gray-700 font-medium">
+              Did the customer use the funeral chapel? (₱6,000 per day)
+            </label>
+          </div>
+          
+          <!-- Chapel Days Input (Hidden by default) -->
+          <div id="chapelDaysContainer" class="hidden mt-3">
+            <label for="chapelDays" class="block text-xs font-medium text-gray-700 mb-1">
+              Number of Chapel Days
+            </label>
+            <div class="relative">
+              <input type="number" id="chapelDays" min="0" value="0" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+            </div>
+            <p class="text-xs text-gray-500 mt-1">
+              Total Chapel Cost: ₱<span id="chapelTotalCost">0</span>
+            </p>
           </div>
         </div>
         
