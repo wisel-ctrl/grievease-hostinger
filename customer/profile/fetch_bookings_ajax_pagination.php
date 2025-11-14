@@ -60,121 +60,168 @@ if ($booking_type === 'traditional') {
     $stmt->close();
 
     // Generate HTML for Traditional Funeral bookings
-    ob_start();
-    if (count($bookings) > 0) {
-        foreach ($bookings as $booking) {
-            $status_class = '';
-            $status_text = '';
-            switch ($booking['status']) {
-                case 'Pending':
-                    $status_class = 'bg-yellow-600/10 text-yellow-600';
-                    $status_text = 'Pending';
-                    break;
-                case 'Accepted':
-                    $status_class = 'bg-green-500/10 text-green-500';
-                    $status_text = 'Accepted';
-                    break;
-                case 'Declined':
-                    $status_class = 'bg-red-500/10 text-red-500';
-                    $status_text = 'Declined';
-                    break;
-                case 'Cancelled':
-                    $status_class = 'bg-gray-500/10 text-gray-500';
-                    $status_text = 'Cancelled';
-                    break;
-                default:
-                    $status_class = 'bg-blue-500/10 text-blue-500';
-                    $status_text = $booking['status'];
+// Generate HTML for Traditional Funeral bookings
+ob_start();
+if (count($bookings) > 0) {
+    foreach ($bookings as $booking) {
+        $status_class = '';
+        $status_text = '';
+        switch ($booking['status']) {
+            case 'Pending':
+                $status_class = 'bg-yellow-600/10 text-yellow-600';
+                $status_text = 'Pending';
+                break;
+            case 'Accepted':
+                $status_class = 'bg-green-500/10 text-green-500';
+                $status_text = 'Accepted';
+                break;
+            case 'Declined':
+                $status_class = 'bg-red-500/10 text-red-500';
+                $status_text = 'Declined';
+                break;
+            case 'Cancelled':
+                $status_class = 'bg-gray-500/10 text-gray-500';
+                $status_text = 'Cancelled';
+                break;
+            default:
+                $status_class = 'bg-blue-500/10 text-blue-500';
+                $status_text = $booking['status'];
+        }
+        $booking_date = date('F j, Y', strtotime($booking['booking_date']));
+        $burial_date = $booking['deceased_dateOfBurial'] ? date('F j, Y', strtotime($booking['deceased_dateOfBurial'])) : 'Not set';
+        $deceased_name = $booking['deceased_lname'] . ', ' . $booking['deceased_fname'];
+        if (!empty($booking['deceased_midname'])) {
+            $deceased_name .= ' ' . $booking['deceased_midname'];
+        }
+        if (!empty($booking['deceased_suffix'])) {
+            $deceased_name .= ' ' . $booking['deceased_suffix'];
+        }
+        $service_name = $booking['service_name'] ?? 'Customize Package';
+        $selling_price = $booking['selling_price'] ?? 0;
+        
+        // Check if this is a custom package
+        $is_custom_package = is_null($booking['service_id']);
+        
+        if ($is_custom_package) {
+            // Fetch custom package details from customsales_tb
+            $custom_query = "SELECT initial_price, amount_paid, balance 
+                            FROM customsales_tb 
+                            WHERE customer_id = ? 
+                            AND fname_deceased = ? 
+                            AND lname_deceased = ? 
+                            AND date_of_burial = ?
+                            LIMIT 1";
+            
+            $custom_stmt = $conn->prepare($custom_query);
+            $custom_stmt->bind_param("isss", 
+                $user_id,
+                $booking['deceased_fname'],
+                $booking['deceased_lname'],
+                $booking['deceased_dateOfBurial']
+            );
+            $custom_stmt->execute();
+            $custom_result = $custom_stmt->get_result();
+            
+            if ($custom_result->num_rows > 0) {
+                $custom_data = $custom_result->fetch_assoc();
+                // Use custom package data
+                $selling_price = $custom_data['initial_price'];
+                $booking['amount_paid'] = $custom_data['amount_paid'] ?? 0;
+                $custom_balance = $custom_data['balance'] ?? $selling_price;
+            } else {
+                // Fallback if custom data not found
+                $selling_price = $booking['initial_price'] ?? 0;
+                $booking['amount_paid'] = $booking['amount_paid'] ?? 0;
+                $custom_balance = $selling_price - $booking['amount_paid'];
             }
-            $booking_date = date('F j, Y', strtotime($booking['booking_date']));
-            $burial_date = $booking['deceased_dateOfBurial'] ? date('F j, Y', strtotime($booking['deceased_dateOfBurial'])) : 'Not set';
-            $deceased_name = $booking['deceased_lname'] . ', ' . $booking['deceased_fname'];
-            if (!empty($booking['deceased_midname'])) {
-                $deceased_name .= ' ' . $booking['deceased_midname'];
-            }
-            if (!empty($booking['deceased_suffix'])) {
-                $deceased_name .= ' ' . $booking['deceased_suffix'];
-            }
-            $service_name = $booking['service_name'] ?? 'Customize Package';
-            $selling_price = $booking['selling_price'] ?? 0;
-            $price = number_format($selling_price, 2);
-            $amount_paid = $booking['amount_paid'] ? number_format($booking['amount_paid'], 2) : '0.00';
+            $custom_stmt->close();
+        }
+        
+        // Format price - use same variable names as original
+        $price = number_format($selling_price, 2);
+        $amount_paid = $booking['amount_paid'] ? number_format($booking['amount_paid'], 2) : '0.00';
+        
+        // Calculate balance based on package type
+        if ($is_custom_package) {
+            $balance = number_format($custom_balance, 2);
+        } else {
             $balance = number_format($selling_price - ($booking['amount_paid'] ?? 0), 2);
-            ?>
-            <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-4">
-                <div class="bg-navy bg-opacity-10 px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200">
-                    <div class="flex items-center justify-between mb-3">
-                        <span class="<?php echo $status_class; ?> text-xs px-2 py-1 rounded-full"><?php echo $status_text; ?></span>
-                        <p class="text-sm text-gray-500">Booking ID: <?php echo $booking['booking_id']; ?></p>
-                    </div>
-                    <h4 class="font-hedvig text-lg text-navy mb-2"><?php echo htmlspecialchars($service_name); ?></h4>
+        }
+        ?>
+        <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-4">
+            <div class="bg-navy bg-opacity-10 px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="<?php echo $status_class; ?> text-xs px-2 py-1 rounded-full"><?php echo $status_text; ?></span>
+                    <p class="text-sm text-gray-500">Booking ID: <?php echo $booking['booking_id']; ?></p>
                 </div>
-                <div class="p-4 sm:p-6 space-y-3 sm:space-y-4">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
-                        <div>
-                            <p class="text-sm text-gray-500">Deceased Name</p>
-                            <p class="text-navy"><?php echo htmlspecialchars(ucwords(strtolower($deceased_name))); ?></p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-500">Branch</p>
-                            <p class="text-navy"><?php echo htmlspecialchars(ucwords(strtolower($booking['branch_name']))); ?></p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-500">Burial Date</p>
-                            <p class="text-navy"><?php echo htmlspecialchars($burial_date); ?></p>
-                        </div>
+                <h4 class="font-hedvig text-lg text-navy mb-2"><?php echo htmlspecialchars($service_name); ?></h4>
+            </div>
+            <div class="p-4 sm:p-6 space-y-3 sm:space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+                    <div>
+                        <p class="text-sm text-gray-500">Deceased Name</p>
+                        <p class="text-navy"><?php echo htmlspecialchars(ucwords(strtolower($deceased_name))); ?></p>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
-                        <div>
-                            <p class="text-sm text-gray-500">Total Amount</p>
-                            <p class="text-navy font-bold">₱<?php echo htmlspecialchars($price); ?></p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-500">Amount Paid</p>
-                            <p class="text-navy">₱<?php echo htmlspecialchars($amount_paid); ?></p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-500">Balance</p>
-                            <p class="text-navy">₱<?php echo htmlspecialchars($balance); ?></p>
-                        </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Branch</p>
+                        <p class="text-navy"><?php echo htmlspecialchars(ucwords(strtolower($booking['branch_name']))); ?></p>
                     </div>
-                    <div class="flex justify-end">
-                        <button class="view-details bg-navy/5 text-navy px-3 py-1 rounded hover:bg-navy/10 transition text-sm mr-2" data-booking="<?php echo $booking['booking_id']; ?>">
-                            <i class="fas fa-file-alt mr-1"></i> View Details
+                    <div>
+                        <p class="text-sm text-gray-500">Burial Date</p>
+                        <p class="text-navy"><?php echo htmlspecialchars($burial_date); ?></p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+                    <div>
+                        <p class="text-sm text-gray-500">Total Amount</p>
+                        <p class="text-navy font-bold">₱<?php echo htmlspecialchars($price); ?></p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Amount Paid</p>
+                        <p class="text-navy">₱<?php echo htmlspecialchars($amount_paid); ?></p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Balance</p>
+                        <p class="text-navy">₱<?php echo htmlspecialchars($balance); ?></p>
+                    </div>
+                </div>
+                <div class="flex justify-end">
+                    <button class="view-details bg-navy/5 text-navy px-3 py-1 rounded hover:bg-navy/10 transition text-sm mr-2" data-booking="<?php echo $booking['booking_id']; ?>">
+                        <i class="fas fa-file-alt mr-1"></i> View Details
+                    </button>
+                    <?php if ($booking['status'] === 'Accepted' && empty($booking['deathcert_url'])): ?>
+                        <button class="upload-death-cert bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition text-sm mr-2" data-booking="<?php echo $booking['booking_id']; ?>">
+                            <i class="fas fa-upload mr-1"></i> Upload Death Cert
                         </button>
-                        <?php if ($booking['status'] === 'Accepted' && empty($booking['deathcert_url'])): ?>
-                            <button class="upload-death-cert bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition text-sm mr-2" data-booking="<?php echo $booking['booking_id']; ?>">
-                                <i class="fas fa-upload mr-1"></i> Upload Death Cert
-                            </button>
-                        <?php endif; ?>
-                        <?php if ($booking['status'] === 'Accepted'): ?>
-                            <button class="view-receipt bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition text-sm mr-2" data-booking="<?php echo $booking['booking_id']; ?>">
-                                <i class="fas fa-receipt mr-1"></i> View Receipt
-                            </button>
-                        <?php endif; ?>
-                        <?php if ($booking['status'] === 'Pending' || $booking['status'] === 'Declined'): ?>
-                            <button class="modify-booking bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition text-sm mr-2" data-booking="<?php echo $booking['booking_id']; ?>">
-                                <i class="fas fa-edit mr-1"></i> Modify
-                            </button>
-                        <?php endif; ?>
-                        <?php if ($booking['status'] === 'Pending'): ?>
-                            <button class="cancel-booking bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition text-sm" data-booking="<?php echo $booking['booking_id']; ?>">
-                                <i class="fas fa-times mr-1"></i> Cancel
-                            </button>
-                        <?php elseif ($booking['status'] === 'Cancelled'): ?>
-                            <span class="text-gray-500 text-sm py-1 px-3">
-                                <i class="fas fa-ban mr-1"></i> Cancelled
-                            </span>
-                        <?php endif; ?>
-                    </div>
+                    <?php endif; ?>
+                    <?php if ($booking['status'] === 'Accepted'): ?>
+                        <button class="view-receipt bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition text-sm mr-2" data-booking="<?php echo $booking['booking_id']; ?>">
+                            <i class="fas fa-receipt mr-1"></i> View Receipt
+                        </button>
+                    <?php endif; ?>
+                    <?php if ($booking['status'] === 'Pending' || $booking['status'] === 'Declined'): ?>
+                        <button class="modify-booking bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition text-sm mr-2" data-booking="<?php echo $booking['booking_id']; ?>">
+                            <i class="fas fa-edit mr-1"></i> Modify
+                        </button>
+                    <?php endif; ?>
+                    <?php if ($booking['status'] === 'Pending'): ?>
+                        <button class="cancel-booking bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition text-sm" data-booking="<?php echo $booking['booking_id']; ?>">
+                            <i class="fas fa-times mr-1"></i> Cancel
+                        </button>
+                    <?php elseif ($booking['status'] === 'Cancelled'): ?>
+                        <span class="text-gray-500 text-sm py-1 px-3">
+                            <i class="fas fa-ban mr-1"></i> Cancelled
+                        </span>
+                    <?php endif; ?>
                 </div>
             </div>
-            <?php
-        }
-    } else {
-        echo '<p class="text-gray-500">You have no traditional funeral bookings yet.</p>';
+        </div>
+        <?php
     }
-    $response['html'] = ob_get_clean();
+} else {
+    echo '<p class="text-gray-500">You have no traditional funeral bookings yet.</p>';
+}
+$response['html'] = ob_get_clean();
 
     // Generate pagination HTML (show only 3 pages, with First and Last buttons)
     ob_start();
