@@ -441,6 +441,64 @@ function getStarRatingHtml($rating) {
 </div>
 
 <script>
+    // Function from id_confirmation.php to validate search input
+    function validateSearchInput(inputElement) {
+        if (!inputElement) return;
+
+        // Validation for user typing (input event)
+        // Removes non-alphanumeric, limits spaces, removes leading/short spaces
+        inputElement.addEventListener('input', function() {
+            let value = this.value;
+            
+            // 1. Remove characters not allowed (all but letters, numbers, hyphen, underscore, space)
+            value = value.replace(/[^a-zA-Z0-9\s_-]/g, ''); 
+            
+            // 2. Limit consecutive spaces to one
+            value = value.replace(/\s{2,}/g, ' '); 
+            
+            // 3. Remove leading space
+            if (value.startsWith(' ')) {
+                value = value.substring(1);
+            }
+            
+            // 4. Remove space if input length is less than 2
+            if (value.length < 2 && value.includes(' ')) {
+                this.value = value.replace(/\s/g, '');
+                return;
+            }
+
+            this.value = value;
+        });
+        
+        // Validation for pasting content
+        // Removes non-alphanumeric, limits spaces, removes leading/short spaces
+        inputElement.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+            
+            // Clean the pasted text
+            let cleanedText = pastedText;
+            
+            // 1. Remove characters not allowed (all but letters, numbers, hyphen, underscore, space)
+            cleanedText = cleanedText.replace(/[^a-zA-Z0-9\s_-]/g, ''); 
+
+            // 2. Remove consecutive spaces
+            cleanedText = cleanedText.replace(/\s{2,}/g, ' ');
+            
+            // 3. Remove leading space
+            if (cleanedText.startsWith(' ')) {
+                cleanedText = cleanedText.substring(1);
+            }
+            
+            // 4. Remove spaces before 2 characters
+            if (cleanedText.length < 2 && cleanedText.includes(' ')) {
+                cleanedText = cleanedText.replace(/\s/g, '');
+            }
+            
+            document.execCommand('insertText', false, cleanedText);
+        });
+    }
+
     // Mobile sidebar toggle
     document.addEventListener('DOMContentLoaded', function() {
         // Mobile hamburger menu toggle
@@ -459,8 +517,9 @@ function getStarRatingHtml($rating) {
             
             // Simple star rendering logic
             let starsHtml = '';
+            const rating = parseFloat(rating);
             const fullStars = Math.floor(rating);
-            const hasHalfStar = rating % 1 !== 0;
+            const hasHalfStar = (rating % 1) >= 0.5;
             
             for (let i = 0; i < fullStars; i++) {
                 starsHtml += '<i class="fas fa-star"></i>';
@@ -527,13 +586,9 @@ function getStarRatingHtml($rating) {
             }
         });
         
-        // Search functionality
-        const searchInput = document.getElementById('feedbackSearchInput');
-        if (searchInput) {
-            searchInput.addEventListener('input', filterTable);
-        }
-
+        // --- Search functionality (Filter function remains the same) ---
         function filterTable() {
+            // This function uses the *already cleaned* value from the input field
             const searchValue = (searchInput.value || '').toLowerCase();
             const rows = document.querySelectorAll('#feedbackTableBody tr');
             
@@ -546,6 +601,16 @@ function getStarRatingHtml($rating) {
                 
                 row.style.display = matchesSearch ? '' : 'none';
             });
+        }
+        
+        const searchInput = document.getElementById('feedbackSearchInput');
+        if (searchInput) {
+            // 1. Apply validation logic (attaches input and paste handlers)
+            validateSearchInput(searchInput);
+            
+            // 2. Attach the filter logic to the input event. 
+            // This fires AFTER the validation input handler, using the cleaned value.
+            searchInput.addEventListener('input', filterTable);
         }
     });
 </script>
