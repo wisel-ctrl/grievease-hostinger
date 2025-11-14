@@ -3,17 +3,67 @@ session_start();
 
 include 'faviconLogo.php';
 
-// Check if user is logged in and is admin
-if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] != 1) {
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
     header("Location: ../Landing_Page/login.php");
     exit();
 }
+
+// Check for admin user type (user_type = 1)
+if ($_SESSION['user_type'] != 1) {
+    // Redirect to appropriate page based on user type
+    switch ($_SESSION['user_type']) {
+        case 2:
+            header("Location: ../employee/index.php");
+            break;
+        case 3:
+            header("Location: ../customer/index.php");
+            break;
+        default:
+            // Invalid user_type
+            session_destroy();
+            header("Location: ../Landing_Page/login.php");
+    }
+    exit();
+}
+
+// Optional: Check for session timeout (30 minutes)
+$session_timeout = 1800; // 30 minutes in seconds
+if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > $session_timeout)) {
+    // Session has expired
+    session_unset();
+    session_destroy();
+    header("Location: ../Landing_Page/login.php?timeout=1");
+    exit();
+}
+
+// Update last activity time
+$_SESSION['last_activity'] = time();
+
+// Prevent caching for authenticated pages
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
 
 // Set page title
 $pageTitle = "Feedback Management";
 
 // Include header
 include 'admin_header.php';
+
+// Get feedback counts
+$activeCount = 0;
+$archivedCount = 0;
+$countQuery = "SELECT 
+    SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END) as active_count,
+    SUM(CASE WHEN status = 'archived' THEN 1 ELSE 0 END) as archived_count
+    FROM feedback";
+$countResult = $conn->query($countQuery);
+if ($countResult && $countResult->num_rows > 0) {
+    $counts = $countResult->fetch_assoc();
+    $activeCount = $counts['active_count'] ?? 0;
+    $archivedCount = $counts['archived_count'] ?? 0;
+}
 ?>
 
 <!-- Main Content -->
@@ -21,37 +71,47 @@ include 'admin_header.php';
     <!-- Page Header -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
         <div>
-            <h1 class="text-2xl font-bold text-gray-800">Feedback Management</h1>
-            <p class="text-sm text-gray-500 mt-1">Manage customer feedback and reviews</p>
+            <h1 class="text-2xl font-bold text-sidebar-text">Feedback Management</h1>
+            <p class="text-sm text-gray-500 mt-1">Manage and respond to customer feedback and reviews</p>
+        </div>
+        <div class="mt-4 sm:mt-0">
+            <button onclick="exportFeedback('active')" class="inline-flex items-center px-4 py-2 border border-sidebar-accent text-sm font-medium rounded-md text-sidebar-accent bg-white hover:bg-sidebar-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sidebar-accent transition-colors">
+                <i class="fas fa-file-export mr-2"></i> Export Active
+            </button>
+            <button onclick="exportFeedback('archived')" class="ml-2 inline-flex items-center px-4 py-2 border border-sidebar-accent text-sm font-medium rounded-md text-sidebar-accent bg-white hover:bg-sidebar-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sidebar-accent transition-colors">
+                <i class="fas fa-file-archive mr-2"></i> Export Archived
+            </button>
         </div>
     </div>
 
     <!-- Tabs Navigation -->
-    <div class="border-b border-gray-200 mb-6">
+    <div class="border-b border-sidebar-border mb-6">
         <nav class="-mb-px flex space-x-8">
-            <button id="active-tab" class="tab-button active border-b-2 border-sidebar-accent text-sidebar-accent whitespace-nowrap py-4 px-1 text-sm font-medium">
+            <button id="active-tab" class="tab-button active border-b-2 border-sidebar-accent text-sidebar-accent whitespace-nowrap py-4 px-1 text-sm font-medium flex items-center">
+                <i class="fas fa-comment-alt mr-2"></i>
                 Active Feedback
-                <span id="active-count" class="ml-2 bg-sidebar-accent text-white text-xs font-medium px-2 py-0.5 rounded-full">0</span>
+                <span id="active-count" class="ml-2 bg-sidebar-accent text-white text-xs font-medium px-2 py-0.5 rounded-full"><?php echo $activeCount; ?></span>
             </button>
-            <button id="archived-tab" class="tab-button border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 text-sm font-medium">
+            <button id="archived-tab" class="tab-button border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 text-sm font-medium flex items-center">
+                <i class="fas fa-archive mr-2"></i>
                 Archived
-                <span id="archived-count" class="ml-2 bg-gray-200 text-gray-600 text-xs font-medium px-2 py-0.5 rounded-full">0</span>
+                <span id="archived-count" class="ml-2 bg-gray-200 text-gray-600 text-xs font-medium px-2 py-0.5 rounded-full"><?php echo $archivedCount; ?></span>
             </button>
         </nav>
     </div>
 
     <!-- Search and Filter Bar -->
-    <div class="bg-white rounded-lg shadow-sm border border-sidebar-border mb-6">
+    <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border mb-6">
         <div class="p-4">
             <div class="flex flex-col sm:flex-row gap-3">
                 <div class="relative flex-grow">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <i class="fas fa-search text-gray-400"></i>
                     </div>
-                    <input type="text" id="search-input" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent sm:text-sm" placeholder="Search feedback...">
+                    <input type="text" id="search-input" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent sm:text-sm" placeholder="Search feedback by customer name, email, or comment...">
                 </div>
                 <div class="w-full sm:w-48">
-                    <select id="filter-rating" class="block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent sm:text-sm rounded-md">
+                    <select id="filter-rating" class="block w-full pl-3 pr-10 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent">
                         <option value="">All Ratings</option>
                         <option value="5">★★★★★ (5)</option>
                         <option value="4">★★★★☆ (4)</option>
@@ -61,79 +121,128 @@ include 'admin_header.php';
                     </select>
                 </div>
                 <div class="w-full sm:w-48">
-                    <select id="filter-date" class="block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent sm:text-sm rounded-md">
+                    <select id="filter-date" class="block w-full pl-3 pr-10 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent">
                         <option value="">All Time</option>
                         <option value="today">Today</option>
                         <option value="week">This Week</option>
                         <option value="month">This Month</option>
+                        <option value="year">This Year</option>
                     </select>
                 </div>
-                <button id="apply-filters" class="px-4 py-2 bg-sidebar-accent text-white text-sm font-medium rounded-md hover:bg-sidebar-accent/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sidebar-accent">
-                    Apply Filters
+                <button id="reset-filters" class="px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sidebar-accent transition-colors">
+                    <i class="fas fa-sync-alt mr-1"></i> Reset
+                </button>
+                <button id="apply-filters" class="px-4 py-2 bg-sidebar-accent text-white text-sm font-medium rounded-lg hover:bg-sidebar-accent/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sidebar-accent transition-colors">
+                    <i class="fas fa-filter mr-1"></i> Apply
                 </button>
             </div>
         </div>
     </div>
 
     <!-- Feedback List -->
-    <div class="bg-white rounded-lg shadow-sm border border-sidebar-border overflow-hidden">
+    <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border overflow-hidden">
         <!-- Active Feedback Tab Content -->
         <div id="active-feedback" class="feedback-tab-content">
-            <div class="overflow-x-auto">
+            <div class="overflow-x-auto scrollbar-thin">
                 <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
+                    <thead class="bg-sidebar-hover">
                         <tr>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rating</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Feedback</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-sidebar-text uppercase tracking-wider">
+                                <div class="flex items-center">
+                                    <span>Customer</span>
+                                    <button class="ml-1 text-gray-400 hover:text-sidebar-accent focus:outline-none">
+                                        <i class="fas fa-sort"></i>
+                                    </button>
+                                </div>
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-sidebar-text uppercase tracking-wider">
+                                <div class="flex items-center">
+                                    <span>Rating</span>
+                                    <button class="ml-1 text-gray-400 hover:text-sidebar-accent focus:outline-none">
+                                        <i class="fas fa-sort"></i>
+                                    </button>
+                                </div>
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-sidebar-text uppercase tracking-wider">Feedback</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-sidebar-text uppercase tracking-wider">
+                                <div class="flex items-center">
+                                    <span>Date</span>
+                                    <button class="ml-1 text-gray-400 hover:text-sidebar-accent focus:outline-none">
+                                        <i class="fas fa-sort"></i>
+                                    </button>
+                                </div>
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-sidebar-text uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="active-feedback-body" class="bg-white divide-y divide-gray-200">
-                        <!-- Feedback items will be loaded here via JavaScript -->
-                        <tr>
-                            <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">Loading feedback...</td>
+                        <!-- Loading Skeleton -->
+                        <tr id="loading-skeleton">
+                            <td colspan="5" class="px-6 py-4">
+                                <div class="animate-pulse space-y-4">
+                                    <?php for($i = 0; $i < 5; $i++): ?>
+                                    <div class="flex items-center justify-between py-3">
+                                        <div class="h-4 bg-gray-200 rounded w-1/4"></div>
+                                        <div class="h-4 bg-gray-200 rounded w-1/6"></div>
+                                        <div class="h-4 bg-gray-200 rounded w-1/3"></div>
+                                        <div class="h-4 bg-gray-200 rounded w-1/6"></div>
+                                        <div class="h-4 bg-gray-200 rounded w-1/5"></div>
+                                    </div>
+                                    <?php endfor; ?>
+                                </div>
+                            </td>
+                        </tr>
+                        <!-- Empty state will be shown if no feedback -->
+                        <tr id="empty-state" class="hidden">
+                            <td colspan="5" class="px-6 py-12 text-center">
+                                <div class="flex flex-col items-center justify-center">
+                                    <i class="fas fa-comment-slash text-4xl text-gray-300 mb-3"></i>
+                                    <h3 class="text-lg font-medium text-gray-900">No feedback found</h3>
+                                    <p class="text-gray-500 mt-1">There are no feedback items to display.</p>
+                                </div>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
             
             <!-- Pagination -->
-            <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+            <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-sidebar-border sm:px-6">
                 <div class="flex-1 flex justify-between sm:hidden">
-                    <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    <button id="prev-page-mobile" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
                         Previous
-                    </a>
-                    <a href="#" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    </button>
+                    <button id="next-page-mobile" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
                         Next
-                    </a>
+                    </button>
                 </div>
                 <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                     <div>
-                        <p class="text-sm text-gray-700">
-                            Showing <span class="font-medium">1</span> to <span class="font-medium">10</span> of <span class="font-medium">20</span> results
+                        <p id="pagination-info" class="text-sm text-gray-700">
+                            Loading...
                         </p>
                     </div>
                     <div>
                         <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                            <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                            <button id="first-page" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                                <span class="sr-only">First</span>
+                                <i class="fas fa-angle-double-left h-4 w-4"></i>
+                            </button>
+                            <button id="prev-page" class="relative inline-flex items-center px-2 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
                                 <span class="sr-only">Previous</span>
                                 <i class="fas fa-chevron-left h-4 w-4"></i>
-                            </a>
-                            <a href="#" aria-current="page" class="z-10 bg-sidebar-accent border-sidebar-accent text-white relative inline-flex items-center px-4 py-2 border text-sm font-medium">
-                                1
-                            </a>
-                            <a href="#" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
-                                2
-                            </a>
-                            <a href="#" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
-                                3
-                            </a>
-                            <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                            </button>
+                            <div id="page-numbers" class="flex">
+                                <!-- Page numbers will be inserted here -->
+                            </div>
+                            <button id="next-page" class="relative inline-flex items-center px-2 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
                                 <span class="sr-only">Next</span>
                                 <i class="fas fa-chevron-right h-4 w-4"></i>
-                            </a>
+                            </button>
+                            <button id="last-page" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                                <span class="sr-only">Last</span>
+                                <i class="fas fa-angle-double-right h-4 w-4"></i>
+                            </button>
                         </nav>
                     </div>
                 </div>
@@ -142,41 +251,91 @@ include 'admin_header.php';
 
         <!-- Archived Feedback Tab Content (initially hidden) -->
         <div id="archived-feedback" class="feedback-tab-content hidden">
-            <div class="overflow-x-auto">
+            <div class="overflow-x-auto scrollbar-thin">
                 <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
+                    <thead class="bg-sidebar-hover">
                         <tr>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rating</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Feedback</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date Archived</th>
-                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-sidebar-text uppercase tracking-wider">
+                                <div class="flex items-center">
+                                    <span>Customer</span>
+                                    <button class="ml-1 text-gray-400 hover:text-sidebar-accent focus:outline-none">
+                                        <i class="fas fa-sort"></i>
+                                    </button>
+                                </div>
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-sidebar-text uppercase tracking-wider">
+                                <div class="flex items-center">
+                                    <span>Rating</span>
+                                    <button class="ml-1 text-gray-400 hover:text-sidebar-accent focus:outline-none">
+                                        <i class="fas fa-sort"></i>
+                                    </button>
+                                </div>
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-sidebar-text uppercase tracking-wider">Feedback</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-sidebar-text uppercase tracking-wider">
+                                <div class="flex items-center">
+                                    <span>Date Archived</span>
+                                    <button class="ml-1 text-gray-400 hover:text-sidebar-accent focus:outline-none">
+                                        <i class="fas fa-sort"></i>
+                                    </button>
+                                </div>
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-sidebar-text uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="archived-feedback-body" class="bg-white divide-y divide-gray-200">
-                        <!-- Archived feedback items will be loaded here via JavaScript -->
+                        <!-- Empty state -->
                         <tr>
-                            <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">No archived feedback found.</td>
+                            <td colspan="5" class="px-6 py-12 text-center">
+                                <div class="flex flex-col items-center justify-center">
+                                    <i class="fas fa-archive text-4xl text-gray-300 mb-3"></i>
+                                    <h3 class="text-lg font-medium text-gray-900">No archived feedback</h3>
+                                    <p class="text-gray-500 mt-1">Archived feedback will appear here.</p>
+                                </div>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
             
             <!-- Pagination -->
-            <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+            <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-sidebar-border sm:px-6">
                 <div class="flex-1 flex justify-between sm:hidden">
-                    <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    <button id="archived-prev-page-mobile" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
                         Previous
-                    </a>
-                    <a href="#" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    </button>
+                    <button id="archived-next-page-mobile" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
                         Next
-                    </a>
+                    </button>
                 </div>
                 <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                     <div>
-                        <p class="text-sm text-gray-700">
-                            Showing <span class="font-medium">0</span> to <span class="font-medium">0</span> of <span class="font-medium">0</span> results
+                        <p id="archived-pagination-info" class="text-sm text-gray-700">
+                            No archived feedback
                         </p>
+                    </div>
+                    <div>
+                        <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                            <button id="archived-first-page" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                                <span class="sr-only">First</span>
+                                <i class="fas fa-angle-double-left h-4 w-4"></i>
+                            </button>
+                            <button id="archived-prev-page" class="relative inline-flex items-center px-2 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                                <span class="sr-only">Previous</span>
+                                <i class="fas fa-chevron-left h-4 w-4"></i>
+                            </button>
+                            <div id="archived-page-numbers" class="flex">
+                                <!-- Page numbers will be inserted here -->
+                            </div>
+                            <button id="archived-next-page" class="relative inline-flex items-center px-2 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                                <span class="sr-only">Next</span>
+                                <i class="fas fa-chevron-right h-4 w-4"></i>
+                            </button>
+                            <button id="archived-last-page" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                                <span class="sr-only">Last</span>
+                                <i class="fas fa-angle-double-right h-4 w-4"></i>
+                            </button>
+                        </nav>
                     </div>
                 </div>
             </div>
