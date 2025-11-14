@@ -59,6 +59,11 @@ $_SESSION['last_activity'] = time();
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
+
+function capitalizeWords($string) {
+    return ucwords(strtolower(trim($string)));
+}
+
 ?>
 <?php
 // Calculate total expenses
@@ -1129,7 +1134,7 @@ $conn->close();
                   echo '<input type="radio" name="expenseBranch" value="' . $row['branch_id'] . '"' . 
                        ($first ? ' checked' : '') . ' required class="hidden peer">';
                   echo '<div class="w-4 h-4 rounded-full border-2 border-gold flex items-center justify-center peer-checked:bg-gold peer-checked:border-darkgold transition-colors"></div>';
-                  echo '<span class="text-sm text-gray-700">' . htmlspecialchars($row['branch_name']) . '</span>';
+                  echo '<span class="text-sm text-gray-700">' . capitalizeWords($row['branch_name']) . '</span>';
                   echo '</label>';
                   $first = false;
               }
@@ -1368,7 +1373,7 @@ $conn->close();
                           name="editExpenseBranch" value="' . htmlspecialchars($row['branch_id']) . '" 
                           class="hidden peer">';
                     echo '<div class="w-4 h-4 rounded-full border-2 border-gold flex items-center justify-center peer-checked:bg-gold peer-checked:border-darkgold transition-colors"></div>';
-                    echo '<span class="text-sm text-gray-700">' . htmlspecialchars($row['branch_name']) . '</span>';
+                    echo '<span class="text-sm text-gray-700">' . capitalizeWords($row['branch_name']) . '</span>';
                     echo '</label>';
                 }
             } else {
