@@ -1,14 +1,11 @@
 <?php
 session_start();
 
-// Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
-    // Redirect to login page
     header("Location: ../Landing_Page/login.php");
     exit();
 }
 
-// Check for correct user type based on which directory we're in
 $current_directory = basename(dirname($_SERVER['PHP_SELF']));
 $allowed_user_type = null;
 
@@ -24,10 +21,8 @@ switch ($current_directory) {
         break;
 }
 
-// Optional: Check for session timeout (30 minutes)
-$session_timeout = 1800; // 30 minutes in seconds
+$session_timeout = 1800;
 if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > $session_timeout)) {
-    // Session has expired
     session_unset();
     session_destroy();
     header("Location: ../Landing_Page/login.php?timeout=1");
@@ -38,7 +33,6 @@ header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 
-// If user is not the correct type for this page, redirect to appropriate page
 if ($_SESSION['user_type'] != $allowed_user_type) {
     switch ($_SESSION['user_type']) {
         case 1:
@@ -51,120 +45,163 @@ if ($_SESSION['user_type'] != $allowed_user_type) {
             header("Location: ../customer/index.php");
             break;
         default:
-            // Invalid user_type
             session_destroy();
             header("Location: ../Landing_Page/login.php");
     }
     exit();
 }
 
-require_once '../db_connect.php'; // Database connection
+require_once '../db_connect.php';
 
-                // Get user's first name from database
-                $user_id = $_SESSION['user_id'];
-                $query = "SELECT first_name , last_name , email , birthdate FROM users WHERE id = ?";
-                $stmt = $conn->prepare($query);
-                $stmt->bind_param("i", $user_id);
-                $stmt->execute();
-                $result = $stmt->get_result();
-                $row = $result->fetch_assoc();
-                $first_name = $row['first_name']; // We're confident user_id exists
-                $last_name = $row['last_name'];
-                $email = $row['email'];
-                
-                // Get notification count for the current user
-                $notifications_count = [
-                    'total' => 0,
-                    'pending' => 0,
-                    'accepted' => 0,
-                    'declined' => 0,
-                    'id_pending' => 0,
-                    'id_accepted' => 0,
-                    'id_declined' => 0
-                ];
-                
-                // Get user's life plan bookings from database (notifications)
-                $lifeplan_query = "SELECT * FROM lifeplan_booking_tb WHERE customer_id = ? ORDER BY initial_date DESC";
-                $lifeplan_stmt = $conn->prepare($lifeplan_query);
-                $lifeplan_stmt->bind_param("i", $user_id);
-                $lifeplan_stmt->execute();
-                $lifeplan_result = $lifeplan_stmt->get_result();
-                $lifeplan_bookings = [];
-                
-                while ($lifeplan_booking = $lifeplan_result->fetch_assoc()) {
-                    $lifeplan_bookings[] = $lifeplan_booking;
-                    
-                    switch ($lifeplan_booking['booking_status']) {
-                        case 'pending':
-                            $notifications_count['total']++;
-                            $notifications_count['pending']++;
-                            break;
-                        case 'accepted':
-                            $notifications_count['total']++;
-                            $notifications_count['accepted']++;
-                            break;
-                        case 'decline':
-                            $notifications_count['total']++;
-                            $notifications_count['declined']++;
-                            break;
-                    }
-                }
-                
-                if (isset($_SESSION['user_id'])) {
-                    $user_id = $_SESSION['user_id'];
-                    $query = "SELECT status FROM booking_tb WHERE customerID = ?";
-                    $stmt = $conn->prepare($query);
-                    $stmt->bind_param("i", $user_id);
-                    $stmt->execute();
-                    $result = $stmt->get_result();
-                    
-                    while ($booking = $result->fetch_assoc()) {
-                        $notifications_count['total']++;
-                        
-                        switch ($booking['status']) {
-                            case 'Pending':
-                                $notifications_count['pending']++;
-                                break;
-                            case 'Accepted':
-                                $notifications_count['accepted']++;
-                                break;
-                            case 'Declined':
-                                $notifications_count['declined']++;
-                                break;
-                        }
-                    }
-                    $stmt->close();
-                    
-                    $query = "SELECT is_validated FROM valid_id_tb WHERE id = ?";
-                    $stmt = $conn->prepare($query);
-                    $stmt->bind_param("i", $user_id);
-                    $stmt->execute();
-                    $result = $stmt->get_result();
-                    
-                    if ($id_validation = $result->fetch_assoc()) {
-                        if ($id_validation['is_validated'] == 'no') {
-                            $notifications_count['id_validation']++;
-                            $notifications_count['total']++;
-                        }
-                    }
-                    $stmt->close();
-                    }
-                
-                
-                $profile_query = "SELECT profile_picture FROM users WHERE id = ?";
-                $profile_stmt = $conn->prepare($profile_query);
-                $profile_stmt->bind_param("i", $user_id);
-                $profile_stmt->execute();
-                $profile_result = $profile_stmt->get_result();
-                $profile_data = $profile_result->fetch_assoc();
-                
-                $profile_picture = $profile_data['profile_picture'];
-                
-                $conn->close();
+$user_id = $_SESSION['user_id'];
+$query = "SELECT first_name , last_name , email , birthdate FROM users WHERE id = ?";
+$stmt = $conn->prepare($query);
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$row = $result->fetch_assoc();
+$first_name = $row['first_name'];
+$last_name = $row['last_name'];
+$email = $row['email'];
 
-// No backend logic - purely for UI demonstration
+$notifications_count = [
+    'total' => 0,
+    'pending' => 0,
+    'accepted' => 0,
+    'declined' => 0,
+    'id_pending' => 0,
+    'id_accepted' => 0,
+    'id_declined' => 0
+];
+
+$lifeplan_query = "SELECT * FROM lifeplan_booking_tb WHERE customer_id = ? ORDER BY initial_date DESC";
+$lifeplan_stmt = $conn->prepare($lifeplan_query);
+$lifeplan_stmt->bind_param("i", $user_id);
+$lifeplan_stmt->execute();
+$lifeplan_result = $lifeplan_stmt->get_result();
+$lifeplan_bookings = [];
+
+while ($lifeplan_booking = $lifeplan_result->fetch_assoc()) {
+    $lifeplan_bookings[] = $lifeplan_booking;
+    
+    switch ($lifeplan_booking['booking_status']) {
+        case 'pending':
+            $notifications_count['total']++;
+            $notifications_count['pending']++;
+            break;
+        case 'accepted':
+            $notifications_count['total']++;
+            $notifications_count['accepted']++;
+            break;
+        case 'decline':
+            $notifications_count['total']++;
+            $notifications_count['declined']++;
+            break;
+    }
+}
+
+if (isset($_SESSION['user_id'])) {
+    $user_id = $_SESSION['user_id'];
+    $query = "SELECT status FROM booking_tb WHERE customerID = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    while ($booking = $result->fetch_assoc()) {
+        $notifications_count['total']++;
+        
+        switch ($booking['status']) {
+            case 'Pending':
+                $notifications_count['pending']++;
+                break;
+            case 'Accepted':
+                $notifications_count['accepted']++;
+                break;
+            case 'Declined':
+                $notifications_count['declined']++;
+                break;
+        }
+    }
+    $stmt->close();
+    
+    $query = "SELECT is_validated FROM valid_id_tb WHERE id = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    if ($id_validation = $result->fetch_assoc()) {
+        if ($id_validation['is_validated'] == 'no') {
+            $notifications_count['id_validation']++;
+            $notifications_count['total']++;
+        }
+    }
+    $stmt->close();
+}
+
+$profile_query = "SELECT profile_picture FROM users WHERE id = ?";
+$profile_stmt = $conn->prepare($profile_query);
+$profile_stmt->bind_param("i", $user_id);
+$profile_stmt->execute();
+$profile_result = $profile_stmt->get_result();
+$profile_data = $profile_result->fetch_assoc();
+
+$profile_picture = $profile_data['profile_picture'];
+
 $success = false;
 $error = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $rating = isset($_POST['rating']) ? intval($_POST['rating']) : 0;
+    $feedback_text = isset($_POST['feedback']) ? trim($_POST['feedback']) : '';
+    $service_id = isset($_POST['service_id']) ? intval($_POST['service_id']) : NULL;
+    
+    // Check if user already submitted feedback for this service
+    if ($service_id) {
+        $check_feedback_query = "SELECT id FROM feedback_tb WHERE customer_id = ? AND service_id = ?";
+        $check_stmt = $conn->prepare($check_feedback_query);
+        $check_stmt->bind_param("ii", $user_id, $service_id);
+        $check_stmt->execute();
+        $check_result = $check_stmt->get_result();
+        
+        if ($check_result->num_rows > 0) {
+            $error = 'You have already submitted feedback for this service. Each user can only submit one feedback per service.';
+            $check_stmt->close();
+        } else {
+            $check_stmt->close();
+            
+            // Proceed with validation and insertion
+            if ($rating === 0) {
+                $error = 'Please select a rating by clicking on the stars.';
+            } elseif ($rating < 1 || $rating > 5) {
+                $error = 'Please select a valid rating between 1 and 5 stars.';
+            } elseif (empty($feedback_text)) {
+                $error = 'Please provide your feedback.';
+            } else {
+                $ph_time = new DateTime('now', new DateTimeZone('Asia/Manila'));
+                $created_at = $ph_time->format('Y-m-d H:i:s');
+                
+                $insert_query = "INSERT INTO feedback_tb (customer_id, service_id, rating, feedback_text, status, created_at) 
+                                VALUES (?, ?, ?, ?, 'Hidden', ?)";
+                $insert_stmt = $conn->prepare($insert_query);
+                $insert_stmt->bind_param("iiiss", $user_id, $service_id, $rating, $feedback_text, $created_at);
+                
+                if ($insert_stmt->execute()) {
+                    $success = true;
+                } else {
+                    $error = 'Sorry, there was an error submitting your feedback. Please try again.';
+                }
+                
+                $insert_stmt->close();
+            }
+        }
+    } else {
+        $error = 'Invalid service ID. Please try again.';
+    }
+}
+
+$conn->close();
 ?>
 
 <!DOCTYPE html>
@@ -271,16 +308,13 @@ $error = '';
     </style>
 </head>
 <body class="bg-cream overflow-x-hidden w-full max-w-full m-0 p-0 font-hedvig">
-    <!-- Fixed Navigation Bar -->
     <nav class="bg-black text-white shadow-md w-full fixed top-0 left-0 z-50 px-4 sm:px-6 lg:px-8" style="height: var(--navbar-height);">
         <div class="flex justify-between items-center h-16">
-            <!-- Left side: Logo and Text with Link -->
             <a href="index.php" class="flex items-center space-x-2">
                 <img src="../Landing_Page/Landing_images/logo.png" alt="Logo" class="h-[42px] w-[38px]">
                 <span class="text-yellow-600 text-3xl">GrieveEase</span>
             </a>
             
-            <!-- Center: Navigation Links (Hidden on small screens) -->
             <div class="hidden md:flex space-x-6">
                 <a href="index.php" class="text-white hover:text-gray-300 transition relative group">
                     Home
@@ -308,7 +342,6 @@ $error = '';
                 </a>
             </div>
             
-            <!-- User Menu -->
             <div class="hidden md:flex items-center space-x-4">
                 <a href="notification.php" class="relative text-white hover:text-yellow-600 transition-colors">
                     <i class="fas fa-bell"></i>
@@ -353,7 +386,6 @@ $error = '';
                 </div>
             </div>
             
-            <!-- Mobile menu header -->
             <div class="md:hidden flex justify-between items-center px-4 py-3 border-b border-gray-700">
                 <div class="flex items-center space-x-4">
                     <a href="notification.php" class="relative text-white hover:text-yellow-600 transition-colors">
@@ -373,7 +405,6 @@ $error = '';
             </div>
         </div>
         
-        <!-- Mobile Menu -->
         <div id="mobile-menu" class="hidden md:hidden fixed left-0 right-0 top-[--navbar-height] bg-black/90 backdrop-blur-md p-4 z-40 max-h-[calc(100vh-var(--navbar-height))] overflow-y-auto">
             <div class="space-y-2">
                 <a href="index.php" class="block text-white py-3 px-4 hover:bg-gray-800 rounded-lg transition-colors duration-300 relative group">
@@ -435,11 +466,8 @@ $error = '';
         </div>
     </nav>
 
-    <!-- Main Content -->
     <main class="max-w-screen-xl mx-auto px-4 sm:px-6 py-8 mt-[var(--navbar-height)]">
-        <!-- Welcome Section -->
         <div class="bg-gradient-to-r from-navy/90 to-navy/40 rounded-xl p-6 sm:p-10 mb-8 relative overflow-hidden">
-            <!-- Background Pattern -->
             <div class="absolute inset-0 bg-center bg-cover bg-no-repeat transition-transform duration-10000 ease-in-out hover:scale-105"
                  style="background-image: url('../Landing_Page/Landing_images/black-bg-image.jpg');">
                 <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-black/80"></div>
@@ -456,12 +484,11 @@ $error = '';
             </div>
         </div>
         
-        <!-- Feedback Form Card -->
         <div class="max-w-4xl mx-auto">
             <div class="bg-white rounded-xl shadow-lg overflow-hidden dashboard-card transition-all duration-300">
                 <div class="p-6 sm:p-8">
-                    <!-- Success Message (Hidden by default, shown via JS) -->
-                    <div id="success-message" class="hidden bg-gradient-to-r from-green-50 to-green-100 border-l-4 border-green-500 text-green-700 px-6 py-5 rounded-lg mb-6 fade-in-up" role="alert">
+                    <?php if ($success): ?>
+                    <div id="success-message" class="bg-gradient-to-r from-green-50 to-green-100 border-l-4 border-green-500 text-green-700 px-6 py-5 rounded-lg mb-6 fade-in-up" role="alert">
                         <div class="flex items-center mb-3">
                             <i class="fas fa-check-circle text-3xl mr-3"></i>
                             <div>
@@ -478,86 +505,82 @@ $error = '';
                             </a>
                         </div>
                     </div>
+                    <?php endif; ?>
 
-                    <!-- Error Message (Hidden by default, shown via JS) -->
-                    <div id="error-message" class="hidden bg-gradient-to-r from-red-50 to-red-100 border-l-4 border-red-500 text-red-700 px-6 py-4 rounded-lg mb-6 fade-in-up" role="alert">
+                    <?php if (!empty($error)): ?>
+                    <div id="error-message" class="bg-gradient-to-r from-red-50 to-red-100 border-l-4 border-red-500 text-red-700 px-6 py-4 rounded-lg mb-6 fade-in-up" role="alert">
                         <div class="flex items-center">
                             <i class="fas fa-exclamation-circle text-2xl mr-3"></i>
                             <div>
                                 <strong class="font-bold">Error!</strong>
-                                <span id="error-text" class="block text-sm mt-1"></span>
+                                <span id="error-text" class="block text-sm mt-1"><?php echo htmlspecialchars($error); ?></span>
                             </div>
                         </div>
                     </div>
+                    <?php endif; ?>
 
-                    <!-- Feedback Form -->
-                    <form id="feedback-form" class="space-y-8">
-                            <!-- Rating Section -->
-                            <div class="bg-gradient-to-br from-yellow-50 to-orange-50 p-6 rounded-xl border border-yellow-200">
-                                <label class="block text-navy text-lg font-hedvig mb-4 text-center">
-                                    <i class="fas fa-star text-yellow-600 mr-2"></i>
-                                    How would you rate your experience?
-                                    <span class="text-red-500">*</span>
-                                </label>
-                                <div class="rating-container py-4">
-                                    <input type="radio" id="star5" name="rating" value="5" class="rating-input" required>
-                                    <label for="star5" class="rating-label" title="5 stars">★</label>
-                                    
-                                    <input type="radio" id="star4" name="rating" value="4" class="rating-input">
-                                    <label for="star4" class="rating-label" title="4 stars">★</label>
-                                    
-                                    <input type="radio" id="star3" name="rating" value="3" class="rating-input">
-                                    <label for="star3" class="rating-label" title="3 stars">★</label>
-                                    
-                                    <input type="radio" id="star2" name="rating" value="2" class="rating-input">
-                                    <label for="star2" class="rating-label" title="2 stars">★</label>
-                                    
-                                    <input type="radio" id="star1" name="rating" value="1" class="rating-input">
-                                    <label for="star1" class="rating-label" title="1 star">★</label>
-                                </div>
-                                <p class="text-center text-sm text-gray-600 mt-2">Click on the stars to rate your experience</p>
+                    <form id="feedback-form" method="POST" class="space-y-8">
+                        <input type="hidden" name="service_id" value="<?php echo isset($_GET['service_id']) ? htmlspecialchars($_GET['service_id']) : ''; ?>">
+                        <div class="bg-gradient-to-br from-yellow-50 to-orange-50 p-6 rounded-xl border border-yellow-200">
+                            <label class="block text-navy text-lg font-hedvig mb-4 text-center">
+                                <i class="fas fa-star text-yellow-600 mr-2"></i>
+                                How would you rate your experience?
+                                <span class="text-red-500">*</span>
+                            </label>
+                            <div class="rating-container py-4">
+                                <input type="radio" id="star5" name="rating" value="5" class="rating-input">
+                                <label for="star5" class="rating-label" title="5 stars">★</label>
+                                
+                                <input type="radio" id="star4" name="rating" value="4" class="rating-input">
+                                <label for="star4" class="rating-label" title="4 stars">★</label>
+                                
+                                <input type="radio" id="star3" name="rating" value="3" class="rating-input">
+                                <label for="star3" class="rating-label" title="3 stars">★</label>
+                                
+                                <input type="radio" id="star2" name="rating" value="2" class="rating-input">
+                                <label for="star2" class="rating-label" title="2 stars">★</label>
+                                
+                                <input type="radio" id="star1" name="rating" value="1" class="rating-input">
+                                <label for="star1" class="rating-label" title="1 star">★</label>
                             </div>
+                            <p class="text-center text-sm text-gray-600 mt-2">Click on the stars to rate your experience</p>
+                        </div>
 
-                            <!-- Feedback Section -->
-                            <div>
-                                <label for="feedback" class="block text-navy text-lg font-hedvig mb-3">
-                                    <i class="fas fa-pen text-yellow-600 mr-2"></i>
-                                    Your Feedback
-                                    <span class="text-red-500">*</span>
-                                </label>
-                                <textarea id="feedback" name="feedback" rows="8" 
-                                    class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-yellow-600 transition-all"
-                                    placeholder="Please share your thoughts about our service. Your feedback helps us improve and serve you better..."
-                                    required></textarea>
-                                <p class="text-sm text-gray-500 mt-2"><i class="fas fa-info-circle mr-1"></i>Please provide detailed feedback to help us understand your experience better.</p>
-                            </div>
+                        <div>
+                            <label for="feedback" class="block text-navy text-lg font-hedvig mb-3">
+                                <i class="fas fa-pen text-yellow-600 mr-2"></i>
+                                Your Feedback
+                                <span class="text-red-500">*</span>
+                            </label>
+                            <textarea id="feedback" name="feedback" rows="8" 
+                                class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-yellow-600 transition-all"
+                                placeholder="Please share your thoughts about our service. Your feedback helps us improve and serve you better..."
+                                required></textarea>
+                            <p class="text-sm text-gray-500 mt-2"><i class="fas fa-info-circle mr-1"></i>Please provide detailed feedback to help us understand your experience better.</p>
+                        </div>
 
-                            <!-- Buttons -->
-                            <div class="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4 pt-4 border-t border-gray-200">
-                                <button type="button" onclick="window.history.back()" class="inline-flex items-center justify-center px-6 py-3 border-2 border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 font-medium transition-all duration-300">
-                                    <i class="fas fa-times mr-2"></i> Cancel
-                                </button>
-                                <button type="submit" class="inline-flex items-center justify-center px-6 py-3 rounded-lg text-white bg-yellow-600 hover:bg-darkgold font-medium transition-all duration-300 shadow-lg hover:shadow-xl pulse-slow">
-                                    <i class="fas fa-paper-plane mr-2"></i> Submit Feedback
-                                </button>
-                            </div>
-                        </form>
+                        <div class="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4 pt-4 border-t border-gray-200">
+                            <button type="button" onclick="window.history.back()" class="inline-flex items-center justify-center px-6 py-3 border-2 border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 font-medium transition-all duration-300">
+                                <i class="fas fa-times mr-2"></i> Cancel
+                            </button>
+                            <button type="submit" class="inline-flex items-center justify-center px-6 py-3 rounded-lg text-white bg-yellow-600 hover:bg-darkgold font-medium transition-all duration-300 shadow-lg hover:shadow-xl pulse-slow">
+                                <i class="fas fa-paper-plane mr-2"></i> Submit Feedback
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- Footer -->
     <footer class="bg-black font-playfair text-white py-12 mt-12">
         <div class="container mx-auto px-6">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <!-- Company Info -->
                 <div>
                     <h3 class="text-yellow-600 text-2xl mb-4">GrieveEase</h3>
                     <p class="text-gray-300 mb-4">Providing dignified funeral services with compassion and respect since 1980.</p>
                 </div>
                 
-                <!-- Quick Links -->
                 <div>
                     <h3 class="text-lg mb-4">Quick Links</h3>
                     <ul class="space-y-2">
@@ -569,7 +592,6 @@ $error = '';
                     </ul>
                 </div>
                 
-                <!-- Services -->
                 <div>
                     <h3 class="text-lg mb-4">Our Services</h3>
                     <ul class="space-y-2">
@@ -578,7 +600,6 @@ $error = '';
                     </ul>
                 </div>
                 
-                <!-- Contact Info -->
                 <div>
                     <h3 class="text-lg mb-4">Contact Us</h3>
                     <ul class="space-y-2">
@@ -613,6 +634,7 @@ $error = '';
     </footer>
 
     <script>
+        
         // Toggle mobile menu
         function toggleMenu() {
             const mobileMenu = document.getElementById('mobile-menu');
@@ -637,43 +659,32 @@ $error = '';
             
             // Form submission handler
             form.addEventListener('submit', function(e) {
-                e.preventDefault(); // Prevent actual form submission
+                e
                 
-                // Get form data
-                const rating = document.querySelector('input[name="rating"]:checked');
+                
                 const feedback = document.getElementById('feedback').value.trim();
                 
-                // Validate form
-                if (!rating) {
-                    // Show error
-                    errorText.textContent = 'Please select a rating between 1 and 5';
-                    errorMessage.classList.remove('hidden');
-                    successMessage.classList.add('hidden');
-                    
-                    // Scroll to error
-                    errorMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    
-                    // Hide error after 5 seconds
-                    setTimeout(() => {
-                        errorMessage.classList.add('hidden');
-                    }, 5000);
-                    return;
+                const ratingInputs = document.querySelectorAll('input[name="rating"]');
+                let ratingSelected = false;
+                
+                // Check if any rating is selected
+                ratingInputs.forEach(input => {
+                    if (input.checked) {
+                        ratingSelected = true;
+                    }
+                });
+                
+                // If no rating selected, prevent default and show error
+                if (!ratingSelected) {
+                    e.preventDefault();
+                    showError('Please select a rating by clicking on the stars.');
+                    return false;
                 }
                 
                 if (!feedback) {
-                    // Show error
-                    errorText.textContent = 'Please provide your feedback';
-                    errorMessage.classList.remove('hidden');
-                    successMessage.classList.add('hidden');
-                    
-                    // Scroll to error
-                    errorMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    
-                    // Hide error after 5 seconds
-                    setTimeout(() => {
-                        errorMessage.classList.add('hidden');
-                    }, 5000);
-                    return;
+                    e.preventDefault();
+                    showError('Please provide your feedback');
+                    return false;
                 }
                 
                 // Success - Show success message
@@ -695,6 +706,53 @@ $error = '';
                     form.reset();
                 }, 1000);
             });
+            
+            function showError(message) {
+                // Create or update error message
+                let errorMessageDiv = document.getElementById('error-message');
+                let errorTextSpan = document.getElementById('error-text');
+                
+                if (!errorMessageDiv) {
+                    // Create error message element if it doesn't exist
+                    errorMessageDiv = document.createElement('div');
+                    errorMessageDiv.id = 'error-message';
+                    errorMessageDiv.className = 'bg-gradient-to-r from-red-50 to-red-100 border-l-4 border-red-500 text-red-700 px-6 py-4 rounded-lg mb-6 fade-in-up';
+                    errorMessageDiv.innerHTML = `
+                        <div class="flex items-center">
+                            <i class="fas fa-exclamation-circle text-2xl mr-3"></i>
+                            <div>
+                                <strong class="font-bold">Error!</strong>
+                                <span id="error-text" class="block text-sm mt-1">${message}</span>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Insert before the form
+                    const form = document.getElementById('feedback-form');
+                    form.parentNode.insertBefore(errorMessageDiv, form);
+                } else {
+                    // Update existing error message
+                    errorTextSpan = document.getElementById('error-text');
+                    if (errorTextSpan) {
+                        errorTextSpan.textContent = message;
+                    }
+                    errorMessageDiv.classList.remove('hidden');
+                }
+                
+                // Hide success message if it exists
+                const successMessage = document.getElementById('success-message');
+                if (successMessage) {
+                    successMessage.classList.add('hidden');
+                }
+                
+                // Scroll to error message
+                errorMessageDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                // Hide error after 5 seconds
+                setTimeout(() => {
+                    errorMessageDiv.classList.add('hidden');
+                }, 5000);
+            }
         });
     </script>
 </body>
