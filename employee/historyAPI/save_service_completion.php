@@ -51,6 +51,13 @@ try {
     $discountedPrice = $serviceData['discounted_price'];
     $service_id = $serviceData['service_id'];
 
+    // Calculate chapel cost if used
+    $chapelCost = 0;
+    if (isset($data['used_chapel']) && $data['used_chapel'] === 'Yes' && isset($data['chapel_days'])) {
+        $chapelCost = intval($data['chapel_days']) * 6000;
+        $discountedPrice += $chapelCost; // Add chapel cost to the total price
+    }
+
     // Get casket_id from services_tb
     $getCasketStmt = $conn->prepare("SELECT casket_id FROM services_tb WHERE service_id = ?");
     if ($getCasketStmt === false) {
@@ -114,17 +121,31 @@ try {
         }
     }
 
-    // Prepare update parameters
-    $updateFields = ["status = 'Completed'"];
+    // Prepare update parameters with new fields
+    $updateFields = [
+        "status = 'Completed'",
+        "interment_place = ?",
+        "use_chapel = ?",
+        "chapel_days = ?",
+        "discounted_price = ?" // Update discounted price with chapel cost
+    ];
+    
     $params = [];
     $types = "";
+    
+    // Add new fields
+    $types .= "ssid";
+    $params[] = $data['interment_place'] ?? '';
+    $params[] = $data['used_chapel'] ?? 'No';
+    $params[] = $data['chapel_days'] ?? 0;
+    $params[] = $discountedPrice; // Updated price with chapel cost
     
     if (!empty($data['balance_settled'])) {
         $updateFields[] = "balance = 0";
         $updateFields[] = "payment_status = 'Fully Paid'";
         $updateFields[] = "amount_paid = ?";
         $types .= "d";
-        $params[] = $discountedPrice;
+        $params[] = $discountedPrice; // Use updated price for amount paid
     }
     
     $types .= "i";
@@ -192,7 +213,8 @@ try {
     $conn->commit();
     $response['success'] = true;
     $response['message'] = "Service completed successfully" . 
-                         (isset($successful_inserts) ? " with $successful_inserts staff records" : "");
+                         (isset($successful_inserts) ? " with $successful_inserts staff records" : "") .
+                         ($chapelCost > 0 ? " and chapel cost of ₱" . number_format($chapelCost) : "");
 
 } catch (Exception $e) {
     if (isset($conn) && method_exists($conn, 'rollback')) {
