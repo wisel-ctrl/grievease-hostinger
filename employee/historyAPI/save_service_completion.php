@@ -124,7 +124,7 @@ try {
     // Prepare update parameters with new fields
     $updateFields = [
         "status = 'Completed'",
-        "internment_place = ?",
+        "interment_place = ?",
         "use_chapel = ?",
         "chapel_days = ?",
         "discounted_price = ?" // Update discounted price with chapel cost
