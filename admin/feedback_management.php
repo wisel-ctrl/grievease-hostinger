@@ -210,11 +210,11 @@ function getStarRatingHtml($rating) {
         </div>
     </div>
     
-    <div class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden">
+    <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border overflow-hidden">
         <div class="bg-sidebar-hover p-4 border-b border-sidebar-border">
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
                 <div class="flex items-center gap-3 mb-4 lg:mb-0">
-                    <h4 class="text-lg font-bold text-gray-800 whitespace-nowrap">All Customer Feedbacks</h4>
+                    <h4 class="text-lg font-bold text-sidebar-text whitespace-nowrap">All Customer Feedbacks</h4>
                     <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
                         <?php echo number_format($total_submissions); ?> Total
                     </span>
@@ -240,12 +240,12 @@ function getStarRatingHtml($rating) {
             </div>
         </div>
         
-        <div class="overflow-x-auto scrollbar-thin">
+        <div class="overflow-x-auto scrollbar-thin relative">
             <div class="min-w-full">
-                <table class="w-full">
-                    <thead>
-                        <tr class="bg-gray-50 border-b border-sidebar-border">
-                            <th class="px-4 py-3.5 text-left text-sm font-medium text-gray-700 whitespace-nowrap">
+                <table class="w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-4 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 <div class="flex items-center gap-1.5">
                                     <i class="fas fa-user text-sidebar-accent"></i> Customer
                                 </div>
@@ -255,33 +255,20 @@ function getStarRatingHtml($rating) {
                                     <i class="fas fa-star text-sidebar-accent"></i> Rating
                                 </div>
                             </th>
-                            <th class="px-4 py-3.5 text-left text-sm font-medium text-gray-700">
-                                <div class="flex items-center gap-1.5">
-                                    <i class="fas fa-comment text-sidebar-accent"></i> Feedback Content
-                                </div>
-                            </th>
-                            <th class="px-4 py-3.5 text-left text-sm font-medium text-gray-700 whitespace-nowrap">
-                                <div class="flex items-center gap-1.5">
-                                    <i class="fas fa-calendar-alt text-sidebar-accent"></i> Date
-                                </div>
-                            </th>
-                            <th class="px-4 py-3.5 text-center text-sm font-medium text-gray-700 whitespace-nowrap">
-                                <div class="flex items-center justify-center gap-1.5">
-                                    <i class="fas fa-toggle-on text-sidebar-accent"></i> Show on Landing
-                                </div>
-                            </th>
-                            <th class="px-4 py-3.5 text-center text-sm font-medium text-gray-700 whitespace-nowrap">
-                                <div class="flex items-center justify-center gap-1.5">
-                                    <i class="fas fa-cogs text-sidebar-accent"></i> Actions
-                                </div>
-                            </th>
                         </tr>
                     </thead>
-                    <tbody id="feedbackTableBody">
-                        <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
-                            <td class="px-4 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">Jane Doe</td>
-                            <td class="px-4 py-4 text-sm text-yellow-600 whitespace-nowrap">
-                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i> (5.0)
+                    <tbody id="feedbackTableBody" class="bg-white divide-y divide-gray-200">
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Jane Doe</td>
+                            <td class="px-4 py-4 whitespace-nowrap">
+                                <div class="flex items-center text-yellow-500">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <span class="ml-1 text-gray-700">(5.0)</span>
+                                </div>
                             </td>
                             <td class="px-4 py-4 text-sm text-gray-700 max-w-[150px] truncate" title="The service was exceptional, highly recommend GrievEase to everyone! The process was smooth and the support team was very helpful.">
                                 The service was exceptional, highly recommend GrievEase to everyone! The process was smooth and the support team was very helpful.
@@ -374,22 +361,20 @@ function getStarRatingHtml($rating) {
             <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
                 Showing <strong>1 - 10</strong> of <strong><?php echo number_format($total_submissions); ?></strong> feedbacks
             </div>
-            <div id="paginationContainer" class="flex space-x-2">
-                <a href="#" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 pointer-events-none">
-                    &laquo;
-                </a>
-                <a href="#" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 pointer-events-none">
-                    &lsaquo;
-                </a>
-                <a href="#" class="px-3.5 py-1.5 rounded text-sm bg-sidebar-accent text-white">1</a>
-                <a href="#" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">2</a>
-                <a href="#" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">3</a>
-                <a href="#" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">
-                    &rsaquo;
-                </a>
-                <a href="#" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">
-                    &raquo;
-                </a>
+            <div class="flex items-center gap-1">
+                <button class="px-3 py-1.5 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200" disabled>
+                    <i class="fas fa-chevron-left w-4 h-4"></i>
+                </button>
+                <div class="flex items-center gap-1">
+                    <button class="w-8 h-8 flex items-center justify-center rounded-md text-sm font-medium text-white bg-sidebar-accent hover:bg-opacity-90 transition-colors duration-200">1</button>
+                    <button class="w-8 h-8 flex items-center justify-center rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors duration-200">2</button>
+                    <button class="w-8 h-8 flex items-center justify-center rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors duration-200">3</button>
+                    <span class="px-2 text-gray-500">...</span>
+                    <button class="w-8 h-8 flex items-center justify-center rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors duration-200">10</button>
+                </div>
+                <button class="px-3 py-1.5 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200">
+                    <i class="fas fa-chevron-right w-4 h-4"></i>
+                </button>
             </div>
         </div>
     </div>
