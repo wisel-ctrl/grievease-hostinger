@@ -2662,15 +2662,15 @@ function removeGcash() {
 
                     <!-- Privacy Policy and Terms Consent -->
                     <div class="mt-4 mb-4 border border-gray-200 rounded-lg p-4 bg-gray-50 terms-checkbox-container">
-                        <div class="flex items-start">
-                            <input type="checkbox" id="termsCheckbox" name="terms_accepted" required 
-                                class="h-5 w-5 text-yellow-600 rounded focus:ring-yellow-500 mt-1">
-                            <label for="termsCheckbox" class="ml-3 text-sm">
-                                <span class="block text-navy mb-1">I have read and agree to the <a href="#" class="text-yellow-600 hover:underline" id="viewPrivacyPolicy">Privacy Policy</a>, <a href="#" class="text-yellow-600 hover:underline" id="viewTermsOfService">Terms of Service</a>, and <a href="lifeplancontract.php" target="_blank" rel="noopener noreferrer" class="text-yellow-600 hover:underline">LifePlan Contract</a>. <a href="lifeplancontract_pdf.php" target="_blank" rel="noopener noreferrer" class="text-yellow-600 hover:underline">(Download PDF Version)</a> <span class="text-red-500">*</span></span>
-                                <span class="block text-gray-500 text-xs">By checking this box, you acknowledge that you have read and understood all terms and conditions, and consent to our data collection practices as described in our Privacy Policy.</span>
-                            </label>
-                        </div>
-                    </div>
+    <div class="flex items-start">
+        <input type="checkbox" id="termsCheckbox" name="terms_accepted" required 
+            class="h-5 w-5 text-yellow-600 rounded focus:ring-yellow-500 mt-1">
+        <label for="termsCheckbox" class="ml-3 text-sm">
+            <span class="block text-navy mb-1">I have read and agree to the <a href="#" class="text-yellow-600 hover:underline" id="viewPrivacyPolicy">Privacy Policy</a>, <a href="#" class="text-yellow-600 hover:underline" id="viewTermsOfService">Terms of Service</a>, and <a href="lifeplancontract.php" class="text-yellow-600 hover:underline">LifePlan Contract</a>. <a href="lifeplancontract_pdf.php" target="_blank" rel="noopener noreferrer" class="text-yellow-600 hover:underline">(Download PDF Version)</a> <span class="text-red-500">*</span></span>
+            <span class="block text-gray-500 text-xs">By checking this box, you acknowledge that you have read and understood all terms and conditions, and consent to our data collection practices as described in our Privacy Policy.</span>
+        </label>
+    </div>
+</div>
 
                     <!-- Privacy Policy Modal -->
                     <div id="privacyPolicyModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
