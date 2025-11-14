@@ -167,7 +167,6 @@ $customersResult = mysqli_query($conn, $customersQuery);
                     <button id="customerFilterToggle" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover">
                         <i class="fas fa-filter text-sidebar-accent"></i>
                         <span>Filters</span>
-                        <span id="filterIndicator" class="hidden h-2 w-2 bg-sidebar-accent rounded-full"></span>
                     </button>
                     
                     <!-- Filter Window -->
@@ -1916,7 +1915,6 @@ if ($result->num_rows > 0) {
                     <button id="filterToggle" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover">
                         <i class="fas fa-filter text-sidebar-accent"></i>
                         <span>Filters</span>
-                        <span id="filterIndicator" class="hidden h-2 w-2 bg-sidebar-accent rounded-full"></span>
                     </button>
                     
                     <!-- Filter Window -->
