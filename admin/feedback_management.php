@@ -49,45 +49,57 @@ $profile_picture = $row['profile_picture'] ? '../' . $row['profile_picture'] : '
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Feedback Management - GrieveEase</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&family=Alex+Brush&family=Cinzel:wght@400;500;600;700&family=Hedvig+Letters+Serif:opsz@8..24&display=swap" rel="stylesheet">
+    <script src="tailwind.js"></script>
     <style>
         body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #f5f7fa;
+            font-family: 'Inter', 'sans-serif';
+            background-color: #F0F4F8;
         }
         .sidebar-link.active {
-            background-color: #FEF3C7;
-            color: #92400E;
+            background-color: #F1F5F9;
+            color: #334155;
             font-weight: 500;
+            border-left: 3px solid #CA8A04;
         }
         .sidebar-link:hover:not(.active) {
-            background-color: #FEF9C3;
+            background-color: #F1F5F9;
         }
         .shadow-sidebar {
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
         }
         .star-rating {
-            color: #fbbf24;
+            color: #CA8A04;
         }
         .star-rating .far {
-            color: #d1d5db;
+            color: #E2E8F0;
         }
-    </style>
+        .border-sidebar-border {
+            border-color: #E2E8F0;
+        }
+        .bg-sidebar-hover {
+            background-color: #F1F5F9;
+        }
+        .text-sidebar-text {
+            color: #334155;
+        }
+        .text-sidebar-accent {
+            color: #CA8A04;
+        }
 </head>
 <body class="bg-gray-50">
     <!-- Sidebar -->
     <?php include 'admin_sidebar.php'; ?>
 
     <!-- Main Content -->
-    <div id="main-content" class="p-6 bg-gray-50 min-h-screen transition-all duration-300 ml-64 w-[calc(100%-16rem)] main-content">
+    <div id="main-content" class="p-6 bg-[#F0F4F8] min-h-screen transition-all duration-300 ml-64 w-[calc(100%-16rem)] main-content">
         <!-- Header with breadcrumb and welcome message -->
         <div class="flex justify-between items-center mb-6 bg-white p-5 rounded-lg shadow-sidebar border border-sidebar-border">
             <div>
                 <h1 class="text-2xl font-bold text-sidebar-text">Feedback Management</h1>
             </div>
             <div class="relative">
-                <button id="branchFilterToggle" class="px-4 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover transition-colors">
+                <button id="branchFilterToggle" class="px-4 py-2 border border-sidebar-border rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover transition-colors text-sidebar-text">
                     <i class="fas fa-filter text-sidebar-accent"></i>
                     <span>Filter</span>
                     <i class="fas fa-chevron-down text-xs text-gray-500"></i>
@@ -203,14 +215,14 @@ $profile_picture = $row['profile_picture'] ? '../' . $row['profile_picture'] : '
         </div>
 
         <!-- Search and Filter Bar -->
-        <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border p-4 mb-6">
+        <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border p-4 mb-6 transition-all duration-200 hover:shadow-md">
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <!-- Search Bar -->
                 <div class="relative flex-grow max-w-2xl">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <i class="fas fa-search text-gray-400"></i>
                     </div>
-                    <input type="text" id="searchFeedback" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sidebar-accent focus:border-sidebar-accent" placeholder="Search feedback...">
+                    <input type="text" id="searchFeedback" placeholder="Search feedback..." class="block w-full pl-10 pr-3 py-2 border border-sidebar-border rounded-md leading-5 bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-sidebar-accent sm:text-sm text-sidebar-text">
                 </div>
                 
                 <!-- Sort Dropdown -->
@@ -219,7 +231,7 @@ $profile_picture = $row['profile_picture'] ? '../' . $row['profile_picture'] : '
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <i class="fas fa-sort-amount-down text-gray-400"></i>
                         </div>
-                        <select id="sortBy" class="block w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sidebar-accent focus:border-sidebar-accent appearance-none bg-white">
+                        <select id="sortFeedback" class="block w-full pl-3 pr-10 py-2 text-base border border-sidebar-border focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-sidebar-accent sm:text-sm rounded-md bg-white text-sidebar-text">
                             <option value="newest">Newest First</option>
                             <option value="oldest">Oldest First</option>
                             <option value="highest">Highest Rating</option>
@@ -371,7 +383,7 @@ $profile_picture = $row['profile_picture'] ? '../' . $row['profile_picture'] : '
                         <button class="px-3 py-1.5 border border-sidebar-border rounded-lg text-sm font-medium text-sidebar-text hover:bg-sidebar-hover disabled:opacity-50 disabled:cursor-not-allowed" disabled>
                             <i class="fas fa-chevron-left"></i>
                         </button>
-                        <button class="px-3 py-1.5 bg-sidebar-accent text-white rounded-lg text-sm font-medium hover:bg-sidebar-accent/90">
+                        <button class="px-3 py-1 text-xs font-medium rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sidebar-accent transition-colors duration-200">
                             1
                         </button>
                         <button class="px-3 py-1.5 border border-sidebar-border rounded-lg text-sm font-medium text-sidebar-text hover:bg-sidebar-hover disabled:opacity-50 disabled:cursor-not-allowed" disabled>
@@ -383,7 +395,7 @@ $profile_picture = $row['profile_picture'] ? '../' . $row['profile_picture'] : '
         </div>
     </main>
 
-    <footer class="bg-white rounded-lg shadow-sidebar border border-sidebar-border p-4 text-center text-sm text-gray-500 mt-8">
+    <footer class="bg-white rounded-lg shadow-sidebar border border-sidebar-border p-4 text-center text-sm text-sidebar-text mt-8 transition-all duration-200 hover:shadow-md">
         <p>© 2025 GrieveEase.</p>
     </footer>
     </div>
