@@ -395,7 +395,7 @@ function getStarRatingHtml($rating) {
     </div>
     
     <footer class="bg-white rounded-lg shadow-sidebar border border-gray-200 p-4 text-center text-sm text-gray-500 mt-8">
-        <p>© 2025 GrievEase. Feedback Management UI.</p>
+        <p>© 2025 GrievEase.</p>
     </footer>
 </div>
 
