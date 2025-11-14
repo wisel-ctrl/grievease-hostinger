@@ -170,7 +170,7 @@ if (isset($_POST['ajax_pagination']) && $_POST['ajax_pagination'] == true) {
         <?php foreach ($feedbacks as $feedback): ?>
             <?php
             $isVisible = $feedback['status'] === 'Show' ? 'checked' : '';
-            $created_date = date('Y-m-d', strtotime($feedback['created_at']));
+            $created_date = date('F j Y', strtotime($feedback['created_at']));
             $isDisabled = ($current_visible_count >= 2 && $feedback['status'] !== 'Show') ? 'disabled' : '';
             ?>
             <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors" data-rating="<?php echo $feedback['rating']; ?>">
@@ -510,7 +510,7 @@ function getStarRatingHtml($rating) {
                             <?php foreach ($feedbacks as $feedback): ?>
                                 <?php
                                 $isVisible = $feedback['status'] === 'Show' ? 'checked' : '';
-                                $created_date = date('Y-m-d', strtotime($feedback['created_at']));
+                                $created_date = date('F j Y', strtotime($feedback['created_at']));
                                 // REMOVE the disabled attribute from here too
                                 ?>
                                 <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors" data-rating="<?php echo $feedback['rating']; ?>">
