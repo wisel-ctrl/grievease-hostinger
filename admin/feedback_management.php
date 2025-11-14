@@ -284,7 +284,7 @@ function getStarRatingHtml($rating) {
                                 <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i> (5.0)
                             </td>
                             <td class="px-4 py-4 text-sm text-gray-700 max-w-sm truncate" title="The service was exceptional, highly recommend GrievEase to everyone! The process was smooth and the support team was very helpful.">
-                                The service was exceptional, highly recommend GrievEase to everyone! The process was smooth and the support team was very helpful.
+                                The service was exceptional, highly recommend GrievEase...
                             </td>
                             <td class="px-4 py-4 text-sm text-gray-500 whitespace-nowrap">2025-10-25</td>
                             <td class="px-4 py-4 text-center">
@@ -306,7 +306,7 @@ function getStarRatingHtml($rating) {
                                 <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i> (4.0)
                             </td>
                             <td class="px-4 py-4 text-sm text-gray-700 max-w-sm truncate" title="Good experience overall, but the initial response was a bit slow. The issue was eventually resolved after a couple of days.">
-                                Good experience overall, but the initial response was a bit slow. The issue was eventually resolved after a couple of days.
+                                Good experience overall, but the initial response was a bit slow...
                             </td>
                             <td class="px-4 py-4 text-sm text-gray-500 whitespace-nowrap">2025-09-15</td>
                             <td class="px-4 py-4 text-center">
@@ -328,7 +328,7 @@ function getStarRatingHtml($rating) {
                                 <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i><i class="far fa-star"></i> (3.5)
                             </td>
                             <td class="px-4 py-4 text-sm text-gray-700 max-w-sm truncate" title="It was okay. Could use better communication updates. I wish the status changes were more frequent.">
-                                It was okay. Could use better communication updates. I wish the status changes were more frequent.
+                                It was okay. Could use better communication updates...
                             </td>
                             <td class="px-4 py-4 text-sm text-gray-500 whitespace-nowrap">2025-11-01</td>
                             <td class="px-4 py-4 text-center">
@@ -350,7 +350,7 @@ function getStarRatingHtml($rating) {
                                 <i class="fas fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i> (1.0)
                             </td>
                             <td class="px-4 py-4 text-sm text-gray-700 max-w-sm truncate" title="Very disappointed. Issue was not resolved in the timeline promised and I had to follow up multiple times.">
-                                Very disappointed. Issue was not resolved in the timeline promised and I had to follow up multiple times.
+                                Very disappointed. Issue was not resolved in the timeline promised...
                             </td>
                             <td class="px-4 py-4 text-sm text-gray-500 whitespace-nowrap">2025-08-20</td>
                             <td class="px-4 py-4 text-center">
