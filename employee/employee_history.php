@@ -3332,7 +3332,7 @@ function finalizeServiceCompletion() {
         balance_settled: balanceSettled,
         interment_place: intermentPlace,
         used_chapel: usedChapel ? 'Yes' : 'No',
-        chapel_days: chapelDays
+        chapel_days: parseInt(chapelDays)
       };
 
       // Send data to server
