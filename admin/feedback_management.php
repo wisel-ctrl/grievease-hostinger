@@ -279,21 +279,21 @@ function getStarRatingHtml($rating) {
                     </thead>
                     <tbody id="feedbackTableBody">
                         <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
-                            <td class="px-4 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">Jane Doe</td>
-                            <td class="px-4 py-4 text-sm text-yellow-600 whitespace-nowrap">
+                            <td class="px-4 py-3.5 text-sm font-medium text-gray-800 whitespace-nowrap">Jane Doe</td>
+                            <td class="px-4 py-3.5 text-sm text-yellow-600 whitespace-nowrap">
                                 <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i> (5.0)
                             </td>
-                            <td class="px-4 py-4 text-sm text-gray-700 max-w-[150px] truncate" title="The service was exceptional, highly recommend GrievEase to everyone! The process was smooth and the support team was very helpful.">
+                            <td class="px-4 py-3.5 text-sm text-gray-700 max-w-[150px] truncate" title="The service was exceptional, highly recommend GrievEase to everyone! The process was smooth and the support team was very helpful.">
                                 The service was exceptional, highly recommend GrievEase to everyone! The process was smooth and the support team was very helpful.
                             </td>
-                            <td class="px-4 py-4 text-sm text-gray-500 whitespace-nowrap">2025-10-25</td>
-                            <td class="px-4 py-4 text-center">
+                            <td class="px-4 py-3.5 text-sm text-gray-500 whitespace-nowrap">2025-10-25</td>
+                            <td class="px-4 py-3.5 text-center">
                                 <label class="relative inline-flex items-center cursor-pointer">
                                     <input type="checkbox" value="" class="sr-only peer toggle-checkbox" checked>
                                     <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-sidebar-accent rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
                                 </label>
                             </td>
-                            <td class="px-4 py-4 text-center">
+                            <td class="px-4 py-3.5 text-center">
                                 <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Full Content">
                                     <i class="fas fa-eye"></i>
                                 </button>
@@ -301,21 +301,21 @@ function getStarRatingHtml($rating) {
                         </tr>
                         
                         <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
-                            <td class="px-4 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">John Smith</td>
-                            <td class="px-4 py-4 text-sm text-yellow-600 whitespace-nowrap">
+                            <td class="px-4 py-3.5 text-sm font-medium text-gray-800 whitespace-nowrap">John Smith</td>
+                            <td class="px-4 py-3.5 text-sm text-yellow-600 whitespace-nowrap">
                                 <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i> (4.0)
                             </td>
-                            <td class="px-4 py-4 text-sm text-gray-700 max-w-[150px] truncate" title="Good experience overall, but the initial response was a bit slow. The issue was eventually resolved after a couple of days.">
+                            <td class="px-4 py-3.5 text-sm text-gray-700 max-w-[150px] truncate" title="Good experience overall, but the initial response was a bit slow. The issue was eventually resolved after a couple of days.">
                                 Good experience overall, but the initial response was a bit slow. The issue was eventually resolved after a couple of days.
                             </td>
-                            <td class="px-4 py-4 text-sm text-gray-500 whitespace-nowrap">2025-09-15</td>
-                            <td class="px-4 py-4 text-center">
+                            <td class="px-4 py-3.5 text-sm text-gray-500 whitespace-nowrap">2025-09-15</td>
+                            <td class="px-4 py-3.5 text-center">
                                 <label class="relative inline-flex items-center cursor-pointer">
                                     <input type="checkbox" value="" class="sr-only peer toggle-checkbox">
                                     <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-sidebar-accent rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
                                 </label>
                             </td>
-                            <td class="px-4 py-4 text-center">
+                            <td class="px-4 py-3.5 text-center">
                                 <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Full Content">
                                     <i class="fas fa-eye"></i>
                                 </button>
@@ -323,21 +323,21 @@ function getStarRatingHtml($rating) {
                         </tr>
 
                         <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
-                            <td class="px-4 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">Alice Johnson</td>
-                            <td class="px-4 py-4 text-sm text-yellow-600 whitespace-nowrap">
+                            <td class="px-4 py-3.5 text-sm font-medium text-gray-800 whitespace-nowrap">Alice Johnson</td>
+                            <td class="px-4 py-3.5 text-sm text-yellow-600 whitespace-nowrap">
                                 <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i><i class="far fa-star"></i> (3.5)
                             </td>
-                            <td class="px-4 py-4 text-sm text-gray-700 max-w-[150px] truncate" title="It was okay. Could use better communication updates. I wish the status changes were more frequent.">
+                            <td class="px-4 py-3.5 text-sm text-gray-700 max-w-[150px] truncate" title="It was okay. Could use better communication updates. I wish the status changes were more frequent.">
                                 It was okay. Could use better communication updates. I wish the status changes were more frequent.
                             </td>
-                            <td class="px-4 py-4 text-sm text-gray-500 whitespace-nowrap">2025-11-01</td>
-                            <td class="px-4 py-4 text-center">
+                            <td class="px-4 py-3.5 text-sm text-gray-500 whitespace-nowrap">2025-11-01</td>
+                            <td class="px-4 py-3.5 text-center">
                                 <label class="relative inline-flex items-center cursor-pointer">
                                     <input type="checkbox" value="" class="sr-only peer toggle-checkbox" checked>
                                     <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-sidebar-accent rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
                                 </label>
                             </td>
-                            <td class="px-4 py-4 text-center">
+                            <td class="px-4 py-3.5 text-center">
                                 <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Full Content">
                                     <i class="fas fa-eye"></i>
                                 </button>
@@ -345,21 +345,21 @@ function getStarRatingHtml($rating) {
                         </tr>
                         
                         <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
-                            <td class="px-4 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">Bob Williams</td>
-                            <td class="px-4 py-4 text-sm text-yellow-600 whitespace-nowrap">
+                            <td class="px-4 py-3.5 text-sm font-medium text-gray-800 whitespace-nowrap">Bob Williams</td>
+                            <td class="px-4 py-3.5 text-sm text-yellow-600 whitespace-nowrap">
                                 <i class="fas fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i> (1.0)
                             </td>
-                            <td class="px-4 py-4 text-sm text-gray-700 max-w-[150px] truncate" title="Very disappointed. Issue was not resolved in the timeline promised and I had to follow up multiple times.">
+                            <td class="px-4 py-3.5 text-sm text-gray-700 max-w-[150px] truncate" title="Very disappointed. Issue was not resolved in the timeline promised and I had to follow up multiple times.">
                                 Very disappointed. Issue was not resolved in the timeline promised and I had to follow up multiple times.
                             </td>
-                            <td class="px-4 py-4 text-sm text-gray-500 whitespace-nowrap">2025-08-20</td>
-                            <td class="px-4 py-4 text-center">
+                            <td class="px-4 py-3.5 text-sm text-gray-500 whitespace-nowrap">2025-08-20</td>
+                            <td class="px-4 py-3.5 text-center">
                                 <label class="relative inline-flex items-center cursor-pointer">
                                     <input type="checkbox" value="" class="sr-only peer toggle-checkbox">
                                     <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-sidebar-accent rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
                                 </label>
                             </td>
-                            <td class="px-4 py-4 text-center">
+                            <td class="px-4 py-3.5 text-center">
                                 <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Full Content">
                                     <i class="fas fa-eye"></i>
                                 </button>
