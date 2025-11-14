@@ -294,7 +294,7 @@ function getStarRatingHtml($rating) {
                                 </label>
                             </td>
                             <td class="px-4 py-3.5 text-center">
-                                <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Full Content">
+                                <button class="p-1.5 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Full Content">
                                     <i class="fas fa-eye"></i>
                                 </button>
                             </td>
@@ -316,7 +316,7 @@ function getStarRatingHtml($rating) {
                                 </label>
                             </td>
                             <td class="px-4 py-3.5 text-center">
-                                <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Full Content">
+                                <button class="p-1.5 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Full Content">
                                     <i class="fas fa-eye"></i>
                                 </button>
                             </td>
@@ -338,7 +338,7 @@ function getStarRatingHtml($rating) {
                                 </label>
                             </td>
                             <td class="px-4 py-3.5 text-center">
-                                <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Full Content">
+                                <button class="p-1.5 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Full Content">
                                     <i class="fas fa-eye"></i>
                                 </button>
                             </td>
@@ -360,7 +360,7 @@ function getStarRatingHtml($rating) {
                                 </label>
                             </td>
                             <td class="px-4 py-3.5 text-center">
-                                <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Full Content">
+                                <button class="p-1.5 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Full Content">
                                     <i class="fas fa-eye"></i>
                                 </button>
                             </td>
