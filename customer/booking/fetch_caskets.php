@@ -6,7 +6,7 @@ require_once '../../db_connect.php';
 $branch_id = isset($_GET['branch_id']) ? intval($_GET['branch_id']) : 0;
 
 // Prepare and execute query
-$query = "SELECT inventory_id, item_name, price, branch_id, inventory_img FROM `inventory_tb` WHERE branch_id = ? AND status = 1 AND category_id = 1";
+$query = "SELECT inventory_id, item_name, selling_price, branch_id, inventory_img FROM `inventory_tb` WHERE branch_id = ? AND status = 1 AND category_id = 1";
 $stmt = $conn->prepare($query);
 $stmt->bind_param("i", $branch_id);
 $stmt->execute();

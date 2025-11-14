@@ -21,7 +21,7 @@ try {
                     ) AS customer_name, 
                     s.service_name, 
                     i.item_name as casket_name,
-                    i.price as casket_price, 
+                    i.selling_price as casket_price, 
                     i.inventory_img as casket_image,
                     u.phone_number, 
                     CONCAT(
