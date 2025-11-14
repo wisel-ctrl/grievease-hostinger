@@ -2666,10 +2666,8 @@ function removeGcash() {
                             <input type="checkbox" id="termsCheckbox" name="terms_accepted" required 
                                 class="h-5 w-5 text-yellow-600 rounded focus:ring-yellow-500 mt-1">
                             <label for="termsCheckbox" class="ml-3 text-sm">
-                                <span class="block text-navy mb-1">I have read and agree to the <a href="#" onclick="event.preventDefault(); openModal('privacyPolicyModal')" class="text-yellow-600 hover:underline">Privacy Policy</a>
-        and
-        <a href="#" onclick="event.preventDefault(); openModal('termsOfServiceModal')" class="text-yellow-600 hover:underline">Terms of Service</a>.
-    </label>
+                                <span class="block text-navy mb-1">I have read and agree to the <a href="#" onclick="openModal('privacyPolicyModal'); return false;" class="text-gray-400 hover:text-white transition mx-2">Privacy Policy</a>
+    <a href="#" onclick="openModal('termsOfServiceModal'); return false;" class="text-gray-400 hover:text-white transition mx-2">Terms of Service</a></label>
                         </div>
                     </div>
 
