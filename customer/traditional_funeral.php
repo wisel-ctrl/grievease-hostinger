@@ -2412,14 +2412,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 data.forEach(casket => {
                     const casketOption = document.createElement('div');
                     casketOption.className = 'border rounded-lg p-4 cursor-pointer casket-option';
-                    casketOption.dataset.price = casket.price;
+                    casketOption.dataset.price = casket.selling_price;
                     casketOption.dataset.name = casket.item_name;
                     casketOption.dataset.id = casket.inventory_id;
                     
                     casketOption.innerHTML = `
                         <img src="${casket.inventory_img ? '../admin/' + casket.inventory_img : '/api/placeholder/300/200'}" alt="${casket.item_name}" class="w-full h-32 object-cover rounded-lg mb-2">
                         <h5 class="font-medium mb-1">${casket.item_name}</h5>
-                        <p class="text-yellow-600">${formatPrice(casket.price)}</p>
+                        <p class="text-yellow-600">${formatPrice(casket.selling_price)}</p>
                     `;
                     
                     casketOption.addEventListener('click', function() {
