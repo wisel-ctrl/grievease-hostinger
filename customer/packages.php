@@ -2575,7 +2575,7 @@ function removeGcash() {
                             <div class="bg-white rounded-lg p-4 sm:p-6 max-w-[90vw] sm:max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
                                 <div class="flex justify-between items-center mb-4">
                                     <h3 class="text-lg sm:text-xl font-hedvig text-navy">Scan to Pay</h3>
-                                    <button id="lifeplanCloseQrModal" class="text-gray-500 hover:text-navy">
+                                    <button type="button" id="lifeplanCloseQrModal" class="text-gray-500 hover:text-navy">
                                         <i class="fas fa-times text-xl"></i>
                                     </button>
                                 </div>
