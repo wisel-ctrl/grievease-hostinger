@@ -184,15 +184,82 @@ $profile_picture = $row['profile_picture'] ? '../' . $row['profile_picture'] : '
                                     Date
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Visible
+                                    Visibility
                                 </th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200" id="feedbackTableBody">
                             <!-- Feedback items will be loaded here -->
                             <tr>
-                                <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">
-                                    No feedback available
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-10 w-10">
+                                            <img class="h-10 w-10 rounded-full" src="https://ui-avatars.com/api/?name=John+Doe&background=4f46e5&color=fff" alt="">
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900">John Doe</div>
+                                            <div class="text-sm text-gray-500">john@example.com</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="star-rating">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="far fa-star"></i>
+                                        </div>
+                                        <span class="ml-2 text-sm text-gray-500">4.0</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-sm text-gray-900">Great service! The team was very professional and handled everything with care.</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    Nov 14, 2023
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                                    <button type="button" class="toggle-visibility inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                                        <i class="fas fa-eye mr-1"></i> Visible
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-10 w-10">
+                                            <img class="h-10 w-10 rounded-full" src="https://ui-avatars.com/api/?name=Jane+Smith&background=ec4899&color=fff" alt="">
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900">Jane Smith</div>
+                                            <div class="text-sm text-gray-500">jane@example.com</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="star-rating">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="far fa-star"></i>
+                                            <i class="far fa-star"></i>
+                                        </div>
+                                        <span class="ml-2 text-sm text-gray-500">3.0</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-sm text-gray-900">Good experience overall, but there was a slight delay in the service.</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    Nov 10, 2023
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                                    <button type="button" class="toggle-visibility inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-white bg-gray-400 hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                                        <i class="fas fa-eye-slash mr-1"></i> Hidden
+                                    </button>
                                 </td>
                             </tr>
                         </tbody>
@@ -214,23 +281,28 @@ $profile_picture = $row['profile_picture'] ? '../' . $row['profile_picture'] : '
             document.querySelector('.main-content').classList.toggle('ml-64');
         });
 
-        // Toggle feedback visibility
-        document.getElementById('toggleVisibility').addEventListener('click', function() {
-            const icon = this.querySelector('i');
-            if (icon.classList.contains('fa-eye-slash')) {
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
-                this.classList.remove('bg-amber-600');
-                this.classList.add('bg-green-600');
-                // In a real app, you would make an AJAX call to update visibility
-                alert('Feedback visibility toggled');
-            } else {
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
-                this.classList.remove('bg-green-600');
-                this.classList.add('bg-amber-600');
-                // In a real app, you would make an AJAX call to update visibility
-                alert('Feedback visibility toggled');
+        // Toggle feedback visibility for individual feedback items
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.toggle-visibility')) {
+                const button = e.target.closest('.toggle-visibility');
+                const icon = button.querySelector('i');
+                const isVisible = button.textContent.trim().includes('Visible');
+                
+                if (isVisible) {
+                    // Hide feedback
+                    icon.className = 'fas fa-eye-slash mr-1';
+                    button.innerHTML = '<i class="fas fa-eye-slash mr-1"></i> Hidden';
+                    button.className = 'toggle-visibility inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-white bg-gray-400 hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500';
+                    // In a real app, make an AJAX call to update visibility in the database
+                    console.log('Hiding feedback');
+                } else {
+                    // Show feedback
+                    icon.className = 'fas fa-eye mr-1';
+                    button.innerHTML = '<i class="fas fa-eye mr-1"></i> Visible';
+                    button.className = 'toggle-visibility inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500';
+                    // In a real app, make an AJAX call to update visibility in the database
+                    console.log('Showing feedback');
+                }
             }
         });
 
