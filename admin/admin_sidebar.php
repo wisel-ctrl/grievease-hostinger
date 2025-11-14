@@ -410,12 +410,6 @@ if ($count_result->num_rows > 0) {
       </ul>
     </div>
       
-    <!-- Footer -->
-    <div class="relative bottom-0 left-0 right-0 px-5 py-3 border-t border-sidebar-border bg-gradient-to-r from-navy to-primary">
-      <div class="flex justify-between items-center">
-        <p class="text-xs text-sidebar-text opacity-60">© 2025 GrievEase</p>
-      </div>
-    </div>
   </nav>
 
 
