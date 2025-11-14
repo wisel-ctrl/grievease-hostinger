@@ -145,23 +145,16 @@ $profile_picture = $row['profile_picture'] ? '../' . $row['profile_picture'] : '
 
             <!-- Feedback Controls -->
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                    <div class="w-full sm:w-1/2">
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="fas fa-sort text-gray-400"></i>
-                            </div>
-                            <select id="sortBy" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
-                                <option value="newest">Newest First</option>
-                                <option value="oldest">Oldest First</option>
-                                <option value="highest">Highest Rating</option>
-                                <option value="lowest">Lowest Rating</option>
-                            </select>
-                        </div>
+                <div class="relative max-w-xs">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-sort text-gray-400"></i>
                     </div>
-                    <button id="toggleVisibility" class="w-full sm:w-auto bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-                        <i class="fas fa-eye-slash mr-2"></i> Toggle Visibility
-                    </button>
+                    <select id="sortBy" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
+                        <option value="newest">Newest First</option>
+                        <option value="oldest">Oldest First</option>
+                        <option value="highest">Highest Rating</option>
+                        <option value="lowest">Lowest Rating</option>
+                    </select>
                 </div>
             </div>
 
