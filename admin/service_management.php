@@ -1637,7 +1637,7 @@ window.addEventListener('popstate', function(event) {
                       echo '<label class="flex items-center space-x-2 cursor-pointer">';
                       echo '<input type="radio" name="branch_id" value="' . $row['branch_id'] . '" required class="hidden peer">';
                       echo '<div class="w-5 h-5 rounded-full border-2 border-gold flex items-center justify-center peer-checked:bg-gold peer-checked:border-darkgold transition-colors"></div>';
-                      echo '<span class="text-gray-700 font-medium">' . htmlspecialchars($row['branch_name']) . '</span>';
+                      echo '<span class="text-gray-700 font-medium">' . capitalizeWords($row['branch_name']) . '</span>';
                       echo '</label>';
                   }
               } else {
