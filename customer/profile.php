@@ -4969,41 +4969,79 @@ function fetchBookingDetails(bookingId) {
         });
 }
 
-function fetchBookingForModification(bookingId) {
-    fetch(`profile/fetch_booking_for_modification.php?booking_id=${bookingId}`)
+function fetchBookingDetails(bookingId) {
+    fetch(`profile/fetch_booking_details.php?booking_id=${bookingId}`)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                const form = document.getElementById('modifyBookingForm');
-                form.reset();
+                const statusContainer = document.getElementById('detail-status').parentNode;
+                const nextElement = statusContainer.nextElementSibling;
                 
-                document.getElementById('modify-booking-id').value = data.booking_id;
-                document.getElementById('modify-service-id').value = data.service_id;
-                document.getElementById('modify-branch-id').value = data.branch_id;
+                if (nextElement && (nextElement.textContent.includes('Accepted Date:') || 
+                                   nextElement.textContent.includes('Declined Date:'))) {
+                    nextElement.remove();
+                }
+
+                document.getElementById('detail-service').textContent = data.service_name;
+                document.getElementById('detail-branch').textContent = data.branch_name 
+                    ? data.branch_name.toLowerCase().replace(/\b\w/g, c => c.toUpperCase())
+                    : '';
+                document.getElementById('detail-status').textContent = data.status;
+                document.getElementById('detail-booking-date').textContent = formatDate(data.booking_date);
+                document.getElementById('detail-total').textContent = `₱${parseFloat(data.selling_price).toFixed(2)}`;
+
+                if (data.status === 'Accepted' && data.accepted_date) {
+                    const acceptedDateP = document.createElement('p');
+                    acceptedDateP.innerHTML = `<span class="text-gray-500">Accepted Date:</span> <span class="text-navy">${formatDate(data.accepted_date)}</span>`;
+                    document.getElementById('detail-status').parentNode.insertAdjacentElement('afterend', acceptedDateP);
+                } 
+                else if (data.status === 'Declined' && data.decline_date) {
+                    const declinedDateP = document.createElement('p');
+                    declinedDateP.innerHTML = `<span class="text-gray-500">Declined Date:</span> <span class="text-navy">${formatDate(data.decline_date)}</span>`;
+                    document.getElementById('detail-status').parentNode.insertAdjacentElement('afterend', declinedDateP);
+                }
                 
-                document.getElementById('display-service-package').textContent = data.service_name + 
-                    ' (₱' + parseFloat(data.selling_price).toFixed(2) + ')';
-                document.getElementById('display-branch-location').textContent = data.branch_name;
+                let deceasedName = `${data.deceased_lname}, ${data.deceased_fname}`;
+                if (data.deceased_midname) deceasedName += ` ${data.deceased_midname}`;
+                if (data.deceased_suffix) deceasedName += ` ${data.deceased_suffix}`;
                 
-                form.querySelector('input[name="deceased_dateOfBurial"]').value = data.deceased_dateOfBurial || '';
-                form.querySelector('input[name="deceased_birth"]').value = data.deceased_birth || '';
-                form.querySelector('input[name="deceased_dodeath"]').value = data.deceased_dodeath || '';
+                document.getElementById('detail-deceased-name').textContent = deceasedName 
+                    ? deceasedName.toLowerCase().replace(/\b\w/g, c => c.toUpperCase())
+                    : '';
+                document.getElementById('detail-birth').textContent = data.deceased_birth ? formatDate(data.deceased_birth) : 'Not provided';
+                document.getElementById('detail-dod').textContent = data.deceased_dodeath ? formatDate(data.deceased_dodeath) : 'Not provided';
+                document.getElementById('detail-burial').textContent = data.deceased_dateOfBurial ? formatDate(data.deceased_dateOfBurial) : 'Not set';
+                document.getElementById('detail-address').textContent = data.deceased_address || 'Not provided';
                 
-                form.querySelector('input[name="deceased_fname"]').value = data.deceased_fname || '';
-                form.querySelector('input[name="deceased_midname"]').value = data.deceased_midname || '';
-                form.querySelector('input[name="deceased_lname"]').value = data.deceased_lname || '';
-                form.querySelector('input[name="deceased_suffix"]').value = data.deceased_suffix || '';
-                form.querySelector('textarea[name="deceased_address"]').value = data.deceased_address || '';
-                form.querySelector('input[name="with_cremate"]').checked = data.with_cremate == 'yes' || data.with_cremate == 1;
+                document.getElementById('detail-paid').textContent = `₱${parseFloat(data.amount_paid || 0).toFixed(2)}`;
                 
-                document.getElementById('modifyBookingModal').classList.remove('hidden');
+                // Calculate balance based on package type
+                let balance;
+                if (data.is_custom_package) {
+                    // Use custom balance from customsales_tb
+                    balance = parseFloat(data.custom_balance || 0);
+                } else {
+                    // Calculate balance for regular packages
+                    balance = parseFloat(data.selling_price) - parseFloat(data.amount_paid || 0);
+                }
+                document.getElementById('detail-balance').textContent = `₱${balance.toFixed(2)}`;
+                
+                document.getElementById('detail-reference').textContent = data.reference_code || 'N/A';
+                
+                currentDeathCertUrl = data.death_certificate || '';
+                currentPaymentUrl = data.payment_proof || '';
+                
+                document.getElementById('viewDeathCertBtn').style.display = currentDeathCertUrl ? 'block' : 'none';
+                document.getElementById('viewPaymentBtn').style.display = currentPaymentUrl ? 'block' : 'none';
+                
+                document.getElementById('viewDetailsModal').classList.remove('hidden');
             } else {
-                showError(data.message || 'Failed to fetch booking for modification');
+                showError(data.message || 'Failed to fetch booking details');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            showError('An error occurred while fetching booking for modification');
+            showError('An error occurred while fetching booking details');
         });
 }
 
