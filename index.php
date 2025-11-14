@@ -374,12 +374,41 @@
     </div>
 
          <!-- Testimonials Section -->
-         <div class="mb-16 mt-8 mr-8 ml-8 bg-navy/5 py-12 px-6 rounded-xl" data-aos="fade-up">
-            <!-- Added max-width container for testimonials -->
-            <div class="max-w-5xl mx-auto">
-                <h3 class="text-4xl font-hedvig text-navy text-center mb-12">Words from Families We've Served</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <!-- Testimonial 1 -->
+<div class="mb-16 mt-8 mr-8 ml-8 bg-navy/5 py-12 px-6 rounded-xl" data-aos="fade-up">
+    <!-- Added max-width container for testimonials -->
+    <div class="max-w-5xl mx-auto">
+        <h3 class="text-4xl font-hedvig text-navy text-center mb-12">Words from Families We've Served</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <?php
+            // Include database connection
+            include 'db_connect.php';
+            
+            // Fetch feedback with status 'Show' and customer names
+            $sql = "SELECT f.*, 
+                           CONCAT(u.first_name, ' ', COALESCE(u.middle_name, ''), ' ', u.last_name, 
+                                  CASE WHEN u.suffix IS NOT NULL AND u.suffix != '' THEN CONCAT(' ', u.suffix) ELSE '' END) as customer_name
+                    FROM feedback_tb f 
+                    INNER JOIN users u ON f.customer_id = u.id 
+                    WHERE f.status = 'Show' 
+                    ORDER BY f.created_at DESC 
+                    LIMIT 2";
+            
+            $result = $conn->query($sql);
+            
+            if ($result && $result->num_rows > 0) {
+                while($row = $result->fetch_assoc()) {
+                    // Generate star rating based on rating value
+                    $stars = '';
+                    $rating = $row['rating'];
+                    for ($i = 1; $i <= 5; $i++) {
+                        if ($i <= $rating) {
+                            $stars .= '<i class="fas fa-star"></i>';
+                        } else {
+                            $stars .= '<i class="far fa-star"></i>';
+                        }
+                    }
+                    ?>
+                    <!-- Dynamic Testimonial -->
                     <div class="bg-white p-6 rounded-lg shadow-md">
                         <div class="flex items-center mb-4">
                             <div class="text-yellow-600 mr-3">
@@ -387,40 +416,66 @@
                             </div>
                             <div>
                                 <div class="text-yellow-600 mb-1">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
+                                    <?php echo $stars; ?>
                                 </div>
                             </div>
                         </div>
-                        <p class="text-dark text-m italic mb-4">In our darkest hour, the team at VJay Relova provided a light of compassion and support. Their attention to detail and genuine care made an unbearable time slightly more bearable. We will be forever grateful.</p>
-                        <p class="font-hedvig text-m text-navy">- The Reyes Family</p>
+                        <p class="text-dark text-m italic mb-4"><?php echo htmlspecialchars($row['feedback_text']); ?></p>
+                        <p class="font-hedvig text-m text-navy">- The <?php echo htmlspecialchars($row['customer_name']); ?> Family</p>
                     </div>
-                    
-                    <!-- Testimonial 2 -->
-                    <div class="bg-white p-6 rounded-lg shadow-md">
-                        <div class="flex items-center mb-4">
-                            <div class="text-yellow-600 mr-3">
-                                <i class="fas fa-quote-left text-3xl"></i>
-                            </div>
-                            <div>
-                                <div class="text-yellow-600 mb-1">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                </div>
+                    <?php
+                }
+            } else {
+                // Fallback to sample testimonials if no feedback found
+                ?>
+                <!-- Fallback Testimonial 1 -->
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <div class="flex items-center mb-4">
+                        <div class="text-yellow-600 mr-3">
+                            <i class="fas fa-quote-left text-3xl"></i>
+                        </div>
+                        <div>
+                            <div class="text-yellow-600 mb-1">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
                             </div>
                         </div>
-                        <p class="text-dark text-m italic mb-4">Mr. Relova and his team treated our family with such respect and dignity. They guided us through every decision with patience and understanding, making a difficult process much easier to navigate.</p>
-                        <p class="font-hedvig text-m text-navy">- The Santos Family</p>
                     </div>
+                    <p class="text-dark text-m italic mb-4">In our darkest hour, the team at VJay Relova provided a light of compassion and support. Their attention to detail and genuine care made an unbearable time slightly more bearable. We will be forever grateful.</p>
+                    <p class="font-hedvig text-m text-navy">- The Reyes Family</p>
                 </div>
-            </div>
+                
+                <!-- Fallback Testimonial 2 -->
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <div class="flex items-center mb-4">
+                        <div class="text-yellow-600 mr-3">
+                            <i class="fas fa-quote-left text-3xl"></i>
+                        </div>
+                        <div>
+                            <div class="text-yellow-600 mb-1">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-dark text-m italic mb-4">Mr. Relova and his team treated our family with such respect and dignity. They guided us through every decision with patience and understanding, making a difficult process much easier to navigate.</p>
+                    <p class="font-hedvig text-m text-navy">- The Santos Family</p>
+                </div>
+                <?php
+            }
+            
+            // Close connection
+            $conn->close();
+            ?>
         </div>
+    </div>
+</div>
 
     <!-- Footer -->
     <footer class="bg-black font-playfair text-white py-12">
