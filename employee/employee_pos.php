@@ -2169,7 +2169,7 @@ document.getElementById('beneficiaryDateOfBirth').addEventListener('change', fun
   <!-- Modal Content -->
   <div class="relative bg-white rounded-xl shadow-card w-full max-w-md mx-4 z-10 transform transition-all duration-300">
     <!-- Close Button -->
-    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeConfirmationModal()">
+    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="startNewOrder()">
       <i class="fas fa-times"></i>
     </button>
     
@@ -2545,9 +2545,12 @@ function showConfirmationModal() {
 function startNewOrder() {
   // Close the confirmation modal
   document.getElementById('confirmation-modal').classList.add('hidden');
+  document.getElementById('deathCertificatePreview').classList.add('hidden')
   
   // Reset the form
   document.getElementById('checkoutForm').reset();
+
+  location.reload();
   
   // You might want to reset other states here
 }
