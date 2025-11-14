@@ -91,10 +91,11 @@ function getStarRatingHtml($rating) {
         }
 
         /* Toggle Switch Styling */
-        /* Adopted gold/accent color from id_confirmation context */
+        /* Updated: Use a distinct green color for the toggled (checked) state */
         .toggle-checkbox:checked {
-            background-color: #CA8A04; /* sidebar-accent color */
+            background-color: #10B981; /* Tailwind green-500 */
         }
+        /* Keeping the gold accent for other elements for consistency */
         .toggle-checkbox:checked + .toggle-label {
             transform: translateX(100%);
         }
@@ -308,13 +309,13 @@ function getStarRatingHtml($rating) {
                             <td class="px-4 py-4 text-sm text-gray-700 max-w-sm truncate" title="Good experience overall, but the initial response was a bit slow. The issue was eventually resolved after a couple of days.">
                                 Good experience overall, but the initial response was a bit slow. The issue was eventually resolved after a couple of days.
                             </td>
-                            <td class="px-4 py-4 text-sm text-gray-500 whitespace-nowrap">2025-09-15</td>
                             <td class="px-4 py-4 text-center">
                                 <label class="relative inline-flex items-center cursor-pointer">
                                     <input type="checkbox" value="" class="sr-only peer toggle-checkbox">
                                     <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-sidebar-accent rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
                                 </label>
                             </td>
+                            <td class="px-4 py-4 text-sm text-gray-500 whitespace-nowrap">2025-09-15</td>
                             <td class="px-4 py-4 text-center">
                                 <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Full Content">
                                     <i class="fas fa-eye"></i>
