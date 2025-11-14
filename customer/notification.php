@@ -972,7 +972,7 @@ document.addEventListener('click', function(event) {
                     <!-- Branch Name -->
                     <p class="text-gray-600 text-xs mt-1 flex items-center">
                         <i class="fas fa-map-marker-alt mr-1 text-gold text-xs"></i> 
-                        <?php echo htmlspecialchars($booking['branch_name']); ?>
+                        <?php echo ucfirst(htmlspecialchars($booking['branch_name'])); ?>
                     </p>
                 </div>
             </div>
@@ -1661,7 +1661,7 @@ function getStatusText(status) {
                                     </div>
                                     <div class="flex flex-wrap">
                                         <div class="w-1/3 text-sm text-gray-500">Branch</div>
-                                        <div class="w-2/3 font-medium text-gray-800 break-words">${data.branch_name}</div>
+                                        <div class="w-2/3 font-medium text-gray-800 break-words capitalize">${data.branch_name}</div>
                                     </div>
                                     <div class="flex flex-wrap">
                                         <div class="w-1/3 text-sm text-gray-500">Initial Price</div>
