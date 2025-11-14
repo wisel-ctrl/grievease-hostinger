@@ -90,6 +90,26 @@ function getStarRatingHtml($rating) {
             background: #A0AEC0;
         }
 
+        /* MODAL STYLES COPIED FROM ACCOUNT_MANAGEMENT.PHP FOR CONSISTENCY */
+        .modal-scroll-container {
+            scrollbar-width: thin;
+            scrollbar-color: #d4a933 #f5f5f5; /* Gold scrollbar */
+        }
+
+        .modal-scroll-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .modal-scroll-container::-webkit-scrollbar-track {
+            background: #f5f5f5;
+        }
+
+        .modal-scroll-container::-webkit-scrollbar-thumb {
+            background-color: #d4a933;
+            border-radius: 6px;
+        }
+        /* End MODAL STYLES */
+
         /* Toggle Switch Styling */
         /* Adopted gold/accent color from id_confirmation context */
         .toggle-checkbox:checked {
@@ -399,51 +419,110 @@ function getStarRatingHtml($rating) {
     </footer>
 </div>
 
-<div id="feedbackModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
-    <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div class="fixed inset-0 transition-opacity" aria-hidden="true">
-            <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
-        </div>
-        
-        <div class="inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
-            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                <div class="sm:flex sm:items-start">
-                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                        <h3 class="text-xl leading-6 font-bold text-gray-900 border-b pb-2 flex items-center gap-2">
-                            <i class="fas fa-comment-alt text-sidebar-accent"></i> Full Feedback Details
-                        </h3>
-                        
-                        <div class="mt-4 space-y-3">
-                            <p class="text-sm font-medium text-gray-700">Customer: <span class="font-normal text-gray-800" id="modalCustomerName">Jane Doe</span></p>
-                            <p class="text-sm font-medium text-gray-700 flex items-center">Rating: 
-                                <span class="ml-2 text-lg text-yellow-600" id="modalRatingStars">
-                                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-                                </span>
-                                <span class="ml-1 text-sm text-gray-600">(5.0)</span>
-                            </p>
-                            <div class="p-3 bg-gray-100 rounded-lg border border-gray-200">
-                                <p class="text-sm font-medium text-gray-700 mb-1">Feedback:</p>
-                                <p class="text-base text-gray-800" id="modalFeedbackContent">
-                                    The service was exceptional, highly recommend GrievEase to everyone! The process was smooth and the support team was very helpful.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                <button type="button" class="mt-3 w-full inline-flex justify-center rounded-lg border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-100 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm" onclick="closeFeedbackModal()">
-                    Close
-                </button>
-            </div>
-        </div>
+<div id="viewFeedbackModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm" onclick="closeFeedbackModal()"></div>
+  
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] flex flex-col">
+    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeFeedbackModal()">
+      <i class="fas fa-times text-xl"></i>
+    </button>
+    
+    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
+        Customer Feedback
+      </h3>
     </div>
+    
+    <div class="px-4 sm:px-6 py-4 sm:py-5 overflow-y-auto modal-scroll-container space-y-4">
+        <p class="text-sm font-medium text-gray-700">Customer: <span class="ml-2 font-semibold text-gray-800" id="modalCustomerName"></span></p>
+        
+        <p class="text-sm font-medium text-gray-700 flex items-center">Rating: 
+            <span class="ml-2 text-lg text-yellow-600" id="modalRatingStars"></span> 
+            <span class="ml-2 text-sm text-gray-500" id="modalRatingText"></span>
+        </p>
+        
+        <p class="text-sm font-medium text-gray-700">Submitted On: <span class="ml-2 font-semibold text-gray-800" id="modalSubmissionDate"></span></p>
+
+        <p class="text-base font-semibold text-gray-800 pt-2">Feedback Details:</p>
+        
+        <div id="modalContent" class="mt-1 p-3 bg-gray-50 rounded-lg border border-gray-200 text-gray-700 whitespace-pre-wrap">
+            </div>
+    </div>
+    
+    <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+        <div class="flex items-center space-x-2">
+            <span class="text-sm text-gray-600 font-medium">Toggle Visibility:</span>
+            <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="modalVisibilityToggle" class="sr-only peer toggle-checkbox">
+                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-sidebar-accent rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+                <span class="ml-3 text-sm font-medium text-gray-900" id="modalVisibilityStatus"></span>
+            </label>
+        </div>
+        <button onclick="closeFeedbackModal()" class="w-full sm:w-auto px-4 sm:px-5 py-2 text-sm font-medium text-sidebar-text bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors shadow-sm">
+            Close
+        </button>
+    </div>
+  </div>
 </div>
 
 <script>
-    // Mobile sidebar toggle
+    // Utility function to generate star HTML
+    function getStarRatingHtml(rating) {
+        let html = '';
+        let roundedRating = Math.round(rating * 2) / 2;
+        let fullStars = Math.floor(roundedRating);
+        let hasHalfStar = (roundedRating - fullStars) >= 0.5;
+
+        for (let i = 0; i < fullStars; i++) {
+            html += '<i class="fas fa-star"></i>';
+        }
+        if (hasHalfStar) {
+            html += '<i class="fas fa-star-half-alt"></i>';
+        }
+        for (let i = 0; i < 5 - Math.ceil(roundedRating); i++) {
+            html += '<i class="far fa-star"></i>';
+        }
+        return html;
+    }
+
+    /**
+     * Opens the view feedback modal with populated data.
+     * Arguments: customerName, rating (float), content (string), date (string), isVisible (0 or 1), feedbackId (int)
+     */
+    function openFeedbackModal(customerName, rating, content, date, isVisible, feedbackId) {
+        const modal = document.getElementById('viewFeedbackModal');
+        const toggle = document.getElementById('modalVisibilityToggle');
+        const statusText = document.getElementById('modalVisibilityStatus');
+
+        // Populate content
+        document.getElementById('modalCustomerName').textContent = customerName;
+        document.getElementById('modalRatingStars').innerHTML = getStarRatingHtml(rating);
+        document.getElementById('modalRatingText').textContent = `(${rating.toFixed(1)})`;
+        document.getElementById('modalContent').textContent = content;
+        document.getElementById('modalSubmissionDate').textContent = date;
+        
+        // Handle visibility toggle
+        toggle.checked = isVisible === 1;
+        toggle.setAttribute('data-feedback-id', feedbackId);
+        statusText.textContent = isVisible === 1 ? 'Visible' : 'Hidden';
+
+        // Display modal
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        document.body.classList.add('overflow-hidden');
+    }
+
+    // Function to close the view feedback modal
+    window.closeFeedbackModal = function() {
+        const modal = document.getElementById('viewFeedbackModal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        document.body.classList.remove('overflow-hidden');
+    }
+
+    // --- Dynamic Content Setup and Event Listeners ---
     document.addEventListener('DOMContentLoaded', function() {
-        // Mobile hamburger menu toggle
+        // Mobile sidebar toggle (Kept from original code)
         const mobileHamburger = document.getElementById('mobile-hamburger');
         const sidebar = document.getElementById('sidebar');
         
@@ -452,48 +531,10 @@ function getStarRatingHtml($rating) {
                 sidebar.classList.toggle('-translate-x-full');
             });
         }
-
-        // Function to open feedback modal
-        function openFeedbackModal(customerName, rating, content) {
-            document.getElementById('modalCustomerName').textContent = customerName;
-            
-            // Simple star rendering logic
-            let starsHtml = '';
-            const fullStars = Math.floor(rating);
-            const hasHalfStar = rating % 1 !== 0;
-            
-            for (let i = 0; i < fullStars; i++) {
-                starsHtml += '<i class="fas fa-star"></i>';
-            }
-            
-            if (hasHalfStar) {
-                starsHtml += '<i class="fas fa-star-half-alt"></i>';
-            }
-            
-            for (let i = 0; i < 5 - Math.ceil(rating); i++) {
-                starsHtml += '<i class="far fa-star"></i>';
-            }
-
-            document.getElementById('modalRatingStars').innerHTML = starsHtml;
-            document.getElementById('modalFeedbackContent').textContent = content;
-            
-            // Update rating number in parentheses
-            const ratingNumberElement = document.querySelector('#modalRatingStars + span');
-            if (ratingNumberElement) {
-                ratingNumberElement.textContent = `(${rating.toFixed(1)})`;
-            }
-
-            document.getElementById('feedbackModal').classList.remove('hidden');
-        }
-
-        // Function to close feedback modal
-        window.closeFeedbackModal = function() {
-            document.getElementById('feedbackModal').classList.add('hidden');
-        }
-
-        // Close modal when clicking outside
+        
+        // Close modal when clicking outside (updated for new modal ID)
         window.addEventListener('click', function(event) {
-            const modal = document.getElementById('feedbackModal');
+            const modal = document.getElementById('viewFeedbackModal');
             if (event.target === modal) {
                 closeFeedbackModal();
             }
@@ -505,24 +546,43 @@ function getStarRatingHtml($rating) {
                 closeFeedbackModal();
             }
         });
-
-        // Attach event listeners to view buttons
-        document.querySelectorAll('#feedbackTableBody tr').forEach(row => {
-            const viewButton = row.querySelector('.fa-eye').closest('button');
-            const customerName = row.cells[0].textContent.trim();
+        
+        const tableBody = document.getElementById('feedbackTableBody');
+        
+        // Loop through all table rows to attach click handlers
+        tableBody.querySelectorAll('tr').forEach((row, index) => {
+            // Target the button with the fa-eye icon
+            const viewButton = row.querySelector('.fa-eye').closest('button'); 
             
-            // Extract the rating number from the text content of the second cell
-            // e.g., from "⭐...⭐ (5.0)" extract "5.0"
+            // NOTE: Since this is mock HTML, we use the row index + 1 as a mock feedback ID
+            const feedbackId = index + 1; 
+
+            // Assuming the table columns are structured: 0: Name, 1: Rating, 2: Content Snippet, 3: Toggle, 4: Date
+            const customerName = row.cells[0]?.textContent?.trim() || 'N/A';
+            
+            // Extract rating from the cell text (e.g., from "⭐...⭐ (5.0)" extract "5.0")
             const ratingTextMatch = row.cells[1].textContent.trim().match(/\((.*)\)/);
             const ratingText = ratingTextMatch ? ratingTextMatch[1] : '0.0';
             const rating = parseFloat(ratingText);
 
             // Get full content from the title attribute
-            const content = row.cells[2].getAttribute('title');
-
+            const content = row.cells[2].getAttribute('title') || row.cells[2].textContent.trim();
+            
+            // Get visibility status, date, and ID
+            const toggleInput = row.cells[4].querySelector('input[type="checkbox"]');
+            const isVisible = toggleInput ? (toggleInput.checked ? 1 : 0) : 0;
+            const date = row.cells[3]?.textContent?.trim() || 'N/A'; 
+            
+            // Attach mock ID to table toggle for two-way sync
+            if (toggleInput) {
+                // IMPORTANT: The HTML column order is [0: Name, 1: Rating, 2: Content, 3: Date, 4: Toggle]
+                toggleInput.setAttribute('data-id', feedbackId);
+            }
+            
             if (viewButton) {
+                // The onclick function is updated to pass the date, isVisible, and feedbackId
                 viewButton.onclick = function() {
-                    openFeedbackModal(customerName, rating, content);
+                    openFeedbackModal(customerName, rating, content, date, isVisible, feedbackId);
                 };
             }
         });
@@ -547,6 +607,26 @@ function getStarRatingHtml($rating) {
                 row.style.display = matchesSearch ? '' : 'none';
             });
         }
+        
+        // Add listener for the modal visibility toggle
+        document.getElementById('modalVisibilityToggle')?.addEventListener('change', function() {
+            const feedbackId = this.getAttribute('data-feedback-id');
+            const newStatus = this.checked ? 1 : 0;
+            const statusText = document.getElementById('modalVisibilityStatus');
+            
+            statusText.textContent = newStatus === 1 ? 'Visible' : 'Hidden';
+            
+            // Update the corresponding toggle in the main table for instant visual feedback
+            // This relies on the 'data-id' attribute being set in the DOMContentLoaded function above.
+            const tableToggle = document.querySelector(`input[data-id="${feedbackId}"]`);
+            if (tableToggle) {
+                tableToggle.checked = this.checked;
+            }
+            
+            // --- AJAX IMPLEMENTATION ---
+            // Add your fetch/AJAX call here to update the database visibility status
+            // The body would be: `feedback_id=${feedbackId}&is_visible=${newStatus}`
+        });
     });
 </script>
 
