@@ -330,6 +330,14 @@ if ($count_result->num_rows > 0) {
             
           </a>
         </li>
+        <li>
+          <a href="feedback_management.php" class="sidebar-link flex items-center px-5 py-3 text-sidebar-text opacity-80 hover:opacity-100 no-underline transition-all duration-300 hover:bg-sidebar-hover relative">
+            <i class="fas fa-hand-holding-usd w-5 text-center mr-3 text-sidebar-accent"></i>
+            <span>Feedback Management</span>
+            <!-- Notification Badge (optional) -->
+            
+          </a>
+        </li>
       </ul>
         
       <!-- Reports & Analytics -->
@@ -355,6 +363,7 @@ if ($count_result->num_rows > 0) {
             <span>History</span>
           </a>
         </li>
+
       </ul>
         
       <!-- Services & Staff -->
