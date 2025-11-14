@@ -902,104 +902,101 @@ document.addEventListener('click', function(event) {
                                     $status_bg = 'bg-error/20';
                                     $status_icon = 'fas fa-times-circle';
                                     $status_text_color = 'text-error';
-                                    $status_text = 'Declined';
                                     break;
                             }
                         ?>
                         
                         <!-- Booking Notification -->
-<div class="bg-white border-l-4 <?php echo $border_color; ?> rounded-xl shadow-md overflow-hidden notification-animate hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5">
+<div class="bg-white border-l-4 <?php echo $border_color; ?> rounded-xl shadow-md overflow-hidden notification-animate hover:shadow-lg transition-all duration-300">
     <div class="flex flex-col">
-        <div class="flex-1 p-4 sm:p-5">
-            <!-- Top Section -->
-            <div class="flex justify-between items-start">
-                <!-- Left Column - Service Info -->
-                <div class="flex-1 pr-3">
-                    <!-- Service Name -->
-                    <h3 class="text-navy text-lg sm:text-xl font-hedvig font-semibold leading-tight mb-2">
-                        <?php echo htmlspecialchars($booking['service_name']); ?>
-                    </h3>
-                    
-                    <!-- Status and Type Badges -->
-                    <div class="flex flex-wrap gap-2 mb-3">
-                        <span class="<?php echo $status_bg; ?> <?php echo $status_text_color; ?> text-xs font-medium px-3 py-1.5 rounded-full inline-flex items-center shadow-sm">
-                            <i class="<?php echo $status_icon; ?> mr-1.5 text-sm"></i>
+        <div class="flex-1 py-4 px-4 sm:py-5 sm:px-7">
+            <!-- Top Row - Now using flex layout with space-between -->
+            <div class="flex justify-between items-start mb-1">
+                <!-- Left Column - Status -->
+                <div class="flex flex-col items-start">
+                    <div class="flex items-center space-x-2 mb-1">
+                        <span class="<?php echo $status_bg; ?> <?php echo $status_text_color; ?> text-xs px-2 py-1 rounded-full inline-flex items-center">
+                            <i class="<?php echo $status_icon; ?> mr-1 text-xs"></i>
                             <p>Booking: <?php echo htmlspecialchars($booking['status']); ?></p>
                         </span>
-                        <span class="bg-yellow-600/15 text-yellow-700 text-xs font-medium px-3 py-1.5 rounded-full inline-flex items-center shadow-sm">
-                            <i class="fas fa-cross mr-1.5 text-yellow-600"></i>
+                        <!-- Add Traditional Funeral badge -->
+                        <span class="bg-yellow-600/20 text-yellow-600 text-xs px-2 py-1 rounded-full inline-flex items-center">
+                            <i class="fas fa-cross mr-1 text-xs"></i>
                             <p>Traditional Funeral</p>
                         </span>
                     </div>
                     
+                    <!-- Service Name -->
+                    <h3 class="text-navy text-base sm:text-lg font-hedvig mt-1">
+                        <?php echo htmlspecialchars($booking['service_name']); ?>
+                    </h3>
+                    
                     <?php if ($booking['status'] === 'Declined' && !empty($booking['reason_for_decline'])): ?>
-                        <div class="mt-2 bg-red-50 border border-red-100 rounded-lg p-3">
-                            <p class="text-red-700 text-xs sm:text-sm flex items-start">
-                                <i class="fas fa-info-circle mt-0.5 mr-2 text-red-500 flex-shrink-0"></i>
-                                <span>Reason: <?php echo htmlspecialchars($booking['reason_for_decline']); ?></span>
-                            </p>
-                        </div>
+                        <p class="text-gray-600 text-xs sm:text-sm mt-1">
+                            <i class="fas fa-comment-alt mr-1 text-gold text-xs"></i> 
+                            Reason: <?php echo htmlspecialchars($booking['reason_for_decline']); ?>
+                        </p>
                     <?php endif; ?>
                 </div>
                 
                 <!-- Right Column - Date/Time and Branch -->
                 <div class="flex flex-col items-end">
-                    <!-- Date/Time Badge -->
-                    <div class="bg-gradient-to-r from-amber-50 to-amber-50 border border-amber-100 rounded-lg px-3 py-2 text-center shadow-sm">
-                        <p class="text-amber-900 font-medium text-sm flex items-center">
-                            <i class="far fa-calendar-alt mr-1.5 text-amber-500"></i>
+                    <!-- Date/Time -->
+                    <div class="bg-cream rounded-lg p-1 text-xs flex items-center space-x-1">
+                        <p class="text-gray-700 flex items-center">
+                            <i class="far fa-calendar mr-1 text-gold text-xs"></i>
                             <?php 
+                                // Determine which date to show based on status
                                 $displayDate = $booking['booking_date'];
                                 if ($booking['status'] === 'Accepted' && !empty($booking['accepted_date'])) {
                                     $displayDate = $booking['accepted_date'];
                                 } elseif ($booking['status'] === 'Declined' && !empty($booking['decline_date'])) {
                                     $displayDate = $booking['decline_date'];
                                 }
-                                
+                                                                
+                                // Convert to Manila timezone and format
                                 $date = new DateTime($displayDate, new DateTimeZone('Asia/Manila'));
                                 $date->setTimezone(new DateTimeZone('Asia/Manila'));
+                                echo $date->format('M d');
                             ?>
-                            <span class="font-semibold"><?php echo $date->format('M d'); ?></span>
-                            <span class="mx-1">•</span>
-                            <span class="font-normal"><?php echo $date->format('h:i A'); ?></span>
+                        </p>
+                        <p class="text-gray-700 flex items-center">
+                            <i class="far fa-clock mr-1 text-gold text-xs"></i>
+                            <?php 
+                                // Same date object, just format time differently
+                                echo $date->format('h:i A'); 
+                            ?>
                         </p>
                     </div>
                     
                     <!-- Branch Name -->
-                    <div class="mt-2 bg-gray-50 rounded-lg px-3 py-1.5">
-                        <p class="text-gray-700 text-xs font-medium flex items-center">
-                            <i class="fas fa-map-marker-alt mr-1.5 text-gray-500"></i> 
-                            <?php echo htmlspecialchars($booking['branch_name']); ?>
-                        </p>
-                    </div>
+                    <p class="text-gray-600 text-xs mt-1 flex items-center">
+                        <i class="fas fa-map-marker-alt mr-1 text-gold text-xs"></i> 
+                        <?php echo htmlspecialchars($booking['branch_name']); ?>
+                    </p>
                 </div>
             </div>
 
-            <!-- Status Message -->
-            <div class="mt-4 pt-3 border-t border-gray-100">
-                <div class="flex items-start">
-                    <div class="flex-shrink-0 h-5 w-5 rounded-full <?php echo $status_bg; ?> flex items-center justify-center mr-3 mt-0.5">
-                        <i class="<?php echo $status_icon; ?> text-xs <?php echo $status_text_color; ?>"></i>
-                    </div>
-                    <p class="text-gray-700 text-sm">
-                        <?php 
-                            switch($booking['status']) {
-                                case 'Pending':
-                                    echo "<span class='font-medium'>Your booking is under review.</span> Our team is currently processing your request. We'll notify you once there's an update. This usually takes 1-2 business days.";
-                                    break;
-                                case 'Accepted':
-                                    echo "<span class='font-medium'>Your booking is confirmed!</span> Please arrive 15 minutes before your scheduled time. If you have any questions, feel free to contact our support team.";
-                                    break;
-                                case 'Declined':
-                                    echo "<span class='font-medium'>We apologize for the inconvenience.</span> " . 
-                                         (!empty($booking['admin_message']) ? 
-                                         htmlspecialchars($booking['admin_message']) : 
-                                         "We were unable to accommodate your booking request. Please try another date or contact us for assistance.");
-                                    break;
-                            }
-                        ?>
-                    </p>
-                </div>
+            <!-- Booking Details -->
+            <div class="mt-2">
+                <p class="text-gray-700 text-xs sm:text-sm">
+                    <?php 
+                        switch($booking['status']) {
+                            case 'Pending':
+                                echo "Your booking request is being reviewed by our staff. We will update you soon.";
+                                break;
+                            case 'Accepted':
+                                echo "Your booking has been confirmed. Please arrive 15 minutes before your scheduled time.";
+                                break;
+                            case 'Declined':
+                                echo "We apologize, but we were unable to accommodate your booking request.";
+                                if (!empty($booking['admin_message'])) {
+                                    echo " Reason: " . htmlspecialchars($booking['admin_message']);
+                                }
+                                break;
+                        }
+                    ?>
+                </p>
             </div>
             
             <div class="mt-3 flex flex-wrap gap-2 items-center justify-between">
