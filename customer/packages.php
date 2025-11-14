@@ -1274,7 +1274,7 @@ function capitalizeWords(str) {
 <!-- Enlarged QR Code View (hidden by default) -->
 <div id="enlargedQrView" class="fixed inset-0 bg-black bg-opacity-90 z-[60] flex items-center justify-center hidden">
     <div class="relative max-w-4xl w-full p-4">
-        <button onclick="closeEnlargedQr()" class="absolute top-4 right-4 text-white text-2xl z-10">
+        <button type="button" onclick="closeEnlargedQr()" class="absolute top-4 right-4 text-white text-2xl z-10">
             <i class="fas fa-times"></i>
         </button>
         <img id="enlargedQrImage" src="" class="w-full max-h-[90vh] object-contain" alt="Enlarged QR Code">
