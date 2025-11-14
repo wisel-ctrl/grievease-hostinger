@@ -917,7 +917,7 @@ document.addEventListener('click', function(event) {
                     <div class="flex items-center space-x-2 mb-1">
                         <span class="<?php echo $status_bg; ?> <?php echo $status_text_color; ?> text-xs px-2 py-1 rounded-full inline-flex items-center">
                             <i class="<?php echo $status_icon; ?> mr-1 text-xs"></i>
-                            <p>Booking: <?php echo htmlspecialchars($booking['status']); ?></p>
+                            <p><?php echo htmlspecialchars($booking['status']); ?></p>
                         </span>
                         <!-- Add Traditional Funeral badge -->
                         <span class="bg-yellow-600/20 text-yellow-600 text-xs px-2 py-1 rounded-full inline-flex items-center">
