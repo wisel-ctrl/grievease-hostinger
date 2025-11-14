@@ -2666,9 +2666,10 @@ function removeGcash() {
                             <input type="checkbox" id="termsCheckbox" name="terms_accepted" required 
                                 class="h-5 w-5 text-yellow-600 rounded focus:ring-yellow-500 mt-1">
                             <label for="termsCheckbox" class="ml-3 text-sm">
-                                <span class="block text-navy mb-1">I have read and agree to the <a href="#" class="text-yellow-600 hover:underline" id="viewPrivacyPolicy">Privacy Policy</a>, <a href="#" class="text-yellow-600 hover:underline" id="viewTermsOfService">Terms of Service</a>, and <a href="lifeplancontract.php" target="_blank" rel="noopener noreferrer" class="text-yellow-600 hover:underline">LifePlan Contract</a>. <a href="lifeplancontract_pdf.php" target="_blank" rel="noopener noreferrer" class="text-yellow-600 hover:underline">(Download PDF Version)</a> <span class="text-red-500">*</span></span>
-                                <span class="block text-gray-500 text-xs">By checking this box, you acknowledge that you have read and understood all terms and conditions, and consent to our data collection practices as described in our Privacy Policy.</span>
-                            </label>
+                                <span class="block text-navy mb-1">I have read and agree to the <a href="#" onclick="event.preventDefault(); openModal('privacyPolicyModal')" class="text-yellow-600 hover:underline">Privacy Policy</a>
+        and
+        <a href="#" onclick="event.preventDefault(); openModal('termsOfServiceModal')" class="text-yellow-600 hover:underline">Terms of Service</a>.
+    </label>
                         </div>
                     </div>
 
@@ -3847,6 +3848,12 @@ function closeAllModals() {
     document.getElementById('traditionalModal').classList.add('hidden');
     document.getElementById('lifeplanModal').classList.add('hidden');
     document.getElementById('serviceTypeModal').classList.add('hidden');
+
+    // ADDED: Close Privacy Policy and Terms of Service Modals
+    const privacyPolicyModal = document.getElementById('privacyPolicyModal');
+    const termsOfServiceModal = document.getElementById('termsOfServiceModal');
+    if (privacyPolicyModal) privacyPolicyModal.classList.add('hidden');
+    if (termsOfServiceModal) termsOfServiceModal.classList.add('hidden');
     
     // Reset traditional modal to show details section
     document.querySelector('#traditionalModal .details-section').classList.remove('hidden');
@@ -4732,6 +4739,19 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+
+// New function to open a specific modal
+function openModal(modalId) {
+    // Close all other modals first to prevent stacking
+    closeAllModals();
+    
+    // Open the target modal
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.remove('hidden');
+    }
+}
 </script>
 </body>
 </html>
