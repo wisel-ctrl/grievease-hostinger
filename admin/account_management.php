@@ -2001,7 +2001,6 @@ if ($result->num_rows > 0) {
                     <div class="relative filter-dropdown">
                         <button id="filterToggleMobile" class="w-10 h-10 flex items-center justify-center text-sidebar-accent">
                             <i class="fas fa-filter text-xl"></i>
-                            <span id="filterIndicatorMobile" class="hidden absolute top-1 right-1 h-2 w-2 bg-sidebar-accent rounded-full"></span>
                         </button>
                         
                         <!-- Mobile Filter Dropdown -->
