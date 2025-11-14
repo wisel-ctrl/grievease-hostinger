@@ -408,19 +408,6 @@ if ($count_result->num_rows > 0) {
           </a>
         </li>
       </ul>
-      
-      <!-- Customer Feedback -->
-      <div class="px-5 mb-2 py-2 menu-header">
-        <h5 class="text-xs font-medium text-sidebar-accent uppercase tracking-wider">Customer Feedback</h5>
-      </div>
-      <ul class="list-none p-0 mb-6">
-        <li>
-          <a href="feedback_management.php" class="sidebar-link flex items-center px-5 py-3 text-sidebar-text opacity-80 hover:opacity-100 no-underline transition-all duration-300 hover:bg-sidebar-hover">
-            <i class="fas fa-comment-alt w-5 text-center mr-3 text-sidebar-accent"></i>
-            <span>Feedback Management</span>
-          </a>
-        </li>
-      </ul>
     </div>
       
   </nav>
