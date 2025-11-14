@@ -917,7 +917,7 @@ document.addEventListener('click', function(event) {
                     <div class="flex items-center space-x-2 mb-1">
                         <span class="<?php echo $status_bg; ?> <?php echo $status_text_color; ?> text-xs px-2 py-1 rounded-full inline-flex items-center">
                             <i class="<?php echo $status_icon; ?> mr-1 text-xs"></i>
-                            <p><?php echo htmlspecialchars($booking['status']); ?></p>
+                            <p>Booking: <?php echo htmlspecialchars($booking['status']); ?></p>
                         </span>
                         <!-- Add Traditional Funeral badge -->
                         <span class="bg-yellow-600/20 text-yellow-600 text-xs px-2 py-1 rounded-full inline-flex items-center">
@@ -928,7 +928,7 @@ document.addEventListener('click', function(event) {
                     
                     <!-- Service Name -->
                     <h3 class="text-navy text-base sm:text-lg font-hedvig mt-1">
-                        <?php echo str_replace('Funeral', '', htmlspecialchars($booking['service_name'])); ?>
+                        <?php echo htmlspecialchars($booking['service_name']); ?>
                     </h3>
                     
                     <?php if ($booking['status'] === 'Declined' && !empty($booking['reason_for_decline'])): ?>
@@ -1204,7 +1204,7 @@ document.addEventListener('click', function(event) {
                     <div class="flex items-center space-x-2 mb-1">
                         <span class="<?php echo $status_bg; ?> <?php echo $status_text_color; ?> text-xs px-2 py-1 rounded-full inline-flex items-center">
                             <i class="<?php echo $status_icon; ?> mr-1 text-xs"></i>
-                            <p><?php echo $status_text; ?></p>
+                            <p>Booking: <?php echo $status_text; ?></p>
                         </span>
                         <!-- Life Plan badge -->
                         <span class="bg-blue-600/20 text-blue-600 text-xs px-2 py-1 rounded-full inline-flex items-center">
@@ -1215,7 +1215,7 @@ document.addEventListener('click', function(event) {
                     
                     <!-- Service Name -->
                     <h3 class="text-navy text-base sm:text-lg font-hedvig mt-1">
-                        <?php echo str_replace('Funeral', '', htmlspecialchars($lifeplan_booking['service_name'])); ?>
+                        <?php echo htmlspecialchars($lifeplan_booking['service_name']); ?>
                     </h3>
                     
                     <?php if ($lifeplan_booking['booking_status'] === 'decline' && !empty($lifeplan_booking['decline_reason'])): ?>
