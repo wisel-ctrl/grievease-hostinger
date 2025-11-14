@@ -99,11 +99,26 @@ function getCasketData($conn, $branchId = null) {
             $branchJoinCondition
         GROUP BY 
             DATE_FORMAT(sale_date, '%Y-%m'), item_name
+    ),
+    monthly_avg AS (
+        SELECT 
+            item_name,
+            AVG(casket_sold) as avg_sales,
+            COUNT(*) as months_with_sales
+        FROM 
+            casket_sales
+        GROUP BY 
+            item_name
     )
     SELECT 
         DATE_FORMAT(am.month, '%Y-%m') AS sale_month,
         it.item_name,
-        COALESCE(cs.casket_sold, 0) AS casket_sold,
+        CASE 
+            WHEN cs.casket_sold IS NOT NULL THEN cs.casket_sold
+            WHEN am.month > DATE_FORMAT(CURDATE(), '%Y-%m-01') THEN 
+                GREATEST(ROUND(ma.avg_sales), 1) -- Forecast: use average sales, minimum 1
+            ELSE 0 -- Historical months with no sales remain 0
+        END AS casket_sold,
         CASE WHEN am.month > DATE_FORMAT(CURDATE(), '%Y-%m-01') THEN 1 ELSE 0 END AS is_forecast
     FROM 
         all_months am
@@ -113,6 +128,10 @@ function getCasketData($conn, $branchId = null) {
         casket_sales cs 
     ON 
         DATE_FORMAT(am.month, '%Y-%m') = cs.sale_month AND it.item_name = cs.item_name
+    LEFT JOIN
+        monthly_avg ma
+    ON
+        it.item_name = ma.item_name
     ORDER BY 
         sale_month, item_name";
 
