@@ -2353,144 +2353,108 @@ function openEditCustomerAccountModal(userId) {
                     <!-- Modal Content -->
                     <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] flex flex-col">
                         <!-- Close Button -->
-                        <button type="button" class="absolute top-4 right-4 text-sidebar-text hover:text-sidebar-accent transition-colors" onclick="closeEditCustomerModal()">
-                            <i class="fas fa-times text-xl"></i>
+                        <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeEditCustomerModal()">
+                            <i class="fas fa-times"></i>
                         </button>
                         
                         <!-- Modal Header -->
-                        <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold">
+                        <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
                             <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
-                                <i class="fas fa-user-edit mr-2"></i> Edit Customer Account
+                                Edit Customer Account
                             </h3>
                         </div>
                         
                         <!-- Modal Body -->
                         <div class="px-4 sm:px-6 py-4 sm:py-5 overflow-y-auto modal-scroll-container">
-                            <form id="editCustomerForm" class="space-y-4 sm:space-y-5">
+                            <form id="editCustomerForm" class="space-y-3 sm:space-y-4">
                                 <input type="hidden" name="user_id" value="${data.user.id}">
                                 
-                                <!-- Customer ID (Readonly) -->
-                                <div class="mb-1">
-                                    <label class="block text-xs font-medium text-gray-700 mb-1">
-                                        Customer ID
-                                    </label>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">Customer ID</label>
                                     <div class="relative">
-                                        <input type="text" 
-                                               value="#CUST-${String(data.user.id).padStart(3, '0')}" 
-                                               class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200 text-gray-700" 
-                                               readonly>
+                                        <input type="text" value="#CUST-${String(data.user.id).padStart(3, '0')}" 
+                                               class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" readonly>
                                     </div>
                                 </div>
-
-                                <!-- First Name -->
-                                <div class="mb-1">
-                                    <label for="editFirstName" class="block text-xs font-medium text-gray-700 mb-1">
+                                
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                                         First Name <span class="text-red-500">*</span>
                                     </label>
                                     <div class="relative">
-                                        <input type="text" 
-                                               id="editFirstName" 
-                                               name="first_name" 
-                                               value="${data.user.first_name ? data.user.first_name[0].toUpperCase() + data.user.first_name.slice(1) : ''}" 
+                                        <input type="text" id="editFirstName" name="first_name" value="${data.user.first_name ? data.user.first_name[0].toUpperCase() + data.user.first_name.slice(1) : ''}" 
                                                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
                                                pattern="[-A-Za-z']{2,}" 
                                                title="Only letters, apostrophes and hyphens allowed (minimum 2 characters)"
                                                required>
                                     </div>
-                                    <p id="firstNameError" class="text-red-500 text-xs mt-1 hidden">Please enter a valid first name</p>
+                                    <p id="firstNameError" class="text-red-500 text-xs mt-1 hidden"></p>
                                 </div>
-
-                                <!-- Last Name -->
-                                <div class="mb-1">
-                                    <label for="editLastName" class="block text-xs font-medium text-gray-700 mb-1">
+                                
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                                         Last Name <span class="text-red-500">*</span>
                                     </label>
                                     <div class="relative">
-                                        <input type="text" 
-                                               id="editLastName" 
-                                               name="last_name" 
-                                               value="${data.user.last_name ? data.user.last_name[0].toUpperCase() + data.user.last_name.slice(1) : ''}" 
+                                        <input type="text" id="editLastName" name="last_name" value="${data.user.last_name ? data.user.last_name[0].toUpperCase() + data.user.last_name.slice(1) : ''}" 
                                                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
                                                pattern="[-A-Za-z']{2,}" 
                                                title="Only letters, apostrophes and hyphens allowed (minimum 2 characters)"
                                                required>
                                     </div>
-                                    <p id="lastNameError" class="text-red-500 text-xs mt-1 hidden">Please enter a valid last name</p>
+                                    <p id="lastNameError" class="text-red-500 text-xs mt-1 hidden"></p>
                                 </div>
-
-                                <!-- Middle Name -->
-                                <div class="mb-1">
-                                    <label for="editMiddleName" class="block text-xs font-medium text-gray-700 mb-1">
-                                        Middle Name
-                                    </label>
+                                
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">Middle Name</label>
                                     <div class="relative">
-                                        <input type="text" 
-                                               id="editMiddleName" 
-                                               name="middle_name" 
-                                               value="${data.user.middle_name ? data.user.middle_name[0].toUpperCase() + data.user.middle_name.slice(1) : ''}" 
-                                               class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
+                                        <input type="text" id="editMiddleName" name="middle_name" value="${data.user.middle_name ? data.user.middle_name[0].toUpperCase() + data.user.middle_name.slice(1) : ''}" 
+                                               class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
                                                pattern="[A-Za-z'-]*"
                                                title="Only letters, apostrophes and hyphens allowed">
                                     </div>
                                 </div>
-
-                                <!-- Email Address -->
-                                <div class="mb-1">
-                                    <label for="editEmail" class="block text-xs font-medium text-gray-700 mb-1">
+                                
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                                         Email Address <span class="text-red-500">*</span>
                                     </label>
                                     <div class="relative">
-                                        <input type="email" 
-                                               id="editEmail" 
-                                               name="email" 
-                                               value="${data.user.email || ''}" 
+                                        <input type="email" id="editEmail" name="email" value="${data.user.email || ''}" 
                                                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
                                                pattern="[^@\s]+@[^@\s]+\.[^@\s]+" 
                                                title="Please enter a valid email address (no spaces allowed)"
                                                required>
-                                        <div id="emailFeedback" class="absolute right-3 top-1/2 transform -translate-y-1/2"></div>
                                     </div>
-                                    <p id="emailError" class="text-red-500 text-xs mt-1 hidden">Please enter a valid email address</p>
-                                    <p id="emailExistsError" class="text-red-500 text-xs mt-1 hidden">Email already in use</p>
+                                    <p id="emailError" class="text-red-500 text-xs mt-1 hidden"></p>
+                                    <p id="emailExistsError" class="text-red-500 text-xs mt-1 hidden"></p>
                                 </div>
-
-                                <!-- Phone Number -->
-                                <div class="mb-1">
-                                    <label for="editPhone" class="block text-xs font-medium text-gray-700 mb-1">
+                                
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                                         Phone Number <span class="text-red-500">*</span>
                                     </label>
                                     <div class="relative">
-                                        <input type="tel" 
-                                               id="editPhone" 
-                                               name="phone_number" 
-                                               value="${data.user.phone_number || ''}" 
+                                        <input type="tel" id="editPhone" name="phone_number" value="${data.user.phone_number || ''}" 
                                                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
                                                pattern="09\d{9}" 
                                                maxlength="11"
                                                title="Philippine number must start with 09 and be 11 digits total"
                                                required>
-                                        <div id="phoneFeedback" class="absolute right-3 top-1/2 transform -translate-y-1/2"></div>
                                     </div>
-                                    <p id="phoneError" class="text-red-500 text-xs mt-1 hidden">Please enter a valid Philippine phone number (09XXXXXXXXX)</p>
-                                    <p id="phoneExistsError" class="text-red-500 text-xs mt-1 hidden">Phone number already in use</p>
+                                    <p id="phoneError" class="text-red-500 text-xs mt-1 hidden"></p>
+                                    <p id="phoneExistsError" class="text-red-500 text-xs mt-1 hidden"></p>
                                 </div>
-
-                                <!-- Branch Location -->
-                                <div class="mb-1">
-                                    <label for="editBranch" class="block text-xs font-medium text-gray-700 mb-1">
+                                
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                                         Branch Location <span class="text-red-500">*</span>
                                     </label>
                                     <div class="relative">
-                                        <select id="editBranch" 
-                                                name="branch_loc" 
-                                                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200 appearance-none" 
-                                                required>
+                                        <select name="branch_loc" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
                                             <option value="">Select Branch</option>
                                             ${branchOptions}
                                         </select>
-                                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                                            <i class="fas fa-chevron-down text-xs"></i>
-                                        </div>
                                     </div>
                                     <p id="branchError" class="text-red-500 text-xs mt-1 hidden">Please select a branch</p>
                                 </div>
@@ -2498,19 +2462,13 @@ function openEditCustomerAccountModal(userId) {
                         </div>
                         
                         <!-- Modal Footer -->
-                        <div class="px-4 sm:px-6 py-4 border-t border-gray-200 bg-gray-50 rounded-b-xl">
-                            <div class="flex flex-col sm:flex-row justify-end gap-3">
-                                <button type="button" 
-                                        onclick="closeEditCustomerModal()" 
-                                        class="w-full sm:w-auto px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-all duration-200 flex items-center justify-center">
-                                    <i class="fas fa-times mr-2"></i> Cancel
-                                </button>
-                                <button type="button" 
-                                        onclick="validateAndSaveCustomerChanges()" 
-                                        class="w-full sm:w-auto px-5 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium hover:opacity-90 transition-all duration-200 flex items-center justify-center shadow-sm">
-                                    <i class="fas fa-save mr-2"></i> Save Changes
-                                </button>
-                            </div>
+                        <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+                            <button type="button" class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeEditCustomerModal()">
+                                Cancel
+                            </button>
+                            <button type="button" class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="validateAndSaveCustomerChanges()">
+                                Save Changes
+                            </button>
                         </div>
                     </div>
                 `;
