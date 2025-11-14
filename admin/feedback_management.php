@@ -37,10 +37,202 @@ $first_name = $row['first_name'];
 $last_name = $row['last_name'];
 $profile_picture = $row['profile_picture'] ? '../' . $row['profile_picture'] : '../default.png';
 
-// --- Placeholder/Mock Data Fetch (Replace with actual database query for real data) ---
-$overall_rating = 4.7;
-$total_submissions = 342;
-$visible_feedbacks = 12;
+// --- REAL DATA FETCH FROM DATABASE ---
+// Get overall statistics
+$stats_query = "SELECT 
+    COUNT(*) as total_submissions,
+    AVG(rating) as overall_rating,
+    SUM(CASE WHEN status = 'Show' THEN 1 ELSE 0 END) as visible_feedbacks
+    FROM feedback_tb";
+$stats_result = $conn->query($stats_query);
+$stats = $stats_result->fetch_assoc();
+
+$overall_rating = $stats['overall_rating'] ? round($stats['overall_rating'], 1) : 0;
+$total_submissions = $stats['total_submissions'] ? $stats['total_submissions'] : 0;
+$visible_feedbacks = $stats['visible_feedbacks'] ? $stats['visible_feedbacks'] : 0;
+
+// Get count of currently visible feedbacks
+$visible_count_query = "SELECT COUNT(*) as visible_count FROM feedback_tb WHERE status = 'Show'";
+$visible_count_result = $conn->query($visible_count_query);
+$visible_count_row = $visible_count_result->fetch_assoc();
+$current_visible_count = $visible_count_row['visible_count'];
+
+// Initial pagination setup for first load
+$per_page = 5;
+$current_page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+$offset = ($current_page - 1) * $per_page;
+$total_pages = ceil($total_submissions / $per_page);
+
+// Initial data fetch for first page load
+$feedbacks_query = "SELECT 
+    f.id,
+    f.customer_id,
+    f.service_id,
+    f.rating,
+    f.feedback_text,
+    f.status,
+    f.created_at,
+    CONCAT(u.first_name, ' ', u.last_name) as customer_name
+    FROM feedback_tb f
+    INNER JOIN users u ON f.customer_id = u.id
+    ORDER BY f.created_at DESC
+    LIMIT ? OFFSET ?";
+$stmt = $conn->prepare($feedbacks_query);
+$stmt->bind_param("ii", $per_page, $offset);
+$stmt->execute();
+$feedbacks_result = $stmt->get_result();
+$feedbacks = [];
+while ($row = $feedbacks_result->fetch_assoc()) {
+    $feedbacks[] = $row;
+}
+
+// Handle AJAX pagination request
+if (isset($_POST['ajax_pagination']) && $_POST['ajax_pagination'] == true) {
+    $page = isset($_POST['page']) ? max(1, intval($_POST['page'])) : 1;
+    $search_term = isset($_POST['search']) ? $_POST['search'] : '';
+    $rating_filter = isset($_POST['rating']) ? $_POST['rating'] : 'all';
+    
+    $per_page = 5;
+    $offset = ($page - 1) * $per_page;
+    
+    // Build query with filters
+    $base_query = "FROM feedback_tb f INNER JOIN users u ON f.customer_id = u.id";
+    $where_conditions = [];
+    $params = [];
+    $types = "";
+    
+    if (!empty($search_term)) {
+        $where_conditions[] = "(u.first_name LIKE ? OR u.last_name LIKE ? OR f.feedback_text LIKE ?)";
+        $search_param = "%$search_term%";
+        $params = array_merge($params, [$search_param, $search_param, $search_param]);
+        $types .= "sss";
+    }
+    
+    if ($rating_filter !== 'all') {
+        $where_conditions[] = "f.rating = ?";
+        $params[] = $rating_filter;
+        $types .= "i";
+    }
+    
+    $where_clause = $where_conditions ? "WHERE " . implode(" AND ", $where_conditions) : "";
+    
+    // Get total count
+    $count_query = "SELECT COUNT(*) as total $base_query $where_clause";
+    if ($where_conditions) {
+        $count_stmt = $conn->prepare($count_query);
+        $count_stmt->bind_param($types, ...$params);
+        $count_stmt->execute();
+        $count_result = $count_stmt->get_result();
+    } else {
+        $count_result = $conn->query($count_query);
+    }
+    $total_with_filters = $count_result->fetch_assoc()['total'];
+    $total_pages = ceil($total_with_filters / $per_page);
+    
+    // Get current visible count for the toggle states
+    $visible_count_query = "SELECT COUNT(*) as visible_count FROM feedback_tb WHERE status = 'Show'";
+    $visible_count_result = $conn->query($visible_count_query);
+    $visible_count_row = $visible_count_result->fetch_assoc();
+    $current_visible_count = $visible_count_row['visible_count'];
+    
+    // Get paginated results
+    $feedbacks_query = "SELECT 
+        f.id,
+        f.customer_id,
+        f.service_id,
+        f.rating,
+        f.feedback_text,
+        f.status,
+        f.created_at,
+        CONCAT(u.first_name, ' ', u.last_name) as customer_name
+        $base_query 
+        $where_clause 
+        ORDER BY f.created_at DESC 
+        LIMIT ? OFFSET ?";
+    
+    $params[] = $per_page;
+    $params[] = $offset;
+    $types .= "ii";
+    
+    $stmt = $conn->prepare($feedbacks_query);
+    $stmt->bind_param($types, ...$params);
+    $stmt->execute();
+    $feedbacks_result = $stmt->get_result();
+    $feedbacks = [];
+    while ($row = $feedbacks_result->fetch_assoc()) {
+        $feedbacks[] = $row;
+    }
+    
+    // Return JSON response for AJAX
+    ob_start();
+    ?>
+    <?php if (count($feedbacks) > 0): ?>
+        <?php foreach ($feedbacks as $feedback): ?>
+            <?php
+            $isVisible = $feedback['status'] === 'Show' ? 'checked' : '';
+            $created_date = date('Y-m-d', strtotime($feedback['created_at']));
+            $isDisabled = ($current_visible_count >= 2 && $feedback['status'] !== 'Show') ? 'disabled' : '';
+            ?>
+            <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors" data-rating="<?php echo $feedback['rating']; ?>">
+                <td class="px-4 py-3.5 text-sm font-medium text-gray-800 whitespace-nowrap"><?php echo htmlspecialchars($feedback['customer_name']); ?></td>
+                <td class="px-4 py-3.5 text-sm text-yellow-600 whitespace-nowrap">
+                    <?php echo getStarRatingHtml($feedback['rating']); ?> (<?php echo number_format($feedback['rating'], 1); ?>)
+                </td>
+                <td class="px-4 py-3.5 text-sm text-gray-700 max-w-[150px] truncate" title="<?php echo htmlspecialchars($feedback['feedback_text']); ?>">
+                    <?php echo htmlspecialchars($feedback['feedback_text']); ?>
+                </td>
+                <td class="px-4 py-3.5 text-sm text-gray-500 whitespace-nowrap"><?php echo $created_date; ?></td>
+                <td class="px-4 py-3.5 text-center">
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" value="" class="sr-only peer toggle-checkbox" 
+                               data-id="<?php echo $feedback['id']; ?>" 
+                               <?php echo $isVisible; ?> 
+                               <?php echo $isDisabled; ?>>
+                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-sidebar-accent rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all <?php echo $isDisabled ? 'opacity-50 cursor-not-allowed' : ''; ?>"></div>
+                    </label>
+                </td>
+                <td class="px-4 py-3.5 text-center">
+                    <button class="p-1.5 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip view-feedback-btn" 
+                            title="View Full Content"
+                            data-customer="<?php echo htmlspecialchars($feedback['customer_name']); ?>"
+                            data-rating="<?php echo $feedback['rating']; ?>"
+                            data-content="<?php echo htmlspecialchars($feedback['feedback_text']); ?>"
+                            data-date="<?php echo $created_date; ?>"
+                            data-visible="<?php echo $feedback['status'] === 'Show' ? 1 : 0; ?>"
+                            data-id="<?php echo $feedback['id']; ?>">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+    <?php else: ?>
+        <tr>
+            <td colspan="6" class="px-4 py-8 text-center text-gray-500">
+                No feedback submissions found.
+            </td>
+        </tr>
+    <?php endif; ?>
+    <?php
+    $table_content = ob_get_clean();
+    
+    // Return JSON response
+    echo json_encode([
+        'success' => true,
+        'table_content' => $table_content,
+        'pagination_info' => 'Showing ' . ($offset + 1) . ' - ' . min($offset + $per_page, $total_with_filters) . ' of ' . number_format($total_with_filters) . ' feedbacks',
+        'current_page' => $page,
+        'total_pages' => $total_pages,
+        'total_items' => $total_with_filters,
+        'current_visible_count' => $current_visible_count
+    ]);
+    exit();
+}
+
+// Get count of currently visible feedbacks
+$visible_count_query = "SELECT COUNT(*) as visible_count FROM feedback_tb WHERE status = 'Show'";
+$visible_count_result = $conn->query($visible_count_query);
+$visible_count_row = $visible_count_result->fetch_assoc();
+$current_visible_count = $visible_count_row['visible_count'];
 
 // Mock function to generate star HTML
 function getStarRatingHtml($rating) {
@@ -60,7 +252,7 @@ function getStarRatingHtml($rating) {
     }
     return $html;
 }
-// --- End Placeholder/Mock Data Fetch ---
+// --- End Real Data Fetch ---
 ?>
 
 <!DOCTYPE html>
@@ -72,6 +264,8 @@ function getStarRatingHtml($rating) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="tailwind.js"></script>
+    <!-- Add SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <style type="text/css">
         /* Custom scrollbar for better visual appeal */
         .scrollbar-thin::-webkit-scrollbar {
@@ -155,6 +349,16 @@ function getStarRatingHtml($rating) {
         /* sidebar-text: #1F2937 (Dark Gray) */
         /* sidebar-border: #E5E7EB (Light Gray) */
         /* sidebar-hover: #F9FAFB (Very Light Gray) */
+        
+        /* Disabled toggle style */
+        .toggle-checkbox:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .toggle-checkbox:disabled + div {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body class="flex bg-gray-50">
@@ -166,7 +370,7 @@ function getStarRatingHtml($rating) {
     <div class="flex justify-between items-center mb-6 bg-white p-5 rounded-lg shadow-sidebar border border-gray-200">
         <div>
             <h1 class="text-2xl font-bold text-gray-800">Customer Feedback Management</h1>
-            <p class="text-sm text-gray-500 mt-1">Review and manage which customer ratings are shown on the landing page.</p>
+            <p class="text-sm text-gray-500 mt-1">Review and manage which customer ratings are shown on the landing page. <span class="font-semibold text-sidebar-accent">Maximum 2 feedbacks can be visible at a time.</span></p>
         </div>
     </div>
     
@@ -222,6 +426,7 @@ function getStarRatingHtml($rating) {
                 </div>
                 <div class="flex items-end">
                     <span class="text-3xl font-bold text-gray-800"><?php echo number_format($visible_feedbacks); ?></span>
+                    <span class="ml-2 text-sm font-medium text-gray-600">/ 2</span>
                 </div>
             </div>
             <div class="px-6 py-3 bg-white border-t border-gray-100">
@@ -238,10 +443,13 @@ function getStarRatingHtml($rating) {
                     <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
                         <?php echo number_format($total_submissions); ?> Total
                     </span>
+                    <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+                        <i class="fas fa-eye"></i> <?php echo $current_visible_count; ?>/2 Visible
+                    </span>
                 </div>
                 
                 <div class="flex flex-col sm:flex-row items-center gap-3 w-full lg:w-auto">
-                    <select class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent w-full sm:w-auto">
+                    <select id="ratingFilter" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent w-full sm:w-auto">
                         <option value="all">Filter: All Ratings</option>
                         <option value="5">5 Stars</option>
                         <option value="4">4 Stars</option>
@@ -298,120 +506,94 @@ function getStarRatingHtml($rating) {
                         </tr>
                     </thead>
                     <tbody id="feedbackTableBody">
-                        <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
-                            <td class="px-4 py-3.5 text-sm font-medium text-gray-800 whitespace-nowrap">Jane Doe</td>
-                            <td class="px-4 py-3.5 text-sm text-yellow-600 whitespace-nowrap">
-                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i> (5.0)
-                            </td>
-                            <td class="px-4 py-3.5 text-sm text-gray-700 max-w-[150px] truncate" title="The service was exceptional, highly recommend GrievEase to everyone! The process was smooth and the support team was very helpful.">
-                                The service was exceptional, highly recommend GrievEase to everyone! The process was smooth and the support team was very helpful.
-                            </td>
-                            <td class="px-4 py-3.5 text-sm text-gray-500 whitespace-nowrap">2025-10-25</td>
-                            <td class="px-4 py-3.5 text-center">
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" value="" class="sr-only peer toggle-checkbox" checked>
-                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-sidebar-accent rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
-                                </label>
-                            </td>
-                            <td class="px-4 py-3.5 text-center">
-                                <button class="p-1.5 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Full Content">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                            </td>
-                        </tr>
-                        
-                        <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
-                            <td class="px-4 py-3.5 text-sm font-medium text-gray-800 whitespace-nowrap">John Smith</td>
-                            <td class="px-4 py-3.5 text-sm text-yellow-600 whitespace-nowrap">
-                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i> (4.0)
-                            </td>
-                            <td class="px-4 py-3.5 text-sm text-gray-700 max-w-[150px] truncate" title="Good experience overall, but the initial response was a bit slow. The issue was eventually resolved after a couple of days.">
-                                Good experience overall, but the initial response was a bit slow. The issue was eventually resolved after a couple of days.
-                            </td>
-                            <td class="px-4 py-3.5 text-sm text-gray-500 whitespace-nowrap">2025-09-15</td>
-                            <td class="px-4 py-3.5 text-center">
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" value="" class="sr-only peer toggle-checkbox">
-                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-sidebar-accent rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
-                                </label>
-                            </td>
-                            <td class="px-4 py-3.5 text-center">
-                                <button class="p-1.5 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Full Content">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                            </td>
-                        </tr>
-
-                        <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
-                            <td class="px-4 py-3.5 text-sm font-medium text-gray-800 whitespace-nowrap">Alice Johnson</td>
-                            <td class="px-4 py-3.5 text-sm text-yellow-600 whitespace-nowrap">
-                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i><i class="far fa-star"></i> (3.5)
-                            </td>
-                            <td class="px-4 py-3.5 text-sm text-gray-700 max-w-[150px] truncate" title="It was okay. Could use better communication updates. I wish the status changes were more frequent.">
-                                It was okay. Could use better communication updates. I wish the status changes were more frequent.
-                            </td>
-                            <td class="px-4 py-3.5 text-sm text-gray-500 whitespace-nowrap">2025-11-01</td>
-                            <td class="px-4 py-3.5 text-center">
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" value="" class="sr-only peer toggle-checkbox" checked>
-                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-sidebar-accent rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
-                                </label>
-                            </td>
-                            <td class="px-4 py-3.5 text-center">
-                                <button class="p-1.5 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Full Content">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                            </td>
-                        </tr>
-                        
-                        <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
-                            <td class="px-4 py-3.5 text-sm font-medium text-gray-800 whitespace-nowrap">Bob Williams</td>
-                            <td class="px-4 py-3.5 text-sm text-yellow-600 whitespace-nowrap">
-                                <i class="fas fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i> (1.0)
-                            </td>
-                            <td class="px-4 py-3.5 text-sm text-gray-700 max-w-[150px] truncate" title="Very disappointed. Issue was not resolved in the timeline promised and I had to follow up multiple times.">
-                                Very disappointed. Issue was not resolved in the timeline promised and I had to follow up multiple times.
-                            </td>
-                            <td class="px-4 py-3.5 text-sm text-gray-500 whitespace-nowrap">2025-08-20</td>
-                            <td class="px-4 py-3.5 text-center">
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" value="" class="sr-only peer toggle-checkbox">
-                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-sidebar-accent rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
-                                </label>
-                            </td>
-                            <td class="px-4 py-3.5 text-center">
-                                <button class="p-1.5 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Full Content">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                            </td>
-                        </tr>
+                        <?php if (count($feedbacks) > 0): ?>
+                            <?php foreach ($feedbacks as $feedback): ?>
+                                <?php
+                                $isVisible = $feedback['status'] === 'Show' ? 'checked' : '';
+                                $created_date = date('Y-m-d', strtotime($feedback['created_at']));
+                                // REMOVE the disabled attribute from here too
+                                ?>
+                                <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors" data-rating="<?php echo $feedback['rating']; ?>">
+                                    <td class="px-4 py-3.5 text-sm font-medium text-gray-800 whitespace-nowrap"><?php echo htmlspecialchars($feedback['customer_name']); ?></td>
+                                    <td class="px-4 py-3.5 text-sm text-yellow-600 whitespace-nowrap">
+                                        <?php echo getStarRatingHtml($feedback['rating']); ?> (<?php echo number_format($feedback['rating'], 1); ?>)
+                                    </td>
+                                    <td class="px-4 py-3.5 text-sm text-gray-700 max-w-[150px] truncate" title="<?php echo htmlspecialchars($feedback['feedback_text']); ?>">
+                                        <?php echo htmlspecialchars($feedback['feedback_text']); ?>
+                                    </td>
+                                    <td class="px-4 py-3.5 text-sm text-gray-500 whitespace-nowrap"><?php echo $created_date; ?></td>
+                                    <td class="px-4 py-3.5 text-center">
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" value="" class="sr-only peer toggle-checkbox" 
+                                                   data-id="<?php echo $feedback['id']; ?>" 
+                                                   <?php echo $isVisible; ?>>
+                                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-sidebar-accent rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+                                        </label>
+                                    </td>
+                                    <td class="px-4 py-3.5 text-center">
+                                        <button class="p-1.5 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip view-feedback-btn" 
+                                                title="View Full Content"
+                                                data-customer="<?php echo htmlspecialchars($feedback['customer_name']); ?>"
+                                                data-rating="<?php echo $feedback['rating']; ?>"
+                                                data-content="<?php echo htmlspecialchars($feedback['feedback_text']); ?>"
+                                                data-date="<?php echo $created_date; ?>"
+                                                data-visible="<?php echo $feedback['status'] === 'Show' ? 1 : 0; ?>"
+                                                data-id="<?php echo $feedback['id']; ?>">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="6" class="px-4 py-8 text-center text-gray-500">
+                                    No feedback submissions found.
+                                </td>
+                            </tr>
+                        <?php endif; ?>
                     </tbody>
                 </table>
             </div>
         </div>
         
         <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
-                Showing <strong>1 - 10</strong> of <strong><?php echo number_format($total_submissions); ?></strong> feedbacks
-            </div>
-            <div id="paginationContainer" class="flex space-x-2">
-                <a href="#" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 pointer-events-none">
-                    &laquo;
-                </a>
-                <a href="#" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 pointer-events-none">
-                    &lsaquo;
-                </a>
-                <a href="#" class="px-3.5 py-1.5 rounded text-sm bg-sidebar-accent text-white">1</a>
-                <a href="#" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">2</a>
-                <a href="#" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">3</a>
-                <a href="#" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">
-                    &rsaquo;
-                </a>
-                <a href="#" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">
-                    &raquo;
-                </a>
-            </div>
-        </div>
+    <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
+        Showing <strong><?php echo ($offset + 1); ?> - <?php echo min($offset + $per_page, $total_submissions); ?></strong> of <strong><?php echo number_format($total_submissions); ?></strong> feedbacks
+    </div>
+    <div id="paginationContainer" class="flex space-x-2">
+        <!-- First Page -->
+        <button data-page="1" class="pagination-btn px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $current_page == 1 ? 'opacity-50 pointer-events-none' : ''; ?>">
+            &laquo;
+        </button>
+        
+        <!-- Previous Page -->
+        <button data-page="<?php echo $current_page - 1; ?>" class="pagination-btn px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $current_page == 1 ? 'opacity-50 pointer-events-none' : ''; ?>">
+            &lsaquo;
+        </button>
+
+        <!-- Page Numbers -->
+        <?php
+        $start_page = max(1, $current_page - 2);
+        $end_page = min($total_pages, $current_page + 2);
+        
+        for ($i = $start_page; $i <= $end_page; $i++): 
+        ?>
+            <button data-page="<?php echo $i; ?>" class="pagination-btn px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $i == $current_page ? 'bg-sidebar-accent text-white border-sidebar-accent' : ''; ?>">
+                <?php echo $i; ?>
+            </button>
+        <?php endfor; ?>
+
+        <!-- Next Page -->
+        <button data-page="<?php echo $current_page + 1; ?>" class="pagination-btn px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $current_page == $total_pages ? 'opacity-50 pointer-events-none' : ''; ?>">
+            &rsaquo;
+        </button>
+        
+        <!-- Last Page -->
+        <button data-page="<?php echo $total_pages; ?>" class="pagination-btn px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $current_page == $total_pages ? 'opacity-50 pointer-events-none' : ''; ?>">
+            &raquo;
+        </button>
+    </div>
+</div>
     </div>
     
     <footer class="bg-white rounded-lg shadow-sidebar border border-gray-200 p-4 text-center text-sm text-gray-500 mt-8">
@@ -465,6 +647,9 @@ function getStarRatingHtml($rating) {
   </div>
 </div>
 
+<!-- Add SweetAlert2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+
 <script>
     // Utility function to generate star HTML
     function getStarRatingHtml(rating) {
@@ -511,6 +696,64 @@ function getStarRatingHtml($rating) {
         modal.classList.add('flex');
         document.body.classList.add('overflow-hidden');
     }
+    
+    // Add listener for the modal visibility toggle
+document.getElementById('modalVisibilityToggle')?.addEventListener('change', function() {
+    const feedbackId = this.getAttribute('data-feedback-id');
+    const newStatus = this.checked ? 1 : 0;
+    const statusText = document.getElementById('modalVisibilityStatus');
+    
+    // Check if trying to enable when max is reached
+    if (newStatus === 1 && checkMaxVisibleReached() && !this.checked) {
+        this.checked = false;
+        showMaxReachedAlert();
+        return;
+    }
+    
+    statusText.textContent = newStatus === 1 ? 'Visible' : 'Hidden';
+    
+    // AJAX call to update the database visibility status
+    const formData = new FormData();
+    formData.append('feedback_id', feedbackId);
+    formData.append('is_visible', newStatus);
+    
+    fetch('update_feedback_visibility.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log('Visibility updated successfully');
+            
+            // Reload the current page to get updated data from server
+            const currentPageBtn = document.querySelector('.pagination-btn.bg-sidebar-accent');
+            const currentPage = currentPageBtn ? parseInt(currentPageBtn.getAttribute('data-page')) : 1;
+            loadPage(currentPage);
+            
+            // Close the modal after successful update
+            closeFeedbackModal();
+            
+        } else {
+            console.error('Failed to update visibility:', data.message);
+            
+            // If it's a max reached error, show the alert
+            if (data.max_reached) {
+                showMaxReachedAlert();
+            }
+            
+            // Revert the toggle if update failed
+            this.checked = !this.checked;
+            statusText.textContent = this.checked ? 'Visible' : 'Hidden';
+        }
+    })
+    .catch(error => {
+        console.error('Error updating visibility:', error);
+        // Revert the toggle if update failed
+        this.checked = !this.checked;
+        statusText.textContent = this.checked ? 'Visible' : 'Hidden';
+    });
+});
 
     // Function to close the view feedback modal
     window.closeFeedbackModal = function() {
@@ -520,114 +763,338 @@ function getStarRatingHtml($rating) {
         document.body.classList.remove('overflow-hidden');
     }
 
+    // Check if maximum visible feedbacks reached
+    function checkMaxVisibleReached() {
+        const visibleToggles = document.querySelectorAll('input.toggle-checkbox:checked');
+        return visibleToggles.length >= 2;
+    }
+    
+    // Update toggle states based on current visible count - only visual, not functional
+    function updateToggleStates() {
+        const maxReached = checkMaxVisibleReached();
+        const uncheckedToggles = document.querySelectorAll('input.toggle-checkbox:not(:checked)');
+        
+        uncheckedToggles.forEach(toggle => {
+            if (maxReached) {
+                // Only add visual indication, don't disable the toggle
+                if (toggle.nextElementSibling) {
+                    toggle.nextElementSibling.classList.add('opacity-50', 'cursor-not-allowed');
+                }
+            } else {
+                // Remove visual indication
+                if (toggle.nextElementSibling) {
+                    toggle.nextElementSibling.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+            }
+        });
+        
+        // Update the visible count in the header
+        updateVisibleCountDisplay();
+    }
+    
+    function updateVisibleCountDisplay() {
+        const visibleCount = document.querySelectorAll('input.toggle-checkbox:checked').length;
+        const visibleCountElement = document.querySelector('.bg-green-100');
+        if (visibleCountElement) {
+            visibleCountElement.innerHTML = `<i class="fas fa-eye"></i> ${visibleCount}/2 Visible`;
+        }
+    }
+
+    // Show maximum reached alert
+    function showMaxReachedAlert() {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Maximum Reached',
+            html: 'You can only show <strong>2 feedbacks</strong> at a time.<br><br>Please hide another feedback first to show this one.',
+            confirmButtonColor: '#CA8A04',
+            confirmButtonText: 'OK',
+            backdrop: true,
+            allowOutsideClick: true,
+            allowEscapeKey: true
+        });
+    }
+
     // --- Dynamic Content Setup and Event Listeners ---
     document.addEventListener('DOMContentLoaded', function() {
-        // Mobile sidebar toggle (Kept from original code)
-        const mobileHamburger = document.getElementById('mobile-hamburger');
-        const sidebar = document.getElementById('sidebar');
-        
-        if (mobileHamburger && sidebar) {
-            mobileHamburger.addEventListener('click', function() {
-                sidebar.classList.toggle('-translate-x-full');
-            });
-        }
-        
-        // Close modal when clicking outside (updated for new modal ID)
-        window.addEventListener('click', function(event) {
-            const modal = document.getElementById('viewFeedbackModal');
-            if (event.target === modal) {
-                closeFeedbackModal();
-            }
+    // Mobile sidebar toggle
+    const mobileHamburger = document.getElementById('mobile-hamburger');
+    const sidebar = document.getElementById('sidebar');
+    
+    if (mobileHamburger && sidebar) {
+        mobileHamburger.addEventListener('click', function() {
+            sidebar.classList.toggle('-translate-x-full');
         });
-        
-        // Handle escape key to close modal
-        document.addEventListener('keydown', function(event) {
-            if (event.key === "Escape") {
-                closeFeedbackModal();
-            }
-        });
-        
-        const tableBody = document.getElementById('feedbackTableBody');
-        
-        // Loop through all table rows to attach click handlers
-        tableBody.querySelectorAll('tr').forEach((row, index) => {
-            // Target the button with the fa-eye icon
-            const viewButton = row.querySelector('.fa-eye').closest('button'); 
-            
-            // NOTE: Since this is mock HTML, we use the row index + 1 as a mock feedback ID
-            const feedbackId = index + 1; 
-
-            // Assuming the table columns are structured: 0: Name, 1: Rating, 2: Content Snippet, 3: Toggle, 4: Date
-            const customerName = row.cells[0]?.textContent?.trim() || 'N/A';
-            
-            // Extract rating from the cell text (e.g., from "⭐...⭐ (5.0)" extract "5.0")
-            const ratingTextMatch = row.cells[1].textContent.trim().match(/\((.*)\)/);
-            const ratingText = ratingTextMatch ? ratingTextMatch[1] : '0.0';
-            const rating = parseFloat(ratingText);
-
-            // Get full content from the title attribute
-            const content = row.cells[2].getAttribute('title') || row.cells[2].textContent.trim();
-            
-            // Get visibility status, date, and ID
-            const toggleInput = row.cells[4].querySelector('input[type="checkbox"]');
-            const isVisible = toggleInput ? (toggleInput.checked ? 1 : 0) : 0;
-            const date = row.cells[3]?.textContent?.trim() || 'N/A'; 
-            
-            // Attach mock ID to table toggle for two-way sync
-            if (toggleInput) {
-                // IMPORTANT: The HTML column order is [0: Name, 1: Rating, 2: Content, 3: Date, 4: Toggle]
-                toggleInput.setAttribute('data-id', feedbackId);
-            }
-            
-            if (viewButton) {
-                // The onclick function is updated to pass the date, isVisible, and feedbackId
-                viewButton.onclick = function() {
-                    openFeedbackModal(customerName, rating, content, date, isVisible, feedbackId);
-                };
-            }
-        });
-        
-        // Search functionality
-        const searchInput = document.getElementById('feedbackSearchInput');
-        if (searchInput) {
-            searchInput.addEventListener('input', filterTable);
+    }
+    
+    // Close modal when clicking outside
+    window.addEventListener('click', function(event) {
+        const modal = document.getElementById('viewFeedbackModal');
+        if (event.target === modal) {
+            closeFeedbackModal();
         }
-
-        function filterTable() {
-            const searchValue = (searchInput.value || '').toLowerCase();
-            const rows = document.querySelectorAll('#feedbackTableBody tr');
-            
-            rows.forEach(row => {
-                const nameCell = row.cells[0]?.textContent?.toLowerCase() || '';
-                const contentCell = row.cells[2]?.textContent?.toLowerCase() || '';
-                
-                const matchesSearch = nameCell.includes(searchValue) || 
-                                    contentCell.includes(searchValue);
-                
-                row.style.display = matchesSearch ? '' : 'none';
-            });
+    });
+    
+    // Handle escape key to close modal
+    document.addEventListener('keydown', function(event) {
+        if (event.key === "Escape") {
+            closeFeedbackModal();
         }
-        
-        // Add listener for the modal visibility toggle
-        document.getElementById('modalVisibilityToggle')?.addEventListener('change', function() {
-            const feedbackId = this.getAttribute('data-feedback-id');
-            const newStatus = this.checked ? 1 : 0;
-            const statusText = document.getElementById('modalVisibilityStatus');
+    });
+    
+    // Search functionality
+    const searchInput = document.getElementById('feedbackSearchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            // Load first page with current filters
+            loadPage(1);
+        });
+    }
+    
+    // Rating filter functionality
+    const ratingFilter = document.getElementById('ratingFilter');
+    if (ratingFilter) {
+        ratingFilter.addEventListener('change', function() {
+            // Load first page with current filters
+            loadPage(1);
+        });
+    }
+    
+    // Initial attachment of event listeners to existing elements
+    attachEventListeners();
+    
+    // Initialize toggle states
+    updateToggleStates();
+    
+    // Initialize pagination listeners
+    attachPaginationListeners();
+});
+    
+// AJAX Pagination function
+function loadPage(page) {
+    const searchValue = document.getElementById('feedbackSearchInput').value;
+    const ratingValue = document.getElementById('ratingFilter').value;
+    
+    // Show loading state
+    const tableBody = document.getElementById('feedbackTableBody');
+    tableBody.innerHTML = `
+        <tr>
+            <td colspan="6" class="px-4 py-8 text-center text-gray-500">
+                <div class="flex justify-center items-center">
+                    <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-sidebar-accent"></div>
+                    <span class="ml-2">Loading...</span>
+                </div>
+            </td>
+        </tr>
+    `;
+    
+    // Disable pagination buttons during load
+    document.querySelectorAll('.pagination-btn').forEach(btn => {
+        btn.disabled = true;
+    });
+    
+    const formData = new FormData();
+    formData.append('ajax_pagination', true);
+    formData.append('page', page);
+    formData.append('search', searchValue);
+    formData.append('rating', ratingValue);
+    
+    fetch('feedback_management.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update table content
+            tableBody.innerHTML = data.table_content;
             
-            statusText.textContent = newStatus === 1 ? 'Visible' : 'Hidden';
+            // Update pagination info
+            document.getElementById('paginationInfo').innerHTML = data.pagination_info;
             
-            // Update the corresponding toggle in the main table for instant visual feedback
-            // This relies on the 'data-id' attribute being set in the DOMContentLoaded function above.
-            const tableToggle = document.querySelector(`input[data-id="${feedbackId}"]`);
-            if (tableToggle) {
-                tableToggle.checked = this.checked;
+            // Update pagination buttons
+            updatePaginationButtons(data.current_page, data.total_pages);
+            
+            // Update visible count from server data
+            if (data.current_visible_count !== undefined) {
+                const visibleCountElement = document.querySelector('.bg-green-100');
+                if (visibleCountElement) {
+                    visibleCountElement.innerHTML = `<i class="fas fa-eye"></i> ${data.current_visible_count}/2 Visible`;
+                }
             }
             
-            // --- AJAX IMPLEMENTATION ---
-            // Add your fetch/AJAX call here to update the database visibility status
-            // The body would be: `feedback_id=${feedbackId}&is_visible=${newStatus}`
+            // Re-attach event listeners to new elements
+            attachEventListeners();
+            
+            // Update toggle states based on current page data
+            updateToggleStates();
+            
+            console.log('Page loaded successfully');
+        } else {
+            console.error('Failed to load page:', data.message);
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="px-4 py-8 text-center text-gray-500">
+                        Error loading data. Please try again.
+                    </td>
+                </tr>
+            `;
+        }
+    })
+    .catch(error => {
+        console.error('Error loading page:', error);
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="6" class="px-4 py-8 text-center text-gray-500">
+                    Error loading data. Please try again.
+                </td>
+            </tr>
+        `;
+    })
+    .finally(() => {
+        // Re-enable pagination buttons
+        document.querySelectorAll('.pagination-btn').forEach(btn => {
+            btn.disabled = false;
         });
     });
+}
+
+// Update pagination buttons
+function updatePaginationButtons(currentPage, totalPages) {
+    const paginationContainer = document.getElementById('paginationContainer');
+    let paginationHTML = '';
+    
+    // First Page
+    paginationHTML += `
+        <button data-page="1" class="pagination-btn px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover ${currentPage == 1 ? 'opacity-50 pointer-events-none' : ''}">
+            &laquo;
+        </button>
+    `;
+    
+    // Previous Page
+    paginationHTML += `
+        <button data-page="${currentPage - 1}" class="pagination-btn px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover ${currentPage == 1 ? 'opacity-50 pointer-events-none' : ''}">
+            &lsaquo;
+        </button>
+    `;
+    
+    // Page Numbers
+    const startPage = Math.max(1, currentPage - 2);
+    const endPage = Math.min(totalPages, currentPage + 2);
+    
+    for (let i = startPage; i <= endPage; i++) {
+        paginationHTML += `
+            <button data-page="${i}" class="pagination-btn px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover ${i == currentPage ? 'bg-sidebar-accent text-white border-sidebar-accent' : ''}">
+                ${i}
+            </button>
+        `;
+    }
+    
+    // Next Page
+    paginationHTML += `
+        <button data-page="${currentPage + 1}" class="pagination-btn px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover ${currentPage == totalPages ? 'opacity-50 pointer-events-none' : ''}">
+            &rsaquo;
+        </button>
+    `;
+    
+    // Last Page
+    paginationHTML += `
+        <button data-page="${totalPages}" class="pagination-btn px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover ${currentPage == totalPages ? 'opacity-50 pointer-events-none' : ''}">
+            &raquo;
+        </button>
+    `;
+    
+    paginationContainer.innerHTML = paginationHTML;
+    
+    // Re-attach event listeners to new pagination buttons
+    attachPaginationListeners();
+}
+
+// Attach event listeners to pagination buttons
+function attachPaginationListeners() {
+    document.querySelectorAll('.pagination-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const page = parseInt(this.getAttribute('data-page'));
+            if (page && !this.disabled) {
+                loadPage(page);
+            }
+        });
+    });
+}
+
+// Re-attach all event listeners after AJAX load
+function attachEventListeners() {
+    // Attach view feedback button listeners
+    document.querySelectorAll('.view-feedback-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const customerName = this.getAttribute('data-customer');
+            const rating = parseFloat(this.getAttribute('data-rating'));
+            const content = this.getAttribute('data-content');
+            const date = this.getAttribute('data-date');
+            const isVisible = parseInt(this.getAttribute('data-visible'));
+            const feedbackId = parseInt(this.getAttribute('data-id'));
+            
+            openFeedbackModal(customerName, rating, content, date, isVisible, feedbackId);
+        });
+    });
+    
+    // Attach toggle listeners
+    document.querySelectorAll('input.toggle-checkbox[data-id]').forEach(toggle => {
+        toggle.addEventListener('change', function() {
+            const feedbackId = this.getAttribute('data-id');
+            const newStatus = this.checked ? 1 : 0;
+            
+            // Check if trying to enable when max is reached
+            if (newStatus === 1 && checkMaxVisibleReached()) {
+                // Show SweetAlert and revert the toggle
+                this.checked = false;
+                showMaxReachedAlert();
+                return;
+            }
+            
+            // AJAX call to update the database visibility status
+            const formData = new FormData();
+            formData.append('feedback_id', feedbackId);
+            formData.append('is_visible', newStatus);
+            
+            fetch('update_feedback_visibility.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('Visibility updated successfully');
+                    
+                    // Reload the current page to get updated data from server
+                    const currentPageBtn = document.querySelector('.pagination-btn.bg-sidebar-accent');
+                    const currentPage = currentPageBtn ? parseInt(currentPageBtn.getAttribute('data-page')) : 1;
+                    loadPage(currentPage);
+                    
+                } else {
+                    console.error('Failed to update visibility:', data.message);
+                    
+                    // If it's a max reached error, show the alert
+                    if (data.max_reached) {
+                        showMaxReachedAlert();
+                    }
+                    
+                    // Revert the toggle if update failed
+                    this.checked = !this.checked;
+                    updateToggleStates();
+                }
+            })
+            .catch(error => {
+                console.error('Error updating visibility:', error);
+                // Revert the toggle if update failed
+                this.checked = !this.checked;
+                updateToggleStates();
+            });
+        });
+    });
+    
+    // Attach pagination listeners
+    attachPaginationListeners();
+}
 </script>
 
 </body>
