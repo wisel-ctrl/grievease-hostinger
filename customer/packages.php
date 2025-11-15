@@ -102,48 +102,109 @@ $show_branch_modal = ($branch_id === null || $branch_id === 'unknown' || $branch
 error_log("User branch_loc: " . $branch_id . ", show_branch_modal: " . ($show_branch_modal ? 'true' : 'false'));
 
 if ($branch_id && $branch_id !== 'unknown' && $branch_id !== '') {
+    
+    // Initialize the counts array
+    $packageAvailedCounts = [];
+    
+    // Query to count traditional service bookings (sales_tb)
+    $salesQuery = "SELECT service_id, COUNT(*) as count 
+                   FROM sales_tb 
+                   WHERE branch_id = ? AND service_id IS NOT NULL
+                   GROUP BY service_id";
+    $salesStmt = $conn->prepare($salesQuery);
+    $salesStmt->bind_param("i", $branch_id);
+    $salesStmt->execute();
+    $salesResult = $salesStmt->get_result();
+    
+    while ($row = $salesResult->fetch_assoc()) {
+        $serviceId = $row['service_id'];
+        if (!isset($packageAvailedCounts[$serviceId])) {
+            $packageAvailedCounts[$serviceId] = 0;
+        }
+        $packageAvailedCounts[$serviceId] += $row['count'];
+    }
+    $salesStmt->close();
+    
+    // Query to count lifeplan bookings (lifeplan_tb)
+    $lifeplanQuery = "SELECT service_id, COUNT(*) as count 
+                      FROM lifeplan_tb 
+                      WHERE branch_id = ? AND service_id IS NOT NULL
+                      GROUP BY service_id";
+    $lifeplanStmt = $conn->prepare($lifeplanQuery);
+    $lifeplanStmt->bind_param("i", $branch_id);
+    $lifeplanStmt->execute();
+    $lifeplanResult = $lifeplanStmt->get_result();
+    
+    while ($row = $lifeplanResult->fetch_assoc()) {
+        $serviceId = $row['service_id'];
+        if (!isset($packageAvailedCounts[$serviceId])) {
+            $packageAvailedCounts[$serviceId] = 0;
+        }
+        $packageAvailedCounts[$serviceId] += $row['count'];
+    }
+    $lifeplanStmt->close();
+    
+    // Debug: Log the counts from database
+    error_log("Package Availed Counts from database for branch $branch_id:");
+    foreach ($packageAvailedCounts as $serviceId => $count) {
+        error_log("Service ID: " . $serviceId . " - Count: " . $count);
+    }
+    
+    // Fetch packages from database
     $query = "SELECT s.service_id, s.service_name, s.description, s.selling_price, s.image_url, 
                      i.item_name AS casket_name, s.flower_design, s.inclusions
               FROM services_tb s
               LEFT JOIN inventory_tb i ON s.casket_id = i.inventory_id
               WHERE s.status = 'active' AND s.branch_id = ?";
-
+    
     $stmt = $conn->prepare($query);
     $stmt->bind_param("i", $branch_id);
     $stmt->execute();
     $result = $stmt->get_result();
-
+    
     if ($result) {
         while ($row = $result->fetch_assoc()) {
             // Parse inclusions (assuming it's stored as a JSON string or comma-separated)
-            $inclusions = []; // Define $inclusions here, inside the loop
+            $inclusions = [];
             if (!empty($row['inclusions'])) {
-                // Try to decode as JSON first
                 $decoded = json_decode($row['inclusions'], true);
                 $inclusions = is_array($decoded) ? $decoded : explode(',', $row['inclusions']);
             }
-
+            
             // Add casket name first (if it exists)
             if (!empty($row['casket_name'])) {
                 array_unshift($inclusions, $row['casket_name'] . " casket");
             }
-
+            
             // Add flower design second (if it exists)
             if (!empty($row['flower_design'])) {
                 array_splice($inclusions, 1, 0, $row['flower_design']);
             }
+            
+            // Get avail count for this package (default to 0 if not found)
+            $avail_count = isset($packageAvailedCounts[$row['service_id']]) ? $packageAvailedCounts[$row['service_id']] : 0;
             
             $packages[] = [
                 'id' => $row['service_id'],
                 'name' => $row['service_name'],
                 'description' => $row['description'],
                 'price' => $row['selling_price'],
-                'image' => getImageUrl($row['image_url']), // Use the helper function for image URLs
-                'features' => $inclusions, // Now $inclusions is defined for each package
-                'service' => 'traditional' // Assuming all are traditional for now
+                'image' => getImageUrl($row['image_url']),
+                'features' => $inclusions,
+                'service' => 'traditional',
+                'avail_count' => $avail_count
             ];
+            
+            // Debug log for each package
+            error_log("Package: " . $row['service_name'] . " (ID: " . $row['service_id'] . ") - Avail Count: " . $avail_count);
         }
         $result->free();
+    }
+    
+    // Debug: Log all packages with their counts
+    error_log("Final packages array with avail counts:");
+    foreach ($packages as $pkg) {
+        error_log("Package: " . $pkg['name'] . " - Avail Count: " . $pkg['avail_count']);
     }
 }
 
@@ -332,7 +393,13 @@ input[name*="LastName"] {
 
         .package-card {
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: all 0.5s ease !important;
         }
+        .package-card.recently-sorted {
+            border: 3px solid #d97706 !important;
+            box-shadow: 0 0 20px rgba(217, 119, 6, 0.5) !important;
+        }
+
         .package-card:hover {
             transform: translateY(-8px);
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
@@ -746,6 +813,7 @@ function capitalizeWords(str) {
             <option value="">Default Order</option>
             <option value="asc">Price: Low to High</option>
             <option value="desc">Price: High to Low</option>
+            <option value="most_availed">Most Availed</option>
         </select>
 
         <!-- Reset Filters Button -->
@@ -767,7 +835,8 @@ function capitalizeWords(str) {
                          data-price="<?= $pkg['price'] ?>"
                          data-service="<?= $pkg['service'] ?>"
                          data-name="<?= htmlspecialchars($pkg['name']) ?>"
-                         data-image="<?= htmlspecialchars($pkg['image']) ?>">
+                         data-image="<?= htmlspecialchars($pkg['image']) ?>"
+                         data-avail-count="<?= $pkg['avail_count'] ?>"> <!-- ADD THIS LINE -->
                         <div class="flex flex-col h-full">
                             <!-- Image section -->
                             <div class="h-48 bg-cover bg-center relative" style="background-image: url('<?= htmlspecialchars($pkg['image']) ?>')">
@@ -2844,22 +2913,21 @@ function removeGcash() {
 let originalPackages = [];
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Collect original packages from the DOM
+    console.log('=== DEBUG: Checking package data attributes ===');
+    
     const packageCards = document.querySelectorAll('.package-card');
-    originalPackages = Array.from(packageCards).map(card => ({
-        name: card.dataset.name,
-        price: parseFloat(card.dataset.price),
-        service: card.dataset.service,
-        image: card.dataset.image,
-        icon: card.querySelector('.fa-')?.className.match(/fa-(.+?)( |$)/)[1] || 'box',
-        description: card.querySelector('p').textContent,
-        features: Array.from(card.querySelectorAll('ul li')).map(li => li.textContent.trim())
-    }));
-
-    // Initialize sorting and filtering
+    console.log('Total package cards found:', packageCards.length);
+    
+    packageCards.forEach((card, index) => {
+        const name = card.dataset.name;
+        const availCount = card.dataset.availCount;
+        console.log(`Package ${index + 1}: ${name}, Avail Count: ${availCount}`);
+    });
+    
+    console.log('=== END DEBUG ===');
+    
+    // Your existing initialization
     initializeSortingAndFiltering();
-
-    // Rest of your existing DOMContentLoaded code...
 });
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -4109,6 +4177,7 @@ function renderPackages(filteredPackages) {
         packageCard.setAttribute('data-service', pkg.service);
         packageCard.setAttribute('data-name', pkg.name);
         packageCard.setAttribute('data-image', pkg.image);
+        packageCard.setAttribute('data-avail-count', pkg.avail_count || 0);
         
         packageCard.innerHTML = `
             <div class="flex flex-col h-full">
@@ -4149,10 +4218,29 @@ function renderPackages(filteredPackages) {
 
 // Initialize sorting and filtering functionality
 function initializeSortingAndFiltering() {
+    // Store original packages with their avail counts
+    const packageCards = document.querySelectorAll('.package-card');
+    originalPackages = Array.from(packageCards).map(card => {
+        const availCount = parseInt(card.dataset.availCount) || 0;
+        console.log(`Initializing: ${card.dataset.name} - Avail Count: ${availCount}`);
+        
+        return {
+            element: card,
+            name: card.dataset.name,
+            price: parseFloat(card.dataset.price),
+            service: card.dataset.service,
+            image: card.dataset.image,
+            availCount: availCount,
+            description: card.querySelector('p').textContent,
+            features: Array.from(card.querySelectorAll('ul li')).map(li => li.textContent.trim())
+        };
+    });
+
+    console.log('Original packages initialized:', originalPackages);
+
     // Event Listeners
     document.getElementById('searchInput').addEventListener('input', filterAndSortPackages);
     document.getElementById('priceSort').addEventListener('change', function() {
-        // Add a small delay to show the change is being processed
         setTimeout(() => {
             filterAndSortPackages();
         }, 100);
@@ -4163,29 +4251,29 @@ function initializeSortingAndFiltering() {
 
 // Enhanced filter and sort function
 function filterAndSortPackages() {
+    console.log('=== filterAndSortPackages START ===');
+    
     const searchInput = document.getElementById('searchInput');
     const searchTerm = searchInput.value.toLowerCase().trim();
-    
-    // Don't proceed if the input is invalid
-    if (searchInput.classList.contains('invalid')) {
-        return;
-    }
-    
     const priceSort = document.getElementById('priceSort');
     const priceSortValue = priceSort.value;
     const packagesContainer = document.getElementById('packages-container');
     const noResults = document.getElementById('no-results');
     
-    // Add/remove visual feedback for sorting
-    if (priceSortValue) {
-        priceSort.classList.add('sorting-active');
-    } else {
-        priceSort.classList.remove('sorting-active');
+    console.log('Search term:', searchTerm);
+    console.log('Sort value:', priceSortValue);
+    
+    if (searchInput.classList.contains('invalid')) {
+        console.log('Search input is invalid, returning early');
+        return;
     }
+    
     
     // Get all package cards
     const allCards = Array.from(document.querySelectorAll('.package-card'));
     let visibleCards = [];
+    
+    console.log('Total cards found:', allCards.length);
     
     // Filter packages based on search term
     allCards.forEach(card => {
@@ -4206,58 +4294,195 @@ function filterAndSortPackages() {
         }
     });
     
+    console.log('Visible cards after search filter:', visibleCards.length);
+    
     // Show/hide no results message
     if (visibleCards.length === 0) {
         noResults.classList.remove('hidden');
+        console.log('No results found, showing no-results message');
         return;
     } else {
         noResults.classList.add('hidden');
+        console.log('Results found, hiding no-results message');
     }
     
     // Sort visible cards if sorting is selected
     if (priceSortValue) {
-        visibleCards.sort((a, b) => {
-            const priceA = parseFloat(a.dataset.price);
-            const priceB = parseFloat(b.dataset.price);
-            return priceSortValue === 'asc' ? priceA - priceB : priceB - priceA;
+    console.log('Starting sort with value:', priceSortValue);
+    
+    if (priceSortValue === 'most_availed') {
+        // Find the maximum avail count
+        const maxAvailCount = Math.max(...visibleCards.map(card => {
+            const packageName = card.dataset.name;
+            const originalPackage = originalPackages.find(pkg => pkg.name === packageName);
+            return originalPackage ? originalPackage.availCount : 0;
+        }));
+        
+        console.log('Maximum avail count found:', maxAvailCount);
+        
+        // Hide all cards first
+        visibleCards.forEach(card => {
+            card.classList.add('hidden');
+        });
+        
+        // Show only packages with the maximum avail count
+        const mostAvailedCards = visibleCards.filter(card => {
+            const packageName = card.dataset.name;
+            const originalPackage = originalPackages.find(pkg => pkg.name === packageName);
+            const availCount = originalPackage ? originalPackage.availCount : 0;
+            return availCount === maxAvailCount;
+        });
+        
+        console.log('Most availed packages to show:', mostAvailedCards.length);
+        mostAvailedCards.forEach(card => {
+            card.classList.remove('hidden');
+        });
+        
+        // Sort the most availed packages by avail count (descending) and then by name
+        const sortedMostAvailed = mostAvailedCards.map(card => {
+            const packageName = card.dataset.name;
+            const originalPackage = originalPackages.find(pkg => pkg.name === packageName);
+            return {
+                element: card,
+                name: packageName,
+                availCount: originalPackage ? originalPackage.availCount : 0,
+                price: parseFloat(card.dataset.price)
+            };
+        }).sort((a, b) => {
+            // First by avail count (descending), then by name (ascending) for consistency
+            if (b.availCount !== a.availCount) {
+                return b.availCount - a.availCount;
+            }
+            return a.name.localeCompare(b.name);
+        });
+        
+        console.log('Most availed packages after sorting:');
+        sortedMostAvailed.forEach((pkg, index) => {
+            console.log(`${index + 1}. ${pkg.name} - Avail Count: ${pkg.availCount}`);
+        });
+        
+        // Re-append only the most availed packages in sorted order
+        console.log('Re-appending most availed cards to container');
+        packagesContainer.innerHTML = '';
+        sortedMostAvailed.forEach(pkg => {
+            packagesContainer.appendChild(pkg.element);
+        });
+        
+    } else {
+        // For price sorting (keep the existing logic)
+        const visiblePackageData = visibleCards.map(card => {
+            const packageName = card.dataset.name;
+            const originalPackage = originalPackages.find(pkg => pkg.name === packageName);
+            return {
+                element: card,
+                name: packageName,
+                availCount: originalPackage ? originalPackage.availCount : 0,
+                price: parseFloat(card.dataset.price)
+            };
+        });
+        
+        visiblePackageData.sort((a, b) => {
+            const result = priceSortValue === 'asc' ? a.price - b.price : b.price - a.price;
+            console.log(`Price sort - ${a.name}: ₱${a.price}, ${b.name}: ₱${b.price}, result: ${result}`);
+            return result;
+        });
+        
+        console.log('Packages after price sorting:');
+        visiblePackageData.forEach((pkg, index) => {
+            console.log(`${index + 1}. ${pkg.name} - Price: ₱${pkg.price}`);
         });
         
         // Re-append sorted cards to maintain order
-        visibleCards.forEach(card => {
-            packagesContainer.appendChild(card);
+        console.log('Re-appending price-sorted cards to container');
+        packagesContainer.innerHTML = '';
+        visiblePackageData.forEach(pkg => {
+            packagesContainer.appendChild(pkg.element);
         });
-    } else {
-        // If no sorting selected, restore original order
-        restoreOriginalOrder();
     }
+    
+    console.log('Finished re-appending cards');
+} else {
+    console.log('No sort value selected, restoring original order');
+    restoreOriginalOrder();
 }
+
+    
+    console.log('=== filterAndSortPackages END ===');
+}
+
+// Add this function to visually debug the order
+function visualizeCurrentOrder() {
+    console.log('=== VISUALIZING CURRENT ORDER ===');
+    const container = document.getElementById('packages-container');
+    const cards = container.querySelectorAll('.package-card');
+    
+    cards.forEach((card, index) => {
+        const name = card.dataset.name;
+        const availCount = card.dataset.availCount;
+        console.log(`Visual ${index + 1}: ${name} - ${availCount}`);
+        
+        // Add a temporary visual indicator
+        const existingIndicator = card.querySelector('.order-indicator');
+        if (existingIndicator) {
+            existingIndicator.remove();
+        }
+        
+        const indicator = document.createElement('div');
+        indicator.className = 'order-indicator';
+        indicator.style.cssText = `
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background: rgba(255,0,0,0.8);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 10;
+        `;
+        indicator.textContent = `${index + 1} (${availCount})`;
+        card.style.position = 'relative';
+        card.appendChild(indicator);
+    });
+    console.log('=== END VISUALIZATION ===');
+}
+
+// Call this after sorting
+console.log('Re-appending sorted cards to container');
+packagesContainer.innerHTML = ''; // Clear container first
+visiblePackageData.forEach((pkg, index) => {
+    pkg.element.classList.add('recently-sorted');
+    packagesContainer.appendChild(pkg.element);
+    
+    // Remove the class after animation
+    setTimeout(() => {
+        pkg.element.classList.remove('recently-sorted');
+    }, 1000);
+});
+
+console.log('Finished re-appending cards');
+visualizeCurrentOrder(); // Add this line
+
 
 // Function to restore original package order
 function restoreOriginalOrder() {
     const packagesContainer = document.getElementById('packages-container');
-    const visibleCards = Array.from(packagesContainer.querySelectorAll('.package-card:not(.hidden)'));
     
-    // Create a map of original positions
-    const originalPositions = new Map();
-    originalPackages.forEach((pkg, index) => {
-        originalPositions.set(pkg.name, index);
-    });
+    // Clear container
+    packagesContainer.innerHTML = '';
     
-    // Sort visible cards by their original position
-    visibleCards.sort((a, b) => {
-        const posA = originalPositions.get(a.dataset.name) || 0;
-        const posB = originalPositions.get(b.dataset.name) || 0;
-        return posA - posB;
-    });
-    
-    // Re-append in original order
-    visibleCards.forEach(card => {
-        packagesContainer.appendChild(card);
+    // Append packages in original order and make sure they're visible
+    originalPackages.forEach(pkg => {
+        pkg.element.classList.remove('hidden'); // Ensure it's visible
+        packagesContainer.appendChild(pkg.element);
     });
 }
 
-// Enhanced reset function
+// Update the resetFilters function
 function resetFilters() {
+    console.log('=== RESETTING FILTERS ===');
+    
     // Reset search input
     const searchInput = document.getElementById('searchInput');
     searchInput.value = '';
@@ -4268,7 +4493,7 @@ function resetFilters() {
     priceSort.value = '';
     priceSort.classList.remove('sorting-active');
     
-    // Show all packages
+    // Show all packages and restore original order
     document.querySelectorAll('.package-card').forEach(card => {
         card.classList.remove('hidden');
     });
@@ -4277,7 +4502,9 @@ function resetFilters() {
     restoreOriginalOrder();
     
     // Hide the "no results" message
-    document.getElementById('no-results').classList.add('hidden');
+    document.getElementById('no-results').classelist.add('hidden');
+    
+    console.log('=== FILTERS RESET ===');
 }
 
 // Date validation for traditional booking form
