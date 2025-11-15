@@ -2660,36 +2660,37 @@ document.getElementById('exportProjectedIncome').addEventListener('click', funct
             font-size: 12pt;
           }
           .header {
-            border-bottom: 2px solid #000;
+            border-bottom: 2px solid #3b82f6; /* Changed to blue */
           }
           .company-name {
-            color: #000;
+            color: #1e40af; /* Changed to blue */
             font-size: 20pt;
           }
           .report-title {
             font-size: 16pt;
           }
           table {
-            border: 1px solid #000 !important;
+            border: 1px solid #3b82f6 !important; /* Changed to blue */
             box-shadow: none;
           }
           th {
-            background-color: #000 !important;
+            background-color: #3b82f6 !important; /* Changed to blue */
             color: white !important;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
-            border: 1px solid #000 !important;
+            border: 1px solid #2563eb !important; /* Changed to blue */
           }
           td {
-            border: 1px solid #ccc !important;
+            border: 1px solid #e5e7eb !important;
           }
           .total-row {
-            background-color: #333 !important;
+            background-color: #1e40af !important; /* Changed to blue */
+            color: white !important;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
           }
           tr:nth-child(even) {
-            background-color: #f9f9f9 !important;
+            background-color: #f8fafc !important;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
           }
@@ -2697,7 +2698,7 @@ document.getElementById('exportProjectedIncome').addEventListener('click', funct
             display: none; 
           }
           .footer {
-            border-top: 1px solid #000;
+            border-top: 1px solid #3b82f6; /* Changed to blue */
           }
         }
         
