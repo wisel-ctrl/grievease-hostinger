@@ -3328,11 +3328,6 @@ document.getElementById('exportPdfBtn').addEventListener('click', function() {
                 reset: true
             },
             export: {
-                csv: {
-                    filename: 'branch-services-comparison',
-                    headerCategory: 'Service',
-                    headerValue: 'Sales Count',
-                },
                 png: {
                     filename: 'branch-services-comparison',
                 },
