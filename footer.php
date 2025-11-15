@@ -11,9 +11,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">    
 </head>
 <body>
+    <!-- Footer -->
     <footer class="bg-black font-playfair text-white py-12">
         <div class="container mx-auto px-6">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- Company Info -->
                 <div>
                     <h3 class="text-yellow-600 text-2xl mb-4">GrievEase</h3>
                     <p class="text-gray-300 mb-4">Providing dignified funeral services with compassion and respect since 1980.</p>
@@ -22,16 +24,19 @@
                     </div>
                 </div>
                 
+                <!-- Quick Links -->
                 <div>
                     <h3 class="text-lg mb-4">Quick Links</h3>
                     <ul class="space-y-2">
                         <li><a href="index.php" class="text-gray-300 hover:text-white transition">Home</a></li>
                         <li><a href="about.php" class="text-gray-300 hover:text-white transition">About</a></li>
+                        <!-- <li><a href="memorial.php" class="text-gray-300 hover:text-white transition">Memorials</a></li> -->
                         <li><a href="services.php" class="text-gray-300 hover:text-white transition">Services & Packages</a></li>
                         <li><a href="faqs.php" class="text-gray-300 hover:text-white transition">FAQs</a></li>
                     </ul>
                 </div>
                 
+                <!-- Services -->
                 <div>
                     <h3 class="text-lg mb-4">Our Services</h3>
                     <ul class="space-y-2">
@@ -40,17 +45,13 @@
                     </ul>
                 </div>
                 
+                <!-- Contact Info -->
                 <div>
                     <h3 class="text-lg mb-4">Contact Us</h3>
                     <ul class="space-y-2">
                         <li class="flex items-start">
                             <i class="fas fa-map-marker-alt mt-1 mr-2 text-yellow-600"></i>
-                            <span><a href="https://www.google.com/maps/search/?api=1&query=%236+J.P+Rizal+St.+Brgy.+Sta+Clara+Sur%2C+(Pob)+Pila%2C+Laguna" 
-                               target="_blank" 
-                               rel="noopener noreferrer" 
-                               class="text-gray-300 hover:text-white transition">
-                                #6 J.P Rizal St. Brgy. Sta Clara Sur, (Pob) Pila, Laguna</span>
-                            </a>
+                            <span>#6 J.P Rizal St. Brgy. Sta Clara Sur, (Pob) Pila, Laguna</span>
                         </li>
                         <li class="flex items-center">
                             <i class="fas fa-phone-alt mr-2 text-yellow-600"></i>
