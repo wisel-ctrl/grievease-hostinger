@@ -890,7 +890,7 @@ require_once '../db_connect.php'; // Database connection
                 
                 <!-- Mobile-only continue button -->
                 <div class="mt-6 border-t border-gray-200 pt-4 md:hidden">
-                    <button id="continueToFormBtn" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300">
+                    <button type="button" id="continueToFormBtn" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300">
                         Continue to Booking
                     </button>
                 </div>
@@ -902,7 +902,7 @@ require_once '../db_connect.php'; // Database connection
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-xl md:text-2xl font-hedvig text-navy">Book Your Package</h2>
                     <div class="flex items-center">
-                        <button id="backToDetailsBtn" class="mr-2 text-gray-500 hover:text-navy md:hidden flex items-center">
+                        <button type="button" id="backToDetailsBtn" class="mr-2 text-gray-500 hover:text-navy md:hidden flex items-center">
                             <i class="fas fa-arrow-left text-lg mr-1"></i>
                             <span class="text-sm">Back</span>
                         </button>
@@ -1238,7 +1238,7 @@ require_once '../db_connect.php'; // Database connection
                             <div class="bg-white rounded-lg p-4 sm:p-6 max-w-[90vw] sm:max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
                                 <div class="flex justify-between items-center mb-4">
                                     <h3 class="text-lg sm:text-xl font-hedvig text-navy">Scan to Pay</h3>
-                                    <button id="lifeplanCloseQrModal" class="text-gray-500 hover:text-navy">
+                                    <button type="button" id="lifeplanCloseQrModal" class="text-gray-500 hover:text-navy">
                                         <i class="fas fa-times text-xl"></i>
                                     </button>
                                 </div>
@@ -1398,7 +1398,6 @@ require_once '../db_connect.php'; // Database connection
                     </div>
 
                     <!-- Terms of Service Modal -->
-                    <div id="termsOfServiceModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
                         <div class="bg-white rounded-lg p-6 max-w-lg w-full mx-4 max-h-[80vh] overflow-y-auto">
                             <div class="flex justify-between items-center mb-4">
                                 <h3 class="text-lg font-hedvig text-navy">Terms of Service</h3>

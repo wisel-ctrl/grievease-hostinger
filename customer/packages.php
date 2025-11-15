@@ -2677,7 +2677,7 @@ function removeGcash() {
                         <div class="bg-white rounded-lg p-6 max-w-lg w-full mx-4 max-h-[80vh] overflow-y-auto">
                             <div class="flex justify-between items-center mb-4">
                                 <h3 class="text-lg font-hedvig text-navy">Privacy Policy</h3>
-                                <button id="closePrivacyModal" class="text-gray-500 hover:text-navy">
+                                <button type="button" id="closePrivacyModal" class="text-gray-500 hover:text-navy">
                                     <i class="fas fa-times text-xl"></i>
                                 </button>
                             </div>
@@ -2744,7 +2744,7 @@ function removeGcash() {
                         <div class="bg-white rounded-lg p-6 max-w-lg w-full mx-4 max-h-[80vh] overflow-y-auto">
                             <div class="flex justify-between items-center mb-4">
                                 <h3 class="text-lg font-hedvig text-navy">Terms of Service</h3>
-                                <button id="closeTermsModal" class="text-gray-500 hover:text-navy">
+                                <button type="button" id="closeTermsModal" class="text-gray-500 hover:text-navy">
                                     <i class="fas fa-times text-xl"></i>
                                 </button>
                             </div>
