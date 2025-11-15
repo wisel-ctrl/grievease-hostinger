@@ -3426,119 +3426,203 @@ branchServicesChart.render();
   // Initialize jsPDF
   const { jsPDF } = window.jspdf;
 
-  document.getElementById('exportTopSellingPackages').addEventListener('click', function() {
+document.getElementById('exportTopSellingPackages').addEventListener('click', function() {
   try {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({
-      orientation: 'portrait'
-    });
+    const formatedName = formatName(username);
 
-    // Set document metadata
-    doc.setProperties({
-      title: 'Vjay Relova Service Package Sales Report',
-      subject: 'Sales Report',
-      author: 'Vjay Relova Funeral Services',
-      keywords: 'sales, report, service, package',
-      creator: 'Vjay Relova Web Application'
-    });
-
-    // Add header
-    doc.setFontSize(20);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(33, 37, 41);
-    doc.text('VJAY RELOVA FUNERAL SERVICES', 105, 20, { align: 'center' });
-
-    doc.setFontSize(16);
-    doc.text('SERVICE PACKAGE SALES REPORT', 105, 30, { align: 'center' });
-
-    doc.setFontSize(10);
-    doc.setTextColor(100, 100, 100);
-    doc.text('Generated on: ' + new Date().toLocaleString('en-PH', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    }), 105, 36, { align: 'center' });
-
-    // Create the table data
-    const tableData = [];
-    
-    // Add headers
-    tableData.push(['Service Package', 'Pila Branch', 'Paete Branch']);
-    
-    // Add rows
-    services.forEach((service, index) => {
-      tableData.push([
-        service,
-        pilaData[index],
-        paeteData[index]
-      ]);
-    });
-
-    // Calculate page width and column widths
-    const pageWidth = doc.internal.pageSize.width;
-    const margin = 15;
-    const availableWidth = pageWidth - (2 * margin);
-    
-    // Add the table
-    doc.autoTable({
-      startY: 45,
-      head: [tableData[0]],
-      body: tableData.slice(1),
-      theme: 'grid',
-      headStyles: {
-        fillColor: [79, 70, 229],
-        textColor: 255,
-        fontStyle: 'bold',
-        fontSize: 11,
-        halign: 'center'
-      },
-      alternateRowStyles: {
-        fillColor: [249, 250, 251]
-      },
-      styles: {
-        cellPadding: 3,
-        fontSize: 9,
-        valign: 'middle',
-        lineWidth: 0.1
-      },
-      columnStyles: {
-        0: { 
-          cellWidth: availableWidth * 0.6,
-          halign: 'left'
-        },
-        1: { 
-          cellWidth: availableWidth * 0.2,
-          halign: 'right'
-        },
-        2: { 
-          cellWidth: availableWidth * 0.2,
-          halign: 'right'
+    let tableHTML = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Vjay Relova Service Package Sales Report</title>
+      <style>
+        body { 
+          font-family: Arial, sans-serif; 
+          margin: 20px;
+          color: #212529;
+          line-height: 1.4;
         }
-      },
-      margin: { 
-        left: margin,
-        right: margin,
-        top: 45
-      },
-      didDrawPage: function(data) {
-        // Add footer
-        const footerY = doc.internal.pageSize.height - 10;
-        doc.setFontSize(9);
-        doc.setTextColor(100, 100, 100);
-        doc.setFont('courier', 'normal');
-        doc.text('For inquiries: Tel: (02) 1234-5678 • Mobile: 0917-123-4567 • Email: info@vjayrelova.com',
-          105, footerY, { align: 'center' });
-      }
+        .header { 
+          text-align: center; 
+          margin-bottom: 30px; 
+          border-bottom: 2px solid #4ade80;
+          padding-bottom: 20px;
+        }
+        .company-name { 
+          font-size: 24px; 
+          font-weight: bold; 
+          color: #16a34a;
+          margin-bottom: 5px; 
+        }
+        .report-title { 
+          font-size: 18px; 
+          font-weight: bold; 
+          margin-bottom: 10px;
+          color: #374151;
+        }
+        .generated-date { 
+          font-size: 12px; 
+          color: #666; 
+          margin-bottom: 20px; 
+        }
+        table { 
+          width: 100%; 
+          border-collapse: collapse; 
+          margin-bottom: 20px;
+          border: 1px solid #4ade80;
+        }
+        th { 
+          background-color: #4ade80; 
+          color: white; 
+          font-weight: bold; 
+          padding: 12px; 
+          text-align: left;
+          border: 1px solid #22c55e;
+        }
+        .amount-header {
+          text-align: right;
+        }
+        td { 
+          padding: 10px 12px; 
+          border: 1px solid #e5e7eb;
+        }
+        tr:nth-child(even) {
+          background-color: #f8fafc;
+        }
+        .amount { 
+          text-align: right; 
+          font-family: 'Courier New', monospace;
+          font-weight: bold;
+        }
+        .footer { 
+          text-align: center; 
+          font-size: 11px; 
+          color: #666; 
+          margin-top: 30px;
+          padding-top: 20px;
+          border-top: 1px solid #e5e7eb;
+        }
+        
+        /* Print Styles */
+        @media print {
+          @page {
+            margin: 0.5in;
+          }
+          body { 
+            margin: 0;
+            color: #000;
+            background: white;
+            font-size: 12pt;
+          }
+          .header {
+            border-bottom: 2px solid #4ade80;
+          }
+          .company-name {
+            color: #16a34a;
+            font-size: 20pt;
+          }
+          .report-title {
+            font-size: 16pt;
+          }
+          table {
+            border: 1px solid #4ade80 !important;
+            box-shadow: none;
+          }
+          th {
+            background-color: #4ade80 !important;
+            color: white !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+            border: 1px solid #22c55e !important;
+          }
+          td {
+            border: 1px solid #e5e7eb !important;
+          }
+          tr:nth-child(even) {
+            background-color: #f8fafc !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
+          .no-print { 
+            display: none; 
+          }
+          .footer {
+            border-top: 1px solid #4ade80;
+          }
+        }
+        
+        /* Force background colors in print */
+        @media print {
+          * {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <div class="company-name">VJAY RELOVA FUNERAL SERVICES</div>
+        <div class="report-title">SERVICE PACKAGE SALES REPORT</div>
+        <div class="generated-date">Generated on: ${new Date().toLocaleString('en-PH', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        })}</div>
+        <div style="margin-top: 10px;">Generated by: ${formatedName}</div>
+      </div>
+      
+      <table>
+        <thead>
+          <tr>
+            <th>Service Package</th>
+            <th class="amount-header">Pila Branch</th>
+            <th class="amount-header">Paete Branch</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+
+    // Add service package rows
+    services.forEach((service, index) => {
+      const pilaValue = pilaData[index] || '0';
+      const paeteValue = paeteData[index] || '0';
+
+      tableHTML += `
+        <tr>
+          <td>${service}</td>
+          <td class="amount">${pilaValue}</td>
+          <td class="amount">${paeteValue}</td>
+        </tr>
+      `;
     });
-    
-    // Save the PDF
-    doc.save(`Vjay-Relova-Service-Packages-Report-${new Date().toISOString().slice(0, 10)}.pdf`);
+
+    tableHTML += `
+        </tbody>
+      </table>
+      
+      <div class="footer">
+        <div>For inquiries: Mobile: (0961) 345-4283 • Mobile: (0956) 814-3000 • Email: GrievEase@gmail.com</div>
+      </div>
+      
+      <div class="no-print" style="text-align: center; margin-top: 20px;">
+        <button onclick="window.print()" style="padding: 10px 20px; background: #4ade80; color: white; border: none; border-radius: 5px; cursor: pointer;">Print Report</button>
+        <button onclick="window.close()" style="padding: 10px 20px; background: #6b7280; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;">Close Window</button>
+      </div>
+    </body>
+    </html>
+    `;
+
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(tableHTML);
+    printWindow.document.close();
+    printWindow.focus();
     
   } catch (error) {
-    console.error('PDF export failed:', error);
-    alert('Failed to generate PDF. Please check console for details.');
+    console.error('Print window failed:', error);
+    alert('Failed to generate print view. Please check console for details.');
   }
 });
 </script>
