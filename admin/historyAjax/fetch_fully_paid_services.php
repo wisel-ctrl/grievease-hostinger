@@ -38,7 +38,7 @@ $totalServices = $countResult->fetch_assoc()['total'];
 $fullyPaidQuery = "SELECT s.sales_id, s.fname, s.mname, s.lname, s.suffix, 
     s.fname_deceased, s.mname_deceased, s.lname_deceased, s.suffix_deceased,
     sv.service_name, CASE 
-    WHEN s.date_of_burial IS NULL OR s.date_of_burial = '0000-00-00' THEN 'Unknown'
+    WHEN s.date_of_burial IS NULL OR s.date_of_burial = '0000-00-00' THEN 'Not Provided'
     ELSE DATE_FORMAT(s.date_of_burial, '%M %d, %Y')
     END AS date_of_burial , s.balance, s.status, s.payment_status
     FROM sales_tb s
