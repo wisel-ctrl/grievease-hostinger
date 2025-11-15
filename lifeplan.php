@@ -399,49 +399,105 @@
                 
                 <!-- Testimonials Section -->
                 <div class="bg-navy/5 py-12 px-6 rounded-xl mb-16">
-                    <h3 class="text-3xl font-hedvig text-navy text-center mb-12">What Our Clients Say</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <!-- Testimonial 1 -->
-                        <div class="bg-white p-6 rounded-lg shadow-md">
-                            <div class="flex items-center mb-4">
-                                <div class="text-yellow-600 mr-3">
-                                    <i class="fas fa-quote-left text-3xl"></i>
-                                </div>
-                                <div>
-                                    <div class="text-yellow-600 mb-1">
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                    </div>
-                                </div>
-                            </div>
-                            <p class="text-dark italic mb-4">Planning ahead with GrievEase was one of the best decisions I've made. The team was compassionate and patient, guiding me through every option. I now have peace of mind knowing my family won't face difficult decisions later.</p>
-                            <p class="font-hedvig text-navy">- Maria Reyes, 67</p>
+    <h3 class="text-3xl font-hedvig text-navy text-center mb-12">What Our Clients Say</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <?php
+        // Include database connection
+        include 'db_connect.php';
+        
+        // Fetch feedback with status 'Show' and service type 'life-plan' only
+        $sql = "SELECT f.*, 
+                       CONCAT(u.first_name, ' ', COALESCE(u.middle_name, ''), ' ', u.last_name, 
+                              CASE WHEN u.suffix IS NOT NULL AND u.suffix != '' THEN CONCAT(' ', u.suffix) ELSE '' END) as customer_name
+                FROM feedback_tb f 
+                INNER JOIN users u ON f.customer_id = u.id 
+                WHERE f.status = 'Show' 
+                AND f.service_type = 'life-plan'
+                ORDER BY f.created_at DESC 
+                LIMIT 2";
+        
+        $result = $conn->query($sql);
+        
+        if ($result && $result->num_rows > 0) {
+            while($row = $result->fetch_assoc()) {
+                // Generate star rating based on rating value
+                $stars = '';
+                $rating = $row['rating'];
+                for ($i = 1; $i <= 5; $i++) {
+                    if ($i <= $rating) {
+                        $stars .= '<i class="fas fa-star"></i>';
+                    } else {
+                        $stars .= '<i class="far fa-star"></i>';
+                    }
+                }
+                ?>
+                <!-- Dynamic Life Plan Testimonial -->
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <div class="flex items-center mb-4">
+                        <div class="text-yellow-600 mr-3">
+                            <i class="fas fa-quote-left text-3xl"></i>
                         </div>
-                        
-                        <!-- Testimonial 2 -->
-                        <div class="bg-white p-6 rounded-lg shadow-md">
-                            <div class="flex items-center mb-4">
-                                <div class="text-yellow-600 mr-3">
-                                    <i class="fas fa-quote-left text-3xl"></i>
-                                </div>
-                                <div>
-                                    <div class="text-yellow-600 mb-1">
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                    </div>
-                                </div>
+                        <div>
+                            <div class="text-yellow-600 mb-1">
+                                <?php echo $stars; ?>
                             </div>
-                            <p class="text-dark italic mb-4">After experiencing the stress of arranging a funeral for my father, I decided to plan ahead for myself. The Premium Plan offered exactly what I wanted, and the financial arrangements were clear and secure.</p>
-                            <p class="font-hedvig text-navy">- Antonio Lim, 58</p>
+                        </div>
+                    </div>
+                    <p class="text-dark italic mb-4"><?php echo htmlspecialchars($row['feedback_text']); ?></p>
+                    <p class="font-hedvig text-navy">- <?php echo htmlspecialchars($row['customer_name']); ?></p>
+                </div>
+                <?php
+            }
+        } else {
+            // Fallback to sample testimonials if no life-plan feedback found
+            ?>
+            <!-- Fallback Life Plan Testimonial 1 -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <div class="flex items-center mb-4">
+                    <div class="text-yellow-600 mr-3">
+                        <i class="fas fa-quote-left text-3xl"></i>
+                    </div>
+                    <div>
+                        <div class="text-yellow-600 mb-1">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
                         </div>
                     </div>
                 </div>
+                <p class="text-dark italic mb-4">Planning ahead with GrievEase was one of the best decisions I've made. The team was compassionate and patient, guiding me through every option. I now have peace of mind knowing my family won't face difficult decisions later.</p>
+                <p class="font-hedvig text-navy">- Maria Reyes, 67</p>
+            </div>
+            
+            <!-- Fallback Life Plan Testimonial 2 -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <div class="flex items-center mb-4">
+                    <div class="text-yellow-600 mr-3">
+                        <i class="fas fa-quote-left text-3xl"></i>
+                    </div>
+                    <div>
+                        <div class="text-yellow-600 mb-1">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-dark italic mb-4">After experiencing the stress of arranging a funeral for my father, I decided to plan ahead for myself. The Premium Plan offered exactly what I wanted, and the financial arrangements were clear and secure.</p>
+                <p class="font-hedvig text-navy">- Antonio Lim, 58</p>
+            </div>
+            <?php
+        }
+        
+        // Close connection
+        $conn->close();
+        ?>
+    </div>
+</div>
     </div>
     </div>
 <!-- Footer -->
