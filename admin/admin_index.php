@@ -2006,6 +2006,15 @@ function loadInventoryLogs(page = 1) {
                 // Clear any existing rows
                 tableBody.innerHTML = '';
                 
+                // Check if there are no logs
+                if (!data.logs || data.logs.length === 0) {
+                    showNoDataMessage(tableBody);
+                    // Hide pagination when no data
+                    paginationInfo.innerHTML = '';
+                    paginationControls.innerHTML = '';
+                    return;
+                }
+                
                 // Populate table with logs
                 data.logs.forEach(log => {
                     const branchName = log.branch_name
@@ -2079,6 +2088,21 @@ function loadInventoryLogs(page = 1) {
         });
 }
 
+// Helper function to show no data message
+function showNoDataMessage(container) {
+    container.innerHTML = `
+        <tr>
+            <td colspan="6" class="px-4 py-8 text-center">
+                <div class="flex flex-col items-center justify-center text-gray-500">
+                    <i class="fas fa-inbox text-4xl mb-3 opacity-50"></i>
+                    <p class="text-lg font-medium mb-1">No inventory activity found</p>
+                    <p class="text-sm">There are no inventory logs to display at the moment.</p>
+                </div>
+            </td>
+        </tr>
+    `;
+}
+
 // Helper function to get appropriate icon for activity type
 function getActivityIcon(activityType) {
     const icons = {
@@ -2118,9 +2142,14 @@ function updatePaginationInfo(element, currentPage, perPage, totalItems) {
 }
 
 // Helper function to update pagination controls
-// Helper function to update pagination controls
 function updatePaginationControls(container, currentPage, perPage, totalItems) {
     const totalPages = Math.ceil(totalItems / perPage);
+    
+    // If no items, don't show pagination controls
+    if (totalItems === 0) {
+        container.innerHTML = '';
+        return;
+    }
     
     let html = '';
     
@@ -2202,7 +2231,7 @@ function updatePaginationControls(container, currentPage, perPage, totalItems) {
 function showError(container, message) {
     container.innerHTML = `
         <tr>
-            <td colspan="7" class="px-4 py-3.5 text-sm text-center text-red-600">
+            <td colspan="6" class="px-4 py-3.5 text-sm text-center text-red-600">
                 <i class="fas fa-exclamation-circle mr-2"></i>
                 Error loading data: ${escapeHtml(message)}
             </td>
