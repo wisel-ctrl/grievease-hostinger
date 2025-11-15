@@ -1424,7 +1424,7 @@ function capitalizeWords(str) {
                         </div>
                     </div>
 
-                    <button type="submit" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300">
+                    <button type="submit" id="traditionalConfirmBtn" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300" disabled>
                         Confirm Booking
                     </button>
                 </form>
@@ -2830,7 +2830,7 @@ function removeGcash() {
     </div>
 </div>
 
-                    <button type="submit" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300">
+                    <button type="submit" id="lifeplanConfirmBtn" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300" disabled>
                         Confirm Lifeplan Booking
                     </button>
                 </form>
@@ -3132,6 +3132,53 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+    // Checkbox functionality for confirm buttons
+    // Traditional booking terms checkbox
+    const traditionalTermsCheckbox = document.getElementById('termsCheckbox');
+    const traditionalConfirmBtn = document.getElementById('traditionalConfirmBtn');
+    
+    if (traditionalTermsCheckbox && traditionalConfirmBtn) {
+        // Initialize button as disabled
+        traditionalConfirmBtn.disabled = true;
+        traditionalConfirmBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        
+        // Add event listener to checkbox
+        traditionalTermsCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                traditionalConfirmBtn.disabled = false;
+                traditionalConfirmBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                traditionalConfirmBtn.classList.add('hover:bg-yellow-700');
+            } else {
+                traditionalConfirmBtn.disabled = true;
+                traditionalConfirmBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                traditionalConfirmBtn.classList.remove('hover:bg-yellow-700');
+            }
+        });
+    }
+    
+    // Lifeplan terms checkbox
+    const lifeplanTermsCheckbox = document.getElementById('termsAgreement');
+    const lifeplanConfirmBtn = document.getElementById('lifeplanConfirmBtn');
+    
+    if (lifeplanTermsCheckbox && lifeplanConfirmBtn) {
+        // Initialize button as disabled
+        lifeplanConfirmBtn.disabled = true;
+        lifeplanConfirmBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        
+        // Add event listener to checkbox
+        lifeplanTermsCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                lifeplanConfirmBtn.disabled = false;
+                lifeplanConfirmBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                lifeplanConfirmBtn.classList.add('hover:bg-yellow-700');
+            } else {
+                lifeplanConfirmBtn.disabled = true;
+                lifeplanConfirmBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                lifeplanConfirmBtn.classList.remove('hover:bg-yellow-700');
+            }
+        });
+    }
 
     // Package selection functionality
     document.addEventListener('click', function(event) {
