@@ -3047,144 +3047,250 @@ function getChartOptions(data) {
 
 document.getElementById('exportPdfBtn').addEventListener('click', function() {
   try {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({
-      orientation: 'portrait'
-    });
-
-    // Set document metadata
-    doc.setProperties({
-      title: 'Vjay Relova Branch Revenue Report',
-      subject: 'Financial Report',
-      author: 'Vjay Relova Funeral Services',
-      keywords: 'revenue, report, financial, branch',
-      creator: 'Vjay Relova Web Application'
-    });
-
     // Get the current timeframe based on which button is active
     const isYearly = document.getElementById('yearlyViewBranch').classList.contains('bg-blue-500');
     const currentData = isYearly ? yearlyData : monthlyData;
     const timeframe = isYearly ? 'Yearly' : 'Monthly';
+    const formatedName = formatName(username);
 
-    // Add header
-    doc.setFontSize(20);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(33, 37, 41);
-    doc.text('VJAY RELOVA FUNERAL SERVICES', 105, 20, { align: 'center' });
+    // Reverse the order of data to show latest first
+    const labels = [...currentData.labels].reverse();
+    const pilaData = [...currentData.pila].reverse();
+    const paeteData = [...currentData.paete].reverse();
 
-    doc.setFontSize(16);
-    doc.text(`${timeframe.toUpperCase()} BRANCH REVENUE REPORT`, 105, 30, { align: 'center' });
-
-    doc.setFontSize(10);
-    doc.setTextColor(100, 100, 100);
-    doc.text('Generated on: ' + new Date().toLocaleString('en-PH', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    }), 105, 36, { align: 'center' });
-
-    // Create table data
-    const headers = [isYearly ? 'Year' : 'Month', 'Pila Revenue', 'Paete Revenue'];
-    const body = [];
-    
-    // Add data rows
-    for (let i = 0; i < currentData.labels.length; i++) {
-      body.push([
-        currentData.labels[i],
-        `PHP ${parseFloat(currentData.pila[i] || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
-        `PHP ${parseFloat(currentData.paete[i] || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-      ]);
-    }
-
-    // Add totals row
-    const pilaTotal = currentData.pila.reduce((a, b) => a + (parseFloat(b) || 0), 0);
-    const paeteTotal = currentData.paete.reduce((a, b) => a + (parseFloat(b) || 0), 0);
-    body.push([
-      'TOTAL',
-      `PHP ${pilaTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
-      `PHP ${paeteTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-    ]);
-    
-    // Calculate page width and column widths
-    const pageWidth = doc.internal.pageSize.width;
-    const margin = 15;
-    const availableWidth = pageWidth - (2 * margin);
-    
-    // Add table
-    doc.autoTable({
-      head: [headers],
-      body: body.slice(0, -1), // Exclude totals row from main body
-      startY: 45,
-      theme: 'grid',
-      headStyles: {
-        fillColor: [79, 70, 229],
-        textColor: 255,
-        fontStyle: 'bold',
-        fontSize: 11,
-        halign: 'center'
-      },
-      columnStyles: {
-        0: { 
-          cellWidth: availableWidth * 0.4,
-          halign: 'left',
-          fontStyle: 'bold'
-        },
-        1: { 
-          cellWidth: availableWidth * 0.3,
-          halign: 'right'
-        },
-        2: { 
-          cellWidth: availableWidth * 0.3,
-          halign: 'right'
+    let tableHTML = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Vjay Relova Branch Revenue Report</title>
+      <style>
+        body { 
+          font-family: Arial, sans-serif; 
+          margin: 20px;
+          color: #212529;
+          line-height: 1.4;
         }
-      },
-      styles: {
-        fontSize: 9,
-        cellPadding: 3,
-        overflow: 'linebreak',
-        valign: 'middle',
-        lineWidth: 0.1
-      },
-      margin: { 
-        left: margin,
-        right: margin,
-        top: 45
-      },
-      tableWidth: 'wrap',
-      didDrawPage: function (data) {
-        if (data.pageCount === data.pageNumber) {
-          const finalY = data.cursor.y + 10;
-          doc.setFontSize(12);
-          doc.setFont('courier', 'bold');
-          
-          // Draw total line with full width
-          doc.setFillColor(240, 240, 240);
-          doc.rect(margin, finalY - 5, availableWidth, 10, 'F');
-          
-          // Add totals row
-          const totalsRow = body[body.length - 1];
-          doc.text(totalsRow[0], margin + 5, finalY);
-          doc.text(totalsRow[1], margin + availableWidth * 0.7, finalY, { align: 'right' });
-          doc.text(totalsRow[2], pageWidth - margin - 5, finalY, { align: 'right' });
-
-          // Add footer
-          const footerY = doc.internal.pageSize.height - 10;
-          doc.setFontSize(9);
-          doc.setTextColor(100, 100, 100);
-          doc.setFont('courier', 'normal');
-          doc.text('For inquiries: Tel: (02) 1234-5678 • Mobile: 0917-123-4567 • Email: info@vjayrelova.com',
-            105, footerY, { align: 'center' });
+        .header { 
+          text-align: center; 
+          margin-bottom: 30px; 
+          border-bottom: 2px solid #4ade80;
+          padding-bottom: 20px;
         }
-      }
+        .company-name { 
+          font-size: 24px; 
+          font-weight: bold; 
+          color: #16a34a;
+          margin-bottom: 5px; 
+        }
+        .report-title { 
+          font-size: 18px; 
+          font-weight: bold; 
+          margin-bottom: 10px;
+          color: #374151;
+        }
+        .generated-date { 
+          font-size: 12px; 
+          color: #666; 
+          margin-bottom: 20px; 
+        }
+        table { 
+          width: 100%; 
+          border-collapse: collapse; 
+          margin-bottom: 20px;
+          border: 1px solid #4ade80;
+        }
+        th { 
+          background-color: #4ade80; 
+          color: white; 
+          font-weight: bold; 
+          padding: 12px; 
+          text-align: left;
+          border: 1px solid #22c55e;
+        }
+        .amount-header {
+          text-align: right;
+        }
+        td { 
+          padding: 10px 12px; 
+          border: 1px solid #e5e7eb;
+        }
+        tr:nth-child(even) {
+          background-color: #f8fafc;
+        }
+        .total-row { 
+          background-color: #16a34a; 
+          color: white;
+          font-weight: bold; 
+        }
+        .amount { 
+          text-align: right; 
+          font-family: 'Courier New', monospace;
+          font-weight: bold;
+        }
+        .footer { 
+          text-align: center; 
+          font-size: 11px; 
+          color: #666; 
+          margin-top: 30px;
+          padding-top: 20px;
+          border-top: 1px solid #e5e7eb;
+        }
+        
+        /* Print Styles */
+        @media print {
+          @page {
+            margin: 0.5in;
+          }
+          body { 
+            margin: 0;
+            color: #000;
+            background: white;
+            font-size: 12pt;
+          }
+          .header {
+            border-bottom: 2px solid #4ade80;
+          }
+          .company-name {
+            color: #16a34a;
+            font-size: 20pt;
+          }
+          .report-title {
+            font-size: 16pt;
+          }
+          table {
+            border: 1px solid #4ade80 !important;
+            box-shadow: none;
+          }
+          th {
+            background-color: #4ade80 !important;
+            color: white !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+            border: 1px solid #22c55e !important;
+          }
+          td {
+            border: 1px solid #e5e7eb !important;
+          }
+          .total-row {
+            background-color: #16a34a !important;
+            color: white !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
+          tr:nth-child(even) {
+            background-color: #f8fafc !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
+          .no-print { 
+            display: none; 
+          }
+          .footer {
+            border-top: 1px solid #4ade80;
+          }
+        }
+        
+        /* Force background colors in print */
+        @media print {
+          * {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <div class="company-name">VJAY RELOVA FUNERAL SERVICES</div>
+        <div class="report-title">${timeframe.toUpperCase()} BRANCH REVENUE REPORT</div>
+        <div class="generated-date">Generated on: ${new Date().toLocaleString('en-PH', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        })}</div>
+        <div style="margin-top: 10px;">Generated by: ${formatedName}</div>
+      </div>
+      
+      <table>
+        <thead>
+          <tr>
+            <th>${isYearly ? 'Year' : 'Month'}</th>
+            <th class="amount-header">Pila Revenue (PHP)</th>
+            <th class="amount-header">Paete Revenue (PHP)</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+
+    let pilaTotal = 0;
+    let paeteTotal = 0;
+
+    labels.forEach((period, index) => {
+      const cleanPeriod = period.toString()
+        .replace(/±/g, '')
+        .replace(/[^a-zA-Z0-9ñÑ\s]/g, '')
+        .trim() || (isYearly ? `Year ${index + 1}` : `Month ${index + 1}`);
+
+      let pilaValue = Number(pilaData[index]) || 0;
+      let paeteValue = Number(paeteData[index]) || 0;
+      
+      pilaTotal += pilaValue;
+      paeteTotal += paeteValue;
+
+      tableHTML += `
+        <tr>
+          <td>${cleanPeriod}</td>
+          <td class="amount">PHP ${pilaValue.toLocaleString('en-PH', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          })}</td>
+          <td class="amount">PHP ${paeteValue.toLocaleString('en-PH', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          })}</td>
+        </tr>
+      `;
     });
-    
-    doc.save(`Vjay-Relova-Branch-Report-${timeframe}-${new Date().toISOString().slice(0, 10)}.pdf`);
+
+    tableHTML += `
+        </tbody>
+        <tfoot>
+          <tr class="total-row">
+            <td>TOTAL</td>
+            <td class="amount">PHP ${pilaTotal.toLocaleString('en-PH', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2
+            })}</td>
+            <td class="amount">PHP ${paeteTotal.toLocaleString('en-PH', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2
+            })}</td>
+          </tr>
+        </tfoot>
+      </table>
+      
+      <div class="footer">
+        <div>For inquiries: Mobile: (0961) 345-4283 • Mobile: (0956) 814-3000 • Email: GrievEase@gmail.com</div>
+      </div>
+      
+      <div class="no-print" style="text-align: center; margin-top: 20px;">
+        <button onclick="window.print()" style="padding: 10px 20px; background: #4ade80; color: white; border: none; border-radius: 5px; cursor: pointer;">Print Report</button>
+        <button onclick="window.close()" style="padding: 10px 20px; background: #6b7280; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;">Close Window</button>
+      </div>
+    </body>
+    </html>
+    `;
+
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(tableHTML);
+    printWindow.document.close();
+    printWindow.focus();
     
   } catch (error) {
-    console.error('PDF export failed:', error);
-    alert('Failed to generate PDF. Please check console for details.');
+    console.error('Print window failed:', error);
+    alert('Failed to generate print view. Please check console for details.');
   }
 });
 </script>
