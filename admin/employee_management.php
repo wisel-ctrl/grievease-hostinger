@@ -185,7 +185,7 @@ $totalPages = ceil($totalEmployees / $perPage);
             <option value="">All Branches</option>
             <?php foreach ($branches as $branch): ?>
               <option value="<?php echo $branch['branch_id']; ?>" <?php echo ($branch_filter == $branch['branch_id']) ? 'selected' : ''; ?>>
-                <?php echo htmlspecialchars($branch['branch_name']); ?>
+                <?php echo ucfirst(htmlspecialchars($branch['branch_name'])); ?>
               </option>
             <?php endforeach; ?>
           </select>
