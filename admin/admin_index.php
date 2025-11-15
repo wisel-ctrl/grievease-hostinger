@@ -4,6 +4,7 @@ session_start();
 include 'faviconLogo.php'; 
 
 date_default_timezone_set('Asia/Manila'); // Or your appropriate timezone
+$user_name = $_SESSION['name'];
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
     // Redirect to login page
@@ -1983,6 +1984,8 @@ function time_elapsed_string($datetime, $full = false) {
       .toLowerCase()
       .replace(/\b\w/g, char => char.toUpperCase()); // Title Case
   });
+
+  const username = <?php json_encode($user_name); ?>
 </script>
 
 <script>
