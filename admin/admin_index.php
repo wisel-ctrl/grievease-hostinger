@@ -2569,20 +2569,134 @@ document.getElementById('exportProjectedIncome').addEventListener('click', funct
     <head>
       <title>Vjay Relova Accrued Revenue Report</title>
       <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .header { text-align: center; margin-bottom: 30px; }
-        .company-name { font-size: 24px; font-weight: bold; color: #212529; margin-bottom: 5px; }
-        .report-title { font-size: 18px; font-weight: bold; margin-bottom: 10px; }
-        .generated-date { font-size: 12px; color: #666; margin-bottom: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-        th { background-color: #3b82f6; color: white; font-weight: bold; padding: 8px; text-align: left; }
-        td { padding: 8px; border-bottom: 1px solid #ddd; }
-        .total-row { background-color: #f0f0f0; font-weight: bold; }
-        .amount { text-align: right; }
-        .footer { text-align: center; font-size: 11px; color: #666; margin-top: 30px; }
+        body { 
+          font-family: Arial, sans-serif; 
+          margin: 20px;
+          color: #212529;
+          line-height: 1.4;
+        }
+        .header { 
+          text-align: center; 
+          margin-bottom: 30px; 
+          border-bottom: 2px solid #3b82f6;
+          padding-bottom: 20px;
+        }
+        .company-name { 
+          font-size: 24px; 
+          font-weight: bold; 
+          color: #1e40af;
+          margin-bottom: 5px; 
+        }
+        .report-title { 
+          font-size: 18px; 
+          font-weight: bold; 
+          margin-bottom: 10px;
+          color: #374151;
+        }
+        .generated-date { 
+          font-size: 12px; 
+          color: #666; 
+          margin-bottom: 20px; 
+        }
+        table { 
+          width: 100%; 
+          border-collapse: collapse; 
+          margin-bottom: 20px;
+          border: 1px solid #3b82f6;
+        }
+        th { 
+          background-color: #3b82f6; 
+          color: white; 
+          font-weight: bold; 
+          padding: 12px; 
+          text-align: left;
+          border: 1px solid #2563eb;
+        }
+        td { 
+          padding: 10px 12px; 
+          border: 1px solid #e5e7eb;
+        }
+        tr:nth-child(even) {
+          background-color: #f8fafc;
+        }
+        .total-row { 
+          background-color: #1e40af; 
+          color: white;
+          font-weight: bold; 
+        }
+        .amount { 
+          text-align: right; 
+          font-family: 'Courier New', monospace;
+          font-weight: bold;
+        }
+        .footer { 
+          text-align: center; 
+          font-size: 11px; 
+          color: #666; 
+          margin-top: 30px;
+          padding-top: 20px;
+          border-top: 1px solid #e5e7eb;
+        }
+        
+        /* Print Styles */
         @media print {
-          body { margin: 0; }
-          .no-print { display: none; }
+          @page {
+            margin: 0.5in;
+          }
+          body { 
+            margin: 0;
+            color: #000;
+            background: white;
+            font-size: 12pt;
+          }
+          .header {
+            border-bottom: 2px solid #000;
+          }
+          .company-name {
+            color: #000;
+            font-size: 20pt;
+          }
+          .report-title {
+            font-size: 16pt;
+          }
+          table {
+            border: 1px solid #000 !important;
+            box-shadow: none;
+          }
+          th {
+            background-color: #000 !important;
+            color: white !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+            border: 1px solid #000 !important;
+          }
+          td {
+            border: 1px solid #ccc !important;
+          }
+          .total-row {
+            background-color: #333 !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
+          tr:nth-child(even) {
+            background-color: #f9f9f9 !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
+          .no-print { 
+            display: none; 
+          }
+          .footer {
+            border-top: 1px solid #000;
+          }
+        }
+        
+        /* Force background colors in print */
+        @media print {
+          * {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
         }
       </style>
     </head>
