@@ -2755,9 +2755,8 @@ function removeGcash() {
         I agree to the 
         <a href="#" id="viewPrivacyPolicy" class="text-yellow-600 hover:text-yellow-700 font-medium transition-colors">Privacy Policy</a>, 
         <a href="#" id="viewTermsOfService" class="text-yellow-600 hover:text-yellow-700 font-medium transition-colors">Terms of Service</a>, 
-        <a href="lifeplancontract.php" target="_blank" class="text-yellow-600 hover:text-yellow-700 font-medium transition-colors">LifePlan Contract</a>, 
-        and 
-        <a href="lifeplancontract_pdf.php" download class="text-yellow-600 hover:text-yellow-700 font-medium transition-colors">download LifePlan PDF</a>.
+        <a href="lifeplancontract.php" target="_blank" class="text-yellow-600 hover:text-yellow-700 font-medium transition-colors">LifePlan Contract</a>
+        <a href="lifeplancontract_pdf.php" download class="text-yellow-600 hover:text-yellow-700 font-medium transition-colors">(download LifePlan PDF)</a>.
     </label>
 </div>
                     </div>
