@@ -3328,6 +3328,7 @@ document.getElementById('exportPdfBtn').addEventListener('click', function() {
                 reset: true
             },
             export: {
+                csv: false,
                 png: {
                     filename: 'branch-services-comparison',
                 },
