@@ -681,7 +681,7 @@ require_once '../db_connect.php'; // Database connection
 
 <!-- Image replacement -->
 <div class="max-w-5xl mx-auto px-4">
-    <img src="../image/orgchartfinal2.png" alt="Organization Chart" class="w-full h-auto rounded-lg shadow-md">
+    <img src="../image/orgchart.png" alt="Organization Chart" class="w-full h-auto rounded-lg shadow-md">
 </div>
 
 <div>
