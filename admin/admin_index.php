@@ -2118,10 +2118,23 @@ function updatePaginationInfo(element, currentPage, perPage, totalItems) {
 }
 
 // Helper function to update pagination controls
+// Helper function to update pagination controls
 function updatePaginationControls(container, currentPage, perPage, totalItems) {
     const totalPages = Math.ceil(totalItems / perPage);
     
-    let html = `
+    let html = '';
+    
+    // First page button
+    html += `
+        <button class="px-3.5 py-1.5 border rounded text-sm ${
+            currentPage <= 1 ? 'border-gray-300 text-gray-400 cursor-not-allowed' : 'border-sidebar-border hover:bg-sidebar-hover'
+        }" ${currentPage <= 1 ? 'disabled' : ''} onclick="loadInventoryLogs(1)" title="First Page">
+            &laquo;&laquo;
+        </button>
+    `;
+    
+    // Previous page button
+    html += `
         <button class="px-3.5 py-1.5 border rounded text-sm ${
             currentPage <= 1 ? 'border-gray-300 text-gray-400 cursor-not-allowed' : 'border-sidebar-border hover:bg-sidebar-hover'
         }" ${currentPage <= 1 ? 'disabled' : ''} onclick="loadInventoryLogs(${currentPage - 1})">
@@ -2129,8 +2142,32 @@ function updatePaginationControls(container, currentPage, perPage, totalItems) {
         </button>
     `;
     
-    // Show page numbers
-    for (let i = 1; i <= totalPages; i++) {
+    // Calculate which page numbers to show (always show 3 numbers)
+    let startPage, endPage;
+    
+    if (totalPages <= 3) {
+        // Less than or equal to 3 total pages - show all
+        startPage = 1;
+        endPage = totalPages;
+    } else {
+        // More than 3 total pages
+        if (currentPage <= 2) {
+            // Near the beginning - show pages 1, 2, 3
+            startPage = 1;
+            endPage = 3;
+        } else if (currentPage >= totalPages - 1) {
+            // Near the end - show last 3 pages
+            startPage = totalPages - 2;
+            endPage = totalPages;
+        } else {
+            // In the middle - show current page and neighbors
+            startPage = currentPage - 1;
+            endPage = currentPage + 1;
+        }
+    }
+    
+    // Show page numbers (only 3 numbers)
+    for (let i = startPage; i <= endPage; i++) {
         html += `
             <button class="px-3.5 py-1.5 border rounded text-sm ${
                 i === currentPage ? 'bg-sidebar-accent text-white border-sidebar-accent' : 'border-sidebar-border hover:bg-sidebar-hover'
@@ -2140,11 +2177,21 @@ function updatePaginationControls(container, currentPage, perPage, totalItems) {
         `;
     }
     
+    // Next page button
     html += `
         <button class="px-3.5 py-1.5 border rounded text-sm ${
             currentPage >= totalPages ? 'border-gray-300 text-gray-400 cursor-not-allowed' : 'border-sidebar-border hover:bg-sidebar-hover'
         }" ${currentPage >= totalPages ? 'disabled' : ''} onclick="loadInventoryLogs(${currentPage + 1})">
             &raquo;
+        </button>
+    `;
+    
+    // Last page button
+    html += `
+        <button class="px-3.5 py-1.5 border rounded text-sm ${
+            currentPage >= totalPages ? 'border-gray-300 text-gray-400 cursor-not-allowed' : 'border-sidebar-border hover:bg-sidebar-hover'
+        }" ${currentPage >= totalPages ? 'disabled' : ''} onclick="loadInventoryLogs(${totalPages})" title="Last Page">
+            &raquo;&raquo;
         </button>
     `;
     
