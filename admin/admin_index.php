@@ -1985,14 +1985,6 @@ function time_elapsed_string($datetime, $full = false) {
       .replace(/\b\w/g, char => char.toUpperCase()); // Title Case
   });
 const username = <?php echo json_encode($user_name); ?>
-function formatName(name) {
-  return name
-    .toLowerCase()                 // make everything lowercase
-    .trim()                        // remove leading/trailing spaces
-    .split(/\s+/)                  // split by one or more spaces
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
-}
 
 </script>
 
@@ -2561,6 +2553,15 @@ document.getElementById('yearlyView').addEventListener('click', function() {
     }
   });
 });
+
+function formatName(name) {
+  return name
+    .toLowerCase()                 // make everything lowercase
+    .trim()                        // remove leading/trailing spaces
+    .split(/\s+/)                  // split by one or more spaces
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
 
 // Update export functionality to handle both views
 document.getElementById('exportProjectedIncome').addEventListener('click', function () {
