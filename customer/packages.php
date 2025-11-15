@@ -2662,128 +2662,86 @@ function removeGcash() {
 
                     <!-- Privacy Policy and Terms Consent -->
                     <div class="mt-4 mb-4 border border-gray-200 rounded-lg p-4 bg-gray-50 terms-checkbox-container">
-                        <div class="flex items-start">
-                            <input type="checkbox" id="termsCheckbox" name="terms_accepted" required 
-                                class="h-5 w-5 text-yellow-600 rounded focus:ring-yellow-500 mt-1">
-                            <label for="termsCheckbox" class="ml-3 text-sm">
-                                <span class="block text-navy mb-1">I have read and agree to the <a href="#" class="text-yellow-600 hover:underline" id="viewPrivacyPolicy">Privacy Policy</a>, <a href="#" class="text-yellow-600 hover:underline" id="viewTermsOfService">Terms of Service</a>, and <a href="lifeplancontract.php" target="_blank" rel="noopener noreferrer" class="text-yellow-600 hover:underline">LifePlan Contract</a>. <a href="lifeplancontract_pdf.php" target="_blank" rel="noopener noreferrer" class="text-yellow-600 hover:underline">(Download PDF Version)</a> <span class="text-red-500">*</span></span>
-                                <span class="block text-gray-500 text-xs">By checking this box, you acknowledge that you have read and understood all terms and conditions, and consent to our data collection practices as described in our Privacy Policy.</span>
-                            </label>
-                        </div>
+                        <div class="mt-6 flex items-start">
+    <input type="checkbox" id="termsAgreement" name="terms_agreement" required class="mt-1 h-4 w-4 text-yellow-600 border-gray-300 rounded focus:ring-yellow-500">
+    <label for="termsAgreement" class="ml-2 text-sm text-gray-700">
+        I agree to the 
+        <a href="#" id="viewPrivacyPolicy" class="text-yellow-600 hover:text-yellow-700 font-medium transition-colors">Privacy Policy</a> 
+        and 
+        <a href="#" id="viewTermsOfService" class="text-yellow-600 hover:text-yellow-700 font-medium transition-colors">Terms of Service</a>
+        of GrievEase.
+    </label>
+</div>
                     </div>
 
-                    <!-- Privacy Policy Modal -->
-                    <div id="privacyPolicyModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
-                        <div class="bg-white rounded-lg p-6 max-w-lg w-full mx-4 max-h-[80vh] overflow-y-auto">
-                            <div class="flex justify-between items-center mb-4">
-                                <h3 class="text-lg font-hedvig text-navy">Privacy Policy</h3>
-                                <button type="button" id="closePrivacyModal" class="text-gray-500 hover:text-navy">
-                                    <i class="fas fa-times text-xl"></i>
-                                </button>
-                            </div>
-                            <div class="text-sm text-gray-700 space-y-4">
-                                <p>At GrievEase, we understand that privacy is of utmost importance, especially during times of grief and loss. This Privacy Policy outlines how we collect, use, protect, and share information gathered through our website and services. We are committed to ensuring the privacy and security of all personal information entrusted to us.</p>
-                                <p>Last Updated: March 22, 2025</p>
+                    <div id="privacyPolicyModal" class="fixed inset-0 z-[60] bg-black bg-opacity-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg shadow-2xl p-6 max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-center mb-4 border-b pb-2">
+            <h3 class="text-2xl font-cinzel text-navy font-bold">Privacy Policy</h3>
+            <button type="button" id="closePrivacyModal" class="text-gray-500 hover:text-red-500 transition-colors">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        <div class="text-sm text-gray-700 space-y-4">
+            <p><strong>Effective Date: January 1, 2024</strong></p>
+            <p>Your privacy is important to us. This policy explains how GrievEase (Vjay Relova Funeral Services) collects, uses, and protects your personal information.</p>
 
-                                <h4 class="font-medium text-navy">Information We Collect</h4>
-                                <p>We collect only what is necessary to provide our services with dignity and respect.</p>
-                                <h5 class="font-medium">Personal Information</h5>
-                                <p>We may collect the following personal information when you use our website, contact us, or arrange for our services:</p>
-                                <ul class="list-disc ml-5 space-y-1">
-                                    <li>Full name and contact information (email, phone number, address)</li>
-                                    <li>Information about the deceased required for documentation</li>
-                                    <li>Payment information for service arrangements</li>
-                                </ul>
+            <h4 class="font-medium text-navy text-base mt-4">Information We Collect</h4>
+            <p>We collect information you provide directly to us when you book a service, sign up for a life plan, or contact us, including:</p>
+            <ul class="list-disc list-inside ml-4 space-y-1">
+                <li>Personal identification information (name, address, email, phone number, birthdate)</li>
+                <li>Financial and payment information (for booking and life plan payments)</li>
+                <li>Valid ID and other documents (for verification purposes)</li>
+                <li>Information about the deceased and beneficiaries (for service planning)</li>
+            </ul>
 
-                                <h4 class="font-medium text-navy">How We Use Your Information</h4>
-                                <p>We use the information we collect for the following purposes:</p>
-                                <ul class="list-disc ml-5 space-y-1">
-                                    <li><strong>Providing Services:</strong> To arrange and conduct funeral services according to your wishes and requirements.</li>
-                                    <li><strong>Communication:</strong> To respond to your inquiries, provide information, and offer support throughout the process.</li>
-                                    <li><strong>Legal Requirements:</strong> To complete necessary documentation and comply with legal obligations related to funeral services.</li>
-                                </ul>
+            <h4 class="font-medium text-navy text-base mt-4">How We Use Your Information</h4>
+            <p>We use the collected information for the following purposes:</p>
+            <ul class="list-disc list-inside ml-4 space-y-1">
+                <li>To process and fulfill your service bookings and life plan agreements.</li>
+                <li>To verify your identity and validate documents (e.g., valid IDs).</li>
+                <li>To communicate with you regarding your service status and general inquiries.</li>
+                <li>To improve our services and website functionality.</li>
+                <li>To send you updates and relevant communications.</li>
+            </ul>
 
-                                <h4 class="font-medium text-navy">Information Sharing</h4>
-                                <p>We treat your information with the same respect and dignity as we treat your loved ones.</p>
-                                <p>GrievEase is committed to maintaining your privacy. We do not sell, rent, or trade your personal information to third parties for marketing purposes. We may share information in the following limited circumstances:</p>
-                                <ul class="list-disc ml-5 space-y-1">
-                                    <li><strong>Service Partners:</strong> With trusted partners who assist us in providing funeral services when necessary to fulfill your service requests.</li>
-                                    <li><strong>Legal Requirements:</strong> When required by law, such as to comply with a subpoena, court order, or similar legal procedure.</li>
-                                    <li><strong>Protection:</strong> When we believe in good faith that disclosure is necessary to protect our rights, protect your safety or the safety of others, or investigate fraud.</li>
-                                </ul>
+            <h4 class="font-medium text-navy text-base mt-4">Contact Us</h4>
+            <p>If you have any questions about this Privacy Policy or our data practices, please contact us at:</p>
+            <p>Email: <a href="mailto:privacy@grievease.com" class="text-blue-600 hover:underline">privacy@grievease.com</a><br> 
+            Phone: +63 912 345 6789<br> 
+            Address: 123 Funeral Services Ave, Metro Manila, Philippines</p>
+        </div>
+    </div>
+</div>
 
-                                <h4 class="font-medium text-navy">Security Measures</h4>
-                                <p>We implement comprehensive security measures to protect your personal information:</p>
-                                <ul class="list-disc ml-5 space-y-1">
-                                    <li>Encryption of sensitive data during transmission and storage</li>
-                                    <li>Regular security assessments and updates</li>
-                                    <li>Limited access to personal information on a need-to-know basis</li>
-                                    <li>Secure disposal of information when no longer needed</li>
-                                </ul>
+<div id="termsOfServiceModal" class="fixed inset-0 z-[60] bg-black bg-opacity-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg shadow-2xl p-6 max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-center mb-4 border-b pb-2">
+            <h3 class="text-2xl font-cinzel text-navy font-bold">Terms of Service</h3>
+            <button type="button" id="closeTermsModal" class="text-gray-500 hover:text-red-500 transition-colors">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        <div class="text-sm text-gray-700 space-y-4">
+            <p><strong>Last Updated: January 1, 2024</strong></p>
+            <p>Welcome to GrievEase (Vjay Relova Funeral Services). By using our website and services, you agree to comply with and be bound by the following terms and conditions of use. Please review these terms carefully.</p>
 
-                                <h4 class="font-medium text-navy">Your Rights</h4>
-                                <p>You have the right to:</p>
-                                <ul class="list-disc ml-5 space-y-1">
-                                    <li>Access and review your personal information</li>
-                                    <li>Request corrections to inaccurate information</li>
-                                    <li>Request deletion of your information (subject to legal requirements)</li>
-                                    <li>Opt-out of certain communications</li>
-                                </ul>
+            <h4 class="font-medium text-navy text-base mt-4">Acceptance of Agreement</h4>
+            <p>You agree to the terms and conditions outlined in this Terms of Service Agreement ("Agreement") with respect to our site. This Agreement constitutes the entire and only agreement between us and you, and supersedes all prior or contemporaneous agreements, representations, warranties and understandings with respect to the Site, the content, products or services provided by or through the Site.</p>
 
-                                <h4 class="font-medium text-navy">Contact Us</h4>
-                                <p>If you have any questions about this Privacy Policy or our data practices, please contact us at:</p>
-                                <p>Email: privacy@grievease.com<br>
-                                Phone: +63 912 345 6789<br>
-                                Address: 123 Funeral Services Ave, Metro Manila, Philippines</p>
-                            </div>
-                        </div>
-                    </div>
+            <h4 class="font-medium text-navy text-base mt-4">Life Plan and Service Bookings</h4>
+            <ul class="list-disc list-inside ml-4 space-y-1">
+                <li>All life plan payments are subject to a minimum payment term and scheduled payment dates as agreed upon in the contract.</li>
+                <li>Cremation and other special requests may incur additional fees as stated in the plan details.</li>
+                <li>Booking confirmations are subject to document verification (Valid ID, etc.) and availability.</li>
+                <li>Cancellations and refunds are handled on a case-by-case basis according to our official policy documents.</li>
+            </ul>
 
-                    <!-- Terms of Service Modal -->
-                    <div id="termsOfServiceModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
-                        <div class="bg-white rounded-lg p-6 max-w-lg w-full mx-4 max-h-[80vh] overflow-y-auto">
-                            <div class="flex justify-between items-center mb-4">
-                                <h3 class="text-lg font-hedvig text-navy">Terms of Service</h3>
-                                <button type="button" id="closeTermsModal" class="text-gray-500 hover:text-navy">
-                                    <i class="fas fa-times text-xl"></i>
-                                </button>
-                            </div>
-                            <div class="text-sm text-gray-700 space-y-4">
-                                <p>Welcome to GrievEase. These Terms of Service govern your use of our website and services. By using our services, you agree to these terms.</p>
-                                <p>Last Updated: March 22, 2025</p>
-
-                                <h4 class="font-medium text-navy">Service Description</h4>
-                                <p>GrievEase provides funeral and memorial services, including traditional funeral arrangements, cremation services, and life plan packages.</p>
-
-                                <h4 class="font-medium text-navy">Booking and Payment</h4>
-                                <ul class="list-disc ml-5 space-y-1">
-                                    <li>All bookings are subject to availability and confirmation</li>
-                                    <li>Payment terms vary by service type and will be clearly communicated</li>
-                                    <li>Life plan packages require monthly payments over 5 years</li>
-                                    <li>Traditional services require 30% downpayment with balance due before service</li>
-                                </ul>
-
-                                <h4 class="font-medium text-navy">Cancellation Policy</h4>
-                                <p>Cancellations must be made in writing and are subject to the following terms:</p>
-                                <ul class="list-disc ml-5 space-y-1">
-                                    <li>Life plan packages: 30-day notice required for cancellation</li>
-                                    <li>Traditional services: 48-hour notice required for full refund</li>
-                                    <li>Administrative fees may apply</li>
-                                </ul>
-
-                                <h4 class="font-medium text-navy">Limitation of Liability</h4>
-                                <p>GrievEase strives to provide the highest quality services, but we cannot guarantee that our services will be uninterrupted or error-free. Our liability is limited to the amount paid for the specific service.</p>
-
-                                <h4 class="font-medium text-navy">Governing Law</h4>
-                                <p>These terms are governed by the laws of the Philippines. Any disputes will be resolved in the courts of Metro Manila.</p>
-
-                                <h4 class="font-medium text-navy">Contact Information</h4>
-                                <p>For questions about these terms, please contact us at:</p>
-                                <p>Email: legal@grievease.com<br>
-                                Phone: +63 912 345 6789</p>
-                            </div>
-                        </div>
-                    </div>
+            <h4 class="font-medium text-navy text-base mt-4">User Conduct</h4>
+            <p>You agree not to use the Service for any unlawful or prohibited activities. Any fraudulent activity or misuse of our platform will result in account suspension and possible legal action.</p>
+        </div>
+    </div>
+</div>
 
                     <button type="submit" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300">
                         Confirm Lifeplan Booking
@@ -4732,6 +4690,54 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// --- Start of Privacy Policy and Terms of Service Modal Logic ---
+
+// Privacy Policy Modal Functionality
+const privacyPolicyLink = document.getElementById('viewPrivacyPolicy');
+const privacyPolicyModal = document.getElementById('privacyPolicyModal');
+const closePrivacyModal = document.getElementById('closePrivacyModal');
+
+if (privacyPolicyLink && privacyPolicyModal) {
+    privacyPolicyLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        privacyPolicyModal.classList.remove('hidden');
+    });
+}
+if (closePrivacyModal && privacyPolicyModal) {
+    closePrivacyModal.addEventListener('click', function() {
+        privacyPolicyModal.classList.add('hidden');
+    });
+}
+
+// Terms of Service Modal Functionality
+const termsOfServiceLink = document.getElementById('viewTermsOfService');
+const termsOfServiceModal = document.getElementById('termsOfServiceModal');
+const closeTermsModal = document.getElementById('closeTermsModal');
+
+if (termsOfServiceLink && termsOfServiceModal) {
+    termsOfServiceLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        termsOfServiceModal.classList.remove('hidden');
+    });
+}
+if (closeTermsModal && termsOfServiceModal) {
+    closeTermsModal.addEventListener('click', function() {
+        termsOfServiceModal.classList.add('hidden');
+    });
+}
+
+// Close modals when clicking outside
+window.addEventListener('click', function(e) {
+    if (e.target === privacyPolicyModal) {
+        privacyPolicyModal.classList.add('hidden');
+    }
+    if (e.target === termsOfServiceModal) {
+        termsOfServiceModal.classList.add('hidden');
+    }
+});
+
+// --- End of Privacy Policy and Terms of Service Modal Logic ---
 </script>
 </body>
 </html>
