@@ -51,7 +51,8 @@
                     <ul class="space-y-2">
                         <li class="flex items-start">
                             <i class="fas fa-map-marker-alt mt-1 mr-2 text-yellow-600"></i>
-                            <span>#6 J.P Rizal St. Brgy. Sta Clara Sur, (Pob) Pila, Laguna</span>
+                                                        <span><a href="https://www.google.com/maps/search/?api=1&query=6+J.P+Rizal+St.+Brgy.+Sta+Clara+Sur%2C+Pila%2C+Laguna" target="_blank" rel="noopener noreferrer" class="hover:text-white transition">#6 J.P Rizal St. Brgy. Sta Clara Sur, (Pob) Pila, Laguna</a></span>
+
                         </li>
                         <li class="flex items-center">
                             <i class="fas fa-phone-alt mr-2 text-yellow-600"></i>
