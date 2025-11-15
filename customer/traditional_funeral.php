@@ -2760,6 +2760,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const downpaymentElement = document.getElementById('traditionalDownpayment');
         const amountDueElement = document.getElementById('traditionalAmountDue');
         
+        // Hide the package image for custom packages
+        const packageImageElement = document.getElementById('traditionalPackageImage');
+        packageImageElement.style.display = 'none';
+        
         // Set the package details
         packageNameElement.textContent = packageName;
         packagePriceElement.textContent = `₱${packagePrice.toLocaleString()}`;
@@ -2926,6 +2930,10 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Update modal title
         document.querySelector('#traditionalModal .font-hedvig.text-2xl.text-navy').textContent = 'Book Your Package';
+        
+        // Ensure package image is visible for standard packages
+        const packageImageElement = document.getElementById('traditionalPackageImage');
+        packageImageElement.style.display = 'block';
         
         // Update traditional modal with package details
         document.getElementById('traditionalPackageName').textContent = packageName;
