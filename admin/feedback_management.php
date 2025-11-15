@@ -57,6 +57,16 @@ $visible_count_result = $conn->query($visible_count_query);
 $visible_count_row = $visible_count_result->fetch_assoc();
 $current_visible_count = $visible_count_row['visible_count'];
 
+// Get current visible counts for both service groups for initial page load
+$traditional_visible_query = "SELECT COUNT(*) as visible_count FROM feedback_tb WHERE status = 'Show' AND service_type IN ('traditional-funeral', 'custom-package')";
+$life_plan_visible_query = "SELECT COUNT(*) as visible_count FROM feedback_tb WHERE status = 'Show' AND service_type = 'life-plan'";
+
+$traditional_visible_result = $conn->query($traditional_visible_query);
+$life_plan_visible_result = $conn->query($life_plan_visible_query);
+
+$traditional_visible_count = $traditional_visible_result->fetch_assoc()['visible_count'];
+$life_plan_visible_count = $life_plan_visible_result->fetch_assoc()['visible_count'];
+
 // Initial pagination setup for first load
 $per_page = 5;
 $current_page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
