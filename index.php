@@ -383,13 +383,14 @@
             // Include database connection
             include 'db_connect.php';
             
-            // Fetch feedback with status 'Show' and customer names
+            // Fetch feedback with status 'Show' and service type 'traditional-funeral' or 'custom-package' only
             $sql = "SELECT f.*, 
                            CONCAT(u.first_name, ' ', COALESCE(u.middle_name, ''), ' ', u.last_name, 
                                   CASE WHEN u.suffix IS NOT NULL AND u.suffix != '' THEN CONCAT(' ', u.suffix) ELSE '' END) as customer_name
                     FROM feedback_tb f 
                     INNER JOIN users u ON f.customer_id = u.id 
                     WHERE f.status = 'Show' 
+                    AND f.service_type IN ('traditional-funeral', 'custom-package')
                     ORDER BY f.created_at DESC 
                     LIMIT 2";
             
