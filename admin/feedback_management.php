@@ -68,6 +68,7 @@ $feedbacks_query = "SELECT
     f.id,
     f.customer_id,
     f.service_id,
+    f.service_type,
     f.rating,
     f.feedback_text,
     f.status,
@@ -77,6 +78,14 @@ $feedbacks_query = "SELECT
     INNER JOIN users u ON f.customer_id = u.id
     ORDER BY f.created_at DESC
     LIMIT ? OFFSET ?";
+$stmt = $conn->prepare($feedbacks_query);
+$stmt->bind_param("ii", $per_page, $offset);
+$stmt->execute();
+$feedbacks_result = $stmt->get_result();
+$feedbacks = [];
+while ($row = $feedbacks_result->fetch_assoc()) {
+    $feedbacks[] = $row;
+}
 $stmt = $conn->prepare($feedbacks_query);
 $stmt->bind_param("ii", $per_page, $offset);
 $stmt->execute();
@@ -129,17 +138,22 @@ if (isset($_POST['ajax_pagination']) && $_POST['ajax_pagination'] == true) {
     $total_with_filters = $count_result->fetch_assoc()['total'];
     $total_pages = ceil($total_with_filters / $per_page);
     
-    // Get current visible count for the toggle states
-    $visible_count_query = "SELECT COUNT(*) as visible_count FROM feedback_tb WHERE status = 'Show'";
-    $visible_count_result = $conn->query($visible_count_query);
-    $visible_count_row = $visible_count_result->fetch_assoc();
-    $current_visible_count = $visible_count_row['visible_count'];
+    // Get current visible counts for both service groups
+    $traditional_visible_query = "SELECT COUNT(*) as visible_count FROM feedback_tb WHERE status = 'Show' AND service_type IN ('traditional-funeral', 'custom-package')";
+    $life_plan_visible_query = "SELECT COUNT(*) as visible_count FROM feedback_tb WHERE status = 'Show' AND service_type = 'life-plan'";
+
+    $traditional_visible_result = $conn->query($traditional_visible_query);
+    $life_plan_visible_result = $conn->query($life_plan_visible_query);
+
+    $traditional_visible_count = $traditional_visible_result->fetch_assoc()['visible_count'];
+    $life_plan_visible_count = $life_plan_visible_result->fetch_assoc()['visible_count'];
     
     // Get paginated results
     $feedbacks_query = "SELECT 
         f.id,
         f.customer_id,
         f.service_id,
+        f.service_type,
         f.rating,
         f.feedback_text,
         f.status,
@@ -171,10 +185,18 @@ if (isset($_POST['ajax_pagination']) && $_POST['ajax_pagination'] == true) {
             <?php
             $isVisible = $feedback['status'] === 'Show' ? 'checked' : '';
             $created_date = date('F j Y', strtotime($feedback['created_at']));
+            $service_type = $feedback['service_type'];
+            // Format service type for display
+            $service_type_display = ucwords(str_replace('-', ' ', $service_type));
             $isDisabled = ($current_visible_count >= 2 && $feedback['status'] !== 'Show') ? 'disabled' : '';
             ?>
             <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors" data-rating="<?php echo $feedback['rating']; ?>">
                 <td class="px-4 py-3.5 text-sm font-medium text-gray-800 whitespace-nowrap"><?php echo htmlspecialchars($feedback['customer_name']); ?></td>
+                <td class="px-4 py-3.5 text-sm text-gray-700 whitespace-nowrap">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                        <?php echo htmlspecialchars($service_type_display); ?>
+                    </span>
+                </td>
                 <td class="px-4 py-3.5 text-sm text-yellow-600 whitespace-nowrap">
                     <?php echo getStarRatingHtml($feedback['rating']); ?> (<?php echo number_format($feedback['rating'], 1); ?>)
                 </td>
@@ -195,6 +217,7 @@ if (isset($_POST['ajax_pagination']) && $_POST['ajax_pagination'] == true) {
                     <button class="p-1.5 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip view-feedback-btn" 
                             title="View Full Content"
                             data-customer="<?php echo htmlspecialchars($feedback['customer_name']); ?>"
+                            data-service="<?php echo htmlspecialchars($service_type_display); ?>"
                             data-rating="<?php echo $feedback['rating']; ?>"
                             data-content="<?php echo htmlspecialchars($feedback['feedback_text']); ?>"
                             data-date="<?php echo $created_date; ?>"
@@ -207,7 +230,7 @@ if (isset($_POST['ajax_pagination']) && $_POST['ajax_pagination'] == true) {
         <?php endforeach; ?>
     <?php else: ?>
         <tr>
-            <td colspan="6" class="px-4 py-8 text-center text-gray-500">
+            <td colspan="7" class="px-4 py-8 text-center text-gray-500">
                 No feedback submissions found.
             </td>
         </tr>
@@ -223,7 +246,8 @@ if (isset($_POST['ajax_pagination']) && $_POST['ajax_pagination'] == true) {
         'current_page' => $page,
         'total_pages' => $total_pages,
         'total_items' => $total_with_filters,
-        'current_visible_count' => $current_visible_count
+        'traditional_visible_count' => $traditional_visible_count,
+        'life_plan_visible_count' => $life_plan_visible_count
     ]);
     exit();
 }
@@ -370,70 +394,60 @@ function getStarRatingHtml($rating) {
     <div class="flex justify-between items-center mb-6 bg-white p-5 rounded-lg shadow-sidebar border border-gray-200">
         <div>
             <h1 class="text-2xl font-bold text-gray-800">Customer Feedback Management</h1>
-            <p class="text-sm text-gray-500 mt-1">Review and manage which customer ratings are shown on the landing page. <span class="font-semibold text-sidebar-accent">Maximum 2 feedbacks can be visible at a time.</span></p>
+            <p class="text-sm text-gray-500 mt-1">Review and manage which customer ratings are shown on the landing page.</p>
         </div>
     </div>
     
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        
-        <div class="bg-white rounded-xl shadow-card hover:shadow-md transition-all duration-300 overflow-hidden col-span-1 lg:col-span-2">
-            <div class="bg-gradient-to-r from-yellow-100 to-yellow-200 px-6 py-4">
-                <div class="flex items-center justify-between mb-1">
-                    <h3 class="text-sm font-medium text-gray-700">Overall Average Rating</h3>
-                    <div class="w-10 h-10 rounded-full bg-white/90 text-yellow-600 flex items-center justify-center">
-                        <i class="fas fa-star"></i>
-                    </div>
-                </div>
-                <div class="flex items-end mt-2">
-                    <span class="text-4xl font-extrabold text-gray-800"><?php echo number_format($overall_rating, 1); ?></span>
-                    <span class="ml-2 text-xl font-semibold text-gray-600">/ 5.0</span>
+
+    <!-- Card 1 -->
+    <div class="bg-white rounded-xl shadow-card hover:shadow-md transition-all duration-300 overflow-hidden 
+                col-span-1 lg:col-span-2 h-full flex flex-col">
+        <div class="bg-gradient-to-r from-yellow-100 to-yellow-200 px-6 py-4 flex-grow">
+            <div class="flex items-center justify-between mb-1">
+                <h3 class="text-sm font-medium text-gray-700">Overall Average Rating</h3>
+                <div class="w-10 h-10 rounded-full bg-white/90 text-yellow-600 flex items-center justify-center">
+                    <i class="fas fa-star"></i>
                 </div>
             </div>
-            <div class="px-6 py-3 bg-white border-t border-gray-100">
-                <div class="flex items-center text-gray-500 justify-between">
-                    <div class="text-xl text-yellow-600">
-                        <?php echo getStarRatingHtml($overall_rating); ?>
-                    </div>
-                    <span class="text-xs">Based on <strong><?php echo number_format($total_submissions); ?></strong> total submissions.</span>
-                </div>
+            <div class="flex items-end mt-2">
+                <span class="text-4xl font-extrabold text-gray-800"><?php echo number_format($overall_rating, 1); ?></span>
+                <span class="ml-2 text-xl font-semibold text-gray-600">/ 5.0</span>
             </div>
         </div>
-
-        <div class="bg-white rounded-xl shadow-card hover:shadow-md transition-all duration-300 overflow-hidden">
-            <div class="bg-gradient-to-r from-blue-100 to-blue-200 px-6 py-4">
-                <div class="flex items-center justify-between mb-1">
-                    <h3 class="text-sm font-medium text-gray-700">Total Feedbacks</h3>
-                    <div class="w-10 h-10 rounded-full bg-white/90 text-blue-600 flex items-center justify-center">
-                        <i class="fas fa-comment-dots"></i>
-                    </div>
+        <div class="px-6 py-3 bg-white border-t border-gray-100">
+            <div class="flex items-center text-gray-500 justify-between">
+                <div class="text-xl text-yellow-600">
+                    <?php echo getStarRatingHtml($overall_rating); ?>
                 </div>
-                <div class="flex items-end">
-                    <span class="text-3xl font-bold text-gray-800"><?php echo number_format($total_submissions); ?></span>
-                </div>
-            </div>
-            <div class="px-6 py-3 bg-white border-t border-gray-100">
-                <span class="text-xs text-gray-500">All-time submissions</span>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-xl shadow-card hover:shadow-md transition-all duration-300 overflow-hidden">
-            <div class="bg-gradient-to-r from-green-100 to-green-200 px-6 py-4">
-                <div class="flex items-center justify-between mb-1">
-                    <h3 class="text-sm font-medium text-gray-700">Visible on Landing Page</h3>
-                    <div class="w-10 h-10 rounded-full bg-white/90 text-green-600 flex items-center justify-center">
-                        <i class="fas fa-eye"></i>
-                    </div>
-                </div>
-                <div class="flex items-end">
-                    <span class="text-3xl font-bold text-gray-800"><?php echo number_format($visible_feedbacks); ?></span>
-                    <span class="ml-2 text-sm font-medium text-gray-600">/ 2</span>
-                </div>
-            </div>
-            <div class="px-6 py-3 bg-white border-t border-gray-100">
-                <span class="text-xs text-gray-500">Currently featured testimonials</span>
+                <span class="text-xs">
+                    Based on <strong><?php echo number_format($total_submissions); ?></strong> total submissions.
+                </span>
             </div>
         </div>
     </div>
+
+    <!-- Card 2 -->
+    <div class="bg-white rounded-xl shadow-card hover:shadow-md transition-all duration-300 overflow-hidden 
+                col-span-1 lg:col-span-2 h-full flex flex-col">
+        <div class="bg-gradient-to-r from-blue-100 to-blue-200 px-6 py-4 flex-grow">
+            <div class="flex items-center justify-between mb-1">
+                <h3 class="text-sm font-medium text-gray-700">Total Feedbacks</h3>
+                <div class="w-10 h-10 rounded-full bg-white/90 text-blue-600 flex items-center justify-center">
+                    <i class="fas fa-comment-dots"></i>
+                </div>
+            </div>
+            <div class="flex items-end">
+                <span class="text-3xl font-bold text-gray-800"><?php echo number_format($total_submissions); ?></span>
+            </div>
+        </div>
+        <div class="px-6 py-3 bg-white border-t border-gray-100">
+            <span class="text-xs text-gray-500">All-time submissions</span>
+        </div>
+    </div>
+
+</div>
+
     
     <div class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden">
         <div class="bg-sidebar-hover p-4 border-b border-sidebar-border">
@@ -444,7 +458,10 @@ function getStarRatingHtml($rating) {
                         <?php echo number_format($total_submissions); ?> Total
                     </span>
                     <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-                        <i class="fas fa-eye"></i> <?php echo $current_visible_count; ?>/2 Visible
+                        <i class="fas fa-dove"></i> <?php echo $traditional_visible_count; ?>/2 Traditional+Custom
+                    </span>
+                    <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+                        <i class="fas fa-seedling"></i> <?php echo $life_plan_visible_count; ?>/2 Life Plan
                     </span>
                 </div>
                 
@@ -457,7 +474,7 @@ function getStarRatingHtml($rating) {
                         <option value="2">2 Stars</option>
                         <option value="1">1 Star</option>
                     </select>
-
+        
                     <div class="relative w-full sm:w-auto">
                         <input type="text" id="feedbackSearchInput" 
                                 placeholder="Search feedback or customer..." 
@@ -476,6 +493,11 @@ function getStarRatingHtml($rating) {
                             <th class="px-4 py-3.5 text-left text-sm font-medium text-gray-700 whitespace-nowrap">
                                 <div class="flex items-center gap-1.5">
                                     <i class="fas fa-user text-sidebar-accent"></i> Customer
+                                </div>
+                            </th>
+                            <th class="px-4 py-3.5 text-left text-sm font-medium text-gray-700 whitespace-nowrap">
+                                <div class="flex items-center gap-1.5">
+                                    <i class="fas fa-dove text-sidebar-accent"></i> Service Type
                                 </div>
                             </th>
                             <th class="px-4 py-3.5 text-left text-sm font-medium text-gray-700 whitespace-nowrap">
@@ -511,10 +533,17 @@ function getStarRatingHtml($rating) {
                                 <?php
                                 $isVisible = $feedback['status'] === 'Show' ? 'checked' : '';
                                 $created_date = date('F j Y', strtotime($feedback['created_at']));
-                                // REMOVE the disabled attribute from here too
+                                $service_type = $feedback['service_type'];
+                                // Format service type for display
+                                $service_type_display = ucwords(str_replace('-', ' ', $service_type));
                                 ?>
                                 <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors" data-rating="<?php echo $feedback['rating']; ?>">
                                     <td class="px-4 py-3.5 text-sm font-medium text-gray-800 whitespace-nowrap"><?php echo htmlspecialchars($feedback['customer_name']); ?></td>
+                                    <td class="px-4 py-3.5 text-sm text-gray-700 whitespace-nowrap">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                            <?php echo htmlspecialchars($service_type_display); ?>
+                                        </span>
+                                    </td>
                                     <td class="px-4 py-3.5 text-sm text-yellow-600 whitespace-nowrap">
                                         <?php echo getStarRatingHtml($feedback['rating']); ?> (<?php echo number_format($feedback['rating'], 1); ?>)
                                     </td>
@@ -534,6 +563,7 @@ function getStarRatingHtml($rating) {
                                         <button class="p-1.5 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip view-feedback-btn" 
                                                 title="View Full Content"
                                                 data-customer="<?php echo htmlspecialchars($feedback['customer_name']); ?>"
+                                                data-service="<?php echo htmlspecialchars($service_type_display); ?>"
                                                 data-rating="<?php echo $feedback['rating']; ?>"
                                                 data-content="<?php echo htmlspecialchars($feedback['feedback_text']); ?>"
                                                 data-date="<?php echo $created_date; ?>"
@@ -546,7 +576,7 @@ function getStarRatingHtml($rating) {
                             <?php endforeach; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="6" class="px-4 py-8 text-center text-gray-500">
+                                <td colspan="7" class="px-4 py-8 text-center text-gray-500">
                                     No feedback submissions found.
                                 </td>
                             </tr>
@@ -618,6 +648,8 @@ function getStarRatingHtml($rating) {
     <div class="px-4 sm:px-6 py-4 sm:py-5 overflow-y-auto modal-scroll-container space-y-4">
         <p class="text-sm font-medium text-gray-700">Customer: <span class="ml-2 font-semibold text-gray-800" id="modalCustomerName"></span></p>
         
+        <p class="text-sm font-medium text-gray-700">Service Type: <span class="ml-2 font-semibold text-gray-800" id="modalServiceType"></span></p>
+        
         <p class="text-sm font-medium text-gray-700 flex items-center">Rating: 
             <span class="ml-2 text-lg text-yellow-600" id="modalRatingStars"></span> 
             <span class="ml-2 text-sm text-gray-500" id="modalRatingText"></span>
@@ -674,13 +706,14 @@ function getStarRatingHtml($rating) {
      * Opens the view feedback modal with populated data.
      * Arguments: customerName, rating (float), content (string), date (string), isVisible (0 or 1), feedbackId (int)
      */
-    function openFeedbackModal(customerName, rating, content, date, isVisible, feedbackId) {
+    function openFeedbackModal(customerName, serviceType, rating, content, date, isVisible, feedbackId) {
         const modal = document.getElementById('viewFeedbackModal');
         const toggle = document.getElementById('modalVisibilityToggle');
         const statusText = document.getElementById('modalVisibilityStatus');
-
+    
         // Populate content
         document.getElementById('modalCustomerName').textContent = customerName;
+        document.getElementById('modalServiceType').textContent = serviceType;
         document.getElementById('modalRatingStars').innerHTML = getStarRatingHtml(rating);
         document.getElementById('modalRatingText').textContent = `(${rating.toFixed(1)})`;
         document.getElementById('modalContent').textContent = content;
@@ -690,7 +723,7 @@ function getStarRatingHtml($rating) {
         toggle.checked = isVisible === 1;
         toggle.setAttribute('data-feedback-id', feedbackId);
         statusText.textContent = isVisible === 1 ? 'Visible' : 'Hidden';
-
+    
         // Display modal
         modal.classList.remove('hidden');
         modal.classList.add('flex');
@@ -698,62 +731,62 @@ function getStarRatingHtml($rating) {
     }
     
     // Add listener for the modal visibility toggle
-document.getElementById('modalVisibilityToggle')?.addEventListener('change', function() {
-    const feedbackId = this.getAttribute('data-feedback-id');
-    const newStatus = this.checked ? 1 : 0;
-    const statusText = document.getElementById('modalVisibilityStatus');
-    
-    // Check if trying to enable when max is reached
-    if (newStatus === 1 && checkMaxVisibleReached() && !this.checked) {
-        this.checked = false;
-        showMaxReachedAlert();
-        return;
-    }
-    
-    statusText.textContent = newStatus === 1 ? 'Visible' : 'Hidden';
-    
-    // AJAX call to update the database visibility status
-    const formData = new FormData();
-    formData.append('feedback_id', feedbackId);
-    formData.append('is_visible', newStatus);
-    
-    fetch('update_feedback_visibility.php', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            console.log('Visibility updated successfully');
-            
-            // Reload the current page to get updated data from server
-            const currentPageBtn = document.querySelector('.pagination-btn.bg-sidebar-accent');
-            const currentPage = currentPageBtn ? parseInt(currentPageBtn.getAttribute('data-page')) : 1;
-            loadPage(currentPage);
-            
-            // Close the modal after successful update
-            closeFeedbackModal();
-            
-        } else {
-            console.error('Failed to update visibility:', data.message);
-            
-            // If it's a max reached error, show the alert
-            if (data.max_reached) {
-                showMaxReachedAlert();
+    document.getElementById('modalVisibilityToggle')?.addEventListener('change', function() {
+        const feedbackId = this.getAttribute('data-feedback-id');
+        const newStatus = this.checked ? 1 : 0;
+        const statusText = document.getElementById('modalVisibilityStatus');
+        
+        // Check if trying to enable when max is reached
+        if (newStatus === 1 && checkMaxVisibleReached() && !this.checked) {
+            this.checked = false;
+            showMaxReachedAlert();
+            return;
+        }
+        
+        statusText.textContent = newStatus === 1 ? 'Visible' : 'Hidden';
+        
+        // AJAX call to update the database visibility status
+        const formData = new FormData();
+        formData.append('feedback_id', feedbackId);
+        formData.append('is_visible', newStatus);
+        
+        fetch('update_feedback_visibility.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log('Visibility updated successfully');
+                
+                // Reload the current page to get updated data from server
+                const currentPageBtn = document.querySelector('.pagination-btn.bg-sidebar-accent');
+                const currentPage = currentPageBtn ? parseInt(currentPageBtn.getAttribute('data-page')) : 1;
+                loadPage(currentPage);
+                
+                // Close the modal after successful update
+                closeFeedbackModal();
+                
+            } else {
+                console.error('Failed to update visibility:', data.message);
+                
+                // If it's a max reached error, show the alert
+                if (data.max_reached) {
+                    showMaxReachedAlert();
+                }
+                
+                // Revert the toggle if update failed
+                this.checked = !this.checked;
+                statusText.textContent = this.checked ? 'Visible' : 'Hidden';
             }
-            
+        })
+        .catch(error => {
+            console.error('Error updating visibility:', error);
             // Revert the toggle if update failed
             this.checked = !this.checked;
             statusText.textContent = this.checked ? 'Visible' : 'Hidden';
-        }
-    })
-    .catch(error => {
-        console.error('Error updating visibility:', error);
-        // Revert the toggle if update failed
-        this.checked = !this.checked;
-        statusText.textContent = this.checked ? 'Visible' : 'Hidden';
+        });
     });
-});
 
     // Function to close the view feedback modal
     window.closeFeedbackModal = function() {
@@ -763,56 +796,121 @@ document.getElementById('modalVisibilityToggle')?.addEventListener('change', fun
         document.body.classList.remove('overflow-hidden');
     }
 
-    // Check if maximum visible feedbacks reached
-    function checkMaxVisibleReached() {
-        const visibleToggles = document.querySelectorAll('input.toggle-checkbox:checked');
-        return visibleToggles.length >= 2;
-    }
+// Check if maximum visible feedbacks reached for specific service type
+function checkMaxVisibleReached(serviceType) {
+    // Get the current counts from the server data (stored in global variables)
+    let traditionalCount = window.currentTraditionalCount || 0;
+    let lifePlanCount = window.currentLifePlanCount || 0;
     
-    // Update toggle states based on current visible count - only visual, not functional
-    function updateToggleStates() {
-        const maxReached = checkMaxVisibleReached();
-        const uncheckedToggles = document.querySelectorAll('input.toggle-checkbox:not(:checked)');
-        
-        uncheckedToggles.forEach(toggle => {
-            if (maxReached) {
-                // Only add visual indication, don't disable the toggle
-                if (toggle.nextElementSibling) {
-                    toggle.nextElementSibling.classList.add('opacity-50', 'cursor-not-allowed');
-                }
-            } else {
-                // Remove visual indication
-                if (toggle.nextElementSibling) {
-                    toggle.nextElementSibling.classList.remove('opacity-50', 'cursor-not-allowed');
+    console.log(`Checking max for ${serviceType} - Traditional: ${traditionalCount}, Life Plan: ${lifePlanCount}`);
+    
+    if (serviceType === 'life-plan') {
+        return lifePlanCount >= 2;
+    } else {
+        return traditionalCount >= 2;
+    }
+}
+
+// Get service type from service text
+function getServiceTypeFromText(serviceText) {
+    if (serviceText === 'Life Plan') {
+        return 'life-plan';
+    } else if (serviceText === 'Traditional Funeral' || serviceText === 'Custom Package') {
+        return 'traditional';
+    }
+    return '';
+}
+
+// Update toggle states based on current visible count
+function updateToggleStates() {
+    // Get the current counts from the server data
+    let traditionalCount = window.currentTraditionalCount || 0;
+    let lifePlanCount = window.currentLifePlanCount || 0;
+    
+    console.log(`Updating toggles - Traditional: ${traditionalCount}, Life Plan: ${lifePlanCount}`);
+    
+    // Update traditional/custom toggles
+    document.querySelectorAll('tr[data-rating]').forEach(row => {
+        const serviceTypeCell = row.querySelector('td:nth-child(2) span');
+        if (serviceTypeCell) {
+            const serviceText = serviceTypeCell.textContent.trim();
+            if (serviceText === 'Traditional Funeral' || serviceText === 'Custom Package') {
+                const toggle = row.querySelector('.toggle-checkbox');
+                if (toggle && !toggle.checked) {
+                    if (traditionalCount >= 2) {
+                        toggle.disabled = true;
+                        if (toggle.nextElementSibling) {
+                            toggle.nextElementSibling.classList.add('opacity-50', 'cursor-not-allowed');
+                        }
+                    } else {
+                        toggle.disabled = false;
+                        if (toggle.nextElementSibling) {
+                            toggle.nextElementSibling.classList.remove('opacity-50', 'cursor-not-allowed');
+                        }
+                    }
                 }
             }
-        });
-        
-        // Update the visible count in the header
-        updateVisibleCountDisplay();
+        }
+    });
+    
+    // Update life-plan toggles
+    document.querySelectorAll('tr[data-rating]').forEach(row => {
+        const serviceTypeCell = row.querySelector('td:nth-child(2) span');
+        if (serviceTypeCell) {
+            const serviceText = serviceTypeCell.textContent.trim();
+            if (serviceText === 'Life Plan') {
+                const toggle = row.querySelector('.toggle-checkbox');
+                if (toggle && !toggle.checked) {
+                    if (lifePlanCount >= 2) {
+                        toggle.disabled = true;
+                        if (toggle.nextElementSibling) {
+                            toggle.nextElementSibling.classList.add('opacity-50', 'cursor-not-allowed');
+                        }
+                    } else {
+                        toggle.disabled = false;
+                        if (toggle.nextElementSibling) {
+                            toggle.nextElementSibling.classList.remove('opacity-50', 'cursor-not-allowed');
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+
+function updateVisibleCountDisplay() {
+    let traditionalCount = window.currentTraditionalCount || 0;
+    let lifePlanCount = window.currentLifePlanCount || 0;
+    
+    // Update traditional count display
+    const traditionalCountElement = document.querySelector('.bg-green-100');
+    if (traditionalCountElement) {
+        traditionalCountElement.innerHTML = `<i class="fas fa-dove"></i> ${traditionalCount}/2 Traditional+Custom`;
     }
     
-    function updateVisibleCountDisplay() {
-        const visibleCount = document.querySelectorAll('input.toggle-checkbox:checked').length;
-        const visibleCountElement = document.querySelector('.bg-green-100');
-        if (visibleCountElement) {
-            visibleCountElement.innerHTML = `<i class="fas fa-eye"></i> ${visibleCount}/2 Visible`;
-        }
+    // Update life plan count display
+    const lifePlanCountElement = document.querySelector('.bg-purple-100');
+    if (lifePlanCountElement) {
+        lifePlanCountElement.innerHTML = `<i class="fas fa-seedling"></i> ${lifePlanCount}/2 Life Plan`;
     }
+}
 
-    // Show maximum reached alert
-    function showMaxReachedAlert() {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Maximum Reached',
-            html: 'You can only show <strong>2 feedbacks</strong> at a time.<br><br>Please hide another feedback first to show this one.',
-            confirmButtonColor: '#CA8A04',
-            confirmButtonText: 'OK',
-            backdrop: true,
-            allowOutsideClick: true,
-            allowEscapeKey: true
-        });
-    }
+// Show maximum reached alert for specific service group
+function showMaxReachedAlert(serviceGroup) {
+    let serviceName = serviceGroup === 'life-plan' ? 'Life Plan' : 'Traditional/Custom';
+    
+    Swal.fire({
+        icon: 'warning',
+        title: 'Maximum Reached',
+        html: `You can only show <strong>2 feedbacks</strong> for ${serviceName} services.<br><br>Please hide another ${serviceName} feedback first to show this one.`,
+        confirmButtonColor: '#CA8A04',
+        confirmButtonText: 'OK',
+        backdrop: true,
+        allowOutsideClick: true,
+        allowEscapeKey: true
+    });
+}
 
     // --- Dynamic Content Setup and Event Listeners ---
     document.addEventListener('DOMContentLoaded', function() {
@@ -914,18 +1012,28 @@ function loadPage(page) {
             // Update pagination buttons
             updatePaginationButtons(data.current_page, data.total_pages);
             
-            // Update visible count from server data
-            if (data.current_visible_count !== undefined) {
-                const visibleCountElement = document.querySelector('.bg-green-100');
-                if (visibleCountElement) {
-                    visibleCountElement.innerHTML = `<i class="fas fa-eye"></i> ${data.current_visible_count}/2 Visible`;
+            // Store the current visible counts from server in global variables
+            if (data.traditional_visible_count !== undefined && data.life_plan_visible_count !== undefined) {
+                window.currentTraditionalCount = data.traditional_visible_count;
+                window.currentLifePlanCount = data.life_plan_visible_count;
+                
+                const traditionalCountElement = document.querySelector('.bg-green-100');
+                const lifePlanCountElement = document.querySelector('.bg-purple-100');
+                
+                if (traditionalCountElement) {
+                    traditionalCountElement.innerHTML = `<i class="fas fa-dove"></i> ${data.traditional_visible_count}/2 Traditional+Custom`;
                 }
+                if (lifePlanCountElement) {
+                    lifePlanCountElement.innerHTML = `<i class="fas fa-seedling"></i> ${data.life_plan_visible_count}/2 Life Plan`;
+                }
+                
+                console.log(`Server counts stored - Traditional: ${data.traditional_visible_count}, Life Plan: ${data.life_plan_visible_count}`);
             }
             
             // Re-attach event listeners to new elements
             attachEventListeners();
             
-            // Update toggle states based on current page data
+            // Update toggle states based on server counts
             updateToggleStates();
             
             console.log('Page loaded successfully');
@@ -933,7 +1041,7 @@ function loadPage(page) {
             console.error('Failed to load page:', data.message);
             tableBody.innerHTML = `
                 <tr>
-                    <td colspan="6" class="px-4 py-8 text-center text-gray-500">
+                    <td colspan="7" class="px-4 py-8 text-center text-gray-500">
                         Error loading data. Please try again.
                     </td>
                 </tr>
@@ -1027,70 +1135,101 @@ function attachEventListeners() {
     document.querySelectorAll('.view-feedback-btn').forEach(button => {
         button.addEventListener('click', function() {
             const customerName = this.getAttribute('data-customer');
+            const serviceType = this.getAttribute('data-service');
             const rating = parseFloat(this.getAttribute('data-rating'));
             const content = this.getAttribute('data-content');
             const date = this.getAttribute('data-date');
             const isVisible = parseInt(this.getAttribute('data-visible'));
             const feedbackId = parseInt(this.getAttribute('data-id'));
             
-            openFeedbackModal(customerName, rating, content, date, isVisible, feedbackId);
+            openFeedbackModal(customerName, serviceType, rating, content, date, isVisible, feedbackId);
         });
     });
     
-    // Attach toggle listeners
-    document.querySelectorAll('input.toggle-checkbox[data-id]').forEach(toggle => {
-        toggle.addEventListener('change', function() {
-            const feedbackId = this.getAttribute('data-id');
-            const newStatus = this.checked ? 1 : 0;
-            
-            // Check if trying to enable when max is reached
-            if (newStatus === 1 && checkMaxVisibleReached()) {
-                // Show SweetAlert and revert the toggle
-                this.checked = false;
-                showMaxReachedAlert();
-                return;
-            }
-            
-            // AJAX call to update the database visibility status
-            const formData = new FormData();
-            formData.append('feedback_id', feedbackId);
-            formData.append('is_visible', newStatus);
-            
-            fetch('update_feedback_visibility.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    console.log('Visibility updated successfully');
+// Attach toggle listeners
+document.querySelectorAll('input.toggle-checkbox[data-id]').forEach(toggle => {
+    toggle.addEventListener('change', function() {
+        const feedbackId = this.getAttribute('data-id');
+        const newStatus = this.checked ? 1 : 0;
+        
+        // Get the service type from the table row
+        const row = this.closest('tr');
+        const serviceTypeCell = row.querySelector('td:nth-child(2) span');
+        let serviceType = '';
+        
+        if (serviceTypeCell) {
+            const serviceText = serviceTypeCell.textContent.trim();
+            serviceType = getServiceTypeFromText(serviceText);
+        }
+        
+        console.log(`Toggle change - Service: ${serviceType}, New Status: ${newStatus}`);
+        
+        // Check if trying to enable when max is reached for this service type
+        if (newStatus === 1 && serviceType && checkMaxVisibleReached(serviceType)) {
+            console.log(`Max reached for ${serviceType}, reverting toggle`);
+            // Show SweetAlert and revert the toggle
+            this.checked = false;
+            showMaxReachedAlert(serviceType);
+            return;
+        }
+        
+        // AJAX call to update the database visibility status
+        const formData = new FormData();
+        formData.append('feedback_id', feedbackId);
+        formData.append('is_visible', newStatus);
+        
+        fetch('update_feedback_visibility.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log('Visibility updated successfully');
+                console.log('Server response:', data);
+                
+                // Store the updated counts from server
+                if (data.traditional_visible_count !== undefined && data.life_plan_visible_count !== undefined) {
+                    window.currentTraditionalCount = data.traditional_visible_count;
+                    window.currentLifePlanCount = data.life_plan_visible_count;
                     
-                    // Reload the current page to get updated data from server
-                    const currentPageBtn = document.querySelector('.pagination-btn.bg-sidebar-accent');
-                    const currentPage = currentPageBtn ? parseInt(currentPageBtn.getAttribute('data-page')) : 1;
-                    loadPage(currentPage);
+                    const traditionalCountElement = document.querySelector('.bg-green-100');
+                    const lifePlanCountElement = document.querySelector('.bg-purple-100');
                     
-                } else {
-                    console.error('Failed to update visibility:', data.message);
-                    
-                    // If it's a max reached error, show the alert
-                    if (data.max_reached) {
-                        showMaxReachedAlert();
+                    if (traditionalCountElement) {
+                        traditionalCountElement.innerHTML = `<i class="fas fa-dove"></i> ${data.traditional_visible_count}/2 Traditional+Custom`;
                     }
-                    
-                    // Revert the toggle if update failed
-                    this.checked = !this.checked;
-                    updateToggleStates();
+                    if (lifePlanCountElement) {
+                        lifePlanCountElement.innerHTML = `<i class="fas fa-seedling"></i> ${data.life_plan_visible_count}/2 Life Plan`;
+                    }
                 }
-            })
-            .catch(error => {
-                console.error('Error updating visibility:', error);
+                
+                // Reload the current page to get updated data from server
+                const currentPageBtn = document.querySelector('.pagination-btn.bg-sidebar-accent');
+                const currentPage = currentPageBtn ? parseInt(currentPageBtn.getAttribute('data-page')) : 1;
+                loadPage(currentPage);
+                
+            } else {
+                console.error('Failed to update visibility:', data.message);
+                
+                // If it's a max reached error, show the alert
+                if (data.max_reached) {
+                    showMaxReachedAlert(data.service_group);
+                }
+                
                 // Revert the toggle if update failed
                 this.checked = !this.checked;
                 updateToggleStates();
-            });
+            }
+        })
+        .catch(error => {
+            console.error('Error updating visibility:', error);
+            // Revert the toggle if update failed
+            this.checked = !this.checked;
+            updateToggleStates();
         });
     });
+});
     
     // Attach pagination listeners
     attachPaginationListeners();
