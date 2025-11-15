@@ -45,11 +45,11 @@
                     <ul class="space-y-2">
                         <li class="flex items-start">
                             <i class="fas fa-map-marker-alt mt-1 mr-2 text-yellow-600"></i>
-                            <a href="https://www.google.com/maps/search/?api=1&query=%236+J.P+Rizal+St.+Brgy.+Sta+Clara+Sur%2C+(Pob)+Pila%2C+Laguna" 
+                            <span><a href="https://www.google.com/maps/search/?api=1&query=%236+J.P+Rizal+St.+Brgy.+Sta+Clara+Sur%2C+(Pob)+Pila%2C+Laguna" 
                                target="_blank" 
                                rel="noopener noreferrer" 
                                class="text-gray-300 hover:text-white transition">
-                                <span>#6 J.P Rizal St. Brgy. Sta Clara Sur, (Pob) Pila, Laguna</span>
+                                #6 J.P Rizal St. Brgy. Sta Clara Sur, (Pob) Pila, Laguna</span>
                             </a>
                         </li>
                         <li class="flex items-center">
