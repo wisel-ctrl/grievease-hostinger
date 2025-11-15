@@ -51,12 +51,6 @@ $overall_rating = $stats['overall_rating'] ? round($stats['overall_rating'], 1) 
 $total_submissions = $stats['total_submissions'] ? $stats['total_submissions'] : 0;
 $visible_feedbacks = $stats['visible_feedbacks'] ? $stats['visible_feedbacks'] : 0;
 
-// Get count of currently visible feedbacks
-$visible_count_query = "SELECT COUNT(*) as visible_count FROM feedback_tb WHERE status = 'Show'";
-$visible_count_result = $conn->query($visible_count_query);
-$visible_count_row = $visible_count_result->fetch_assoc();
-$current_visible_count = $visible_count_row['visible_count'];
-
 // Get current visible counts for both service groups for initial page load
 $traditional_visible_query = "SELECT COUNT(*) as visible_count FROM feedback_tb WHERE status = 'Show' AND service_type IN ('traditional-funeral', 'custom-package')";
 $life_plan_visible_query = "SELECT COUNT(*) as visible_count FROM feedback_tb WHERE status = 'Show' AND service_type = 'life-plan'";
@@ -66,6 +60,12 @@ $life_plan_visible_result = $conn->query($life_plan_visible_query);
 
 $traditional_visible_count = $traditional_visible_result->fetch_assoc()['visible_count'];
 $life_plan_visible_count = $life_plan_visible_result->fetch_assoc()['visible_count'];
+
+// Get count of currently visible feedbacks (keep this for backward compatibility if needed)
+$visible_count_query = "SELECT COUNT(*) as visible_count FROM feedback_tb WHERE status = 'Show'";
+$visible_count_result = $conn->query($visible_count_query);
+$visible_count_row = $visible_count_result->fetch_assoc();
+$current_visible_count = $visible_count_row['visible_count'];
 
 // Initial pagination setup for first load
 $per_page = 5;
@@ -198,7 +198,7 @@ if (isset($_POST['ajax_pagination']) && $_POST['ajax_pagination'] == true) {
             $service_type = $feedback['service_type'];
             // Format service type for display
             $service_type_display = ucwords(str_replace('-', ' ', $service_type));
-            $isDisabled = ($current_visible_count >= 2 && $feedback['status'] !== 'Show') ? 'disabled' : '';
+            $isDisabled = '';
             ?>
             <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors" data-rating="<?php echo $feedback['rating']; ?>">
                 <td class="px-4 py-3.5 text-sm font-medium text-gray-800 whitespace-nowrap"><?php echo htmlspecialchars($feedback['customer_name']); ?></td>
@@ -219,7 +219,7 @@ if (isset($_POST['ajax_pagination']) && $_POST['ajax_pagination'] == true) {
                         <input type="checkbox" value="" class="sr-only peer toggle-checkbox" 
                                data-id="<?php echo $feedback['id']; ?>" 
                                <?php echo $isVisible; ?> 
-                               <?php echo $isDisabled; ?>>
+                               >
                         <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-sidebar-accent rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all <?php echo $isDisabled ? 'opacity-50 cursor-not-allowed' : ''; ?>"></div>
                     </label>
                 </td>
@@ -741,62 +741,63 @@ function getStarRatingHtml($rating) {
     }
     
     // Add listener for the modal visibility toggle
-    document.getElementById('modalVisibilityToggle')?.addEventListener('change', function() {
-        const feedbackId = this.getAttribute('data-feedback-id');
-        const newStatus = this.checked ? 1 : 0;
-        const statusText = document.getElementById('modalVisibilityStatus');
-        
-        // Check if trying to enable when max is reached
-        if (newStatus === 1 && checkMaxVisibleReached() && !this.checked) {
-            this.checked = false;
-            showMaxReachedAlert();
-            return;
-        }
-        
-        statusText.textContent = newStatus === 1 ? 'Visible' : 'Hidden';
-        
-        // AJAX call to update the database visibility status
-        const formData = new FormData();
-        formData.append('feedback_id', feedbackId);
-        formData.append('is_visible', newStatus);
-        
-        fetch('update_feedback_visibility.php', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                console.log('Visibility updated successfully');
-                
-                // Reload the current page to get updated data from server
-                const currentPageBtn = document.querySelector('.pagination-btn.bg-sidebar-accent');
-                const currentPage = currentPageBtn ? parseInt(currentPageBtn.getAttribute('data-page')) : 1;
-                loadPage(currentPage);
-                
-                // Close the modal after successful update
-                closeFeedbackModal();
-                
+    // Add listener for the modal visibility toggle
+document.getElementById('modalVisibilityToggle')?.addEventListener('change', function() {
+    const feedbackId = this.getAttribute('data-feedback-id');
+    const newStatus = this.checked ? 1 : 0;
+    const statusText = document.getElementById('modalVisibilityStatus');
+    
+    // Check if trying to enable when max is reached
+    // Remove the check that prevents the toggle from changing
+    // Let the server handle the validation and show SweetAlert
+    
+    statusText.textContent = newStatus === 1 ? 'Visible' : 'Hidden';
+    
+    // AJAX call to update the database visibility status
+    const formData = new FormData();
+    formData.append('feedback_id', feedbackId);
+    formData.append('is_visible', newStatus);
+    
+    fetch('update_feedback_visibility.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log('Visibility updated successfully');
+            
+            // Reload the current page to get updated data from server
+            const currentPageBtn = document.querySelector('.pagination-btn.bg-sidebar-accent');
+            const currentPage = currentPageBtn ? parseInt(currentPageBtn.getAttribute('data-page')) : 1;
+            loadPage(currentPage);
+            
+            // Close the modal after successful update
+            closeFeedbackModal();
+            
+        } else {
+            console.error('Failed to update visibility:', data.message);
+            
+            // If it's a max reached error, show the alert
+            if (data.max_reached) {
+                showMaxReachedAlert(data.service_group);
+                // Revert the toggle since it failed
+                this.checked = !this.checked;
+                statusText.textContent = this.checked ? 'Visible' : 'Hidden';
             } else {
-                console.error('Failed to update visibility:', data.message);
-                
-                // If it's a max reached error, show the alert
-                if (data.max_reached) {
-                    showMaxReachedAlert();
-                }
-                
-                // Revert the toggle if update failed
+                // Revert the toggle if update failed for other reasons
                 this.checked = !this.checked;
                 statusText.textContent = this.checked ? 'Visible' : 'Hidden';
             }
-        })
-        .catch(error => {
-            console.error('Error updating visibility:', error);
-            // Revert the toggle if update failed
-            this.checked = !this.checked;
-            statusText.textContent = this.checked ? 'Visible' : 'Hidden';
-        });
+        }
+    })
+    .catch(error => {
+        console.error('Error updating visibility:', error);
+        // Revert the toggle if update failed
+        this.checked = !this.checked;
+        statusText.textContent = this.checked ? 'Visible' : 'Hidden';
     });
+});
 
     // Function to close the view feedback modal
     window.closeFeedbackModal = function() {
@@ -839,48 +840,31 @@ function updateToggleStates() {
     
     console.log(`Updating toggles - Traditional: ${traditionalCount}, Life Plan: ${lifePlanCount}`);
     
-    // Update traditional/custom toggles
-    document.querySelectorAll('tr[data-rating]').forEach(row => {
-        const serviceTypeCell = row.querySelector('td:nth-child(2) span');
-        if (serviceTypeCell) {
-            const serviceText = serviceTypeCell.textContent.trim();
-            if (serviceText === 'Traditional Funeral' || serviceText === 'Custom Package') {
-                const toggle = row.querySelector('.toggle-checkbox');
-                if (toggle && !toggle.checked) {
-                    if (traditionalCount >= 2) {
-                        toggle.disabled = true;
-                        if (toggle.nextElementSibling) {
-                            toggle.nextElementSibling.classList.add('opacity-50', 'cursor-not-allowed');
-                        }
-                    } else {
-                        toggle.disabled = false;
-                        if (toggle.nextElementSibling) {
-                            toggle.nextElementSibling.classList.remove('opacity-50', 'cursor-not-allowed');
-                        }
-                    }
-                }
-            }
+    // Remove ALL visual disabled states first
+    document.querySelectorAll('input.toggle-checkbox').forEach(toggle => {
+        toggle.disabled = false;
+        if (toggle.nextElementSibling) {
+            toggle.nextElementSibling.classList.remove('opacity-50', 'cursor-not-allowed');
         }
     });
     
-    // Update life-plan toggles
+    // Add visual indication for unchecked toggles when max is reached (but don't disable)
     document.querySelectorAll('tr[data-rating]').forEach(row => {
         const serviceTypeCell = row.querySelector('td:nth-child(2) span');
         if (serviceTypeCell) {
             const serviceText = serviceTypeCell.textContent.trim();
-            if (serviceText === 'Life Plan') {
-                const toggle = row.querySelector('.toggle-checkbox');
-                if (toggle && !toggle.checked) {
-                    if (lifePlanCount >= 2) {
-                        toggle.disabled = true;
-                        if (toggle.nextElementSibling) {
-                            toggle.nextElementSibling.classList.add('opacity-50', 'cursor-not-allowed');
-                        }
-                    } else {
-                        toggle.disabled = false;
-                        if (toggle.nextElementSibling) {
-                            toggle.nextElementSibling.classList.remove('opacity-50', 'cursor-not-allowed');
-                        }
+            const toggle = row.querySelector('.toggle-checkbox');
+            
+            if (toggle && !toggle.checked) {
+                if ((serviceText === 'Traditional Funeral' || serviceText === 'Custom Package') && traditionalCount >= 2) {
+                    // Add visual indication but don't disable
+                    if (toggle.nextElementSibling) {
+                        toggle.nextElementSibling.classList.add('opacity-50', 'cursor-not-allowed');
+                    }
+                } else if (serviceText === 'Life Plan' && lifePlanCount >= 2) {
+                    // Add visual indication but don't disable
+                    if (toggle.nextElementSibling) {
+                        toggle.nextElementSibling.classList.add('opacity-50', 'cursor-not-allowed');
                     }
                 }
             }
