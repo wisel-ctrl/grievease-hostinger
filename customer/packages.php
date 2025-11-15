@@ -1339,7 +1339,8 @@ function capitalizeWords(str) {
 
                     <div class="mt-4 mb-4 border border-gray-200 rounded-lg p-4 bg-gray-50 terms-checkbox-container">
                         <div class="flex items-start">
-                            <input type="checkbox" id="traditionalTerms" name="traditionalTerms" required class="mt-1 w-4 h-4 text-yellow-600 bg-gray-100 border-gray-300 rounded focus:ring-yellow-500">
+                            <input type="checkbox" id="termsCheckbox" name="terms_accepted" required 
+                                class="h-5 w-5 text-yellow-600 rounded focus:ring-yellow-500 mt-1">
                             <label for="termsCheckbox" class="ml-3 text-sm">
                                 <span class="block text-navy mb-1">I have read and agree to the <a href="#" class="text-yellow-600 hover:underline" id="viewPrivacyPolicy">Privacy Policy</a> and <a href="#" class="text-yellow-600 hover:underline" id="viewTermsOfService">Terms of Service</a>. <span class="text-red-500">*</span></span>
                                 <span class="block text-gray-500 text-xs">By checking this box, you consent to our data collection practices as described in our Privacy Policy.</span>
@@ -1423,9 +1424,9 @@ function capitalizeWords(str) {
                         </div>
                     </div>
 
-                    <button type="submit" id="traditionalConfirmBookingBtn" disabled class="w-full bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300">
-    Confirm Booking
-</button>
+                    <button type="submit" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300">
+                        Confirm Booking
+                    </button>
                 </form>
             </div>
         </div>
@@ -4824,28 +4825,6 @@ window.addEventListener('click', function(e) {
 });
 
 // --- End of Privacy Policy and Terms of Service Modal Logic ---
-
-document.addEventListener('DOMContentLoaded', function() {
-    // --- Logic for Traditional Booking Form ---
-    const termsCheckbox = document.getElementById('traditionalTerms');
-    const confirmButton = document.getElementById('traditionalConfirmBookingBtn');
-
-    if (termsCheckbox && confirmButton) {
-        // 1. Initial State: Set the button to disabled by default 
-        //    (You should also add 'disabled' attribute to the HTML in Step 1)
-        confirmButton.disabled = true;
-
-        // 2. Add an event listener to the checkbox
-        termsCheckbox.addEventListener('change', function() {
-            // Enable the button if the checkbox is checked, disable it otherwise
-            confirmButton.disabled = !this.checked;
-        });
-    }
-
-    // You can repeat this process for the Life Plan form if needed,
-    // by changing the IDs (e.g., 'lifeplanTerms' and 'lifeplanConfirmBookingBtn')
-
-});
 </script>
 </body>
 </html>
