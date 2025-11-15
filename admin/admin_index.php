@@ -3317,7 +3317,7 @@ document.getElementById('exportPdfBtn').addEventListener('click', function() {
             top: 1
         },
         toolbar: {
-            show: true,
+            show: false,
             tools: {
                 download: true,
                 selection: false,
