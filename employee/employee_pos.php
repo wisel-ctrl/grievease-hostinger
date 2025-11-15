@@ -124,6 +124,10 @@ header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 
+function capitalizeWords($string) {
+    return ucwords(strtolower(trim($string)));
+}
+
 // Check if user has a branch location assigned
 if (!$user_branch_id) {
     // Handle case where user doesn't have a branch assigned
@@ -312,7 +316,7 @@ $servicesJson = json_encode($allServices);
           $stmt->execute();
           $branch_result = $stmt->get_result();
           $branch_name = $branch_result->fetch_assoc()['branch_name'];
-          echo htmlspecialchars($branch_name);
+          echo capitalizeWords($branch_name);
           ?>
         </span>
       </p>
