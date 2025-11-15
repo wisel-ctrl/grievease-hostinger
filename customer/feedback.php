@@ -156,12 +156,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $rating = isset($_POST['rating']) ? intval($_POST['rating']) : 0;
     $feedback_text = isset($_POST['feedback']) ? trim($_POST['feedback']) : '';
     $service_id = isset($_POST['service_id']) ? intval($_POST['service_id']) : NULL;
+    $service_type = isset($_POST['service_type']) ? $_POST['service_type'] : '';
     
-    // Check if user already submitted feedback for this service
-    if ($service_id) {
-        $check_feedback_query = "SELECT id FROM feedback_tb WHERE customer_id = ? AND service_id = ?";
+    // Validate service type
+    $allowed_service_types = ['traditional-funeral', 'custom-package', 'life-plan'];
+    if (!in_array($service_type, $allowed_service_types)) {
+        $error = 'Invalid service type. Please try again.';
+    }
+    // Check if user already submitted feedback for this service and service type
+    elseif ($service_id) {
+        $check_feedback_query = "SELECT id FROM feedback_tb WHERE customer_id = ? AND service_id = ? AND service_type = ?";
         $check_stmt = $conn->prepare($check_feedback_query);
-        $check_stmt->bind_param("ii", $user_id, $service_id);
+        $check_stmt->bind_param("iis", $user_id, $service_id, $service_type);
         $check_stmt->execute();
         $check_result = $check_stmt->get_result();
         
@@ -182,10 +188,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $ph_time = new DateTime('now', new DateTimeZone('Asia/Manila'));
                 $created_at = $ph_time->format('Y-m-d H:i:s');
                 
-                $insert_query = "INSERT INTO feedback_tb (customer_id, service_id, rating, feedback_text, status, created_at) 
-                                VALUES (?, ?, ?, ?, 'Hidden', ?)";
+                // Updated INSERT query to include service_type
+                $insert_query = "INSERT INTO feedback_tb (customer_id, service_id, service_type, rating, feedback_text, status, created_at) 
+                                VALUES (?, ?, ?, ?, ?, 'Hidden', ?)";
                 $insert_stmt = $conn->prepare($insert_query);
-                $insert_stmt->bind_param("iiiss", $user_id, $service_id, $rating, $feedback_text, $created_at);
+                $insert_stmt->bind_param("iisiss", $user_id, $service_id, $service_type, $rating, $feedback_text, $created_at);
                 
                 if ($insert_stmt->execute()) {
                     $success = true;
@@ -521,6 +528,24 @@ $conn->close();
 
                     <form id="feedback-form" method="POST" class="space-y-8">
                         <input type="hidden" name="service_id" value="<?php echo isset($_GET['service_id']) ? htmlspecialchars($_GET['service_id']) : ''; ?>">
+                        <input type="hidden" name="service_type" value="<?php echo isset($_GET['service_type']) ? htmlspecialchars($_GET['service_type']) : ''; ?>">
+                        
+                        <!-- Service Type Display -->
+                        <?php if (isset($_GET['service_type'])): ?>
+                        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-lg border border-blue-200">
+                            <div class="flex items-center justify-center">
+                                <i class="fas fa-cube text-blue-600 mr-2"></i>
+                                <span class="text-blue-800 font-medium">
+                                    Service Type: 
+                                    <?php 
+                                    $service_type_display = htmlspecialchars($_GET['service_type']);
+                                    echo ucwords(str_replace('-', ' ', $service_type_display));
+                                    ?>
+                                </span>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+                        
                         <div class="bg-gradient-to-br from-yellow-50 to-orange-50 p-6 rounded-xl border border-yellow-200">
                             <label class="block text-navy text-lg font-hedvig mb-4 text-center">
                                 <i class="fas fa-star text-yellow-600 mr-2"></i>
