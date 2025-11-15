@@ -1282,7 +1282,7 @@ if ($result_gcash) {
     <div class="bg-white rounded-lg p-4 sm:p-6 max-w-[90vw] sm:max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
         <div class="flex justify-between items-center mb-4">
             <h3 class="text-lg sm:text-xl font-hedvig text-navy">Scan to Pay</h3>
-            <button id="closeQrModal" class="text-gray-500 hover:text-navy">
+            <button type="button" id="closeQrModal" class="text-gray-500 hover:text-navy">
                 <i class="fas fa-times text-xl"></i>
             </button>
         </div>
@@ -1407,7 +1407,7 @@ if ($result_gcash) {
                         <div class="bg-white rounded-lg p-6 max-w-lg w-full mx-4 max-h-[80vh] overflow-y-auto">
                             <div class="flex justify-between items-center mb-4">
                                 <h3 class="text-lg font-hedvig text-navy">Privacy Policy</h3>
-                                <button id="closePrivacyModal" class="text-gray-500 hover:text-navy">
+                                <button type="button" id="closePrivacyModal" class="text-gray-500 hover:text-navy">
                                     <i class="fas fa-times text-xl"></i>
                                 </button>
                             </div>
@@ -1447,7 +1447,7 @@ if ($result_gcash) {
                         <div class="bg-white rounded-lg p-6 max-w-lg w-full mx-4 max-h-[80vh] overflow-y-auto">
                             <div class="flex justify-between items-center mb-4">
                                 <h3 class="text-lg font-hedvig text-navy">Terms of Service</h3>
-                                <button id="closeTermsModal" class="text-gray-500 hover:text-navy">
+                                <button type="button" id="closeTermsModal" class="text-gray-500 hover:text-navy">
                                     <i class="fas fa-times text-xl"></i>
                                 </button>
                             </div>
