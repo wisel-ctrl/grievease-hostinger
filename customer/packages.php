@@ -102,6 +102,55 @@ $show_branch_modal = ($branch_id === null || $branch_id === 'unknown' || $branch
 error_log("User branch_loc: " . $branch_id . ", show_branch_modal: " . ($show_branch_modal ? 'true' : 'false'));
 
 if ($branch_id && $branch_id !== 'unknown' && $branch_id !== '') {
+    
+    // Initialize the counts array
+    $packageAvailedCounts = [];
+    
+    // Query to count traditional service bookings (sales_tb)
+    $salesQuery = "SELECT service_id, COUNT(*) as count 
+                   FROM sales_tb 
+                   WHERE branch_id = ? AND service_id IS NOT NULL
+                   GROUP BY service_id";
+    $salesStmt = $conn->prepare($salesQuery);
+    $salesStmt->bind_param("i", $branch_id);
+    $salesStmt->execute();
+    $salesResult = $salesStmt->get_result();
+    
+    while ($row = $salesResult->fetch_assoc()) {
+        $serviceId = $row['service_id'];
+        if (!isset($packageAvailedCounts[$serviceId])) {
+            $packageAvailedCounts[$serviceId] = 0;
+        }
+        $packageAvailedCounts[$serviceId] += $row['count'];
+    }
+    $salesStmt->close();
+    
+    // Query to count lifeplan bookings (lifeplan_tb)
+    $lifeplanQuery = "SELECT service_id, COUNT(*) as count 
+                      FROM lifeplan_tb 
+                      WHERE branch_id = ? AND service_id IS NOT NULL
+                      GROUP BY service_id";
+    $lifeplanStmt = $conn->prepare($lifeplanQuery);
+    $lifeplanStmt->bind_param("i", $branch_id);
+    $lifeplanStmt->execute();
+    $lifeplanResult = $lifeplanStmt->get_result();
+    
+    while ($row = $lifeplanResult->fetch_assoc()) {
+        $serviceId = $row['service_id'];
+        if (!isset($packageAvailedCounts[$serviceId])) {
+            $packageAvailedCounts[$serviceId] = 0;
+        }
+        $packageAvailedCounts[$serviceId] += $row['count'];
+    }
+    $lifeplanStmt->close();
+    
+    // Debug: Log the counts from database
+    error_log("Package Availed Counts from database for branch $branch_id:");
+    foreach ($packageAvailedCounts as $serviceId => $count) {
+        error_log("Service ID: " . $serviceId . " - Count: " . $count);
+    }
+    
+    // Fetch packages
     $query = "SELECT s.service_id, s.service_name, s.description, s.selling_price, s.image_url, 
                      i.item_name AS casket_name, s.flower_design, s.inclusions
               FROM services_tb s
@@ -116,7 +165,7 @@ if ($branch_id && $branch_id !== 'unknown' && $branch_id !== '') {
     if ($result) {
         while ($row = $result->fetch_assoc()) {
             // Parse inclusions (assuming it's stored as a JSON string or comma-separated)
-            $inclusions = []; // Define $inclusions here, inside the loop
+            $inclusions = [];
             if (!empty($row['inclusions'])) {
                 // Try to decode as JSON first
                 $decoded = json_decode($row['inclusions'], true);
@@ -133,19 +182,30 @@ if ($branch_id && $branch_id !== 'unknown' && $branch_id !== '') {
                 array_splice($inclusions, 1, 0, $row['flower_design']);
             }
             
+            $serviceId = $row['service_id'];
+            $availedCount = isset($packageAvailedCounts[$serviceId]) ? $packageAvailedCounts[$serviceId] : 0;
+            
             $packages[] = [
-                'id' => $row['service_id'],
+                'id' => $serviceId,
                 'name' => $row['service_name'],
                 'description' => $row['description'],
                 'price' => $row['selling_price'],
-                'image' => getImageUrl($row['image_url']), // Use the helper function for image URLs
-                'features' => $inclusions, // Now $inclusions is defined for each package
-                'service' => 'traditional' // Assuming all are traditional for now
+                'image' => getImageUrl($row['image_url']),
+                'features' => $inclusions,
+                'service' => 'traditional',
+                'availed_count' => $availedCount
             ];
         }
         $result->free();
     }
+    
+    // Final debug: Log the package counts
+    error_log("Final Package Availed Counts:");
+    foreach ($packages as $pkg) {
+        error_log("Package: " . $pkg['name'] . " (ID: " . $pkg['id'] . ") - Availed: " . $pkg['availed_count']);
+    }
 }
+
 
 // Add some debug information
 echo "<!-- DEBUG: Image URLs in database -->\n";
@@ -737,7 +797,7 @@ function capitalizeWords(str) {
             >
             <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
         </div>
-
+    
         <!-- Price Sort -->
         <select 
             id="priceSort" 
@@ -746,13 +806,14 @@ function capitalizeWords(str) {
             <option value="">Default Order</option>
             <option value="asc">Price: Low to High</option>
             <option value="desc">Price: High to Low</option>
+            <option value="most_availed">Most Availed</option> <!-- Add this option -->
         </select>
-
+    
         <!-- Reset Filters Button -->
         <button id="resetFilters" class="w-full md:w-1/5 px-6 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg flex items-center justify-center space-x-2 transition duration-300">
-    <i class="fas fa-sync mr-2"></i>
-    <span>Reset</span>
-</button>
+            <i class="fas fa-sync mr-2"></i>
+            <span>Reset</span>
+        </button>
     </div>
 
         <!-- Packages Grid -->
@@ -767,7 +828,8 @@ function capitalizeWords(str) {
                          data-price="<?= $pkg['price'] ?>"
                          data-service="<?= $pkg['service'] ?>"
                          data-name="<?= htmlspecialchars($pkg['name']) ?>"
-                         data-image="<?= htmlspecialchars($pkg['image']) ?>">
+                         data-image="<?= htmlspecialchars($pkg['image']) ?>"
+                         data-availed-count="<?= htmlspecialchars($pkg['availed_count']) ?>"
                         <div class="flex flex-col h-full">
                             <!-- Image section -->
                             <div class="h-48 bg-cover bg-center relative" style="background-image: url('<?= htmlspecialchars($pkg['image']) ?>')">
@@ -789,6 +851,7 @@ function capitalizeWords(str) {
                                 <div class="text-3xl font-hedvig text-yellow-600 mb-4 h-12 flex items-center">
                                     ₱<?= number_format($pkg['price']) ?>
                                 </div>
+                            
                                 
                                 <!-- Features list -->
                                 <div class="border-t border-gray-200 pt-4 mt-2 flex-grow overflow-y-auto">
@@ -2853,7 +2916,8 @@ document.addEventListener('DOMContentLoaded', function() {
         image: card.dataset.image,
         icon: card.querySelector('.fa-')?.className.match(/fa-(.+?)( |$)/)[1] || 'box',
         description: card.querySelector('p').textContent,
-        features: Array.from(card.querySelectorAll('ul li')).map(li => li.textContent.trim())
+        features: Array.from(card.querySelectorAll('ul li')).map(li => li.textContent.trim()),
+        availed_count: parseInt(card.dataset.availedCount) || 0
     }));
 
     // Initialize sorting and filtering
@@ -4159,9 +4223,47 @@ function initializeSortingAndFiltering() {
     });
     document.getElementById('resetFilters').addEventListener('click', resetFilters);
     document.getElementById('reset-filters-no-results')?.addEventListener('click', resetFilters);
+    
+    // Add availed count data to package cards
+    addAvailedCountData();
 }
 
-// Enhanced filter and sort function
+// Function to add availed count data to package cards
+function addAvailedCountData() {
+    const packageCards = document.querySelectorAll('.package-card');
+    console.log('Setting availed count data for packages:');
+    
+    packageCards.forEach(card => {
+        const packageName = card.dataset.name;
+        // Find the package in originalPackages to get availed_count
+        const pkg = originalPackages.find(p => p.name === packageName);
+        if (pkg && pkg.availed_count !== undefined) {
+            // Use setAttribute instead of dataset
+            card.setAttribute('data-availed-count', pkg.availed_count);
+            console.log(`✓ ${packageName}: ${pkg.availed_count}`);
+        } else {
+            card.setAttribute('data-availed-count', '0');
+            console.log(`✗ ${packageName}: 0 (not found)`);
+        }
+    });
+}
+
+// Debug function to check availed counts
+function debugAvailedCounts() {
+    const packageCards = document.querySelectorAll('.package-card');
+    console.log('=== Package Availed Counts Debug ===');
+    packageCards.forEach(card => {
+        console.log(`Package: ${card.dataset.name}, Availed Count: ${card.dataset.availedCount}`);
+    });
+    console.log('=== End Debug ===');
+}
+
+// Call this after page loads to verify data
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(debugAvailedCounts, 1000);
+});
+
+// Update the filterAndSortPackages function to handle most_availed sorting
 function filterAndSortPackages() {
     const searchInput = document.getElementById('searchInput');
     const searchTerm = searchInput.value.toLowerCase().trim();
@@ -4214,8 +4316,54 @@ function filterAndSortPackages() {
         noResults.classList.add('hidden');
     }
     
-    // Sort visible cards if sorting is selected
-    if (priceSortValue) {
+    // Handle "Most Availed" filtering specially
+    if (priceSortValue === 'most_availed') {
+        // Get availed counts for all visible cards
+        const packagesWithCounts = visibleCards.map(card => {
+            const count = parseInt(card.getAttribute('data-availed-count')) || 0;
+            return {
+                card: card,
+                count: count,
+                name: card.dataset.name
+            };
+        });
+        
+        // Find the highest availed count
+        const maxCount = Math.max(...packagesWithCounts.map(p => p.count));
+        
+        console.log(`Highest availed count: ${maxCount}`);
+        
+        // Show/hide cards based on availed count while maintaining layout
+        visibleCards.forEach(card => {
+            const count = parseInt(card.getAttribute('data-availed-count')) || 0;
+            if (count === maxCount && maxCount > 0) {
+                card.classList.remove('hidden');
+            } else {
+                card.classList.add('hidden');
+            }
+        });
+        
+        const mostAvailedPackages = packagesWithCounts.filter(p => p.count === maxCount && maxCount > 0);
+        
+        console.log(`Showing ${mostAvailedPackages.length} most availed packages:`);
+        mostAvailedPackages.forEach((p, index) => {
+            console.log(`${index + 1}. ${p.name} - Count: ${p.count}`);
+        });
+        
+        // If no packages have availed counts > 0, show a message
+        if (maxCount === 0) {
+            noResults.classList.remove('hidden');
+            noResults.innerHTML = `
+                <div class="text-center py-12">
+                    <i class="fas fa-chart-line text-5xl text-gray-300 mb-4"></i>
+                    <h3 class="text-2xl font-hedvig text-navy mb-2">No Availed Packages Yet</h3>
+                    <p class="text-gray-600 max-w-md mx-auto">No packages have been availed yet. Check back later to see popular choices.</p>
+                </div>
+            `;
+        }
+        
+    } else if (priceSortValue) {
+        // Handle other sorting options (price sorting)
         visibleCards.sort((a, b) => {
             const priceA = parseFloat(a.dataset.price);
             const priceB = parseFloat(b.dataset.price);
@@ -4231,6 +4379,28 @@ function filterAndSortPackages() {
         restoreOriginalOrder();
     }
 }
+
+function checkDataAttributes() {
+    const packageCards = document.querySelectorAll('.package-card');
+    console.log('=== Checking Data Attributes ===');
+    packageCards.forEach(card => {
+        const name = card.dataset.name;
+        const availedCount = card.getAttribute('data-availed-count');
+        const availedCountDataset = card.dataset.availedCount;
+        
+        console.log(`Package: ${name}`);
+        console.log(`  - getAttribute('data-availed-count'): ${availedCount}`);
+        console.log(`  - dataset.availedCount: ${availedCountDataset}`);
+        console.log(`  - Full dataset:`, card.dataset);
+    });
+    console.log('=== End Check ===');
+}
+
+// Call this after page loads
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(checkDataAttributes, 1000);
+});
+
 
 // Function to restore original package order
 function restoreOriginalOrder() {
@@ -4279,6 +4449,7 @@ function resetFilters() {
     // Hide the "no results" message
     document.getElementById('no-results').classList.add('hidden');
 }
+
 
 // Date validation for traditional booking form
 document.addEventListener('DOMContentLoaded', function() {
