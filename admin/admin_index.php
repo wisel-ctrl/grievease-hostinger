@@ -1984,8 +1984,7 @@ function time_elapsed_string($datetime, $full = false) {
       .toLowerCase()
       .replace(/\b\w/g, char => char.toUpperCase()); // Title Case
   });
-
-  const username = <?php json_encode($user_name); ?>
+const username = <?php echo json_encode($user_name); ?>
 </script>
 
 <script>
