@@ -257,21 +257,11 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
           width: calc(100% - 4rem);
         }
 
-        /* Mobile responsive sidebar styles */
+        /* Mobile responsive styles */
         @media (max-width: 768px) {
-          #sidebar {
-            transform: translateX(-100%);
-            -webkit-transform: translateX(-100%);
-          }
-          
-          #sidebar.translate-x-0 {
-            transform: translateX(0);
-            -webkit-transform: translateX(0);
-          }
-          
-          #sidebar.-translate-x-full {
-            transform: translateX(-100%);
-            -webkit-transform: translateX(-100%);
+          .main-content {
+            margin-left: 0;
+            width: 100%;
           }
           
           #main-content {
@@ -279,19 +269,35 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
             width: 100% !important;
           }
           
-          .mobile-menu-btn {
-            display: block;
+          .w-\[calc\(100\%-16rem\)\] {
+            width: 100% !important;
+          }
+          
+          /* Mobile-friendly touch targets */
+          .mobile-touch-target {
+            min-height: 44px;
+            min-width: 44px;
+          }
+          
+          /* Mobile table scrolling */
+          .mobile-table-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+          }
+          
+          /* Mobile modal adjustments */
+          .mobile-modal {
+            margin: 1rem;
+            max-height: calc(100vh - 2rem);
+            overflow-y: auto;
           }
         }
         
-        /* Touch-friendly targets for mobile */
-        @media (max-width: 768px) {
-          .sidebar-link {
-            min-height: 44px;
-          }
-          
-          button, .btn {
-            min-height: 44px;
+        /* Tablet responsive styles */
+        @media (min-width: 769px) and (max-width: 1024px) {
+          .main-content {
+            margin-left: 16rem;
+            width: calc(100% - 16rem);
           }
         }
 
@@ -422,14 +428,10 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
   <?php include 'employee_sidebar.php'; ?>
 
   <!-- Main Content -->
-  <div id="main-content" class="ml-64 p-6 bg-gray-50 min-h-screen transition-all duration-300 main-content">
+  <div id="main-content" class="ml-64 w-[calc(100%-16rem)] p-6 bg-gray-50 min-h-screen transition-all duration-300 main-content">
     <!-- Header with breadcrumb and welcome message -->
-    <div class="flex justify-between items-center mb-6 bg-white p-5 rounded-lg shadow-sidebar">
-      <div class="flex items-center">
-        <!-- Mobile menu button -->
-        <button id="mobile-menu-btn" class="md:hidden p-2 mr-3 bg-gray-100 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-200 transition-all duration-300">
-          <i class="fas fa-bars text-lg"></i>
-        </button>
+    <div class="flex justify-between items-center mb-6 bg-white p-5 rounded-lg shadow-sidebar mobile-touch-target">
+      <div>
         <h1 class="text-2xl font-bold text-sidebar-text">Expense Tracking</h1>
       </div>
     </div>
@@ -648,7 +650,7 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
     </div>
     
     <!-- Responsive Table Container with improved spacing -->
-    <div class="overflow-x-auto scrollbar-thin">
+    <div class="overflow-x-auto scrollbar-thin mobile-table-container">
         <!-- Responsive Table with improved spacing and horizontal scroll for small screens -->
         <div class="min-w-full">
             <table class="w-full">
@@ -830,7 +832,7 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] flex flex-col">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] flex flex-col mobile-modal">
     <!-- Close Button -->
     <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeAddExpenseModal()">
       <i class="fas fa-times"></i>
