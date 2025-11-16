@@ -264,6 +264,41 @@ foreach ($bookings as $key => $booking) {
                 
                 $profile_picture = $profile_data['profile_picture'];
 
+
+// ===== DEDICATED QUERIES FOR BELL ICON COUNT (UNREAD NOTIFICATIONS ONLY) =====
+$bell_notification_count = 0;
+
+// Count unread booking notifications
+$bell_booking_query = "SELECT COUNT(*) as count FROM booking_tb WHERE customerID = ? AND is_read = FALSE";
+$bell_booking_stmt = $conn->prepare($bell_booking_query);
+$bell_booking_stmt->bind_param("i", $user_id);
+$bell_booking_stmt->execute();
+$bell_booking_result = $bell_booking_stmt->get_result();
+$bell_booking_count = $bell_booking_result->fetch_assoc()['count'];
+$bell_notification_count += $bell_booking_count;
+$bell_booking_stmt->close();
+
+// Count unread lifeplan booking notifications
+$bell_lifeplan_query = "SELECT COUNT(*) as count FROM lifeplan_booking_tb WHERE customer_id = ? AND is_read = FALSE";
+$bell_lifeplan_stmt = $conn->prepare($bell_lifeplan_query);
+$bell_lifeplan_stmt->bind_param("i", $user_id);
+$bell_lifeplan_stmt->execute();
+$bell_lifeplan_result = $bell_lifeplan_stmt->get_result();
+$bell_lifeplan_count = $bell_lifeplan_result->fetch_assoc()['count'];
+$bell_notification_count += $bell_lifeplan_count;
+$bell_lifeplan_stmt->close();
+
+// Count unread ID validation notifications
+$bell_id_query = "SELECT COUNT(*) as count FROM valid_id_tb WHERE id = ? AND is_read = FALSE";
+$bell_id_stmt = $conn->prepare($bell_id_query);
+$bell_id_stmt->bind_param("i", $user_id);
+$bell_id_stmt->execute();
+$bell_id_result = $bell_id_stmt->get_result();
+$bell_id_count = $bell_id_result->fetch_assoc()['count'];
+$bell_notification_count += $bell_id_count;
+$bell_id_stmt->close();
+
+
 $conn->close();
 
 // Function to calculate time elapsed
@@ -525,11 +560,11 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
             
             <!-- User Menu -->
             <div class="hidden md:flex items-center space-x-4">
-                <a href="notification.php" class="relative text-white hover:text-yellow-600 transition-colors">
+                <a href="notification.php" id="notification-bell" class="relative text-white hover:text-yellow-600 transition-colors">
                     <i class="fas fa-bell"></i>
-                    <?php if ($notifications_count['pending'] > 0): ?>
-                    <span class="absolute -top-2 -right-2 bg-yellow-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                        <?php echo $notifications_count['pending']; ?>
+                    <?php if ($bell_notification_count > 0): ?>
+                    <span id="notification-count" class="absolute -top-2 -right-2 bg-yellow-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                        <?php echo $bell_notification_count; ?>
                     </span>
                     <?php endif; ?>
                 </a>
@@ -573,11 +608,11 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
             <!-- mobile menu header -->
             <div class="md:hidden flex justify-between items-center px-4 py-3 border-b border-gray-700">
         <div class="flex items-center space-x-4">
-            <a href="notification.php" class="relative text-white hover:text-yellow-600 transition-colors">
+            <a href="notification.php" id="mobile-notification-bell" class="relative text-white hover:text-yellow-600 transition-colors">
                 <i class="fas fa-bell text-xl"></i>
-                <?php if ($notifications_count['pending'] > 0): ?>
-                <span class="absolute -top-2 -right-2 bg-yellow-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                    <?php echo $notifications_count['pending']; ?>
+                <?php if ($bell_notification_count > 0): ?>
+                <span id="mobile-notification-count" class="absolute -top-2 -right-2 bg-yellow-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                    <?php echo $bell_notification_count; ?>
                 </span>
                 <?php endif; ?>
             </a>
@@ -2297,6 +2332,78 @@ function getStatusColorClass(status) {
     const mobileMenu = document.getElementById('mobile-menu');
     mobileMenu.classList.toggle('hidden');
 }
+
+// Notification bell click handler
+document.addEventListener('DOMContentLoaded', function() {
+    const notificationBell = document.getElementById('notification-bell');
+    const notificationCount = document.getElementById('notification-count');
+    const mobileNotificationBell = document.getElementById('mobile-notification-bell');
+    const mobileNotificationCount = document.getElementById('mobile-notification-count');
+   
+    // Handle desktop notification bell
+    if (notificationBell && notificationCount) {
+        notificationBell.addEventListener('click', async function(e) {
+            // Only mark as read if there are notifications
+            if (notificationCount.textContent > 0) {
+                e.preventDefault();
+               
+                try {
+                    // Mark notifications as read
+                    const response = await fetch('mark_notifications_seen.php');
+                    const result = await response.json();
+                   
+                    if (result.success) {
+                        // Remove the notification count badge
+                        notificationCount.remove();
+                       
+                        // Then navigate to notification page
+                        window.location.href = 'notification.php';
+                    } else {
+                        // If marking as read fails, just navigate normally
+                        window.location.href = 'notification.php';
+                    }
+                } catch (error) {
+                    console.error('Error marking notifications as read:', error);
+                    // If there's an error, just navigate normally
+                    window.location.href = 'notification.php';
+                }
+            }
+            // If no notifications, the normal link behavior will proceed
+        });
+    }
+
+    // Handle mobile notification bell
+    if (mobileNotificationBell && mobileNotificationCount) {
+        mobileNotificationBell.addEventListener('click', async function(e) {
+            // Only mark as read if there are notifications
+            if (mobileNotificationCount.textContent > 0) {
+                e.preventDefault();
+               
+                try {
+                    // Mark notifications as read
+                    const response = await fetch('mark_notifications_seen.php');
+                    const result = await response.json();
+                   
+                    if (result.success) {
+                        // Remove the notification count badge
+                        mobileNotificationCount.remove();
+                       
+                        // Then navigate to notification page
+                        window.location.href = 'notification.php';
+                    } else {
+                        // If marking as read fails, just navigate normally
+                        window.location.href = 'notification.php';
+                    }
+                } catch (error) {
+                    console.error('Error marking notifications as read:', error);
+                    // If there's an error, just navigate normally
+                    window.location.href = 'notification.php';
+                }
+            }
+            // If no notifications, the normal link behavior will proceed
+        });
+    }
+});
 </script>
 
 </body>
