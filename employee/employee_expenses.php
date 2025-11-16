@@ -1225,42 +1225,16 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initial load
     loadExpenses(1);
     
-    // Initialize search inputs with URL parameter
-    const urlParams = new URLSearchParams(window.location.search);
-    const searchParam = urlParams.get('search');
-    if (searchParam) {
-        document.querySelectorAll('input[name="search"]').forEach(input => {
-            input.value = searchParam;
-        });
-    }
-    
     // Handle search input changes with debounce
-    function setupSearchInput(searchInput) {
-        if (searchInput) {
-            let searchTimeout;
-            searchInput.addEventListener('input', function() {
-                clearTimeout(searchTimeout);
-                searchTimeout = setTimeout(() => {
-                    // Sync both search inputs
-                    const searchValue = searchInput.value;
-                    document.querySelectorAll('input[name="search"]').forEach(input => {
-                        if (input !== searchInput) {
-                            input.value = searchValue;
-                        }
-                    });
-                    loadExpenses(1);
-                }, 500); // 500ms debounce
-            });
-        }
-    }
-    
-    // Setup search for both desktop and mobile inputs
-    const desktopSearchInput = document.querySelector('input[name="search"]');
-    const mobileSearchInput = document.querySelectorAll('input[name="search"]')[1];
-    
-    setupSearchInput(desktopSearchInput);
-    if (mobileSearchInput) {
-        setupSearchInput(mobileSearchInput);
+    const searchInput = document.querySelector('input[name="search"]');
+    if (searchInput) {
+        let searchTimeout;
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                loadExpenses(1);
+            }, 500); // 500ms debounce
+        });
     }
     
     // Add event listener for filter changes
@@ -1283,13 +1257,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function loadExpenses(page) {
-    // Get search value from either input (they should be synced)
-    const searchInputs = document.querySelectorAll('input[name="search"]');
-    let searchValue = '';
-    if (searchInputs.length > 0) {
-        searchValue = searchInputs[0].value || '';
-    }
-    
+    const searchInput = document.querySelector('input[name="search"]');
     const categoryFilter = document.querySelector('select[name="category"]');
     const urlParams = new URLSearchParams(window.location.search);
     const sortBy = urlParams.get('sort') || 'date';
@@ -1304,7 +1272,7 @@ function loadExpenses(page) {
     // Prepare parameters
     const params = new URLSearchParams();
     params.append('page', page);
-    if (searchValue) params.append('search', searchValue);
+    if (searchInput && searchInput.value) params.append('search', searchInput.value);
     if (categoryFilter && categoryFilter.value) params.append('category', categoryFilter.value);
     params.append('sort', sortBy);
     params.append('order', sortOrder);
