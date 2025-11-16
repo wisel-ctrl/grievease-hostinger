@@ -121,8 +121,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
         
         // Validate phone number
-        if (!preg_match("/^\+63[0-9]{10}$|^[0-9]{11}$/", $phone_number)) {
-            $errors[] = "Phone number must be exactly 11 digits, or 13 characters starting with +63 followed by 10 digits.";
+        if (!preg_match("/^[0-9]{11}$/", $phone_number)) {
+            $errors[] = "Phone number must be exactly 11 digits.";
         }
         
         // Check if email exists (excluding current user)
@@ -510,7 +510,8 @@ unset($_SESSION['error_message']);
                         <div class="space-y-2">
                             <label for="phone_number" class="block text-primary-foreground font-medium font-inter">Phone Number</label>
                             <input type="tel" id="phone_number" name="phone_number" required
-                                   pattern="(\+63[0-9]{10}|[0-9]{11})"
+                                   pattern="[0-9]{11}"
+                                   maxlength="11"
                                    class="w-full px-4 py-3 border border-input-border rounded-xl focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-primary"
                                    value="<?php echo htmlspecialchars($employee['phone_number']); ?>">
                             <p id="phone_number_error" class="text-error text-sm hidden"></p>
@@ -628,7 +629,7 @@ unset($_SESSION['error_message']);
 
         // Real-time validation
         const namePattern = /^[a-zA-Z\s'-]+$/;
-        const phonePattern = /^\+63[0-9]{10}$|^[0-9]{11}$/;
+        const phonePattern = /^[0-9]{11}$/;
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         const originalEmail = '<?php echo htmlspecialchars($employee['email']); ?>';
         const originalPhone = '<?php echo htmlspecialchars($employee['phone_number']); ?>';
@@ -737,19 +738,17 @@ unset($_SESSION['error_message']);
         }
         
         /**
-         * Cleans phone number input: only numbers and optional leading '+'. Enforces PH number format (09...).
+         * Cleans phone number input: only numbers allowed. Enforces 11-digit limit.
          * @param {Event} e - The input event.
          */
         function validatePhoneNumberInput(e) {
             let input = e.target;
             let value = input.value;
-            let sanitized = value.replace(/[^0-9+]/g, ''); // Allow only numbers and '+'
-
-            // Further restrict to common PH formats: 09... or +639...
-            if (sanitized.startsWith('+') && sanitized.length > 1) {
-                sanitized = '+' + sanitized.substring(1).replace(/\+/g, '');
-            } else {
-                sanitized = sanitized.replace(/\+/g, '');
+            let sanitized = value.replace(/[^0-9]/g, ''); // Allow only numbers
+            
+            // Limit to 11 digits
+            if (sanitized.length > 11) {
+                sanitized = sanitized.substring(0, 11);
             }
             
             if (value !== sanitized) {
@@ -763,7 +762,7 @@ unset($_SESSION['error_message']);
                 return;
             }
             if (!phonePattern.test(cleanValue)) {
-                showError('phone_number', 'Phone number must be 11 digits (09xxxxxxxxx) or 13 characters (+639xxxxxxxxx).');
+                showError('phone_number', 'Phone number must be exactly 11 digits.');
             } else {
                 // If the pattern is met, proceed to check_credentials (existing logic)
             }
@@ -833,7 +832,7 @@ unset($_SESSION['error_message']);
                 const value = this.value.trim();
                 if ((field === 'first_name' || field === 'last_name') && !value) {
                     showError(field, 'This field is required');
-                } else if (value && !namePattern.test(value)) {
+                } else if ((field === 'middle_name' || field === 'suffix') && value && !namePattern.test(value)) {
                     showError(field, 'Can only contain letters, spaces, hyphens, or apostrophes');
                 } else {
                     showError(field, '');
@@ -850,7 +849,7 @@ unset($_SESSION['error_message']);
                 return;
             }
             if (!phonePattern.test(value)) {
-                showError('phone_number', 'Phone number must be 11 digits, or 13 characters starting with +63');
+                showError('phone_number', 'Phone number must be exactly 11 digits.');
                 return;
             }
             
@@ -938,7 +937,7 @@ unset($_SESSION['error_message']);
                 showError('phone_number', 'Phone number is required');
                 hasError = true;
             } else if (!phonePattern.test(phone)) {
-                showError('phone_number', 'Phone number must be 11 digits, or 13 characters starting with +63');
+                showError('phone_number', 'Phone number must be exactly 11 digits.');
                 hasError = true;
             }
             if (phone !== originalValues.phone_number) {
