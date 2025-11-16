@@ -151,6 +151,95 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
       animation: slideIn 0.3s ease forwards;
     } */
 
+    /* Mobile responsive styles */
+    @media (max-width: 768px) {
+      .main-content {
+        margin-left: 0;
+        width: 100%;
+      }
+      
+      #main-content {
+        margin-left: 0 !important;
+        width: 100% !important;
+      }
+      
+      .w-\[calc\(100\%-16rem\)\] {
+        width: 100% !important;
+      }
+      
+      /* Mobile-friendly touch targets */
+      .mobile-touch-target {
+        min-height: 44px;
+        min-width: 44px;
+      }
+      
+      /* Mobile table scrolling */
+      .mobile-table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      
+      /* Mobile modal adjustments */
+      .mobile-modal {
+        margin: 1rem;
+        max-height: calc(100vh - 2rem);
+      }
+      
+      /* Hide desktop hamburger on mobile */
+      #hamburger-menu {
+        display: none !important;
+      }
+      
+      /* Show mobile hamburger */
+      #mobile-hamburger {
+        display: block !important;
+      }
+      
+      /* Sidebar positioning for mobile */
+      #sidebar {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        height: 100vh !important;
+        z-index: 50 !important;
+        transform: translateX(-100%) !important;
+        transition: transform 0.3s ease-in-out !important;
+      }
+      
+      #sidebar.translate-x-0 {
+        transform: translateX(0) !important;
+      }
+      
+      #sidebar.-translate-x-full {
+        transform: translateX(-100%) !important;
+      }
+      
+      /* Mobile overlay */
+      #mobile-overlay {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        background: rgba(0, 0, 0, 0.5) !important;
+        z-index: 40 !important;
+      }
+      
+      /* Ensure main content is below sidebar on mobile */
+      .main-content {
+        position: relative !important;
+        z-index: 1 !important;
+      }
+    }
+    
+    @media (min-width: 769px) and (max-width: 1024px) {
+      /* Tablet adjustments */
+      .main-content {
+        margin-left: 14rem;
+        width: calc(100% - 14rem);
+      }
+    }
+
     /* Gradient background for menu section headers */
     .menu-header {
       background: linear-gradient(to right, rgba(202, 138, 4, 0.1), transparent);
@@ -6453,6 +6542,113 @@ document.addEventListener('DOMContentLoaded', function() {
         const total = days * CHAPEL_RATE_PER_DAY;
         chapelTotalCost.textContent = total.toLocaleString();
     }
+});
+</script>
+
+<script>
+// Override the sidebar.js mobile functionality with our own
+document.addEventListener('DOMContentLoaded', function() {
+  // Wait a bit for sidebar.js to load, then override its functionality
+  setTimeout(function() {
+    // Get all elements
+    const sidebar = document.getElementById("sidebar");
+    const overlay = document.getElementById("mobile-overlay");
+    const mobileMenuBtn = document.getElementById('mobile-hamburger');
+    
+    console.log('Initializing mobile menu override...');
+    console.log('Sidebar:', sidebar);
+    console.log('Overlay:', overlay);
+    console.log('Mobile button:', mobileMenuBtn);
+    
+    // Remove any existing event listeners by cloning the button
+    if (mobileMenuBtn) {
+      const newMobileMenuBtn = mobileMenuBtn.cloneNode(true);
+      mobileMenuBtn.parentNode.replaceChild(newMobileMenuBtn, mobileMenuBtn);
+      
+      // Add our own event listener
+      newMobileMenuBtn.addEventListener('click', function(e) {
+        console.log('Mobile hamburger clicked - our handler');
+        e.preventDefault();
+        e.stopPropagation();
+        toggleMobileSidebar();
+      });
+    }
+    
+    // Function to toggle mobile sidebar
+    function toggleMobileSidebar() {
+      if (!sidebar) return;
+      
+      const isOpen = sidebar.classList.contains('translate-x-0');
+      
+      if (isOpen) {
+        // Close sidebar
+        sidebar.classList.remove('translate-x-0');
+        sidebar.classList.add('-translate-x-full');
+        if (overlay) {
+          overlay.classList.add('hidden');
+        }
+        console.log('Closing mobile sidebar');
+      } else {
+        // Open sidebar
+        sidebar.classList.remove('-translate-x-full');
+        sidebar.classList.add('translate-x-0');
+        if (overlay) {
+          overlay.classList.remove('hidden');
+        }
+        console.log('Opening mobile sidebar');
+      }
+    }
+    
+    // Set initial state for mobile
+    if (window.innerWidth < 768 && sidebar) {
+      sidebar.classList.remove('translate-x-0');
+      sidebar.classList.add('-translate-x-full');
+      if (overlay) {
+        overlay.classList.add('hidden');
+      }
+    }
+    
+    // Close sidebar when clicking outside on mobile
+    document.addEventListener('click', function(event) {
+      if (window.innerWidth < 768 && 
+          sidebar && !sidebar.contains(event.target) && 
+          !event.target.closest('#mobile-hamburger')) {
+        sidebar.classList.remove('translate-x-0');
+        sidebar.classList.add('-translate-x-full');
+        if (overlay) {
+          overlay.classList.add('hidden');
+        }
+      }
+    });
+    
+    // Close sidebar when overlay is clicked
+    if (overlay) {
+      overlay.addEventListener('click', function() {
+        sidebar.classList.remove('translate-x-0');
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+      });
+    }
+    
+    // Handle window resize
+    window.addEventListener('resize', function() {
+      if (window.innerWidth >= 768 && sidebar) {
+        // Reset to desktop state
+        sidebar.classList.remove('-translate-x-full', 'translate-x-0');
+        if (overlay) {
+          overlay.classList.add('hidden');
+        }
+      } else if (window.innerWidth < 768 && sidebar) {
+        // Set mobile state
+        sidebar.classList.remove('translate-x-0');
+        sidebar.classList.add('-translate-x-full');
+        if (overlay) {
+          overlay.classList.add('hidden');
+        }
+      }
+    });
+    
+  }, 100); // 100ms delay to ensure sidebar.js has loaded
 });
 </script>
 
