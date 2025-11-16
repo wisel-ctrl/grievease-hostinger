@@ -418,10 +418,7 @@ unset($_SESSION['error_message']);
   <div id="mobile-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden"></div>
 
   <div id="main-content" class="p-8 bg-navy min-h-screen transition-all duration-300 ml-64 w-[calc(100%-16rem)] main-content">
-        <!-- Mobile Hamburger Menu -->
-        <button id="mobile-hamburger" class="lg:hidden p-3 bg-sidebar-bg rounded-xl shadow-card text-sidebar-text hover:text-sidebar-accent hover:bg-sidebar-hover transition-all duration-300 mb-6">
-            <i class="fas fa-bars text-lg"></i>
-        </button>
+        
         
         <!-- Page Header -->
         <div class="mb-10">
