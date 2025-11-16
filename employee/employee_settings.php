@@ -211,57 +211,14 @@ unset($_SESSION['error_message']);
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GrievEase - Employee Settings</title>
-  <?php include 'faviconLogo.php'; ?>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        'playfair': ['"Playfair Display"', 'serif'],
-                        'alexbrush': ['"Alex Brush"', 'cursive'],
-                        'inter': ['Inter', 'sans-serif'],
-                        'cinzel': ['Cinzel', 'serif'],
-                        'hedvig': ['Hedvig Letters Serif', 'serif']
-                    },
-                    colors: {
-                        'yellow': {
-                            600: '#CA8A04',
-                        },
-                        'navy': '#F0F4F8',
-                        'cream': '#F9F6F0',
-                        'dark': '#4A5568',
-                        'gold': '#D69E2E',
-                        'darkgold': '#B7791F',
-                        'primary': '#F8FAFC',
-                        'primary-foreground': '#334155',
-                        'secondary': '#F1F5F9',
-                        'secondary-foreground': '#334155',
-                        'border': '#E4E9F0',
-                        'input-border': '#D3D8E1',
-                        'error': '#E53E3E',
-                        'success': '#38A169',
-                        'sidebar-bg': '#FFFFFF',
-                        'sidebar-hover': '#F1F5F9',
-                        'sidebar-text': '#334155',
-                        'sidebar-accent': '#CA8A04',
-                        'sidebar-border': '#E2E8F0',
-                    },
-                    boxShadow: {
-                        'input': '0 1px 2px rgba(0, 0, 0, 0.05)',
-                        'card': '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-                        'sidebar': '0 0 15px rgba(0, 0, 0, 0.05)'
-                    }
-                }
-            }
-        }
-    </script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Alex+Brush&family=Inter:wght@300;400;500;600;700&family=Cinzel:wght@400;500;600&family=Hedvig+Letters+Serif:opsz@12..24&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Settings - GrievEase</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="tailwind.js"></script>
+    <?php include 'faviconLogo.php'; ?>
     <style>
         #suffix-suggestions {
             display: none;
@@ -417,49 +374,54 @@ unset($_SESSION['error_message']);
   <!-- Mobile Overlay -->
   <div id="mobile-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden"></div>
 
-  <div id="main-content" class="p-8 bg-navy min-h-screen transition-all duration-300 ml-64 w-[calc(100%-16rem)] main-content">
-        
+  <div id="main-content" class="p-4 sm:p-6 bg-gray-50 min-h-screen transition-all duration-300 ml-64 w-[calc(100%-16rem)] main-content">
+        <!-- Mobile Hamburger Menu -->
+        <button id="mobile-hamburger" class="lg:hidden p-3 bg-sidebar-bg rounded-xl shadow-card text-sidebar-text hover:text-sidebar-accent hover:bg-sidebar-hover transition-all duration-300 mb-4 sm:mb-6">
+            <i class="fas fa-bars text-lg"></i>
+        </button>
         
         <!-- Page Header -->
-        <div class="mb-10">
-            <h1 class="text-4xl font-bold text-primary-foreground mb-2 font-playfair">Employee Settings</h1>
-            <p class="text-dark text-lg font-inter">Manage your personal information and account settings</p>
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 bg-white p-4 sm:p-5 rounded-lg shadow-sidebar">
+            <div class="w-full sm:w-auto">
+                <h1 class="text-xl sm:text-2xl font-bold text-sidebar-text">Employee Settings</h1>
+                <p class="text-xs sm:text-sm text-gray-500 mt-1">Manage your personal information and account settings</p>
+            </div>
         </div>
         
         <!-- Alert Messages -->
         <?php if ($success_message): ?>
-            <div class="bg-green-50 border-l-4 border-success text-green-800 px-6 py-4 rounded-lg relative mb-6 shadow-input" role="alert">
+            <div class="bg-green-50 border-l-4 border-success text-green-800 px-4 sm:px-6 py-3 sm:py-4 rounded-lg relative mb-4 sm:mb-6 shadow-input" role="alert">
                 <div class="flex items-center">
                     <i class="fas fa-check-circle text-success mr-3"></i>
-                    <span class="font-medium"><?php echo $success_message; ?></span>
+                    <span class="font-medium text-sm sm:text-base"><?php echo $success_message; ?></span>
                 </div>
             </div>
         <?php endif; ?>
         
         <?php if ($error_message): ?>
-            <div class="bg-red-50 border-l-4 border-error text-red-800 px-6 py-4 rounded-lg relative mb-6 shadow-input" role="alert">
+            <div class="bg-red-50 border-l-4 border-error text-red-800 px-4 sm:px-6 py-3 sm:py-4 rounded-lg relative mb-4 sm:mb-6 shadow-input" role="alert">
                 <div class="flex items-center">
                     <i class="fas fa-exclamation-circle text-error mr-3"></i>
-                    <span class="font-medium"><?php echo $error_message; ?></span>
+                    <span class="font-medium text-sm sm:text-base"><?php echo $error_message; ?></span>
                 </div>
             </div>
         <?php endif; ?>
         
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
             <!-- Profile Picture Section -->
-            <div class="bg-sidebar-bg rounded-2xl shadow-card p-8 col-span-1 border border-border">
-                <div class="flex items-center mb-6">
-                    <i class="fas fa-camera text-sidebar-accent mr-3 text-xl"></i>
-                    <h2 class="text-2xl font-semibold text-primary-foreground font-playfair">Profile Picture</h2>
+            <div class="bg-white rounded-xl shadow-sidebar border border-sidebar-border p-4 sm:p-6 col-span-1 lg:col-span-1">
+                <div class="flex items-center mb-4 sm:mb-6">
+                    <i class="fas fa-camera text-sidebar-accent mr-3 text-lg sm:text-xl"></i>
+                    <h2 class="text-lg sm:text-xl font-semibold text-sidebar-text">Profile Picture</h2>
                 </div>
                 <div class="flex flex-col items-center">
                     <?php if (!empty($employee['profile_picture'])): ?>
                         <img id="profile-preview" 
                              src="../profile_picture/<?php echo $employee['profile_picture']; ?>" 
-                             alt="Profile" class="w-40 h-40 rounded-full object-cover border-4 border-border shadow-card transition-all duration-300 group-hover:shadow-lg">
+                             alt="Profile" class="w-32 h-32 sm:w-40 sm:h-40 rounded-full object-cover border-4 border-sidebar-border shadow-card transition-all duration-300 group-hover:shadow-lg">
                     <?php else: ?>
-                        <div id="profile-preview" class="w-40 h-40 rounded-full bg-sidebar-accent flex items-center justify-center border-4 border-border shadow-card transition-all duration-300 group-hover:shadow-lg">
-                            <span class="text-white text-2xl font-bold font-inter">
+                        <div id="profile-preview" class="w-32 h-32 sm:w-40 sm:h-40 rounded-full bg-sidebar-accent flex items-center justify-center border-4 border-sidebar-border shadow-card transition-all duration-300 group-hover:shadow-lg">
+                            <span class="text-white text-xl sm:text-2xl font-bold">
                                 <?php echo strtoupper(substr($employee['first_name'], 0, 1) . substr($employee['last_name'], 0, 1)); ?>
                             </span>
                         </div>
@@ -468,6 +430,7 @@ unset($_SESSION['error_message']);
                         <div class="mb-6">
                             <label class="block text-primary-foreground font-medium mb-3 font-inter" for="profile_picture">Upload New Picture</label>
                             <input type="file" id="profile_picture" name="profile_picture" 
+                                   class="w-full px-4 py-3 border border-input-border rounded-xl focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-primary"
                                    class="w-full px-4 py-3 border border-input-border rounded-xl focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-primary file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-secondary file:text-secondary-foreground hover:file:bg-sidebar-hover"
                                    accept="image/*">
                         </div>
@@ -493,10 +456,10 @@ unset($_SESSION['error_message']);
             </div>
             
             <!-- Personal Details Section -->
-            <div class="bg-sidebar-bg rounded-2xl shadow-card p-8 col-span-2 border border-border">
-                <div class="flex items-center mb-6">
-                    <i class="fas fa-user-edit text-sidebar-accent mr-3 text-xl"></i>
-                    <h2 class="text-2xl font-semibold text-primary-foreground font-playfair">Personal Details</h2>
+            <div class="bg-white rounded-xl shadow-sidebar border border-sidebar-border p-4 sm:p-6 col-span-1 lg:col-span-2">
+                <div class="flex items-center mb-4 sm:mb-6">
+                    <i class="fas fa-user-edit text-sidebar-accent mr-3 text-lg sm:text-xl"></i>
+                    <h2 class="text-lg sm:text-xl font-semibold text-sidebar-text">Personal Details</h2>
                 </div>
                 <form method="post" id="personal-details-form">
                     <input type="hidden" name="update_personal" value="1">
@@ -571,16 +534,16 @@ unset($_SESSION['error_message']);
             </div>
             
             <!-- Change Password Section -->
-            <div class="bg-sidebar-bg rounded-2xl shadow-card p-8 col-span-1 lg:col-span-3 border border-border">
-                <div class="flex items-center mb-6">
-                    <i class="fas fa-lock text-sidebar-accent mr-3 text-xl"></i>
-                    <h2 class="text-2xl font-semibold text-primary-foreground font-playfair">Change Password</h2>
+            <div class="bg-white rounded-xl shadow-sidebar border border-sidebar-border p-4 sm:p-6 col-span-1 lg:col-span-3">
+                <div class="flex items-center mb-4 sm:mb-6">
+                    <i class="fas fa-lock text-sidebar-accent mr-3 text-lg sm:text-xl"></i>
+                    <h2 class="text-lg sm:text-xl font-semibold text-sidebar-text">Change Password</h2>
                 </div>
                 <form method="post" id="password-form">
                     <input type="hidden" name="update_password" value="1">
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <div class="space-y-2">
-                            <label for="current_password" class="block text-primary-foreground font-medium font-inter">Current Password</label>
+                            <label for="current_password" class="block text-sm sm:text-base font-medium text-gray-700">Current Password</label>
                             <div class="relative">
                                 <input type="password" id="current_password" name="current_password" required
                                        class="w-full px-4 py-3 pr-12 border border-input-border rounded-xl focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-primary">
@@ -590,7 +553,7 @@ unset($_SESSION['error_message']);
                             </div>
                         </div>
                         <div class="space-y-2">
-                            <label for="new_password" class="block text-primary-foreground font-medium font-inter">New Password</label>
+                            <label for="new_password" class="block text-sm sm:text-base font-medium text-gray-700">New Password</label>
                             <div class="relative">
                                 <input type="password" id="new_password" name="new_password" required minlength="6"
                                        class="w-full px-4 py-3 pr-12 border border-input-border rounded-xl focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-primary">
@@ -600,7 +563,7 @@ unset($_SESSION['error_message']);
                             </div>
                         </div>
                         <div class="space-y-2">
-                            <label for="confirm_password" class="block text-primary-foreground font-medium font-inter">Confirm Password</label>
+                            <label for="confirm_password" class="block text-sm sm:text-base font-medium text-gray-700">Confirm Password</label>
                             <div class="relative">
                                 <input type="password" id="confirm_password" name="confirm_password" required minlength="6"
                                        class="w-full px-4 py-3 pr-12 border border-input-border rounded-xl focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-primary">
