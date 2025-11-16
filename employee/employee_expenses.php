@@ -1804,6 +1804,146 @@ function unarchiveExpense(expenseId) {
 }
     </script>
     <script src="tailwind.js"></script>
+    <script>
+// Override the sidebar.js mobile functionality with our own
+document.addEventListener('DOMContentLoaded', function() {
+  // Wait a bit for sidebar.js to load, then override its functionality
+  setTimeout(function() {
+    // Get all elements
+    const sidebar = document.getElementById("sidebar");
+    const overlay = document.getElementById("mobile-overlay");
+    const mobileMenuBtn = document.getElementById('mobile-hamburger');
+    
+    console.log('Initializing mobile menu override...');
+    console.log('Sidebar:', sidebar);
+    console.log('Overlay:', overlay);
+    console.log('Mobile button:', mobileMenuBtn);
+    
+    // Remove any existing event listeners by cloning the button
+    if (mobileMenuBtn) {
+      const newMobileMenuBtn = mobileMenuBtn.cloneNode(true);
+      mobileMenuBtn.parentNode.replaceChild(newMobileMenuBtn, mobileMenuBtn);
+      
+      // Add our own event listener
+      newMobileMenuBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        console.log('Mobile hamburger clicked - our handler');
+        console.log('Sidebar classes before:', sidebar.className);
+        
+        if (sidebar.classList.contains("-translate-x-full")) {
+          // Show sidebar with full UI
+          sidebar.classList.remove("-translate-x-full");
+          sidebar.classList.add("translate-x-0");
+          sidebar.classList.remove("w-16");
+          sidebar.classList.add("w-64");
+          
+          // Show all text in navigation links
+          document.querySelectorAll(".sidebar-link span").forEach(el => {
+            el.classList.remove("hidden");
+          });
+          
+          // Show menu section headers
+          document.querySelectorAll(".menu-header").forEach(el => {
+            el.classList.remove("hidden");
+          });
+          
+          // Show logo and title in the header
+          const headerElements = document.querySelectorAll("#sidebar > div:first-child > *");
+          headerElements.forEach(el => {
+            el.classList.remove("hidden");
+          });
+          
+          // Show user profile text
+          const userProfileText = document.querySelectorAll("#sidebar > div:nth-child(2) > div:not(:first-child)");
+          userProfileText.forEach(el => {
+            el.classList.remove("hidden");
+          });
+          
+          // Restore original navigation link styling
+          document.querySelectorAll(".sidebar-link").forEach(el => {
+            el.classList.remove("justify-center");
+            el.classList.remove("px-0");
+            el.classList.add("px-5");
+          });
+          
+          // Show overlay
+          if (overlay) {
+            overlay.classList.remove("hidden");
+          }
+          
+          console.log('Sidebar shown');
+        } else {
+          // Hide sidebar
+          sidebar.classList.remove("translate-x-0");
+          sidebar.classList.add("-translate-x-full");
+          
+          // Hide overlay
+          if (overlay) {
+            overlay.classList.add("hidden");
+          }
+          
+          console.log('Sidebar hidden');
+        }
+      });
+    }
+    
+    // Close sidebar when clicking outside on mobile
+    document.addEventListener('click', function(event) {
+      if (window.innerWidth < 768 && 
+          sidebar && !sidebar.contains(event.target) && 
+          !event.target.closest('#mobile-hamburger')) {
+        sidebar.classList.remove('translate-x-0');
+        sidebar.classList.add('-translate-x-full');
+        if (overlay) {
+          overlay.classList.add('hidden');
+        }
+      }
+    });
+    
+    // Close sidebar when overlay is clicked
+    if (overlay) {
+      overlay.addEventListener('click', function() {
+        sidebar.classList.remove('translate-x-0');
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+      });
+    }
+    
+    // Handle window resize
+    window.addEventListener('resize', function() {
+      if (window.innerWidth >= 768) {
+        // Show sidebar on desktop
+        if (sidebar) {
+          sidebar.classList.remove('-translate-x-full');
+          sidebar.classList.add('translate-x-0');
+        }
+        if (overlay) {
+          overlay.classList.add('hidden');
+        }
+      } else {
+        // Hide sidebar on mobile
+        if (sidebar) {
+          sidebar.classList.remove('translate-x-0');
+          sidebar.classList.add('-translate-x-full');
+        }
+        if (overlay) {
+          overlay.classList.add('hidden');
+        }
+      }
+    });
+    
+    // Initialize mobile state
+    if (window.innerWidth < 768) {
+      if (sidebar) {
+        sidebar.classList.remove('translate-x-0');
+        sidebar.classList.add('-translate-x-full');
+      }
+    }
+  }, 100); // Small delay to ensure sidebar.js has loaded
+});
+    </script>
     <script src="sidebar.js"></script>
   </div>
 </body>
