@@ -585,6 +585,8 @@ unset($_SESSION['error_message']);
         </div>
     </div>
 
+    // ... (The entire existing PHP and HTML code remains unchanged above this point)
+
     <script src="sidebar.js"></script>
     <script>
         // Profile picture preview
@@ -668,9 +670,167 @@ unset($_SESSION['error_message']);
             updateSubmitButtonState();
         }
         
-        // Name validation
+        // --- START: NEW INPUT VALIDATION FUNCTIONS ---
+        
+        /**
+         * Cleans name input: no numbers, no consecutive spaces after 2 characters.
+         * @param {Event} e - The input event.
+         */
+        function validateNameInput(e) {
+            let input = e.target;
+            let value = input.value;
+            let cursorPosition = input.selectionStart;
+
+            // 1. No numbers allowed
+            let sanitized = value.replace(/[0-9]/g, '');
+
+            // 2. No consecutive spaces allowed unless there is a 2 character input already
+            // This regex specifically targets '  ' (two or more spaces)
+            if (sanitized.length > 2) {
+                const originalLength = sanitized.length;
+                sanitized = sanitized.replace(/ {2,}/g, ' ');
+
+                // Adjust cursor position if characters were removed before it
+                const diff = originalLength - sanitized.length;
+                if (diff > 0 && cursorPosition > 0) {
+                    // Try to guess where the cursor should be
+                    const beforeCursor = value.substring(0, cursorPosition);
+                    const newBeforeCursor = beforeCursor.replace(/[0-9]| {2,}/g, (match) => {
+                        // If it's a number, it's removed
+                        if (/[0-9]/.test(match)) return '';
+                        // If it's multiple spaces, replace with one space
+                        if (/ {2,}/.test(match)) return ' ';
+                        return match;
+                    });
+                    cursorPosition = newBeforeCursor.length;
+                }
+            }
+            
+            if (value !== sanitized) {
+                input.value = sanitized;
+                input.setSelectionRange(cursorPosition, cursorPosition);
+            }
+
+            // Client-side visual validation
+            const field = input.id;
+            const cleanValue = input.value.trim();
+
+            if ((field === 'first_name' || field === 'last_name') && !cleanValue) {
+                showError(field, 'This field is required');
+            } else if (cleanValue && !namePattern.test(cleanValue)) {
+                showError(field, 'Can only contain letters, spaces, hyphens, or apostrophes.');
+            } else {
+                showError(field, '');
+            }
+        }
+        
+        /**
+         * Cleans password input: no spaces allowed.
+         * @param {Event} e - The input event.
+         */
+        function validatePasswordInput(e) {
+            let input = e.target;
+            let value = input.value;
+            let sanitized = value.replace(/\s/g, ''); // Remove all spaces
+            
+            if (value !== sanitized) {
+                input.value = sanitized;
+            }
+        }
+        
+        /**
+         * Cleans phone number input: only numbers and optional leading '+'. Enforces PH number format (09...).
+         * @param {Event} e - The input event.
+         */
+        function validatePhoneNumberInput(e) {
+            let input = e.target;
+            let value = input.value;
+            let sanitized = value.replace(/[^0-9+]/g, ''); // Allow only numbers and '+'
+
+            // Further restrict to common PH formats: 09... or +639...
+            if (sanitized.startsWith('+') && sanitized.length > 1) {
+                sanitized = '+' + sanitized.substring(1).replace(/\+/g, '');
+            } else {
+                sanitized = sanitized.replace(/\+/g, '');
+            }
+            
+            if (value !== sanitized) {
+                input.value = sanitized;
+            }
+
+            // Client-side visual validation
+            const cleanValue = input.value.trim();
+            if (!cleanValue) {
+                showError('phone_number', 'Phone number is required');
+                return;
+            }
+            if (!phonePattern.test(cleanValue)) {
+                showError('phone_number', 'Phone number must be 11 digits (09xxxxxxxxx) or 13 characters (+639xxxxxxxxx).');
+            } else {
+                // If the pattern is met, proceed to check_credentials (existing logic)
+            }
+            // The existing `phoneInput.addEventListener('input', async function() { ... })` handles the DB check
+        }
+        
+        /**
+         * Cleans email input: no consecutive multiple spaces allowed.
+         * @param {Event} e - The input event.
+         */
+        function validateEmailInput(e) {
+            let input = e.target;
+            let value = input.value;
+            let sanitized = value.replace(/ {2,}/g, ' '); // Replace 2 or more consecutive spaces with a single space
+            
+            if (value !== sanitized) {
+                input.value = sanitized;
+            }
+
+            // Client-side visual validation
+            const cleanValue = input.value.trim();
+            if (!cleanValue) {
+                showError('email', 'Email is required');
+                return;
+            }
+            if (!emailPattern.test(cleanValue)) {
+                showError('email', 'Please enter a valid email address');
+            } else {
+                // If the pattern is met, proceed to check_credentials (existing logic)
+            }
+            // The existing `emailInput.addEventListener('input', async function() { ... })` handles the DB check
+        }
+        
+        // Apply new input listeners
         ['first_name', 'last_name', 'middle_name', 'suffix'].forEach(field => {
             const input = document.getElementById(field);
+            if (input) {
+                input.addEventListener('input', validateNameInput);
+            }
+        });
+        
+        ['current_password', 'new_password', 'confirm_password'].forEach(field => {
+            const input = document.getElementById(field);
+            if (input) {
+                input.addEventListener('input', validatePasswordInput);
+            }
+        });
+
+        const phoneInput = document.getElementById('phone_number');
+        if (phoneInput) {
+            phoneInput.addEventListener('input', validatePhoneNumberInput);
+        }
+        
+        const emailInput = document.getElementById('email');
+        if (emailInput) {
+            emailInput.addEventListener('input', validateEmailInput);
+        }
+
+        // --- END: NEW INPUT VALIDATION FUNCTIONS ---
+
+        // Name validation (Existing logic for the server-side patterns/requirements)
+        ['first_name', 'last_name', 'middle_name', 'suffix'].forEach(field => {
+            const input = document.getElementById(field);
+            // The logic below is still needed to perform the required *visual* validation (showError)
+            // even if `validateNameInput` handles the *cleaning* of the input in real-time.
             input.addEventListener('input', function() {
                 const value = this.value.trim();
                 if ((field === 'first_name' || field === 'last_name') && !value) {
@@ -683,8 +843,8 @@ unset($_SESSION['error_message']);
             });
         });
         
-        // Phone number validation
-        const phoneInput = document.getElementById('phone_number');
+        // Phone number validation (Existing logic for DB check)
+        
         phoneInput.addEventListener('input', async function() {
             const value = this.value.trim();
             if (!value) {
@@ -719,8 +879,8 @@ unset($_SESSION['error_message']);
             }
         });
         
-        // Email validation
-        const emailInput = document.getElementById('email');
+        // Email validation (Existing logic for DB check)
+        
         emailInput.addEventListener('input', async function() {
             const value = this.value.trim();
             if (!value) {
@@ -755,7 +915,7 @@ unset($_SESSION['error_message']);
             }
         });
         
-        // Form submission validation
+        // Form submission validation (Existing logic)
         document.getElementById('personal-details-form').addEventListener('submit', function(e) {
             let hasError = false;
             let hasChanges = false;
@@ -821,7 +981,7 @@ unset($_SESSION['error_message']);
             }
         });
 
-        // Password match validation
+        // Password match validation (Existing logic)
         document.getElementById('password-form').addEventListener('submit', function(e) {
             const newPassword = document.getElementById('new_password').value;
             const confirmPassword = document.getElementById('confirm_password').value;
@@ -832,13 +992,13 @@ unset($_SESSION['error_message']);
             }
         });
         
-        // Sidebar toggle for mobile
+        // Sidebar toggle for mobile (Existing logic)
         document.getElementById('mobile-hamburger').addEventListener('click', function() {
             const sidebar = document.getElementById('sidebar');
             sidebar.classList.toggle('-translate-x-full');
         });
         
-        // Add subtle animations on form focus
+        // Add subtle animations on form focus (Existing logic)
         const inputs = document.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"], input[type="date"], input[type="password"]');
         inputs.forEach(input => {
             input.addEventListener('focus', function() {
@@ -850,7 +1010,7 @@ unset($_SESSION['error_message']);
             });
         });
         
-        // Suffix suggestions functionality
+        // Suffix suggestions functionality (Existing logic)
         const suffixOptions = ["Jr", "Sr", "II", "III", "IV"];
         
         function setupSuffixTypeahead() {
@@ -887,7 +1047,7 @@ unset($_SESSION['error_message']);
                     div.addEventListener('click', () => {
                         suffixInput.value = option;
                         suggestionsContainer.style.display = 'none';
-                        validateName('suffix', false);
+                        validateNameInput({ target: suffixInput }); // Use the new validator
                     });
                     suggestionsContainer.appendChild(div);
                 });
@@ -930,7 +1090,7 @@ unset($_SESSION['error_message']);
                     e.preventDefault();
                     suffixInput.value = activeSuggestion.textContent;
                     suggestionsContainer.style.display = 'none';
-                    validateName('suffix', false);
+                    validateNameInput({ target: suffixInput }); // Use the new validator
                     return;
                 } else if (e.key === 'Escape') {
                     suggestionsContainer.style.display = 'none';
@@ -959,7 +1119,7 @@ unset($_SESSION['error_message']);
                         div.addEventListener('click', () => {
                             suffixInput.value = option;
                             suggestionsContainer.style.display = 'none';
-                            validateName('suffix', false);
+                            validateNameInput({ target: suffixInput }); // Use the new validator
                         });
                         suggestionsContainer.appendChild(div);
                     });
@@ -973,7 +1133,7 @@ unset($_SESSION['error_message']);
             
         });
         
-        // Profile picture upload validation
+        // Profile picture upload validation (Existing logic)
 const profilePictureInput = document.getElementById('profile_picture');
 const updatePictureBtn = document.getElementById('update-picture-btn');
 
@@ -997,7 +1157,7 @@ updateProfilePictureButtonState();
 // Update state when file input changes
 profilePictureInput.addEventListener('change', updateProfilePictureButtonState);
 
-// Profile picture form submission validation
+// Profile picture form submission validation (Existing logic)
 document.querySelector('form[enctype="multipart/form-data"]').addEventListener('submit', function(e) {
     const profilePicture = document.getElementById('profile_picture');
     
@@ -1045,7 +1205,7 @@ document.querySelector('form[enctype="multipart/form-data"]').addEventListener('
     return true;
 });
 
-// Enhanced Profile Picture Preview with File Validation
+// Enhanced Profile Picture Preview with File Validation (Existing logic)
 document.getElementById('profile_picture').addEventListener('change', function(e) {
     const file = e.target.files[0];
     const maxSize = 2 * 1024 * 1024; // 2MB
@@ -1092,7 +1252,7 @@ document.getElementById('profile_picture').addEventListener('change', function(e
     }
 });
 
-// Remove Profile Picture functionality
+// Remove Profile Picture functionality (Existing logic)
 document.getElementById('remove-profile-picture')?.addEventListener('click', function() {
     Swal.fire({
         title: 'Remove Profile Picture?',
@@ -1152,7 +1312,7 @@ document.getElementById('remove-profile-picture')?.addEventListener('click', fun
     });
 });
 
-// Override the sidebar.js mobile functionality with our own
+// Override the sidebar.js mobile functionality with our own (Existing logic)
 document.addEventListener('DOMContentLoaded', function() {
   // Wait a bit for sidebar.js to load, then override its functionality
   setTimeout(function() {
