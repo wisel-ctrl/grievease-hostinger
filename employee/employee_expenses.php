@@ -625,6 +625,24 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
                             <i class="fas fa-filter text-xl"></i>
                             <span class="<?php echo ($category_filter || $status_filter) ? '' : 'hidden'; ?> absolute top-1 right-1 h-2 w-2 bg-sidebar-accent rounded-full"></span>
                         </button>
+                        
+                        <!-- Mobile Filter Window -->
+                        <div id="mobileFilterDropdown" class="filter-content absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border hidden p-4">
+                            <div class="space-y-4">
+                                <!-- Category Filter -->
+                                <div>
+                                    <h5 class="text-sm font-medium text-sidebar-text mb-2">Category</h5>
+                                    <select name="category" class="w-full px-3 py-2 border border-sidebar-border rounded-md text-sm" onchange="loadExpenses(1)">
+                                        <option value="">All Categories</option>
+                                        <option value="Supplies" <?php echo $category_filter === 'Supplies' ? 'selected' : ''; ?>>Supplies</option>
+                                        <option value="Utilities" <?php echo $category_filter === 'Utilities' ? 'selected' : ''; ?>>Utilities</option>
+                                        <option value="Salaries" <?php echo $category_filter === 'Salaries' ? 'selected' : ''; ?>>Salaries</option>
+                                        <option value="Maintenance" <?php echo $category_filter === 'Maintenance' ? 'selected' : ''; ?>>Maintenance</option>
+                                        <option value="Other" <?php echo $category_filter === 'Other' ? 'selected' : ''; ?>>Other</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1389,7 +1407,16 @@ function escapeHtml(unsafe) {
 
 function applyFilters() {
     loadExpenses(1);
-    document.getElementById('filterDropdown').classList.add('hidden');
+    // Hide both desktop and mobile filter dropdowns
+    const desktopDropdown = document.getElementById('filterDropdown');
+    const mobileDropdown = document.getElementById('mobileFilterDropdown');
+    
+    if (desktopDropdown) {
+        desktopDropdown.classList.add('hidden');
+    }
+    if (mobileDropdown) {
+        mobileDropdown.classList.add('hidden');
+    }
 }
 
 // Function to sort table
@@ -1426,7 +1453,19 @@ function sortTable(column) {
       
       // Function to toggle filter dropdown
       function toggleFilter() {
-        document.getElementById('filterDropdown').classList.toggle('hidden');
+        // Get both dropdowns
+        const desktopDropdown = document.getElementById('filterDropdown');
+        const mobileDropdown = document.getElementById('mobileFilterDropdown');
+        
+        // Toggle desktop dropdown
+        if (desktopDropdown) {
+          desktopDropdown.classList.toggle('hidden');
+        }
+        
+        // Toggle mobile dropdown
+        if (mobileDropdown) {
+          mobileDropdown.classList.toggle('hidden');
+        }
       }
       
       
