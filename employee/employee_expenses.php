@@ -257,6 +257,44 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
           width: calc(100% - 4rem);
         }
 
+        /* Mobile responsive sidebar styles */
+        @media (max-width: 768px) {
+          #sidebar {
+            transform: translateX(-100%);
+            -webkit-transform: translateX(-100%);
+          }
+          
+          #sidebar.translate-x-0 {
+            transform: translateX(0);
+            -webkit-transform: translateX(0);
+          }
+          
+          #sidebar.-translate-x-full {
+            transform: translateX(-100%);
+            -webkit-transform: translateX(-100%);
+          }
+          
+          #main-content {
+            margin-left: 0 !important;
+            width: 100% !important;
+          }
+          
+          .mobile-menu-btn {
+            display: block;
+          }
+        }
+        
+        /* Touch-friendly targets for mobile */
+        @media (max-width: 768px) {
+          .sidebar-link {
+            min-height: 44px;
+          }
+          
+          button, .btn {
+            min-height: 44px;
+          }
+        }
+
         /* Modal scroll container styles */
         .modal-scroll-container {
           scrollbar-width: thin;
@@ -387,7 +425,11 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
   <div id="main-content" class="ml-64 p-6 bg-gray-50 min-h-screen transition-all duration-300 main-content">
     <!-- Header with breadcrumb and welcome message -->
     <div class="flex justify-between items-center mb-6 bg-white p-5 rounded-lg shadow-sidebar">
-      <div>
+      <div class="flex items-center">
+        <!-- Mobile menu button -->
+        <button id="mobile-menu-btn" class="md:hidden p-2 mr-3 bg-gray-100 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-200 transition-all duration-300">
+          <i class="fas fa-bars text-lg"></i>
+        </button>
         <h1 class="text-2xl font-bold text-sidebar-text">Expense Tracking</h1>
       </div>
     </div>
