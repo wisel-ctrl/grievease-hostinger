@@ -297,12 +297,7 @@ $profile_picture = $employee['profile_picture'] ? '../' . $employee['profile_pic
     
   <!-- Footer -->
   <div class="relative bottom-0 left-0 right-0 px-5 py-3 border-t border-sidebar-border bg-gradient-to-r from-navy to-primary">
-    <div class="flex justify-between items-center">
-      <p class="text-xs text-sidebar-text opacity-60">© 2025 GrievEase</p>
-      <div class="text-xs text-sidebar-accent">
-        <i class="fas fa-heart"></i> With Compassion
-      </div>
-    </div>
+    
   </div>
 </nav>
 
