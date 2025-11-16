@@ -295,10 +295,7 @@ $profile_picture = $employee['profile_picture'] ? '../' . $employee['profile_pic
     </ul>
   </div>
     
-  <!-- Footer -->
-  <div class="relative bottom-0 left-0 right-0 px-5 py-3 border-t border-sidebar-border bg-gradient-to-r from-navy to-primary">
-    
-  </div>
+
 </nav>
 
 <!-- Create mobile menu button -->
