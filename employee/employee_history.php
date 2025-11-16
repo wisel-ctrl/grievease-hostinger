@@ -167,7 +167,7 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
 }
 /* Add this to your existing styles */
 #sidebar {
-  transition: width 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
+  transition: width 0.3s ease, opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
 }
 
 #main-content {
@@ -185,12 +185,51 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
 .invisible {
   visibility: hidden;
 }
+
 .w-\[calc\(100\%-16rem\)\] {
   width: calc(100% - 16rem);
 }
 
 .w-\[calc\(100\%-4rem\)\] {
   width: calc(100% - 4rem);
+}
+
+/* Mobile-specific styles to fix sidebar rendering */
+@media (max-width: 768px) {
+  #sidebar {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    height: 100vh !important;
+    width: 16rem !important;
+    z-index: 50 !important;
+    transform: translateX(-100%);
+    background-color: white !important;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+  }
+  
+  #sidebar.translate-x-0 {
+    transform: translateX(0) !important;
+  }
+  
+  #sidebar.-translate-x-full {
+    transform: translateX(-100%) !important;
+  }
+  
+  #main-content {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+  
+  /* Hide in-sidebar hamburger on mobile */
+  #hamburger-menu {
+    display: none !important;
+  }
+  
+  /* Show mobile hamburger on mobile */
+  #mobile-hamburger {
+    display: block !important;
+  }
 }
   </style>
 </head>
@@ -6454,7 +6493,73 @@ document.addEventListener('DOMContentLoaded', function() {
         chapelTotalCost.textContent = total.toLocaleString();
     }
 });
-</script>
+
+// Initialize mobile sidebar functionality
+document.addEventListener('DOMContentLoaded', function() {
+  // Ensure mobile sidebar initialization runs after all other scripts
+  setTimeout(function() {
+    const mobileMenuBtn = document.getElementById('mobile-hamburger');
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.getElementById('main-content');
+    
+    console.log('Mobile sidebar initialization', { mobileMenuBtn, sidebar, mainContent });
+    
+    if (mobileMenuBtn && sidebar) {
+      // Remove any existing event listeners to prevent duplicates
+      mobileMenuBtn.removeEventListener('click', window.toggleMobileSidebar);
+      
+      // Define the toggle function if it doesn't exist
+      window.toggleMobileSidebar = window.toggleMobileSidebar || function() {
+        const overlay = document.getElementById('mobile-overlay');
+        
+        console.log("toggleMobileSidebar called");
+        console.log("Current sidebar classes:", sidebar.className);
+        
+        if (sidebar.classList.contains("-translate-x-full")) {
+          // Show sidebar
+          sidebar.classList.remove("-translate-x-full");
+          sidebar.classList.add("translate-x-0");
+          if (overlay) {
+            overlay.classList.remove("hidden");
+          }
+          console.log("Showing sidebar");
+        } else {
+          // Hide sidebar
+          sidebar.classList.remove("translate-x-0");
+          sidebar.classList.add("-translate-x-full");
+          if (overlay) {
+            overlay.classList.add("hidden");
+          }
+          console.log("Hiding sidebar");
+        }
+      };
+      
+      // Add event listener
+      mobileMenuBtn.addEventListener('click', window.toggleMobileSidebar);
+      console.log("Mobile hamburger event listener added");
+      
+      // Set initial state for mobile
+      if (window.innerWidth < 768) {
+        sidebar.classList.add("-translate-x-full");
+        sidebar.classList.remove("translate-x-0");
+        if (mainContent) {
+          mainContent.style.marginLeft = '0';
+          mainContent.style.width = '100%';
+        }
+      }
+    }
+    
+    // Handle overlay click
+    const overlay = document.getElementById('mobile-overlay');
+    if (overlay) {
+      overlay.addEventListener('click', function() {
+        if (window.innerWidth < 768 && window.toggleMobileSidebar) {
+          window.toggleMobileSidebar();
+        }
+      });
+    }
+  }, 100); // Small delay to ensure all scripts are loaded
+});
 
 </body> 
 </html>
