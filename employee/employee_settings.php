@@ -625,13 +625,13 @@ unset($_SESSION['error_message']);
                 icon.classList.add('fa-eye');
             }
         }
-        
-        // Validation patterns
+
+        // Real-time validation
         const namePattern = /^[a-zA-Z\s'-]+$/;
-        const phonePattern = /^09[0-9]{9}$/;
+        const phonePattern = /^\+63[0-9]{10}$|^[0-9]{11}$/;
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        
-        // Store original values
+        const originalEmail = '<?php echo htmlspecialchars($employee['email']); ?>';
+        const originalPhone = '<?php echo htmlspecialchars($employee['phone_number']); ?>';
         const originalValues = {
             first_name: '<?php echo htmlspecialchars($employee['first_name']); ?>',
             last_name: '<?php echo htmlspecialchars($employee['last_name']); ?>',
@@ -641,8 +641,6 @@ unset($_SESSION['error_message']);
             phone_number: '<?php echo htmlspecialchars($employee['phone_number']); ?>',
             email: '<?php echo htmlspecialchars($employee['email']); ?>'
         };
-        const originalPhone = originalValues.phone_number;
-        const originalEmail = originalValues.email;
         const submitButton = document.querySelector('#personal-details-form button[type="submit"]');
         
         function updateSubmitButtonState() {
@@ -670,59 +668,31 @@ unset($_SESSION['error_message']);
             updateSubmitButtonState();
         }
         
-        // Enhanced name validation
+        // Name validation
         ['first_name', 'last_name', 'middle_name', 'suffix'].forEach(field => {
             const input = document.getElementById(field);
             input.addEventListener('input', function() {
-                const value = this.value;
-                const trimmedValue = value.trim();
-                
-                if ((field === 'first_name' || field === 'last_name') && !trimmedValue) {
+                const value = this.value.trim();
+                if ((field === 'first_name' || field === 'last_name') && !value) {
                     showError(field, 'This field is required');
-                    return;
-                }
-                
-                // Check for numbers
-                if (/[0-9]/.test(value)) {
-                    showError(field, 'Numbers are not allowed in name fields');
-                    return;
-                }
-                
-                // Check for consecutive spaces (unless there are at least 2 non-space characters)
-                const nonSpaceChars = value.replace(/\s/g, '');
-                if (/\s{2,}/.test(value) && nonSpaceChars.length < 2) {
-                    showError(field, 'Consecutive spaces not allowed unless there are at least 2 characters');
-                    return;
-                }
-                
-                if (trimmedValue && !namePattern.test(trimmedValue)) {
+                } else if (value && !namePattern.test(value)) {
                     showError(field, 'Can only contain letters, spaces, hyphens, or apostrophes');
-                    return;
+                } else {
+                    showError(field, '');
                 }
-                
-                showError(field, '');
             });
         });
         
-        // Enhanced phone number validation
+        // Phone number validation
         const phoneInput = document.getElementById('phone_number');
         phoneInput.addEventListener('input', async function() {
             const value = this.value.trim();
-            
             if (!value) {
                 showError('phone_number', 'Phone number is required');
                 return;
             }
-            
-            // Check for non-digit characters
-            if (!/^[0-9]+$/.test(value)) {
-                showError('phone_number', 'Phone number can only contain numbers');
-                return;
-            }
-            
-            // Check for Philippine number format (must start with 09 and be 11 digits)
             if (!phonePattern.test(value)) {
-                showError('phone_number', 'Phone number must start with 09 and be 11 digits');
+                showError('phone_number', 'Phone number must be 11 digits, or 13 characters starting with +63');
                 return;
             }
             
@@ -749,22 +719,14 @@ unset($_SESSION['error_message']);
             }
         });
         
-        // Enhanced email validation
+        // Email validation
         const emailInput = document.getElementById('email');
         emailInput.addEventListener('input', async function() {
             const value = this.value.trim();
-            
             if (!value) {
                 showError('email', 'Email is required');
                 return;
             }
-            
-            // Check for consecutive multiple spaces
-            if (/\s{2,}/.test(value)) {
-                showError('email', 'Consecutive spaces are not allowed in email');
-                return;
-            }
-            
             if (!emailPattern.test(value)) {
                 showError('email', 'Please enter a valid email address');
                 return;
@@ -793,35 +755,6 @@ unset($_SESSION['error_message']);
             }
         });
         
-        // Enhanced password validation (no spaces allowed)
-        ['current_password', 'new_password', 'confirm_password'].forEach(field => {
-            const input = document.getElementById(field);
-            input.addEventListener('input', function() {
-                const value = this.value;
-                
-                // Check for spaces
-                if (/\s/.test(value)) {
-                    // For password fields, we don't show error directly but prevent spaces
-                    this.value = value.replace(/\s/g, '');
-                    return;
-                }
-                
-                // Clear any existing password-related errors
-                const errorElement = document.getElementById(`${field}_error`);
-                if (errorElement && errorElement.textContent.includes('spaces')) {
-                    errorElement.textContent = '';
-                    errorElement.classList.add('hidden');
-                }
-            });
-            
-            // Also prevent paste with spaces
-            input.addEventListener('paste', function(e) {
-                e.preventDefault();
-                const pastedData = (e.clipboardData || window.clipboardData).getData('text');
-                this.value += pastedData.replace(/\s/g, '');
-            });
-        });
-        
         // Form submission validation
         document.getElementById('personal-details-form').addEventListener('submit', function(e) {
             let hasError = false;
@@ -847,7 +780,7 @@ unset($_SESSION['error_message']);
                 showError('phone_number', 'Phone number is required');
                 hasError = true;
             } else if (!phonePattern.test(phone)) {
-                showError('phone_number', 'Phone number must start with 09 and be 11 digits');
+                showError('phone_number', 'Phone number must be 11 digits, or 13 characters starting with +63');
                 hasError = true;
             }
             if (phone !== originalValues.phone_number) {
