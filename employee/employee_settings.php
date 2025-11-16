@@ -585,9 +585,7 @@ unset($_SESSION['error_message']);
         </div>
     </div>
 
-    // ... (The entire existing PHP and HTML code remains unchanged above this point)
-
-    <script src="sidebar.js"></script>
+  <script src="sidebar.js"></script>
     <script>
         // Profile picture preview
         document.getElementById('profile_picture').addEventListener('change', function(e) {
