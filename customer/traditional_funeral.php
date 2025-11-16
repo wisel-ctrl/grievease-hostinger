@@ -88,8 +88,8 @@ require_once '../db_connect.php'; // Database connection
                     'id_declined' => 0
                 ];
                 
-                // Get user's life plan bookings from database (notifications)
-                $lifeplan_query = "SELECT * FROM lifeplan_booking_tb WHERE customer_id = ? ORDER BY initial_date DESC";
+                // Get user's life plan bookings from database (only unread notifications)
+                $lifeplan_query = "SELECT * FROM lifeplan_booking_tb WHERE customer_id = ? AND is_read = FALSE ORDER BY initial_date DESC";
                 $lifeplan_stmt = $conn->prepare($lifeplan_query);
                 $lifeplan_stmt->bind_param("i", $user_id);
                 $lifeplan_stmt->execute();
@@ -114,10 +114,12 @@ require_once '../db_connect.php'; // Database connection
                             break;
                     }
                 }
-
+                
                 if (isset($_SESSION['user_id'])) {
                     $user_id = $_SESSION['user_id'];
-                    $query = "SELECT status FROM booking_tb WHERE customerID = ?";
+                    
+                    // Only count unread booking notifications
+                    $query = "SELECT status FROM booking_tb WHERE customerID = ? AND is_read = FALSE";
                     $stmt = $conn->prepare($query);
                     $stmt->bind_param("i", $user_id);
                     $stmt->execute();
@@ -140,20 +142,20 @@ require_once '../db_connect.php'; // Database connection
                     }
                     $stmt->close();
                     
-                    // Get ID validation status
-                $query = "SELECT is_validated FROM valid_id_tb WHERE id = ?";
-                $stmt = $conn->prepare($query);
-                $stmt->bind_param("i", $user_id);
-                $stmt->execute();
-                $result = $stmt->get_result();
-                
-                if ($id_validation = $result->fetch_assoc()) {
-                    if ($id_validation['is_validated'] == 'no') {
-                        $notifications_count['id_validation']++;
-                        $notifications_count['total']++;
+                    // Get ID validation status (only unread)
+                    $query = "SELECT is_validated FROM valid_id_tb WHERE id = ? AND is_read = FALSE";
+                    $stmt = $conn->prepare($query);
+                    $stmt->bind_param("i", $user_id);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    
+                    if ($id_validation = $result->fetch_assoc()) {
+                        if ($id_validation['is_validated'] == 'no') {
+                            $notifications_count['id_validation']++;
+                            $notifications_count['total']++;
+                        }
                     }
-                }
-                $stmt->close();
+                    $stmt->close();
 
                 // After getting user info but before closing connection
                     if (!isset($_SESSION['branch_loc'])) {
@@ -388,10 +390,10 @@ if ($result_gcash) {
             
             <!-- User Menu -->
             <div class="hidden md:flex items-center space-x-4">
-                <a href="notification.php" class="relative text-white hover:text-yellow-600 transition-colors">
+                <a href="notification.php" id="notification-bell" class="relative text-white hover:text-yellow-600 transition-colors">
                     <i class="fas fa-bell"></i>
                     <?php if ($notifications_count['pending'] > 0 || $notifications_count['id_validation'] > 0): ?>
-                    <span class="absolute -top-2 -right-2 bg-yellow-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                    <span id="notification-count" class="absolute -top-2 -right-2 bg-yellow-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
                         <?php echo $notifications_count['pending'] + $notifications_count['id_validation']; ?>
                     </span>
                     <?php endif; ?>
@@ -3422,6 +3424,43 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    const notificationBell = document.getElementById('notification-bell');
+    const notificationCount = document.getElementById('notification-count');
+    
+    if (notificationBell && notificationCount) {
+        notificationBell.addEventListener('click', async function(e) {
+            // Only mark as read if there are notifications
+            if (notificationCount.textContent > 0) {
+                e.preventDefault();
+                
+                try {
+                    // Mark notifications as read
+                    const response = await fetch('notification/mark_notifications_seen.php');
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        // Remove the notification count badge
+                        notificationCount.remove();
+                        
+                        // Then navigate to notification page
+                        window.location.href = 'notification.php';
+                    } else {
+                        // If marking as read fails, just navigate normally
+                        window.location.href = 'notification.php';
+                    }
+                } catch (error) {
+                    console.error('Error marking notifications as read:', error);
+                    // If there's an error, just navigate normally
+                    window.location.href = 'notification.php';
+                }
+            }
+            // If no notifications, the normal link behavior will proceed
+        });
+    }
+});
+
 </script>
 
 <script>// FAQ accordion toggle
