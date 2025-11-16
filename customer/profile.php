@@ -589,35 +589,57 @@ input[name*="LastName"] {
             </div>
             
             <!-- Profile Info Positioned at Bottom of Banner -->
-            <div class="absolute bottom-0 left-0 right-0 p-6 md:p-12 z-10 flex items-end">
-            <div class="relative">
-                <div class="absolute -top-16 w-24 h-24 rounded-full border-4 border-cream overflow-hidden bg-white group">
-                    <?php if ($profile_picture && file_exists('../profile_picture/' . $profile_picture)): ?>
-                        <img src="../profile_picture/<?php echo htmlspecialchars($profile_picture); ?>" 
-                             alt="Profile Picture" 
-                             class="w-full h-full object-cover">
-                    <?php else: ?>
-                        <div class="w-full h-full bg-gray-300 flex items-center justify-center text-3xl font-bold text-gray-600">
-                            <?php echo htmlspecialchars(strtoupper(substr($first_name, 0, 1) . substr($last_name, 0, 1))); ?>
-                        </div>
-                    <?php endif; ?>
-                    <!-- Upload Button Overlay -->
-                    <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer" 
-                         onclick="document.getElementById('profile-picture-upload').click()">
-                        <span class="text-white text-xs text-center px-2">
-                            <i class="fas fa-camera text-lg mb-1"></i><br>
-                            Change Photo
-                        </span>
-                    </div>
+<div class="absolute bottom-0 left-0 right-0 p-6 md:p-12 z-10">
+    <div class="flex items-end gap-8">
+        <div class="relative pb-4">
+            <div class="w-24 h-24 rounded-full border-4 border-cream overflow-hidden bg-white group relative">
+            <?php if ($profile_picture && file_exists('../profile_picture/' . $profile_picture)): ?>
+                <img src="../profile_picture/<?php echo htmlspecialchars($profile_picture); ?>" 
+                     alt="Profile Picture" 
+                     class="w-full h-full object-cover">
+                <!-- Upload Button Overlay -->
+                <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer" 
+                     onclick="document.getElementById('profile-picture-upload').click()">
+                    <span class="text-white text-xs text-center px-2">
+                        <i class="fas fa-camera text-lg mb-1"></i><br>
+                        Change Photo
+                    </span>
                 </div>
-                <div class="ml-32">
-                    <h1 class="font-hedvig text-3xl text-white"><?php echo htmlspecialchars(ucwords($first_name . ' ' . $last_name)); ?></h1>
-                    <p class="text-white/80">
-                        Member since <?php echo date('F Y', strtotime($created_at)); ?>
-                    </p>
+            <?php else: ?>
+                <div class="w-full h-full bg-gray-300 flex items-center justify-center text-3xl font-bold text-gray-600">
+                    <?php echo htmlspecialchars(strtoupper(substr($first_name, 0, 1) . substr($last_name, 0, 1))); ?>
                 </div>
-            </div>
+                <!-- Upload Button Overlay (only show when no profile picture) -->
+                <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer" 
+                     onclick="document.getElementById('profile-picture-upload').click()">
+                    <span class="text-white text-xs text-center px-2">
+                        <i class="fas fa-camera text-lg mb-1"></i><br>
+                        Upload Photo
+                    </span>
+                </div>
+            <?php endif; ?>
         </div>
+        
+            <!-- Remove Button - Positioned at the bottom of the image -->
+            <?php if ($profile_picture && file_exists('../profile_picture/' . $profile_picture)): ?>
+            <button class="absolute -bottom-3 left-1/2 transform -translate-x-1/2 text-red-500 hover:text-red-600 active:text-red-700 rounded-full px-3 py-1 md:px-4 md:py-2 flex items-center justify-center gap-1.5 cursor-pointer transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2 z-20 whitespace-nowrap text-xs md:text-sm" 
+                 onclick="removeProfilePicture()" 
+                 title="Remove Profile Picture"
+                 type="button">
+                <i class="fas fa-trash-alt"></i>
+                <span>Remove</span>
+            </button>
+            <?php endif; ?>
+        </div>
+        
+        <div>
+            <h1 class="font-hedvig text-3xl text-white"><?php echo htmlspecialchars(ucwords($first_name . ' ' . $last_name)); ?></h1>
+            <p class="text-white/80">
+                Member since <?php echo date('F Y', strtotime($created_at)); ?>
+            </p>
+        </div>
+    </div>
+</div>
         
         <!-- Hidden file input for profile picture upload -->
         <input type="file" id="profile-picture-upload" accept="image/*" class="hidden" onchange="uploadProfilePicture(this)">
@@ -7368,6 +7390,72 @@ function formatCurrency(amount) {
     return '₱ ' + amount.toLocaleString('en-PH', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
+    });
+}
+
+
+function removeProfilePicture() {
+    Swal.fire({
+        title: 'Remove Profile Picture?',
+        text: "Are you sure you want to remove your profile picture?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, remove it!',
+        cancelButtonText: 'Cancel',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Show loading indicator
+            Swal.fire({
+                title: 'Removing...',
+                html: 'Please wait while we remove your profile picture',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            
+            // Send request to remove profile picture
+            fetch('profile/remove_profile_picture.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                Swal.close();
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Removed!',
+                        text: 'Profile picture has been removed successfully',
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        // Reload the page to show the default avatar
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: data.message || 'Failed to remove profile picture',
+                    });
+                }
+            })
+            .catch(error => {
+                Swal.close();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'An error occurred while removing the profile picture',
+                });
+                console.error('Error:', error);
+            });
+        }
     });
 }
 
