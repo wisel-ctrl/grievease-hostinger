@@ -1567,21 +1567,26 @@ function getStatusText(status) {
     document.getElementById('bookingDetailsModal').classList.remove('hidden');
     
     // Set modal header color based on status
-    const modalHeader = document.querySelector('#bookingDetailsModal .bg-yellow-600');
-    modalHeader.classList.remove('bg-yellow-600');
-    
-    switch(status.toLowerCase()) {
-        case 'pending':
-            modalHeader.classList.add('bg-yellow-600');
-            break;
-        case 'accepted':
-            modalHeader.classList.add('bg-green-600');
-            break;
-        case 'declined':
-            modalHeader.classList.add('bg-red-600');
-            break;
-        default:
-            modalHeader.classList.add('bg-gray-600');
+    const modalHeader = document.querySelector('#bookingDetailsModal .px-4'); // Target the header div directly
+
+    // First remove all possible status color classes
+    if (modalHeader) {
+        modalHeader.classList.remove('bg-yellow-600', 'bg-green-600', 'bg-red-600', 'bg-gray-600');
+        
+        // Then add the appropriate class based on status
+        switch(status.toLowerCase()) {
+            case 'pending':
+                modalHeader.classList.add('bg-yellow-600');
+                break;
+            case 'accepted':
+                modalHeader.classList.add('bg-green-600');
+                break;
+            case 'declined':
+                modalHeader.classList.add('bg-red-600');
+                break;
+            default:
+                modalHeader.classList.add('bg-gray-600');
+        }
     }
     
     // Fetch booking details via AJAX
@@ -1886,21 +1891,26 @@ function getStatusClass(status) {
     document.getElementById('bookingDetailsModal').classList.remove('hidden');
     
     // Set modal header color based on status
-    const modalHeader = document.querySelector('#bookingDetailsModal .bg-yellow-600');
-    modalHeader.classList.remove('bg-yellow-600');
+    const modalHeader = document.querySelector('#bookingDetailsModal .px-4'); // Target the header div directly
     
-    switch(status.toLowerCase()) {
-        case 'pending':
-            modalHeader.classList.add('bg-yellow-600');
-            break;
-        case 'accepted':
-            modalHeader.classList.add('bg-green-600');
-            break;
-        case 'decline':
-            modalHeader.classList.add('bg-red-600');
-            break;
-        default:
-            modalHeader.classList.add('bg-gray-600');
+    // First remove all possible status color classes
+    if (modalHeader) {
+        modalHeader.classList.remove('bg-yellow-600', 'bg-green-600', 'bg-red-600', 'bg-gray-600');
+        
+        // Then add the appropriate class based on status
+        switch(status.toLowerCase()) {
+            case 'pending':
+                modalHeader.classList.add('bg-yellow-600');
+                break;
+            case 'accepted':
+                modalHeader.classList.add('bg-green-600');
+                break;
+            case 'decline':
+                modalHeader.classList.add('bg-red-600');
+                break;
+            default:
+                modalHeader.classList.add('bg-gray-600');
+        }
     }
     
     // Fetch life plan booking details via AJAX
