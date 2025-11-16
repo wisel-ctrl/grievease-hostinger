@@ -6,6 +6,7 @@
     <title>Admin Settings - GrievEase</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="tailwind.js"></script>
 </head>
 <body class="flex bg-gray-50">
@@ -369,12 +370,23 @@
                                    class="w-full px-3 py-2 sm:px-4 sm:py-3 border border-sidebar-border rounded-xl focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-white file:mr-3 sm:file:mr-4 file:py-1 sm:file:py-2 file:px-3 sm:file:px-4 file:rounded-lg file:border-0 file:bg-sidebar-bg file:text-sidebar-text hover:file:bg-sidebar-hover text-sm sm:text-base"
                                    accept="image/*">
                         </div>
-                        <button type="submit" 
-                                class="w-full bg-sidebar-accent hover:bg-darkgold text-white py-2 sm:py-3 px-4 rounded-xl transition-all duration-300 font-medium shadow-input hover:shadow-card text-sm sm:text-base">
+                        <button type="submit" id="update-picture-btn"
+                                class="w-full bg-sidebar-accent hover:bg-darkgold text-white py-2 sm:py-3 px-4 rounded-xl transition-all duration-300 font-medium shadow-input hover:shadow-card text-sm sm:text-base opacity-50 cursor-not-allowed"
+                                disabled>
                             <i class="fas fa-upload mr-2"></i>
                             Update Picture
                         </button>
                     </form>
+                    <!-- Remove Profile Picture Button -->
+                    <?php if (!empty($admin['profile_picture'])): ?>
+                    <div class="mt-4 w-full">
+                        <button type="button" id="remove-profile-picture" 
+                                class="w-full bg-red-500 hover:bg-red-600 text-white py-2 sm:py-3 px-4 rounded-xl transition-all duration-300 font-medium shadow-input hover:shadow-card text-sm sm:text-base">
+                            <i class="fas fa-trash-alt mr-2"></i>
+                            Remove Profile Picture
+                        </button>
+                    </div>
+                    <?php endif; ?>
                     <p class="text-gray-500 text-xs sm:text-sm mt-3 sm:mt-4 text-center font-inter">JPG, PNG or GIF. Max size 2MB</p>
                 </div>
             </div>
@@ -706,12 +718,47 @@
         // Profile picture preview
         document.getElementById('profile_picture').addEventListener('change', function(e) {
             const file = e.target.files[0];
+            const maxSize = 2 * 1024 * 1024; // 2MB
+            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+            
             if (file) {
+                // Validate file type
+                if (!allowedTypes.includes(file.type)) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid File Type',
+                        text: 'Please select a valid image file (JPG, PNG, or GIF).',
+                        confirmButtonColor: '#3085d6',
+                        confirmButtonText: 'OK'
+                    });
+                    this.value = '';
+                    updateProfilePictureButtonState();
+                    return;
+                }
+                
+                // Validate file size
+                if (file.size > maxSize) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'File Too Large',
+                        text: 'Please select an image smaller than 2MB.',
+                        confirmButtonColor: '#3085d6',
+                        confirmButtonText: 'OK'
+                    });
+                    this.value = '';
+                    updateProfilePictureButtonState();
+                    return;
+                }
+                
+                // If validation passes, show preview
                 const reader = new FileReader();
                 reader.onload = function(event) {
                     document.getElementById('profile-preview').src = event.target.result;
                 };
                 reader.readAsDataURL(file);
+                updateProfilePictureButtonState();
+            } else {
+                updateProfilePictureButtonState();
             }
         });
         
@@ -1578,6 +1625,139 @@ document.getElementById('gcash-qr-form')?.addEventListener('submit', function(e)
         return false;
     }
     // Continue with form submission if validation passes
+});
+
+// Remove Profile Picture functionality
+document.getElementById('remove-profile-picture')?.addEventListener('click', function() {
+    Swal.fire({
+        title: 'Remove Profile Picture?',
+        text: "Are you sure you want to remove your profile picture?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, remove it!',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Send AJAX request to remove profile picture
+            fetch('settings/remove_profile_picture.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'remove_profile_picture=1'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire(
+                        'Removed!',
+                        'Your profile picture has been removed.',
+                        'success'
+                    ).then(() => {
+                        // Update the profile preview to show initials
+                        const profilePreview = document.getElementById('profile-preview');
+                        profilePreview.outerHTML = `
+                            <div id="profile-preview" class="w-32 h-32 sm:w-40 sm:h-40 rounded-full bg-sidebar-accent flex items-center justify-center border-4 border-sidebar-border shadow-card transition-all duration-300 group-hover:shadow-lg">
+                                <span class="text-white text-xl sm:text-2xl font-bold">
+                                    <?php echo strtoupper(substr($admin['first_name'], 0, 1) . substr($admin['last_name'], 0, 1)); ?>
+                                </span>
+                            </div>
+                        `;
+                        // Hide the remove button
+                        document.getElementById('remove-profile-picture').remove();
+                    });
+                } else {
+                    Swal.fire(
+                        'Error!',
+                        data.message || 'Failed to remove profile picture.',
+                        'error'
+                    );
+                }
+            })
+            .catch(error => {
+                Swal.fire(
+                    'Error!',
+                    'An error occurred while removing profile picture.',
+                    'error'
+                );
+            });
+        }
+    });
+});
+
+
+// Profile picture upload validation
+const profilePictureInput = document.getElementById('profile_picture');
+const updatePictureBtn = document.getElementById('update-picture-btn');
+
+function updateProfilePictureButtonState() {
+    const hasFile = profilePictureInput.files.length > 0;
+    
+    if (hasFile) {
+        updatePictureBtn.disabled = false;
+        updatePictureBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        updatePictureBtn.classList.add('hover:bg-darkgold', 'hover:shadow-card');
+    } else {
+        updatePictureBtn.disabled = true;
+        updatePictureBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        updatePictureBtn.classList.remove('hover:bg-darkgold', 'hover:shadow-card');
+    }
+}
+
+// Initial state
+updateProfilePictureButtonState();
+
+// Update state when file input changes
+profilePictureInput.addEventListener('change', updateProfilePictureButtonState);
+
+// Profile picture form submission validation
+document.querySelector('form[enctype="multipart/form-data"]').addEventListener('submit', function(e) {
+    const profilePicture = document.getElementById('profile_picture');
+    
+    if (!profilePicture.files || profilePicture.files.length === 0) {
+        e.preventDefault();
+        Swal.fire({
+            icon: 'warning',
+            title: 'No Image Selected',
+            text: 'Please select an image file to upload first.',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'OK'
+        });
+        return false;
+    }
+    
+    // Additional file validation
+    const file = profilePicture.files[0];
+    const maxSize = 2 * 1024 * 1024; // 2MB
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+    
+    if (!allowedTypes.includes(file.type)) {
+        e.preventDefault();
+        Swal.fire({
+            icon: 'error',
+            title: 'Invalid File Type',
+            text: 'Please select a valid image file (JPG, PNG, or GIF).',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'OK'
+        });
+        return false;
+    }
+    
+    if (file.size > maxSize) {
+        e.preventDefault();
+        Swal.fire({
+            icon: 'error',
+            title: 'File Too Large',
+            text: 'Please select an image smaller than 2MB.',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'OK'
+        });
+        return false;
+    }
+    
+    return true;
 });
 
 
