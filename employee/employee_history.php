@@ -230,6 +230,36 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
         position: relative !important;
         z-index: 1 !important;
       }
+      
+      /* Show sidebar text when sidebar is open on mobile */
+      #sidebar.translate-x-0 .sidebar-link span {
+        display: inline !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+      }
+      
+      #sidebar.translate-x-0 .menu-header {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+      }
+      
+      #sidebar.translate-x-0 #sidebar > div:first-child > * {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+      }
+      
+      /* Ensure sidebar links have proper spacing on mobile when open */
+      #sidebar.translate-x-0 .sidebar-link {
+        justify-content: flex-start !important;
+        padding-left: 1.25rem !important;
+        padding-right: 1.25rem !important;
+      }
+      
+      #sidebar.translate-x-0 .sidebar-link i {
+        margin-right: 0.75rem !important;
+      }
     }
     
     @media (min-width: 769px) and (max-width: 1024px) {
