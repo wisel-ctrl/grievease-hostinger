@@ -68,16 +68,19 @@ try {
         exit();
     }
     
+    // Determine payment status based on new balance
+    $payment_status = ($new_balance == 0) ? 'Fully Paid' : 'With Balance';
+    
     // Update payment status to 'accepted'
     $update_payment = "UPDATE installment_request_tb SET status = 'accepted', acceptdecline_date = ? WHERE payment_id = ?";
     $stmt = mysqli_prepare($conn, $update_payment);
     mysqli_stmt_bind_param($stmt, "si", $current_datetime, $payment_id);
     mysqli_stmt_execute($stmt);
     
-    // Update sales with new amount_paid and status
-    $update_sales = "UPDATE sales_tb SET amount_paid = ?, status = 'paid', balance = ? WHERE sales_id = ?";
+    // Update sales with new amount_paid and conditional payment status
+    $update_sales = "UPDATE sales_tb SET amount_paid = ?, payment_status = ?, balance = ? WHERE sales_id = ?";
     $stmt = mysqli_prepare($conn, $update_sales);
-    mysqli_stmt_bind_param($stmt, "ddi", $new_amount_paid, $new_balance, $sales_id);
+    mysqli_stmt_bind_param($stmt, "dsdi", $new_amount_paid, $payment_status, $new_balance, $sales_id);
     mysqli_stmt_execute($stmt);
     
     // Insert into installment_tb
