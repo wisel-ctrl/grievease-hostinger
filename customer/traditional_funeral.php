@@ -185,18 +185,19 @@ require_once '../db_connect.php'; // Database connection
                 $profile_picture = $profile_data['profile_picture'];
 
                 
-$query_gcash = "SELECT qr_number, qr_image FROM gcash_qr_tb WHERE is_available = 1";
+$query_gcash = "SELECT qr_number, gcash_name, qr_image FROM gcash_qr_tb WHERE is_available = 1";
 $result_gcash = $conn->query($query_gcash);
 $gcash_qrs = [];
 if ($result_gcash) {
     while ($row_gcash = $result_gcash->fetch_assoc()) {
         $gcash_qrs[] = [
             'qr_number' => $row_gcash['qr_number'],
+            'gcash_name' => $row_gcash['gcash_name'], // Make sure this is included
             'qr_image' => '../' . $row_gcash['qr_image']
         ];
     }
     $result_gcash->free();
-}    
+}  
 ?>
 
 <script src="customer_support.js"></script>
@@ -1299,7 +1300,14 @@ if ($result_gcash) {
                                      alt="GCash QR Code <?= htmlspecialchars($qr['qr_number']) ?>" 
                                      class="w-full h-full object-contain landscape-img"
                                      onclick="enlargeQrCode(this)">
-                                <p class="text-center text-xs sm:text-sm font-medium text-gray-600 mt-2"><?= htmlspecialchars($qr['qr_number']) ?></p>
+                                <!-- Display GCash Name -->
+                                <p class="text-center text-xs sm:text-sm font-semibold text-gray-800 mt-2">
+                                    <?= htmlspecialchars($qr['gcash_name']) ?>
+                                </p>
+                                <!-- Display QR Number -->
+                                <p class="text-center text-xs text-gray-600 mt-1">
+                                    <?= htmlspecialchars($qr['qr_number']) ?>
+                                </p>
                             </div>
                         </div>
                     <?php endforeach; ?>
@@ -1308,11 +1316,12 @@ if ($result_gcash) {
             <?php else: ?>
                 <p class="text-center text-sm text-gray-500">No GCash QR codes available</p>
             <?php endif; ?>
-            <p class="text-center text-sm text-gray-600 mt-4 mb-2">Scan a QR code with your GCash app to make payment</p>
+            <p class="text-center text-sm text-gray-600 mt-20 mb-2">Scan a QR code with your GCash app to make payment</p>
             <p class="text-center font-bold text-yellow-600" id="qrCodeAmount">Amount: ₱0</p>
         </div>
     </div>
 </div>
+
 
 <!-- Enlarged QR Code View (hidden by default) -->
 <div id="enlargedQrView" class="fixed inset-0 bg-black bg-opacity-90 z-[60] flex items-center justify-center hidden">
