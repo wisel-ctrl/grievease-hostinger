@@ -1507,7 +1507,7 @@ document.addEventListener('DOMContentLoaded', function() {
     <div id="lifeplan-booking-content" class="service-content" style="display: none;">
         <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
             <!-- Header -->
-            <div class="bookings bg-yellow-600 p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 tab-header">
+            <div class="bookings bg-blue-600 p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 tab-header">
                 <h3 class="font-hedvig text-xl sm:text-2xl text-white font-semibold">Life Plan Bookings</h3>
                 <div class="flex space-x-4">
                     <select id="lifeplan-status-filter" class="border border-gray-300 rounded-lg px-3 py-2 text-sm text-navy focus:outline-none focus:ring-2 focus:ring-yellow-600">
@@ -1597,39 +1597,39 @@ document.addEventListener('DOMContentLoaded', function() {
                             <span class="<?php echo $status_class; ?> text-xs px-2 py-1 rounded-full"><?php echo $status_text; ?></span>
                             <p class="text-sm text-gray-500">Life Plan ID: <?php echo $booking['lpbooking_id']; ?></p>
                         </div>
-                        <h4 class="font-hedvig text-lg text-yellow-600 mb-2"><?php echo $service_name; ?> (Life Plan)</h4>
+                        <h4 class="font-hedvig text-lg text-blue-600 mb-2"><?php echo $service_name; ?> (Life Plan)</h4>
                     </div>
                     <div class="p-4 sm:p-6 space-y-3 sm:space-y-4">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
                             <div>
                                 <p class="text-sm text-gray-500">Beneficiary Name</p>
-                                <p class="text-yellow-600"><?php echo ucwords(strtolower($beneficiary_name)); ?></p>
+                                <p class="text-blue-600"><?php echo ucwords(strtolower($beneficiary_name)); ?></p>
                             </div>
                             <div>
                                 <p class="text-sm text-gray-500">Branch</p>
-                                <p class="text-yellow-600"><?php echo ucwords(strtolower($booking['branch_name'])); ?></p>
+                                <p class="text-blue-600"><?php echo ucwords(strtolower($booking['branch_name'])); ?></p>
                             </div>
                             <div>
                                 <p class="text-sm text-gray-500">End Date</p>
-                                <p class="text-yellow-600"><?php echo $end_date; ?></p>
+                                <p class="text-blue-600"><?php echo $end_date; ?></p>
                             </div>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
                             <div>
                                 <p class="text-sm text-gray-500">Total Amount</p>
-                                <p class="text-yellow-600 font-bold">₱<?php echo $price; ?></p>
+                                <p class="text-blue-600 font-bold">₱<?php echo $price; ?></p>
                             </div>
                             <div>
                                 <p class="text-sm text-gray-500">Amount Paid</p>
-                                <p class="text-yellow-600">₱<?php echo $amount_paid; ?></p>
+                                <p class="text-blue-600">₱<?php echo $amount_paid; ?></p>
                             </div>
                             <div>
                                 <p class="text-sm text-gray-500">Balance</p>
-                                <p class="text-yellow-600">₱<?php echo $balance; ?></p>
+                                <p class="text-blue-600">₱<?php echo $balance; ?></p>
                             </div>
                         </div>
                         <div class="flex justify-end">
-                            <button class="view-lifeplan-details bg-yellow-600/5 text-yellow-600 px-3 py-1 rounded hover:bg-yellow-600/10 transition text-sm mr-2" data-booking="<?php echo $booking['lpbooking_id']; ?>">
+                            <button class="view-lifeplan-details bg-blue-600/5 text-blue-600 px-3 py-1 rounded hover:bg-blue-600/10 transition text-sm mr-2" data-booking="<?php echo $booking['lpbooking_id']; ?>">
                                 <i class="fas fa-file-alt mr-1"></i> View Details
                             </button>
                             <?php if ($booking['booking_status'] === 'pending' || $booking['booking_status'] === 'decline'): ?>
@@ -2772,44 +2772,44 @@ function populateLifePlanCards(containerId, lifeplans) {
                         <span class="${statusClass} text-xs px-2 py-1 rounded-full">${escapeHtml(statusText)}</span>
                         <p class="text-sm text-gray-500">Life Plan ID: ${escapeHtml(plan.lifeplan_id)}</p>
                     </div>
-                    <h4 class="font-hedvig text-lg text-yellow-600 mb-2">${escapeHtml(plan.service_name)} (Life Plan)</h4>
+                    <h4 class="font-hedvig text-lg text-blue-600 mb-2">${escapeHtml(plan.service_name)} (Life Plan)</h4>
                 </div>
                 <div class="p-4 sm:p-6 space-y-3 sm:space-y-4">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
                         <div>
                             <p class="text-sm text-gray-500">Beneficiary Name</p>
-                            <p class="text-yellow-600">${escapeHtml(plan.benefeciary_name)}</p>
+                            <p class="text-blue-600">${escapeHtml(plan.benefeciary_name)}</p>
                         </div>
                         <div>
                             <p class="text-sm text-gray-500">Start Date</p>
-                            <p class="text-yellow-600">${formattedInitialDate}</p>
+                            <p class="text-blue-600">${formattedInitialDate}</p>
                         </div>
                         <div>
                             <p class="text-sm text-gray-500">End Date</p>
-                            <p class="text-yellow-600">${formattedEndDate}</p>
+                            <p class="text-blue-600">${formattedEndDate}</p>
                         </div>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
                         <div>
                             <p class="text-sm text-gray-500">Total Amount</p>
-                            <p class="text-yellow-600 font-bold">${formatCurrency(plan.custom_price)}</p>
+                            <p class="text-blue-600 font-bold">${formatCurrency(plan.custom_price)}</p>
                         </div>
                         <div>
                             <p class="text-sm text-gray-500">Amount Paid</p>
-                            <p class="text-yellow-600">${formatCurrency(plan.amount_paid)}</p>
+                            <p class="text-blue-600">${formatCurrency(plan.amount_paid)}</p>
                         </div>
                         <div>
                             <p class="text-sm text-gray-500">Balance</p>
-                            <p class="text-yellow-600">${formatCurrency(plan.balance)}</p>
+                            <p class="text-blue-600">${formatCurrency(plan.balance)}</p>
                         </div>
                     </div>
                     <div class="flex justify-end space-x-2">
                         <button onclick="openPaymentHistoryModal('life-plan', '${escapeHtml(plan.lifeplan_id)}')" 
-                            class="bg-yellow-600/5 text-yellow-600 px-3 py-1 rounded hover:bg-yellow-600/10 transition text-sm">
+                            class="bg-blue-600/5 text-blue-600 px-3 py-1 rounded hover:bg-blue-600/10 transition text-sm">
                             <i class="fas fa-file-alt mr-1"></i> View History
                         </button>
                         <a href="feedback.php?service_id=${escapeHtml(plan.lifeplan_id)}&service_type=life-plan" 
-                            class="bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition text-sm inline-flex items-center">
+                            class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition text-sm inline-flex items-center">
                             <i class="fas fa-comment-dots mr-1"></i> Feedback
                         </a>
                         ${plan.balance > 0 ? `
