@@ -21,49 +21,116 @@ if (!isset($data['chatRoomId']) || !isset($data['receiverId']) || !isset($data['
 $chatRoomId = $conn->real_escape_string($data['chatRoomId']);
 $receiverId = $conn->real_escape_string($data['receiverId']);
 $message = $conn->real_escape_string($data['message']);
-$chatId = uniqid('chat_', true);
 
-// Start transaction
-$conn->begin_transaction();
-
-try {
-    // Insert into chat_messages
-    $query = "INSERT INTO chat_messages (chatId, sender, message, chatRoomId, messageType, status) 
-              VALUES (?, ?, ?, ?, 'text', 'sent')";
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param("ssss", $chatId, $employee_id, $message, $chatRoomId);
-    $stmt->execute();
+// Function to generate unique chat ID
+function generateChatId($conn) {
+    do {
+        $chatId = 'chat_' . uniqid() . '_' . mt_rand(1000, 9999) . '_' . time();
+        
+        // Check if this ID already exists in chat_messages
+        $check_query = "SELECT chatId FROM chat_messages WHERE chatId = ?";
+        $stmt = $conn->prepare($check_query);
+        $stmt->bind_param("s", $chatId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+    } while ($result->num_rows > 0);
     
-    // Insert into chat_recipients for the sender (status = 'read')
-    $query = "INSERT INTO chat_recipients (chatId, userId, status) VALUES (?, ?, 'read')";
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param("ss", $chatId, $employee_id);
-    $stmt->execute();
-    
-    // Insert into chat_recipients for the receiver (status = 'sent')
-    $query = "INSERT INTO chat_recipients (chatId, userId, status) VALUES (?, ?, 'sent')";
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param("ss", $chatId, $receiverId);
-    $stmt->execute();
-
-    // Get admin user_id
-$admin_query = "SELECT id FROM users WHERE user_type = 1 LIMIT 1";
-$admin_result = $conn->query($admin_query);
-
-if ($admin_result && $admin_result->num_rows > 0) {
-    $admin = $admin_result->fetch_assoc();
-    $adminId = $admin['id'];
-
-    // Insert message for admin (status = 'sent')
-    $query = "INSERT INTO chat_recipients (chatId, userId, status) VALUES (?, ?, 'sent')";
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param("ss", $chatId, $adminId);
-    $stmt->execute();
+    return $chatId;
 }
 
+// Function to insert or update recipient
+function insertOrUpdateRecipient($conn, $chatId, $userId, $status) {
+    // Check if recipient already exists
+    $check_query = "SELECT id FROM chat_recipients WHERE chatId = ? AND userId = ?";
+    $stmt = $conn->prepare($check_query);
+    $stmt->bind_param("ss", $chatId, $userId);
+    $stmt->execute();
+    $result = $stmt->get_result();
     
-    $conn->commit();
+    if ($result->num_rows > 0) {
+        // Update existing record
+        $update_query = "UPDATE chat_recipients SET status = ? WHERE chatId = ? AND userId = ?";
+        $stmt = $conn->prepare($update_query);
+        $stmt->bind_param("sss", $status, $chatId, $userId);
+        return $stmt->execute();
+    } else {
+        // Insert new record
+        $insert_query = "INSERT INTO chat_recipients (chatId, userId, status) VALUES (?, ?, ?)";
+        $stmt = $conn->prepare($insert_query);
+        $stmt->bind_param("sss", $chatId, $userId, $status);
+        return $stmt->execute();
+    }
+}
+
+// Function to send reply with retry mechanism
+function sendReplyWithRetry($conn, $chatRoomId, $senderId, $receiverId, $message, $maxRetries = 3) {
+    $retries = 0;
     
+    while ($retries < $maxRetries) {
+        try {
+            $chatId = generateChatId($conn);
+            
+            // Start transaction
+            $conn->begin_transaction();
+            
+            // Insert into chat_messages
+            $query = "INSERT INTO chat_messages (chatId, sender, message, chatRoomId, messageType, status) 
+                      VALUES (?, ?, ?, ?, 'text', 'sent')";
+            $stmt = $conn->prepare($query);
+            $stmt->bind_param("ssss", $chatId, $senderId, $message, $chatRoomId);
+            
+            if (!$stmt->execute()) {
+                throw new Exception("Failed to insert into chat_messages: " . $stmt->error);
+            }
+            
+            // Insert/Update chat_recipients for the sender
+            if (!insertOrUpdateRecipient($conn, $chatId, $senderId, 'read')) {
+                throw new Exception("Failed to insert/update sender recipient");
+            }
+            
+            // Insert/Update chat_recipients for the receiver
+            if (!insertOrUpdateRecipient($conn, $chatId, $receiverId, 'sent')) {
+                throw new Exception("Failed to insert/update receiver recipient");
+            }
+
+            // Get admin user_id
+            $admin_query = "SELECT id FROM users WHERE user_type = 1 LIMIT 1";
+            $admin_result = $conn->query($admin_query);
+
+            if ($admin_result && $admin_result->num_rows > 0) {
+                $admin = $admin_result->fetch_assoc();
+                $adminId = $admin['id'];
+
+                // Insert/Update chat_recipients for admin
+                if (!insertOrUpdateRecipient($conn, $chatId, $adminId, 'sent')) {
+                    throw new Exception("Failed to insert/update admin recipient");
+                }
+            }
+            
+            $conn->commit();
+            return ['success' => true, 'chatId' => $chatId];
+            
+        } catch (Exception $e) {
+            $conn->rollback();
+            
+            // Check if it's a duplicate key error
+            if (strpos($e->getMessage(), 'Duplicate entry') !== false && $retries < $maxRetries - 1) {
+                $retries++;
+                continue; // Retry with new ID
+            } else {
+                return ['success' => false, 'error' => $e->getMessage()];
+            }
+        }
+    }
+    
+    return ['success' => false, 'error' => 'Max retries exceeded'];
+}
+
+// Send the reply with retry mechanism
+$result = sendReplyWithRetry($conn, $chatRoomId, $employee_id, $receiverId, $message);
+
+if ($result['success']) {
     // Get the newly inserted message
     $new_message_query = "
         SELECT 
@@ -76,23 +143,25 @@ if ($admin_result && $admin_result->num_rows > 0) {
             cr.status AS recipient_status
         FROM chat_messages cm
         JOIN chat_recipients cr ON cm.chatId = cr.chatId
-        WHERE cm.chatId = '$chatId'
-        AND cr.userId = '$employee_id'
+        WHERE cm.chatId = ?
+        AND cr.userId = ?
     ";
     
-    $result = $conn->query($new_message_query);
-    $new_message = $result->fetch_assoc();
+    $stmt = $conn->prepare($new_message_query);
+    $stmt->bind_param("ss", $result['chatId'], $employee_id);
+    $stmt->execute();
+    $result_msg = $stmt->get_result();
+    $new_message = $result_msg->fetch_assoc();
     
     echo json_encode([
         'success' => true,
         'message' => 'Reply sent successfully',
         'data' => $new_message
     ]);
-} catch (Exception $e) {
-    $conn->rollback();
+} else {
     echo json_encode([
         'success' => false,
-        'error' => 'Error sending reply: ' . $e->getMessage()
+        'error' => $result['error']
     ]);
 }
 
