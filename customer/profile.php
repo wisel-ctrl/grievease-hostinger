@@ -203,7 +203,7 @@ header("Pragma: no-cache");
 
                 $addressDB->close();
                 
-                $gcash_query = "SELECT qr_number, qr_image FROM gcash_qr_tb WHERE is_available = 1";
+                $gcash_query = "SELECT gcash_name, qr_number, qr_image FROM gcash_qr_tb WHERE is_available = 1";
                 $gcash_stmt = $conn->prepare($gcash_query);
                 $gcash_stmt->execute();
                 $gcash_result = $gcash_stmt->get_result();
@@ -2078,11 +2078,20 @@ $lifeplanStmt->close();
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             <?php foreach ($gcash_accounts as $account): ?>
                             <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                                <!-- GCash Name Display -->
+                                <?php if (!empty($account['gcash_name'])): ?>
+                                <div class="mb-3 text-center">
+                                    <h3 class="font-semibold text-lg text-navy">
+                                        <?php echo htmlspecialchars($account['gcash_name']); ?>
+                                    </h3>
+                                </div>
+                                <?php endif; ?>
+                                
                                 <div class="relative w-full aspect-[4/3] overflow-hidden rounded-md cursor-pointer group"
                                      onclick="openImageModal('../<?php echo htmlspecialchars($account['qr_image']); ?>')">
                                     <img 
                                         src="../<?php echo htmlspecialchars($account['qr_image']); ?>" 
-                                        alt="GCash QR Code"
+                                        alt="GCash QR Code for <?php echo htmlspecialchars($account['gcash_name'] ?? 'Account'); ?>"
                                         class="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
                                     >
                                     <div class="absolute inset-0 bg-navy bg-opacity-0 group-hover:bg-opacity-30 flex items-center justify-center transition-all duration-300">
@@ -2092,7 +2101,7 @@ $lifeplanStmt->close();
                                     </div>
                                 </div>
                                 <p class="mt-2 text-sm text-gray-600 text-center">
-                                     <?php echo htmlspecialchars($account['qr_number']); ?>
+                                    <?php echo htmlspecialchars($account['qr_number']); ?>
                                 </p>
                             </div>
                             <?php endforeach; ?>
