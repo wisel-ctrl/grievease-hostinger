@@ -2198,7 +2198,7 @@ $lifeplanStmt->close();
     <div class="relative max-w-4xl w-full m-4">
         <button class="absolute top-4 right-4 text-black hover:text-yellow-600 z-[110]" onclick="closeImageModal()">
             <i class="fas fa-times text-2xl" style="text-shadow: 
-                1px 1px 0 #FFFFFF, 
+                1px 1px 0 yellow-600, 
                 -1px 1px 0 #FFFFFF, 
                 1px -1px 0 #FFFFFF, 
                 -1px -1px 0 #FFFFFF;
