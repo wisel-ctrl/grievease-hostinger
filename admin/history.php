@@ -2393,7 +2393,7 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
 
             <div class="space-y-1">
               <label class="block text-xs font-medium text-gray-500">Service Price</label>
-              <div id="servicePriceView" class="text-sm font-medium text-gray-800">-</div>
+              <div id="servicePriceView" class="text-lg font-bold text-sidebar-accent">-</div>
             </div>
             
             <div class="space-y-1">
