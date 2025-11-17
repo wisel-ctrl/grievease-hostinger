@@ -2087,6 +2087,11 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
               <label class="block text-xs font-medium text-gray-500">Service Type</label>
               <div id="serviceServiceType" class="text-sm font-medium text-gray-800">-</div>
             </div>
+
+            <div class="space-y-1">
+              <label class="block text-xs font-medium text-gray-500">Service Price</label>
+              <div id="servicePriceView" class="text-base font-bold text-sidebar-accent">-</div>
+            </div>
             
             <div class="space-y-1">
               <label class="block text-xs font-medium text-gray-500">Branch</label>
@@ -3499,6 +3504,7 @@ function viewServiceDetails(serviceId) {
         document.getElementById('serviceClientName').textContent = 
           `${data.fname} ${data.mname ? data.mname + ' ' : ''}${data.lname}${data.suffix ? ' ' + data.suffix : ''}`;
         document.getElementById('serviceServiceType').textContent = data.service_name || 'N/A';
+        document.getElementById('servicePriceView').textContent = data.discounted_price ? formatCurrency(data.discounted_price) : '₱0.00';
         document.getElementById('branchName').textContent = data.branch_name || 'N/A';
         document.getElementById('serviceDate').textContent = data.date_of_burial ? formatDate(data.date_of_burial) : 'N/A';
         document.getElementById('serviceStatus').textContent = data.status || 'N/A';
@@ -6680,6 +6686,26 @@ document.addEventListener('DOMContentLoaded', function() {
     
   }, 100); // 100ms delay to ensure sidebar.js has loaded
 });
+
+
+function formatCurrency(amount) {
+    // Convert the amount to a number if it's not already
+    const num = typeof amount === 'number' ? amount : parseFloat(amount);
+    
+    // Check if the conversion resulted in a valid number
+    if (isNaN(num)) {
+        return '₱ 0.00';
+    }
+    
+    // Format the number with commas and 2 decimal places
+    const formattedAmount = num.toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+        useGrouping: true
+    });
+    
+    return `₱ ${formattedAmount}`;
+}
 </script>
 
 </body> 
