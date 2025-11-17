@@ -1657,7 +1657,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 $stmt->close();
                 ?>
             </div>
-            <div id="lifeplan-pagination" class="mt-6 flex justify-center items-center space-x-2"></div>
+            <div id="lifeplan-pagination" class="mt-6 mb-6 flex justify-center items-center space-x-2"></div>
         </div>
     </div>
 </div>
