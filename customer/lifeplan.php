@@ -1457,6 +1457,7 @@ require_once '../db_connect.php'; // Database connection
                     </div>
 
                     <!-- Terms of Service Modal -->
+                    <div id="termsOfServiceModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
                         <div class="bg-white rounded-lg p-6 max-w-lg w-full mx-4 max-h-[80vh] overflow-y-auto">
                             <div class="flex justify-between items-center mb-4">
                                 <h3 class="text-lg font-hedvig text-navy">Terms of Service</h3>
