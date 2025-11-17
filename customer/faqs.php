@@ -1042,9 +1042,11 @@ require_once '../db_connect.php'; // Database connection
                     <h3 class="text-lg mb-4">Contact Us</h3>
                     <ul class="space-y-2">
                         <li class="flex items-start">
-                            <i class="fas fa-map-marker-alt mt-1 mr-2 text-yellow-600"></i>
-                            <span>#6 J.P Rizal St. Brgy. Sta Clara Sur, (Pob) Pila, Laguna</span>
-                        </li>
+            <i class="fas fa-map-marker-alt mt-1 mr-2 text-yellow-600"></i>
+            <a href="https://www.google.com/maps/place/Relova+House/@14.2334299,121.3641134,3a,75y,175.91h,95.84t/data=!3m7!1e1!3m5!1sJ3xMh7oB9IPYcVOoWh7r1w!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fcb_client%3Dmaps_sv.tactile%26w%3D900%26h%3D600%26pitch%3D-5.83729800653137%26panoid%3DJ3xMh7oB9IPYcVOoWh7r1w%26yaw%3D175.90838416612516!7i16384!8i8192!4m6!3m5!1s0x3397e3e78f3dbe85:0xbf90dbd162697767!8m2!3d14.2334537!4d121.3639905!16s%2Fg%2F11j56kmr4k?entry=ttu&g_ep=EgoyMDI1MTExMi4wIKXMDSoASAFQAw%3D%3D" target="_blank" class="text-gray-300 hover:text-white transition hover:underline">
+                #6 J.P Rizal St. Brgy. Sta Clara Sur, (Pob) Pila, Laguna
+            </a>
+        </li>
                         <li class="flex items-center">
                             <i class="fas fa-phone-alt mr-2 text-yellow-600"></i>
                             <span>(0956) 814-3000 <br> (0961) 345-4283</span>
