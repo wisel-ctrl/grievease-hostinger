@@ -1066,7 +1066,7 @@ function printDemandPrediction() {
                         <div>(0956) 814-3000 | (0961) 345-4283 | GrievEase@gmail.com</div>
                         <div>VJay Relova Funeral Services - Available 24/7</div>
                     </div>
-                    <p>Report generated on ${new Date().toLocaleDateString()}</p>
+                    <p>Report generated on ${new Date().toLocaleDateString()} by ${formattedUsername}</p>
                     <p>(F) indicates forecasted values</p>
                 </div>
 
