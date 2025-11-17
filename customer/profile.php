@@ -1775,7 +1775,7 @@ $lifeplanStmt->close();
       <!-- Header with close button -->
       <div class="bg-navy p-6 flex justify-between items-center">
         <h2 class="text-2xl font-hedvig text-white" id="modal-package-title">Payment History</h2>
-        <button id="close-payment-history-modal" class="text-white hover:text-yellow-300">
+        <button id="close-payment-history-modal" class="text-yellow-600 hover:text-gray-300">
           <i class="fas fa-times text-2xl"></i>
         </button>
       </div>
