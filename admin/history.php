@@ -2393,7 +2393,7 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
 
             <div class="space-y-1">
               <label class="block text-xs font-medium text-gray-500">Service Price</label>
-              <div id="servicePrice" class="text-sm font-medium text-gray-800">-</div>
+              <div id="servicePriceView" class="text-sm font-medium text-gray-800">-</div>
             </div>
             
             <div class="space-y-1">
@@ -4527,7 +4527,7 @@ function viewServiceDetails(serviceId) {
         document.getElementById('serviceClientName').textContent = 
           `${data.fname} ${data.mname ? data.mname + ' ' : ''}${data.lname}${data.suffix ? ' ' + data.suffix : ''}`;
         document.getElementById('serviceServiceType').textContent = data.service_name || 'N/A';
-        document.getElementById('servicePrice').textContent = data.discounted_price ? formatCurrency(data.discounted_price) : '₱0.00';
+        document.getElementById('servicePriceView').textContent = data.discounted_price ? formatCurrency(data.discounted_price) : '₱0.00';
         console.log(data.discounted_price );
         document.getElementById('branchName').textContent = data.branch_name ? toProperCase(data.branch_name) : 'N/A';
         document.getElementById('serviceDate').textContent = data.date_of_burial ? formatDate(data.date_of_burial) : 'N/A';
