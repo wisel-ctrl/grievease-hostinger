@@ -704,7 +704,7 @@
                                         <input type="text" id="modal_gcash_name" name="gcash_name" required
                                                pattern="[a-zA-Z\s.]+"
                                                class="w-full px-3 py-2 sm:px-4 sm:py-3 border border-sidebar-border rounded-xl focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-white text-sm sm:text-base"
-                                               placeholder="Enter GCash account name (only letters, spaces, and dots)">
+                                               placeholder="Enter GCash account name">
                                         <p id="modal_gcash_name_error" class="text-red-500 text-xs sm:text-sm hidden"></p>
                                     </div>
                                     
@@ -1721,8 +1721,23 @@ function validateGCashName() {
         return false;
     }
     
+    // Check if the name contains only dots or only special characters
+    if (/^[.\s]+$/.test(value)) {
+        errorElement.textContent = 'GCash Name cannot contain only dots or spaces';
+        errorElement.classList.remove('hidden');
+        return false;
+    }
+    
     if (!/^[a-zA-Z\s.]+$/.test(value)) {
         errorElement.textContent = 'GCash Name can only contain letters, spaces, and dots (.)';
+        errorElement.classList.remove('hidden');
+        return false;
+    }
+    
+    // Check if there's at least 5 letters in the name
+    const letterCount = (value.match(/[a-zA-Z]/g) || []).length;
+    if (letterCount < 5) {
+        errorElement.textContent = 'GCash Name must contain at least 5 letters';
         errorElement.classList.remove('hidden');
         return false;
     }
@@ -1730,6 +1745,20 @@ function validateGCashName() {
     // Prevent multiple consecutive spaces
     if (/\s{2,}/.test(value)) {
         errorElement.textContent = 'Cannot have multiple consecutive spaces';
+        errorElement.classList.remove('hidden');
+        return false;
+    }
+    
+    // Prevent names that start or end with dots
+    if (value.startsWith('.') || value.endsWith('.')) {
+        errorElement.textContent = 'GCash Name cannot start or end with a dot';
+        errorElement.classList.remove('hidden');
+        return false;
+    }
+    
+    // Prevent multiple consecutive dots
+    if (/\.{2,}/.test(value)) {
+        errorElement.textContent = 'Cannot have multiple consecutive dots';
         errorElement.classList.remove('hidden');
         return false;
     }
@@ -1766,10 +1795,37 @@ document.getElementById('gcash-form').addEventListener('submit', function(e) {
         return false;
     }
     
-    if (!gcashName || !/^[a-zA-Z\s.]+$/.test(gcashName)) {
+    // Enhanced GCash Name validation for form submission
+    if (!gcashName) {
         e.preventDefault();
         const errorElement = document.getElementById('modal_gcash_name_error');
-        errorElement.textContent = 'Please enter a valid GCash Name (only letters, spaces, and dots allowed)';
+        errorElement.textContent = 'GCash Name is required';
+        errorElement.classList.remove('hidden');
+        return false;
+    }
+    
+    if (!/^[a-zA-Z\s.]+$/.test(gcashName)) {
+        e.preventDefault();
+        const errorElement = document.getElementById('modal_gcash_name_error');
+        errorElement.textContent = 'GCash Name can only contain letters, spaces, and dots (.)';
+        errorElement.classList.remove('hidden');
+        return false;
+    }
+    
+    // Check for at least 5 letters
+    const letterCount = (gcashName.match(/[a-zA-Z]/g) || []).length;
+    if (letterCount < 5 || /^[.\s]+$/.test(gcashName)) {
+        e.preventDefault();
+        const errorElement = document.getElementById('modal_gcash_name_error');
+        errorElement.textContent = 'GCash Name must contain at least 5 letters and cannot be only dots or spaces';
+        errorElement.classList.remove('hidden');
+        return false;
+    }
+    
+    if (gcashName.startsWith('.') || gcashName.endsWith('.') || /\.{2,}/.test(gcashName)) {
+        e.preventDefault();
+        const errorElement = document.getElementById('modal_gcash_name_error');
+        errorElement.textContent = 'GCash Name cannot start/end with dots or have consecutive dots';
         errorElement.classList.remove('hidden');
         return false;
     }
