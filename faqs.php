@@ -96,7 +96,7 @@
     <div class="bg-white rounded-lg shadow-md overflow-hidden" data-category="life-plan">
         <button class="faq-question w-full text-left p-6 focus:outline-none">
             <div class="flex justify-between items-center">
-                <h3 class="text-lg font-hedvig text-navy">How do you handle cases where families cannot afford to pay?</h3>
+                <h3 class="text-lg font-hedvig text-navy">How do we handle cases where families cannot afford to pay?</h3>
                 <i class="fas fa-chevron-down text-yellow-600 transition-transform duration-300"></i>
             </div>
         </button>
@@ -228,7 +228,7 @@
     <div class="bg-white rounded-lg shadow-md overflow-hidden" data-category="services">
         <button class="faq-question w-full text-left p-6 focus:outline-none">
             <div class="flex justify-between items-center">
-                <h3 class="text-lg font-hedvig text-navy">Can you accommodate different religious and cultural traditions?</h3>
+                <h3 class="text-lg font-hedvig text-navy">Can we accommodate different religious and cultural traditions?</h3>
                 <i class="fas fa-chevron-down text-yellow-600 transition-transform duration-300"></i>
             </div>
         </button>
@@ -316,7 +316,7 @@
     <div class="bg-white rounded-lg shadow-md overflow-hidden" data-category="services">
         <button class="faq-question w-full text-left p-6 focus:outline-none">
             <div class="flex justify-between items-center">
-                <h3 class="text-lg font-hedvig text-navy">How do you handle deaths from accidents or disease?</h3>
+                <h3 class="text-lg font-hedvig text-navy">How do we handle deaths from accidents or disease?</h3>
                 <i class="fas fa-chevron-down text-yellow-600 transition-transform duration-300"></i>
             </div>
         </button>
@@ -361,7 +361,7 @@
     <div class="bg-white rounded-lg shadow-md overflow-hidden" data-category="services">
         <button class="faq-question w-full text-left p-6 focus:outline-none">
             <div class="flex justify-between items-center">
-                <h3 class="text-lg font-hedvig text-navy">How do you handle special requests from families?</h3>
+                <h3 class="text-lg font-hedvig text-navy">How do we handle special requests from families?</h3>
                 <i class="fas fa-chevron-down text-yellow-600 transition-transform duration-300"></i>
             </div>
         </button>
@@ -475,7 +475,7 @@
     <div class="bg-white rounded-lg shadow-md overflow-hidden" data-category="costs">
         <button class="faq-question w-full text-left p-6 focus:outline-none">
             <div class="flex justify-between items-center">
-                <h3 class="text-lg font-hedvig text-navy">What payment options do you offer?</h3>
+                <h3 class="text-lg font-hedvig text-navy">What payment options do we offer?</h3>
                 <i class="fas fa-chevron-down text-yellow-600 transition-transform duration-300"></i>
             </div>
         </button>
@@ -496,7 +496,7 @@
     <div class="bg-white rounded-lg shadow-md overflow-hidden" data-category="costs">
         <button class="faq-question w-full text-left p-6 focus:outline-none">
             <div class="flex justify-between items-center">
-                <h3 class="text-lg font-hedvig text-navy">Do you offer discounts on your funeral services?</h3>
+                <h3 class="text-lg font-hedvig text-navy">Do we offer discounts on our funeral services?</h3>
                 <i class="fas fa-chevron-down text-yellow-600 transition-transform duration-300"></i>
             </div>
         </button>
@@ -518,7 +518,7 @@
 <div class="bg-white rounded-lg shadow-md overflow-hidden" data-category="life-plan">
     <button class="faq-question w-full text-left p-6 focus:outline-none">
         <div class="flex justify-between items-center">
-            <h3 class="text-lg font-hedvig text-navy">Do you offer lifeplan installment plans for those who are not yet deceased?</h3>
+            <h3 class="text-lg font-hedvig text-navy">Do we offer lifeplan installment plans for those who are not yet deceased?</h3>
             <i class="fas fa-chevron-down text-yellow-600 transition-transform duration-300"></i>
         </div>
     </button>
@@ -562,7 +562,7 @@
 <div class="bg-white rounded-lg shadow-md overflow-hidden" data-category="services">
     <button class="faq-question w-full text-left p-6 focus:outline-none">
         <div class="flex justify-between items-center">
-            <h3 class="text-lg font-hedvig text-navy">How do you handle deaths from accidents or disease?</h3>
+            <h3 class="text-lg font-hedvig text-navy">How do we handle deaths from accidents or disease?</h3>
             <i class="fas fa-chevron-down text-yellow-600 transition-transform duration-300"></i>
         </div>
     </button>
@@ -652,7 +652,7 @@
 <div class="bg-white rounded-lg shadow-md overflow-hidden" data-category="costs">
     <button class="faq-question w-full text-left p-6 focus:outline-none">
         <div class="flex justify-between items-center">
-            <h3 class="text-lg font-hedvig text-navy">How do you handle unpaid balances?</h3>
+            <h3 class="text-lg font-hedvig text-navy">How do we handle unpaid balances?</h3>
             <i class="fas fa-chevron-down text-yellow-600 transition-transform duration-300"></i>
         </div>
     </button>

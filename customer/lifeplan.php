@@ -661,7 +661,7 @@ require_once '../db_connect.php'; // Database connection
 <div class="bg-white rounded-lg shadow-md overflow-hidden">
     <button class="faq-question w-full text-left p-6 focus:outline-none">
         <div class="flex justify-between items-center">
-            <h3 class="text-lg font-hedvig text-navy">Do you offer lifeplans?</h3>
+            <h3 class="text-lg font-hedvig text-navy">Do we offer lifeplans?</h3>
             <i class="fas fa-chevron-down text-yellow-600 transition-transform duration-300"></i>
         </div>
     </button>

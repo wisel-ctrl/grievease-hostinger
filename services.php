@@ -483,7 +483,7 @@
             <div class="bg-white rounded-lg shadow-md overflow-hidden">
                 <button class="faq-question w-full text-left p-6 focus:outline-none">
                     <div class="flex justify-between items-center">
-                        <h3 class="text-lg font-hedvig text-navy">What services do you offer?</h3>
+                        <h3 class="text-lg font-hedvig text-navy">What services do we offer?</h3>
                         <i class="fas fa-chevron-down text-yellow-600 transition-transform duration-300"></i>
                     </div>
                 </button>
@@ -574,7 +574,7 @@
             <div class="bg-white rounded-lg shadow-md overflow-hidden">
                 <button class="faq-question w-full text-left p-6 focus:outline-none">
                     <div class="flex justify-between items-center">
-                        <h3 class="text-lg font-hedvig text-navy">How do you handle cremation services?</h3>
+                        <h3 class="text-lg font-hedvig text-navy">How do we handle cremation services?</h3>
                         <i class="fas fa-chevron-down text-yellow-600 transition-transform duration-300"></i>
                     </div>
                 </button>
@@ -597,7 +597,7 @@
             <div class="bg-white rounded-lg shadow-md overflow-hidden">
                 <button class="faq-question w-full text-left p-6 focus:outline-none">
                     <div class="flex justify-between items-center">
-                        <h3 class="text-lg font-hedvig text-navy">Can you accommodate special requests during the funeral service?</h3>
+                        <h3 class="text-lg font-hedvig text-navy">Can we accommodate special requests during the funeral service?</h3>
                         <i class="fas fa-chevron-down text-yellow-600 transition-transform duration-300"></i>
                     </div>
                 </button>
