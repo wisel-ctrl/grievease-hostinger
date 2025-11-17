@@ -518,7 +518,7 @@
                     <ul class="space-y-2">
                         <li class="flex items-start">
             <i class="fas fa-map-marker-alt mt-1 mr-2 text-yellow-600"></i>
-            <a href="https://maps.app.goo.gl/hGz7gM8xYtXW2v597" target="_blank" class="text-gray-300 hover:text-white transition hover:underline">
+            <a href="https://maps.app.goo.gl/xCiG3wLTYPNQPE9X8" target="_blank" class="text-gray-300 hover:text-white transition hover:underline">
                 #6 J.P Rizal St. Brgy. Sta Clara Sur, (Pob) Pila, Laguna
             </a>
         </li>
