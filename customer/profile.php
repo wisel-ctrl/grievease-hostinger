@@ -2196,7 +2196,7 @@ $lifeplanStmt->close();
 
 <div id="image-zoom-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black bg-opacity-75 hidden">
     <div class="relative max-w-4xl w-full m-4">
-        <button class="absolute top-4 right-4 text-white hover:text-yellow-300 z-[110]" onclick="closeImageModal()">
+        <button class="absolute top-4 right-4 text-yellow-600 hover:text-gray z-[110]" onclick="closeImageModal()">
             <i class="fas fa-times text-2xl"></i>
         </button>
         <img id="zoomed-image" src="" alt="Zoomed Image" class="w-full h-auto max-h-[80vh] object-contain rounded-lg">
