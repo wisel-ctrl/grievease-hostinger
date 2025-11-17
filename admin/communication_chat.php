@@ -458,57 +458,87 @@ header("Pragma: no-cache");
             modalConversation.scrollTop = modalConversation.scrollHeight;
         }
         
-        // Function to send a reply
-        function sendReply() {
-            const message = replyInput.value.trim();
-            
-            if (!message || !currentChatRoomId || !currentReceiverId) {
-                return;
-            }
-            
-            // Disable button while sending
-            sendReplyBtn.disabled = true;
-            sendReplyBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
-            
-            const requestData = {
-                chatRoomId: currentChatRoomId,
-                receiverId: currentReceiverId,
-                message: message
-            };
-            
-            fetch('messages/send_reply.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(requestData)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Clear input
-                    replyInput.value = '';
-                    
-                    // Add the new message to the conversation
-                    const newMessage = data.data;
-                    const messages = [newMessage];
-                    displayConversation(messages);
-                    
-                    // Refresh conversation to show all messages in proper order
-                    loadConversation(currentChatRoomId);
-                } else {
-                    showError('Failed to send reply: ' + (data.error || 'Unknown error'));
-                }
-            })
-            .catch(error => {
-                showError('Error sending reply: ' + error.message);
-            })
-            .finally(() => {
-                // Re-enable button
-                sendReplyBtn.disabled = false;
-                sendReplyBtn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i> Send';
-            });
+        let isSending = false;
+
+// Function to send a reply
+function sendReply() {
+    // Prevent double submission
+    if (isSending) return;
+    isSending = true;
+
+    const message = replyInput.value.trim();
+
+    // Basic validation
+    if (!message) {
+        showError("Please type a message before sending.");
+        isSending = false;
+        return;
+    }
+
+    if (!currentChatRoomId || !currentReceiverId) {
+        showError("Conversation not properly loaded.");
+        isSending = false;
+        return;
+    }
+
+    // UI: Show sending state
+    sendReplyBtn.disabled = true;
+    sendReplyBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Sending...';
+
+    const requestData = {
+        chatRoomId: currentChatRoomId,
+        receiverId: currentReceiverId,
+        message: message
+    };
+
+    fetch('messages/send_reply.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestData)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Server error: ${response.status}`);
         }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            // Success: Clear input and update UI
+            replyInput.value = '';
+            
+            // Optional: Instantly show the message (optimistic UI)
+            const newMessage = data.data;
+            if (newMessage) {
+                const tempMessages = [{
+                    sender: '<?php echo $_SESSION["user_id"]; ?>',
+                    message: newMessage.message,
+                    timestamp: newMessage.timestamp || new Date().toISOString(),
+                    status: 'read'
+                }];
+                displayConversation(tempMessages); // Append instantly
+            }
+
+            // Reload full conversation to ensure order & sync
+            loadConversation(currentChatRoomId);
+
+        } else {
+            throw new Error(data.error || 'Unknown error from server');
+        }
+    })
+    .catch(error => {
+        console.error('Send reply error:', error);
+        showError('Failed to send message: ' + error.message);
+    })
+    .finally(() => {
+        // Always runs: success or failure
+        isSending = false;
+        sendReplyBtn.disabled = false;
+        sendReplyBtn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i> Send';
+    });
+}
         
         // Function to update message count
         function updateMessageCount(count) {
