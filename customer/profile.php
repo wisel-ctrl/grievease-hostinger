@@ -2772,44 +2772,44 @@ function populateLifePlanCards(containerId, lifeplans) {
                         <span class="${statusClass} text-xs px-2 py-1 rounded-full">${escapeHtml(statusText)}</span>
                         <p class="text-sm text-gray-500">Life Plan ID: ${escapeHtml(plan.lifeplan_id)}</p>
                     </div>
-                    <h4 class="font-hedvig text-lg text-blue-600 mb-2">${escapeHtml(plan.service_name)} (Life Plan)</h4>
+                    <h4 class="font-hedvig text-lg text-yellow-600 mb-2">${escapeHtml(plan.service_name)} (Life Plan)</h4>
                 </div>
                 <div class="p-4 sm:p-6 space-y-3 sm:space-y-4">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
                         <div>
                             <p class="text-sm text-gray-500">Beneficiary Name</p>
-                            <p class="text-blue-600">${escapeHtml(plan.benefeciary_name)}</p>
+                            <p class="text-yellow-600">${escapeHtml(plan.benefeciary_name)}</p>
                         </div>
                         <div>
                             <p class="text-sm text-gray-500">Start Date</p>
-                            <p class="text-blue-600">${formattedInitialDate}</p>
+                            <p class="text-yellow-600">${formattedInitialDate}</p>
                         </div>
                         <div>
                             <p class="text-sm text-gray-500">End Date</p>
-                            <p class="text-blue-600">${formattedEndDate}</p>
+                            <p class="text-yellow-600">${formattedEndDate}</p>
                         </div>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
                         <div>
                             <p class="text-sm text-gray-500">Total Amount</p>
-                            <p class="text-blue-600 font-bold">${formatCurrency(plan.custom_price)}</p>
+                            <p class="text-yellow-600 font-bold">${formatCurrency(plan.custom_price)}</p>
                         </div>
                         <div>
                             <p class="text-sm text-gray-500">Amount Paid</p>
-                            <p class="text-blue-600">${formatCurrency(plan.amount_paid)}</p>
+                            <p class="text-yellow-600">${formatCurrency(plan.amount_paid)}</p>
                         </div>
                         <div>
                             <p class="text-sm text-gray-500">Balance</p>
-                            <p class="text-blue-600">${formatCurrency(plan.balance)}</p>
+                            <p class="text-yellow-600">${formatCurrency(plan.balance)}</p>
                         </div>
                     </div>
                     <div class="flex justify-end space-x-2">
                         <button onclick="openPaymentHistoryModal('life-plan', '${escapeHtml(plan.lifeplan_id)}')" 
-                            class="bg-blue-600/5 text-blue-600 px-3 py-1 rounded hover:bg-blue-600/10 transition text-sm">
+                            class="bg-yellow-600/5 text-yellow-600 px-3 py-1 rounded hover:bg-yellow-600/10 transition text-sm">
                             <i class="fas fa-file-alt mr-1"></i> View History
                         </button>
                         <a href="feedback.php?service_id=${escapeHtml(plan.lifeplan_id)}&service_type=life-plan" 
-                            class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition text-sm inline-flex items-center">
+                            class="bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition text-sm inline-flex items-center">
                             <i class="fas fa-comment-dots mr-1"></i> Feedback
                         </a>
                         ${plan.balance > 0 ? `
