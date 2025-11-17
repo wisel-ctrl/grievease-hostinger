@@ -5,11 +5,13 @@ session_start();
 if (isset($_GET['booking_id'])) {
     $bookingId = $_GET['booking_id'];
     
-    $query = "SELECT lb.*, s.service_name, s.selling_price as package_price, br.branch_name 
-              FROM lifeplan_booking_tb lb
-              LEFT JOIN services_tb s ON lb.service_id = s.service_id
-              JOIN branch_tb br ON lb.branch_id = br.branch_id
-              WHERE lb.lpbooking_id = ?";
+   $query = "SELECT lb.*, s.service_name, s.selling_price as package_price, 
+                 CONCAT(UPPER(SUBSTRING(br.branch_name, 1, 1)), 
+                        LOWER(SUBSTRING(br.branch_name, 2))) as branch_name 
+          FROM lifeplan_booking_tb lb
+          LEFT JOIN services_tb s ON lb.service_id = s.service_id
+          JOIN branch_tb br ON lb.branch_id = br.branch_id
+          WHERE lb.lpbooking_id = ?";
     
     $stmt = $conn->prepare($query);
     $stmt->bind_param("i", $bookingId);

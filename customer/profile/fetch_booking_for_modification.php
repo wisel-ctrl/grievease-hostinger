@@ -6,12 +6,13 @@ $bookingId = $_GET['booking_id'] ?? 0;
 $query = "SELECT b.*, 
                  IFNULL(s.service_name, 'Customize Package') as service_name, 
                  IFNULL(s.selling_price, 0) as selling_price, 
-                 br.branch_name 
+                 CONCAT(UPPER(SUBSTRING(br.branch_name, 1, 1)), 
+                        LOWER(SUBSTRING(br.branch_name, 2))) as branch_name 
           FROM booking_tb b
           LEFT JOIN services_tb s ON b.service_id = s.service_id
           JOIN branch_tb br ON b.branch_id = br.branch_id
           WHERE b.booking_id = ?";
-
+          
 $stmt = $conn->prepare($query);
 $stmt->bind_param("i", $bookingId);
 $stmt->execute();
