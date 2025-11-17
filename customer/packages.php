@@ -331,13 +331,14 @@ $validationStmt->close();
                 
                 $profile_picture = $profile_data['profile_picture'];
                 
-$query_gcash = "SELECT qr_number, qr_image FROM gcash_qr_tb WHERE is_available = 1";
+$query_gcash = "SELECT qr_number, gcash_name, qr_image FROM gcash_qr_tb WHERE is_available = 1";
 $result_gcash = $conn->query($query_gcash);
 $gcash_qrs = [];
 if ($result_gcash) {
     while ($row_gcash = $result_gcash->fetch_assoc()) {
         $gcash_qrs[] = [
             'qr_number' => $row_gcash['qr_number'],
+            'gcash_name' => $row_gcash['gcash_name'], // Add this line
             'qr_image' => '../' . $row_gcash['qr_image']
         ];
     }
@@ -1328,9 +1329,16 @@ function capitalizeWords(str) {
                                                     <div class="w-48 h-32 sm:w-64 sm:h-40">
                                                         <img src="<?= htmlspecialchars($qr['qr_image']) ?>" 
                                                              alt="GCash QR Code <?= htmlspecialchars($qr['qr_number']) ?>" 
-                                                             class="w-full h-full object-contain landscape-img"
+                                                             class="w-full h-full object-contain landscape-img cursor-zoom-in"
                                                              onclick="enlargeQrCode(this)">
-                                                        <p class="text-center text-xs sm:text-sm font-medium text-gray-600 mt-2"><?= htmlspecialchars($qr['qr_number']) ?></p>
+                                                        <!-- Display GCash Name -->
+                                                        <p class="text-center text-xs sm:text-sm font-semibold text-gray-800 mt-2">
+                                                            <?= htmlspecialchars($qr['gcash_name']) ?>
+                                                        </p>
+                                                        <!-- Display QR Number -->
+                                                        <p class="text-center text-xs text-gray-600 mt-1">
+                                                            <?= htmlspecialchars($qr['qr_number']) ?>
+                                                        </p>
                                                     </div>
                                                 </div>
                                             <?php endforeach; ?>
@@ -1339,7 +1347,7 @@ function capitalizeWords(str) {
                                     <?php else: ?>
                                         <p class="text-center text-sm text-gray-500">No GCash QR codes available</p>
                                     <?php endif; ?>
-                                    <p class="text-center text-sm text-gray-600 mt-4 mb-2">Scan a QR code with your GCash app to make payment</p>
+                                    <p class="text-center text-sm text-gray-600 mt-20 mb-2">Scan a QR code with your GCash app to make payment</p>
                                     <p class="text-center font-bold text-yellow-600" id="qrCodeAmount">Amount: ₱0</p>
                                 </div>
                             </div>
@@ -1585,6 +1593,26 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+});
+
+// Fix for Lifeplan QR code enlargement
+document.addEventListener('DOMContentLoaded', function() {
+    // Delegate click events for QR code enlargement
+    document.addEventListener('click', function(e) {
+        // Check if clicked element is a QR code image in either modal
+        if (e.target.classList.contains('landscape-img') && e.target.getAttribute('onclick') === 'enlargeQrCode(this)') {
+            enlargeQrCode(e.target);
+        }
+    });
+    
+    // Ensure all QR images have the onclick attribute
+    setTimeout(() => {
+        const lifeplanQrImages = document.querySelectorAll('#lifeplanGcashQrContainer .landscape-img');
+        lifeplanQrImages.forEach(img => {
+            img.setAttribute('onclick', 'enlargeQrCode(this)');
+            img.style.cursor = 'zoom-in';
+        });
+    }, 1000);
 });
 
 // Lifeplan Holder Street Address Validation
@@ -2749,9 +2777,16 @@ function removeGcash() {
                                                     <div class="w-48 h-32 sm:w-64 sm:h-40">
                                                         <img src="<?= htmlspecialchars($qr['qr_image']) ?>" 
                                                              alt="GCash QR Code <?= htmlspecialchars($qr['qr_number']) ?>" 
-                                                             class="w-full h-full object-contain landscape-img"
+                                                             class="w-full h-full object-contain landscape-img cursor-zoom-in"
                                                              onclick="enlargeQrCode(this)">
-                                                        <p class="text-center text-xs sm:text-sm font-medium text-gray-600 mt-2"><?= htmlspecialchars($qr['qr_number']) ?></p>
+                                                        <!-- Display GCash Name -->
+                                                        <p class="text-center text-xs sm:text-sm font-semibold text-gray-800 mt-2">
+                                                            <?= htmlspecialchars($qr['gcash_name']) ?>
+                                                        </p>
+                                                        <!-- Display QR Number -->
+                                                        <p class="text-center text-xs text-gray-600 mt-1">
+                                                            <?= htmlspecialchars($qr['qr_number']) ?>
+                                                        </p>
                                                     </div>
                                                 </div>
                                             <?php endforeach; ?>
@@ -2760,11 +2795,12 @@ function removeGcash() {
                                     <?php else: ?>
                                         <p class="text-center text-sm text-gray-500">No GCash QR codes available</p>
                                     <?php endif; ?>
-                                    <p class="text-center text-sm text-gray-600 mt-4 mb-2">Scan a QR code with your GCash app to make payment</p>
+                                    <p class="text-center text-sm text-gray-600 mt-20 mb-2">Scan a QR code with your GCash app to make payment</p>
                                     <p class="text-center font-bold text-yellow-600" id="lifeplanQrCodeAmount">Amount: ₱0</p>
                                 </div>
                             </div>
                         </div>
+
                         
                         <!-- GCash Upload with Preview (Improved UI) -->
                         <div class="mb-4">
