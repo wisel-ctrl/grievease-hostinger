@@ -402,9 +402,9 @@ $conn->close();
                 <div class="flex items-center space-x-4">
                     <a href="notification.php" class="relative text-white hover:text-yellow-600 transition-colors">
                         <i class="fas fa-bell"></i>
-                        <?php if ($notifications_count > 0): ?>
+                        <?php if ($notifications_count['total'] > 0): ?>
                         <span class="absolute -top-2 -right-2 bg-yellow-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                            <?php echo $notifications_count; ?>
+                            <?php echo $notifications_count['total']; ?>
                         </span>
                         <?php endif; ?>
                     </a>
