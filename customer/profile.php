@@ -7505,6 +7505,123 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// Add this function to handle traditional booking modification
+function fetchBookingForModification(bookingId) {
+    // Show loading state
+    const submitBtn = document.getElementById('modifyBookingSubmit');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Loading...';
+    submitBtn.disabled = true;
+
+    fetch(`profile/fetch_booking_for_modification.php?booking_id=${bookingId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Populate the form with booking data
+                document.getElementById('modify-booking-id').value = data.booking_id;
+                document.getElementById('modify-service-id').value = data.service_id || '';
+                document.getElementById('modify-branch-id').value = data.branch_id;
+                
+                // Display service package and branch
+                document.getElementById('display-service-package').textContent = data.service_name;
+                document.getElementById('display-branch-location').textContent = data.branch_name;
+                
+                // Populate form fields
+                document.querySelector('input[name="deceased_dateOfBurial"]').value = data.deceased_dateOfBurial || '';
+                document.querySelector('input[name="deceased_fname"]').value = data.deceased_fname || '';
+                document.querySelector('input[name="deceased_midname"]').value = data.deceased_midname || '';
+                document.querySelector('input[name="deceased_lname"]').value = data.deceased_lname || '';
+                document.querySelector('input[name="deceased_suffix"]').value = data.deceased_suffix || '';
+                document.querySelector('input[name="deceased_birth"]').value = data.deceased_birth || '';
+                document.querySelector('input[name="deceased_dodeath"]').value = data.deceased_dodeath || '';
+                document.querySelector('textarea[name="deceased_address"]').value = data.deceased_address || '';
+                document.querySelector('input[name="with_cremate"]').checked = data.with_cremate || false;
+                
+                // Show the modal
+                document.getElementById('modifyBookingModal').classList.remove('hidden');
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: data.message || 'Failed to load booking details'
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to load booking details'
+            });
+        })
+        .finally(() => {
+            // Restore button state
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        });
+}
+
+// Also add the form submission handler for traditional bookings
+document.addEventListener('DOMContentLoaded', function() {
+    const modifyBookingForm = document.getElementById('modifyBookingForm');
+    if (modifyBookingForm) {
+        modifyBookingForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            submitModifiedBooking();
+        });
+    }
+});
+
+function submitModifiedBooking() {
+    const formData = new FormData(document.getElementById('modifyBookingForm'));
+    const submitBtn = document.getElementById('modifyBookingSubmit');
+    const originalText = submitBtn.innerHTML;
+    
+    // Show loading state
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Saving...';
+    submitBtn.disabled = true;
+
+    // Use the correct path to your update_booking.php file
+    fetch('booking/update_booking.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: 'Booking updated successfully',
+                timer: 2000,
+                showConfirmButton: false
+            }).then(() => {
+                document.getElementById('modifyBookingModal').classList.add('hidden');
+                location.reload();
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: data.message || 'Failed to update booking'
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Failed to update booking'
+        });
+    })
+    .finally(() => {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    });
+}
+
 </script>
 </body> 
 </html>
