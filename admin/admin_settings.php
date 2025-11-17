@@ -195,14 +195,20 @@
         }
         
     
+        // Replace this section in your existing code:
         if (isset($_POST['add_gcash_qr'])) {
             $qr_number = trim($_POST['qr_number']);
+            $gcash_name = trim($_POST['gcash_name']); // Add this line
             
             // Validate QR number
             if (empty($qr_number)) {
                 $_SESSION['error_message'] = "GCash number is required!";
             } elseif (!preg_match("/^[0-9]{11}$/", $qr_number)) {
                 $_SESSION['error_message'] = "GCash number must be 11 digits!";
+            } elseif (empty($gcash_name)) { // Add GCash Name validation
+                $_SESSION['error_message'] = "GCash Name is required!";
+            } elseif (!preg_match("/^[a-zA-Z\s.]+$/", $gcash_name)) { // Only letters, spaces, and dots allowed
+                $_SESSION['error_message'] = "GCash Name can only contain letters, spaces, and dots (.)";
             } elseif (!isset($_FILES['qr_image'])) {
                 $_SESSION['error_message'] = "QR Code image is required!";
             } else {
@@ -229,9 +235,10 @@
                     if (move_uploaded_file($_FILES["qr_image"]["tmp_name"], $target_file)) {
                         $relative_path = "GCash/" . $new_filename;
                         $ph_time = date('Y-m-d H:i:s'); // Current Philippines time
-                        $insert_query = "INSERT INTO gcash_qr_tb (qr_number, qr_image, created_at, updated_at) VALUES (?, ?, ?, ?)";
+                        // Update the INSERT query to include gcash_name
+                        $insert_query = "INSERT INTO gcash_qr_tb (qr_number, gcash_name, qr_image, created_at, updated_at) VALUES (?, ?, ?, ?, ?)";
                         $stmt = $conn->prepare($insert_query);
-                        $stmt->bind_param("ssss", $qr_number, $relative_path, $ph_time, $ph_time);
+                        $stmt->bind_param("sssss", $qr_number, $gcash_name, $relative_path, $ph_time, $ph_time);
                         
                         if ($stmt->execute()) {
                             $_SESSION['success_message'] = "GCash QR Code added successfully!";
@@ -566,6 +573,9 @@
                                      data-available="<?php echo $qr['is_available'] ? '1' : '0'; ?>">
                                     <div class="flex justify-between items-start mb-3 sm:mb-4">
                                         <div>
+                                            <h4 class="font-semibold text-sidebar-text text-sm sm:text-base">
+                                                <?php echo htmlspecialchars($qr['gcash_name']); ?>
+                                            </h4>
                                             <h4 class="font-semibold text-sidebar-text text-sm sm:text-base"><?php echo htmlspecialchars($qr['qr_number']); ?></h4>
                                             <p class="text-xs sm:text-sm text-gray-500">
                                                 <?php echo $qr['is_available'] ? 'Available' : 'Not Available'; ?>
@@ -617,6 +627,9 @@
                                          data-available="<?php echo $qr['is_available'] ? '1' : '0'; ?>">
                                         <div class="flex justify-between items-start mb-3 sm:mb-4">
                                             <div>
+                                                <h4 class="font-semibold text-sidebar-text text-sm sm:text-base">
+                                                    <?php echo htmlspecialchars($qr['gcash_name']); ?>
+                                                </h4>
                                                 <h4 class="font-semibold text-sidebar-text text-sm sm:text-base"><?php echo htmlspecialchars($qr['qr_number']); ?></h4>
                                                 <p class="text-xs sm:text-sm text-gray-500">
                                                     <?php echo $qr['is_available'] ? 'Available' : 'Not Available'; ?>
@@ -684,6 +697,15 @@
                                                class="w-full px-3 py-2 sm:px-4 sm:py-3 border border-sidebar-border rounded-xl focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-white text-sm sm:text-base"
                                                placeholder="11-digit GCash number">
                                         <p id="modal_qr_number_error" class="text-red-500 text-xs sm:text-sm hidden"></p>
+                                    </div>
+                                    
+                                    <div>
+                                        <label for="modal_gcash_name" class="block text-sidebar-text font-medium font-inter text-sm sm:text-base">GCash Name</label>
+                                        <input type="text" id="modal_gcash_name" name="gcash_name" required
+                                               pattern="[a-zA-Z\s.]+"
+                                               class="w-full px-3 py-2 sm:px-4 sm:py-3 border border-sidebar-border rounded-xl focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-white text-sm sm:text-base"
+                                               placeholder="Enter GCash account name (only letters, spaces, and dots)">
+                                        <p id="modal_gcash_name_error" class="text-red-500 text-xs sm:text-sm hidden"></p>
                                     </div>
                                     
                                     <div>
@@ -1687,6 +1709,91 @@ document.getElementById('remove-profile-picture')?.addEventListener('click', fun
     });
 });
 
+// Add this function for GCash Name validation
+function validateGCashName() {
+    const input = document.getElementById('modal_gcash_name');
+    const value = input.value.trim();
+    const errorElement = document.getElementById('modal_gcash_name_error');
+    
+    if (!value) {
+        errorElement.textContent = 'GCash Name is required';
+        errorElement.classList.remove('hidden');
+        return false;
+    }
+    
+    if (!/^[a-zA-Z\s.]+$/.test(value)) {
+        errorElement.textContent = 'GCash Name can only contain letters, spaces, and dots (.)';
+        errorElement.classList.remove('hidden');
+        return false;
+    }
+    
+    // Prevent multiple consecutive spaces
+    if (/\s{2,}/.test(value)) {
+        errorElement.textContent = 'Cannot have multiple consecutive spaces';
+        errorElement.classList.remove('hidden');
+        return false;
+    }
+    
+    errorElement.textContent = '';
+    errorElement.classList.add('hidden');
+    return true;
+}
+
+// Add this function to handle GCash Name input
+function handleGCashNameInput(event) {
+    const input = event.target;
+    // Remove any characters that are not letters, spaces, or dots
+    input.value = input.value.replace(/[^a-zA-Z\s.]/g, '');
+    // Prevent multiple consecutive spaces
+    input.value = input.value.replace(/\s{2,}/g, ' ');
+}
+
+// Add event listener for GCash Name input
+document.getElementById('modal_gcash_name')?.addEventListener('input', handleGCashNameInput);
+document.getElementById('modal_gcash_name')?.addEventListener('blur', validateGCashName);
+
+// Update the modal form submission validation
+document.getElementById('gcash-form').addEventListener('submit', function(e) {
+    const qrNumber = document.getElementById('modal_qr_number').value.trim();
+    const gcashName = document.getElementById('modal_gcash_name').value.trim();
+    const qrImage = document.getElementById('modal_qr_image').value;
+    
+    if (!/^[0-9]{11}$/.test(qrNumber)) {
+        e.preventDefault();
+        const errorElement = document.getElementById('modal_qr_number_error');
+        errorElement.textContent = 'GCash number must be 11 digits';
+        errorElement.classList.remove('hidden');
+        return false;
+    }
+    
+    if (!gcashName || !/^[a-zA-Z\s.]+$/.test(gcashName)) {
+        e.preventDefault();
+        const errorElement = document.getElementById('modal_gcash_name_error');
+        errorElement.textContent = 'Please enter a valid GCash Name (only letters, spaces, and dots allowed)';
+        errorElement.classList.remove('hidden');
+        return false;
+    }
+    
+    if (!qrImage) {
+        e.preventDefault();
+        const errorElement = document.getElementById('modal_qr_image_error');
+        errorElement.textContent = 'QR Code image is required';
+        errorElement.classList.remove('hidden');
+        return false;
+    }
+    
+    return true;
+});
+
+// Update the resetModalForm function to include GCash Name
+function resetModalForm() {
+    document.getElementById('modal_qr_number').value = '';
+    document.getElementById('modal_gcash_name').value = '';
+    document.getElementById('modal_qr_image').value = '';
+    document.getElementById('modal_qr_number_error').classList.add('hidden');
+    document.getElementById('modal_gcash_name_error').classList.add('hidden');
+    document.getElementById('modal_qr_image_error').classList.add('hidden');
+}
 
 // Profile picture upload validation
 const profilePictureInput = document.getElementById('profile_picture');
