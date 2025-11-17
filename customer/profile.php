@@ -1507,7 +1507,7 @@ document.addEventListener('DOMContentLoaded', function() {
     <div id="lifeplan-booking-content" class="service-content" style="display: none;">
         <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
             <!-- Header -->
-            <div class="bookings bg-blue-600 p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 tab-header">
+            <div class="bookings bg-yellow-600 p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 tab-header">
                 <h3 class="font-hedvig text-xl sm:text-2xl text-white font-semibold">Life Plan Bookings</h3>
                 <div class="flex space-x-4">
                     <select id="lifeplan-status-filter" class="border border-gray-300 rounded-lg px-3 py-2 text-sm text-navy focus:outline-none focus:ring-2 focus:ring-yellow-600">
