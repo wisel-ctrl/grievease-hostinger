@@ -2772,7 +2772,7 @@ function populateLifePlanCards(containerId, lifeplans) {
                         <span class="${statusClass} text-xs px-2 py-1 rounded-full">${escapeHtml(statusText)}</span>
                         <p class="text-sm text-gray-500">Life Plan ID: ${escapeHtml(plan.lifeplan_id)}</p>
                     </div>
-                    <h4 class="font-hedvig text-lg text-blue-600 mb-2">${escapeHtml(plan.service_name)} (Life Plan)</h4>
+                    <h4 class="font-hedvig text-lg text-yellow-600 mb-2">${escapeHtml(plan.service_name)} (Life Plan)</h4>
                 </div>
                 <div class="p-4 sm:p-6 space-y-3 sm:space-y-4">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
