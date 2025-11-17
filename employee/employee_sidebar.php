@@ -226,7 +226,7 @@ $profile_picture = $employee['profile_picture'] ? '../' . $employee['profile_pic
       <li>
         <a href="employee_customer_account_creation.php" class="sidebar-link flex items-center px-5 py-3 text-sidebar-text opacity-80 hover:opacity-100 no-underline transition-all duration-300 hover:bg-sidebar-hover">
           <i class="fas fa-user-circle w-5 text-center mr-3 text-sidebar-accent"></i>
-          <span>Customer Account Management</span>
+          <span>Customer Accounts</span>
         </a>
       </li>
       <li>
