@@ -192,13 +192,14 @@ require_once '../db_connect.php'; // Database connection
                 
                 $profile_picture = $profile_data['profile_picture'];
                 
-                $query_gcash = "SELECT qr_number, qr_image FROM gcash_qr_tb WHERE is_available = 1";
+                $query_gcash = "SELECT qr_number, gcash_name, qr_image FROM gcash_qr_tb WHERE is_available = 1";
                 $result_gcash = $conn->query($query_gcash);
                 $gcash_qrs = [];
                 if ($result_gcash) {
                     while ($row_gcash = $result_gcash->fetch_assoc()) {
                         $gcash_qrs[] = [
                             'qr_number' => $row_gcash['qr_number'],
+                            'gcash_name' => $row_gcash['gcash_name'], // Add this line
                             'qr_image' => '../' . $row_gcash['qr_image']
                         ];
                     }
@@ -1312,7 +1313,14 @@ require_once '../db_connect.php'; // Database connection
                                                              alt="GCash QR Code <?= htmlspecialchars($qr['qr_number']) ?>" 
                                                              class="w-full h-full object-contain landscape-img"
                                                              onclick="enlargeQrCode(this)">
-                                                        <p class="text-center text-xs sm:text-sm font-medium text-gray-600 mt-2"><?= htmlspecialchars($qr['qr_number']) ?></p>
+                                                        <!-- Display GCash Name -->
+                                                        <p class="text-center text-xs sm:text-sm font-semibold text-gray-800 mt-2">
+                                                            <?= htmlspecialchars($qr['gcash_name']) ?>
+                                                        </p>
+                                                        <!-- Display QR Number -->
+                                                        <p class="text-center text-xs text-gray-600 mt-1">
+                                                            <?= htmlspecialchars($qr['qr_number']) ?>
+                                                        </p>
                                                     </div>
                                                 </div>
                                             <?php endforeach; ?>
@@ -1321,10 +1329,20 @@ require_once '../db_connect.php'; // Database connection
                                     <?php else: ?>
                                         <p class="text-center text-sm text-gray-500">No GCash QR codes available</p>
                                     <?php endif; ?>
-                                    <p class="text-center text-sm text-gray-600 mt-4 mb-2">Scan a QR code with your GCash app to make payment</p>
+                                    <p class="text-center text-sm text-gray-600 mt-20 mb-2">Scan a QR code with your GCash app to make payment</p>
                                     <p class="text-center font-bold text-yellow-600" id="lifeplanQrCodeAmount">Amount: ₱0</p>
                                 </div>
                             </div>
+                        </div>
+                        
+                        <!-- Expanded QR Modal -->
+                        <div id="expandedQrModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 9999; flex-items: center; justify-content: center; align-items: center; justify-items: center;" onclick="closeExpandedQr()">
+                          <div style="position: relative; display: flex; align-items: center; justify-content: center;">
+                            <img id="expandedQrImage" src="" alt="Expanded QR Code" style="max-width: 90vw; max-height: 90vh; object-fit: contain;">
+                            <button type="button" onclick="closeExpandedQr()" style="position: absolute; top: 1rem; right: 1rem; background: white; border: none; width: 2.5rem; height: 2.5rem; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #1f2937;">
+                              <i class="fas fa-times"></i>
+                            </button>
+                          </div>
                         </div>
                         
                         <!-- GCash Upload with Preview (Improved UI) -->
@@ -3428,6 +3446,25 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+function enlargeQrCode(img) {
+    const expandedModal = document.getElementById('expandedQrModal');
+    const expandedImage = document.getElementById('expandedQrImage');
+    expandedImage.src = img.src;
+    expandedModal.style.display = 'flex';
+  }
+
+  function closeExpandedQr() {
+    const expandedModal = document.getElementById('expandedQrModal');
+    expandedModal.style.display = 'none';
+  }
+
+  // Close on ESC key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      closeExpandedQr();
+    }
+  });
 
 </script>
 
