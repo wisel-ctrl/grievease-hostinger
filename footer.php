@@ -50,9 +50,11 @@
                     <h3 class="text-lg mb-4">Contact Us</h3>
                     <ul class="space-y-2">
                         <li class="flex items-start">
-                            <i class="fas fa-map-marker-alt mt-1 mr-2 text-yellow-600"></i>
-                            <span>#6 J.P Rizal St. Brgy. Sta Clara Sur, (Pob) Pila, Laguna</span>
-                        </li>
+            <i class="fas fa-map-marker-alt mt-1 mr-2 text-yellow-600"></i>
+            <a href="https://maps.app.goo.gl/hGz7gM8xYtXW2v597" target="_blank" class="text-gray-300 hover:text-white transition hover:underline">
+                #6 J.P Rizal St. Brgy. Sta Clara Sur, (Pob) Pila, Laguna
+            </a>
+        </li>
                         <li class="flex items-center">
                             <i class="fas fa-phone-alt mr-2 text-yellow-600"></i>
                             <span>(0956) 814-3000 <br> (0961) 345-4283</span>
