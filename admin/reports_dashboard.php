@@ -1153,7 +1153,7 @@ var options = {
   dataLabels: {
     enabled: true,
     style: {
-      colors: ['#6B7280'],
+      colors: ['#9CA3AF'],
       fontSize: '12px',
       fontWeight: 600,
       fontFamily: 'Inter, Helvetica, sans-serif',
