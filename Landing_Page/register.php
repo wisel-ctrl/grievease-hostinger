@@ -96,9 +96,10 @@
                             <label for="birthdate" class="block text-xs font-medium text-white mb-1">Birthdate <span class="text-red-500">*</label>
                             <div class="relative">
                                 <input 
-                                    type="date" 
+                                    type="text" 
                                     id="birthdate" 
                                     name="birthdate" 
+                                    readonly
                                     required
                                     class="w-full px-3 py-2 bg-white border border-input-border rounded-lg focus:ring-1 focus:ring-yellow-600 focus:border-yellow-600 outline-none transition-all duration-200 pr-8"
                                 >
