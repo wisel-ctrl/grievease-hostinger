@@ -96,16 +96,13 @@
                             <label for="birthdate" class="block text-xs font-medium text-white mb-1">Birthdate <span class="text-red-500">*</label>
                             <div class="relative">
                                 <input 
-                                    type="text" 
+                                    type="date" 
                                     id="birthdate" 
                                     name="birthdate" 
-                                    readonly
                                     required
-                                    class="w-full px-3 py-2 bg-white border border-input-border rounded-lg focus:ring-1 focus:ring-yellow-600 focus:border-yellow-600 outline-none transition-all duration-200 pr-8"
+                                    class="w-full px-3 py-2 bg-white border border-input-border rounded-lg focus:ring-1 focus:ring-yellow-600 focus:border-yellow-600 outline-none transition-all duration-200"
+                                    max="<?php echo date('Y-m-d'); ?>"
                                 >
-                                <span class="absolute right-2 top-1/2 transform -translate-y-1/2 text-yellow-600 text-sm">
-                                    <i class="fas fa-calendar-alt"></i>
-                                </span>
                             </div>
                         </div>
                     </div>
@@ -336,104 +333,60 @@ document.getElementById('otpModalContent').addEventListener('click', function(e)
     e.stopPropagation();
 });
         document.addEventListener('DOMContentLoaded', function() {
-            const birthdateInput = document.getElementById('birthdate');
+        const birthdateInput = document.getElementById('birthdate');
+        
+        // Change input type to date for native date picker
+        birthdateInput.type = 'date';
+        
+        // Remove the calendar icon since browser provides its own
+        const calendarIcon = birthdateInput.parentNode.querySelector('.fa-calendar-alt');
+        if (calendarIcon) {
+            calendarIcon.parentNode.remove();
+        }
+        
+        // Age validation function
+        function validateAge() {
+            const birthdate = birthdateInput.value;
+            if (!birthdate) return;
             
-            // Add custom CSS for Pikaday
-            const style = document.createElement('style');
-            style.textContent = `
-                .pika-single {
-                    font-family: 'Hedvig Letters Serif', serif;
-                    border-radius: 0.5rem;
-                    box-shadow: 0 10px 25px rgb(0, 0, 0);
-                    border: 1px solidrgb(110, 110, 110);
-                    padding: 0.rem;
-                }
-                .pika-title {
-                    padding: 0.25rem;
-                    text-align: center;
-                }
-                .pika-label {
-                    font-size: 1rem;
-                    font-weight: bold;
-                    color: #1E1E1E;
-                }
-                .pika-button {
-                    border-radius: 0.25rem !important;
-                    text-align: center;
-                    transition: all 0.2s ease;
-                }
-                .pika-button:hover {
-                    background: #F1F5F9 !important;
-                    color:rgb(0, 0, 0) !important;
-                    box-shadow: none !important;
-                }
-                .is-selected .pika-button {
-                    background: #C98522 !important;
-                    box-shadow: none !important;
-                    color: #fff !important;
-                }
-                .is-today .pika-button {
-                    color: #C98522;
-                    font-weight: bold;
-                }
-                .pika-prev, .pika-next {
-                    background-color: #F1F5F9;
-                    border-radius: 50%;
-                    width: 24px;
-                    height: 24px;
-                }
-            `;
-            document.head.appendChild(style);
+            const birthDate = new Date(birthdate);
+            const today = new Date();
             
-            // Initialize Pikaday
-            const picker = new Pikaday({
-                field: birthdateInput,
-                format: 'YYYY-MM-DD',
-                maxDate: new Date(),
-                yearRange: [1900, new Date().getFullYear()],
-                theme: 'custom-theme',
-                bound: true,
-                onSelect: function() {
-                    validateAge(this.toString('YYYY-MM-DD'));
-                }
-            });
+            // Calculate age
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDiff = today.getMonth() - birthDate.getMonth();
             
-            // Age validation function
-            function validateAge(birthdate) {
-                const birthDate = new Date(birthdate);
-                const today = new Date();
-                
-                // Calculate age
-                let age = today.getFullYear() - birthDate.getFullYear();
-                const monthDiff = today.getMonth() - birthDate.getMonth();
-                
-                // Adjust age if birthday hasn't occurred yet this year
-                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-                    age--;
-                }
-                
-                // Update UI based on age
-                const ageRequirement = document.getElementById('ageRequirement');
-                
-                if (age >= 18) {
-                    ageRequirement.classList.add('text-success');
-                    ageRequirement.classList.remove('text-error');
-                    ageRequirement.querySelector('i').className = 'fas fa-check-circle mr-1';
-                    birthdateInput.classList.remove('border-error');
-                    birthdateInput.classList.add('border-success');
-                } else {
-                    ageRequirement.classList.add('text-error');
-                    ageRequirement.classList.remove('text-success');
-                    ageRequirement.querySelector('i').className = 'fas fa-times-circle mr-1';
-                    birthdateInput.classList.add('border-error');
-                    birthdateInput.classList.remove('border-success');
-                }
-                
-                // Trigger a synthetic event for form validation
-                const changeEvent = new Event('change');
-                birthdateInput.dispatchEvent(changeEvent);
+            // Adjust age if birthday hasn't occurred yet this year
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
             }
-        });
+            
+            // Update UI based on age
+            const ageRequirement = document.getElementById('ageRequirement');
+            
+            if (age >= 18) {
+                ageRequirement.classList.add('text-success');
+                ageRequirement.classList.remove('text-error');
+                ageRequirement.querySelector('i').className = 'fas fa-check-circle mr-1';
+                birthdateInput.classList.remove('border-error');
+                birthdateInput.classList.add('border-success');
+            } else {
+                ageRequirement.classList.add('text-error');
+                ageRequirement.classList.remove('text-success');
+                ageRequirement.querySelector('i').className = 'fas fa-times-circle mr-1';
+                birthdateInput.classList.add('border-error');
+                birthdateInput.classList.remove('border-success');
+            }
+            
+            // Trigger a synthetic event for form validation
+            const changeEvent = new Event('change');
+            birthdateInput.dispatchEvent(changeEvent);
+        }
+        
+        // Add event listeners for validation
+        birthdateInput.addEventListener('change', validateAge);
+        birthdateInput.addEventListener('input', validateAge);
+    });
     </script>
     
 <!-- VALIDATION INPUT -->
