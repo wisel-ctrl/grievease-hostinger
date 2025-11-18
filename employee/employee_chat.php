@@ -880,17 +880,7 @@ function capitalizeWords(str) {
         
         <!-- Modal Footer - Reply Form -->
         <div class="p-4 border-t border-gray-200">
-          <div class="flex gap-2 mb-2">
-            <button class="text-gray-500 hover:text-gray-700" title="Attach File">
-              <i class="fas fa-paperclip"></i>
-            </button>
-            <button class="text-gray-500 hover:text-gray-700" title="Quick Reply Template">
-              <i class="fas fa-reply-all"></i>
-            </button>
-            <button class="text-gray-500 hover:text-gray-700" title="Format Text">
-              <i class="fas fa-font"></i>
-            </button>
-          </div>
+         
           <div class="flex gap-2">
             <textarea id="reply-input" class="flex-1 p-2.5 border border-gray-300 rounded text-sm" placeholder="Type your reply..."></textarea>
             <button class="bg-[#008080] text-white px-4 py-2 rounded-md hover:bg-opacity-90" id="send-reply">
