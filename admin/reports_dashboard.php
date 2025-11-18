@@ -467,22 +467,34 @@ $ratioChange = number_format($changes['ratio_change'] ?? 0, 1);
 
     const formattedUsername = formatName(username);
 
-    document.addEventListener('DOMContentLoaded', function() {
-      console.log('nag call ang dom');
-    // Event delegation for print buttons
-        document.addEventListener('click', function(e) {
-            if (e.target.closest('button[onclick*="printRevenueTables"]') || 
-                e.target.closest('button')?.parentElement?.onclick?.toString().includes('printRevenueTables')) {
-                printRevenueTables();
-                console.log('nagclick naman');
-            }
+    // Debugging version
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded - setting up event listeners');
+    
+    // Method 1: Direct event listener (more reliable)
+    const printBtn = document.querySelector('.print-revenue-btn');
+    if (printBtn) {
+        console.log('Found print button directly');
+        printBtn.addEventListener('click', function(e) {
+            console.log('Direct click event fired');
+            printRevenueTables();
+            e.preventDefault();
         });
-        
-        // Remove the inline onclick from the button HTML
-        // Change this in your HTML:
-        // FROM: <button onclick="printRevenueTables()" ...>
-        // TO: <button class="print-revenue-btn" ...>
+    } else {
+        console.log('Print button not found with class .print-revenue-btn');
+    }
+
+    // Method 2: Event delegation as backup
+    document.addEventListener('click', function(e) {
+        const clickedBtn = e.target.closest('.print-revenue-btn');
+        if (clickedBtn) {
+            console.log('Event delegation caught print button click');
+            printRevenueTables();
+            e.preventDefault();
+            e.stopPropagation();
+        }
     });
+});
 
     function printRevenueTables() {
         if (!historicalRevenueData || historicalRevenueData.length === 0) {
