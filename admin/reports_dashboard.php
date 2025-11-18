@@ -468,11 +468,13 @@ $ratioChange = number_format($changes['ratio_change'] ?? 0, 1);
     const formattedUsername = formatName(username);
 
     document.addEventListener('DOMContentLoaded', function() {
+      console.log('nag call ang dom');
     // Event delegation for print buttons
         document.addEventListener('click', function(e) {
             if (e.target.closest('button[onclick*="printRevenueTables"]') || 
                 e.target.closest('button')?.parentElement?.onclick?.toString().includes('printRevenueTables')) {
                 printRevenueTables();
+                console.log('nagclick naman');
             }
         });
         
