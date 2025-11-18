@@ -1,40 +1,43 @@
 <?php
 require_once '../db_connect.php';
 
-// Query for pending funeral bookings
+// Query for pending funeral bookings (show all, but track is_read)
 $funeralQuery = "SELECT 
                     b.booking_id,
                     CONCAT(b.deceased_lname, ', ', b.deceased_fname, ' ', IFNULL(b.deceased_midname, '')) AS deceased_name,
                     b.booking_date AS notification_date,
                     IFNULL(s.service_name, 'Custom Package') AS service_name,
                     'funeral' AS notification_type,
-                    'Booking_acceptance.php' AS link_base
+                    'Booking_acceptance.php' AS link_base,
+                    b.is_read
                  FROM booking_tb b
                  LEFT JOIN services_tb s ON b.service_id = s.service_id
                  WHERE b.status = 'Pending'
                  ORDER BY b.booking_date DESC";
 
-// Query for pending life plan bookings
+// Query for pending life plan bookings (show all, but track is_read)
 $lifeplanQuery = "SELECT 
                     lb.lpbooking_id AS booking_id,
                     CONCAT(lb.benefeciary_lname, ', ', lb.benefeciary_fname, ' ', IFNULL(lb.benefeciary_mname, '')) AS deceased_name,
                     lb.initial_date AS notification_date,
                     s.service_name,
                     'lifeplan' AS notification_type,
-                    'Booking_acceptance.php' AS link_base
+                    'Booking_acceptance.php' AS link_base,
+                    lb.is_read
                   FROM lifeplan_booking_tb lb
                   JOIN services_tb s ON lb.service_id = s.service_id
                   WHERE lb.booking_status = 'pending'
                   ORDER BY lb.initial_date DESC";
 
-// Query for pending ID validations
+// Query for pending ID validations (show all, but track is_read)
 $idValidationQuery = "SELECT 
                         id AS booking_id,
                         '' AS deceased_name,
                         upload_at AS notification_date,
                         'ID Validation' AS service_name,
                         'id_validation' AS notification_type,
-                        'id_confirmation.php' AS link_base
+                        'id_confirmation.php' AS link_base,
+                        is_read
                      FROM valid_id_tb
                      WHERE is_validated = 'no'
                      ORDER BY upload_at DESC";
@@ -67,11 +70,24 @@ if ($idValidationResult && $idValidationResult->num_rows > 0) {
     }
 }
 
-// Count totals
-$totalFuneral = count($funeralNotifications);
-$totalLifeplan = count($lifeplanNotifications);
-$totalIdValidation = count($idValidationNotifications);
-$totalPending = $totalFuneral + $totalLifeplan + $totalIdValidation;
+// Count totals - only count unread for the badge
+$totalFuneralUnread = 0;
+$totalLifeplanUnread = 0;
+$totalIdValidationUnread = 0;
+
+foreach ($funeralNotifications as $notification) {
+    if ($notification['is_read'] == 0) $totalFuneralUnread++;
+}
+
+foreach ($lifeplanNotifications as $notification) {
+    if ($notification['is_read'] == 0) $totalLifeplanUnread++;
+}
+
+foreach ($idValidationNotifications as $notification) {
+    if ($notification['is_read'] == 0) $totalIdValidationUnread++;
+}
+
+$totalPending = $totalFuneralUnread + $totalLifeplanUnread + $totalIdValidationUnread;
 
 // Function to calculate time ago
 function time_elapsed_string($datetime, $full = false) {
@@ -224,6 +240,25 @@ function time_elapsed_string($datetime, $full = false) {
             0%, 100% { border-left-color: #EF4444; }
             50% { border-left-color: #FCA5A5; }
         }
+        
+        .notification-item.read {
+            opacity: 0.8;
+        }
+        
+        .notification-item.read:hover {
+            opacity: 0.9;
+        }
+        
+        .status-text.read {
+            color: #10b981 !important;
+            font-weight: 500;
+        }
+        
+        /* Smooth transitions for status changes */
+        .notification-item,
+        .notification-item * {
+            transition: all 0.3s ease;
+        }
     </style>
 </head>
 
@@ -333,7 +368,7 @@ function time_elapsed_string($datetime, $full = false) {
                     >
                         <i class="fas fa-cross mr-2" aria-hidden="true"></i>
                         Funeral Bookings
-                        <span class="ml-2 bg-blue-500 text-white text-xs rounded-full px-2 py-0.5"><?php echo $totalFuneral; ?></span>
+                        <span class="ml-2 bg-blue-500 text-white text-xs rounded-full px-2 py-0.5"><?php echo $totalFuneralUnread; ?></span>
                     </button>
                     <button 
                         onclick="filterNotifications('lifeplan')" 
@@ -344,7 +379,7 @@ function time_elapsed_string($datetime, $full = false) {
                     >
                         <i class="fas fa-heart mr-2" aria-hidden="true"></i>
                         Life Plan Bookings
-                        <span class="ml-2 bg-purple-500 text-white text-xs rounded-full px-2 py-0.5"><?php echo $totalLifeplan; ?></span>
+                        <span class="ml-2 bg-purple-500 text-white text-xs rounded-full px-2 py-0.5"><?php echo $totalLifeplanUnread; ?></span>
                     </button>
                     <button 
                         onclick="filterNotifications('validation')" 
@@ -355,7 +390,7 @@ function time_elapsed_string($datetime, $full = false) {
                     >
                         <i class="fas fa-id-card mr-2" aria-hidden="true"></i>
                         ID Validations
-                        <span class="ml-2 bg-yellow-500 text-white text-xs rounded-full px-2 py-0.5"><?php echo $totalIdValidation; ?></span>
+                        <span class="ml-2 bg-yellow-500 text-white text-xs rounded-full px-2 py-0.5"><?php echo $totalIdValidationUnread; ?></span>
                     </button>
                 </nav>
             </div>
@@ -416,64 +451,84 @@ function time_elapsed_string($datetime, $full = false) {
                 </div>
             <?php else: ?>
                 <!-- Funeral Bookings -->
-                <?php foreach ($funeralNotifications as $notification): 
-                    $timeAgo = time_elapsed_string($notification['notification_date']);
-                    $isUrgent = (strtotime($notification['notification_date']) > strtotime('-1 day'));
-                ?>
-                <div class="notification-item funeral <?php echo $isUrgent ? 'notification-priority-high' : ''; ?> bg-sidebar-bg rounded-lg shadow-card border border-sidebar-border overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1" data-priority="<?php echo $isUrgent ? 'high' : 'medium'; ?>" data-timestamp="<?php echo strtotime($notification['notification_date']); ?>">
-                    <div class="flex items-start p-6">
-                        <div class="absolute left-0 top-0 bottom-0 w-1 <?php echo $isUrgent ? 'bg-red-500' : 'bg-blue-500'; ?>"></div>
-                        <div class="flex-shrink-0 <?php echo $isUrgent ? 'bg-red-100' : 'bg-blue-100'; ?> rounded-full p-3 mr-4">
-                            <i class="fas fa-cross <?php echo $isUrgent ? 'text-red-600' : 'text-blue-600'; ?> text-lg" aria-hidden="true"></i>
-                        </div>
-                        <div class="flex-grow">
-                            <div class="flex justify-between items-start mb-2">
-                                <div class="flex-grow">
-                                    <div class="flex items-center gap-2 mb-2">
-                                        <h3 class="text-lg font-semibold text-sidebar-text"><?php echo $isUrgent ? 'URGENT: ' : ''; ?>Funeral Booking Request</h3>
-                                        <?php if ($isUrgent): ?>
-                                        <span class="bg-red-100 text-red-800 text-xs font-medium px-2 py-1 rounded-full">High Priority</span>
-                                        <?php endif; ?>
-                                    </div>
-                                    <p class="text-sidebar-text"><?php echo htmlspecialchars($notification['deceased_name']); ?> - <?php echo htmlspecialchars($notification['service_name']); ?></p>
-                                </div>
-                                <div class="flex items-center space-x-2 ml-4">
-                                    <span class="h-3 w-3 bg-blue-600 rounded-full" aria-label="Unread notification"></span>
-                                    <span class="text-xs text-gray-500">Unread</span>
-                                </div>
-                            </div>
-                            <div class="flex flex-wrap items-center text-sm text-gray-600 mb-4 gap-4">
-                                <div class="flex items-center">
-                                    <i class="far fa-clock mr-2" aria-hidden="true"></i>
-                                    <span><?php echo $timeAgo; ?></span>
-                                </div>
-                                <div class="flex items-center">
-                                    <i class="fas fa-calendar mr-2" aria-hidden="true"></i>
-                                    <span>Booking Date: <?php echo date('F j, Y', strtotime($notification['notification_date'])); ?></span>
-                                </div>
-                            </div>
-                            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                                <div class="flex flex-wrap gap-2">
-                                    <a href="<?php echo $notification['link_base']; ?>" 
-                                        class="ripple-effect px-4 py-2 bg-sidebar-accent text-white rounded-lg hover:bg-darkgold transition-all duration-200 text-sm font-medium transform hover:scale-105 focus-visible:focus"
-                                        title="View detailed booking information"
-                                    >
-                                        <i class="fas fa-eye mr-2" aria-hidden="true"></i>View Details
-                                    </a>
-                                </div>
-                                <button 
-                                    onclick="markAsRead(this)" 
-                                    class="text-gray-400 hover:text-sidebar-accent transition-colors p-2 rounded focus-visible:focus"
-                                    title="Mark as read"
-                                    aria-label="Mark notification as read"
-                                >
-                                    <i class="fas fa-check-circle text-lg" aria-hidden="true"></i>
-                                </button>
-                            </div>
-                        </div>
+<!-- Funeral Bookings -->
+<!-- Funeral Bookings -->
+<?php foreach ($funeralNotifications as $notification): 
+    $timeAgo = time_elapsed_string($notification['notification_date']);
+    $isUrgent = (strtotime($notification['notification_date']) > strtotime('-1 day'));
+    $isRead = $notification['is_read'] == 1; // This should reflect the database value
+?>
+<div class="notification-item funeral <?php echo $isUrgent ? 'notification-priority-high' : ''; ?> <?php echo $isRead ? 'read' : ''; ?> bg-sidebar-bg rounded-lg shadow-card border border-sidebar-border overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1" 
+     data-priority="<?php echo $isUrgent ? 'high' : 'medium'; ?>" 
+     data-timestamp="<?php echo strtotime($notification['notification_date']); ?>"
+     data-notification-type="funeral"
+     data-booking-id="<?php echo $notification['booking_id']; ?>"
+     data-is-read="<?php echo $isRead ? '1' : '0'; ?>">
+    <div class="flex items-start p-6">
+        <div class="absolute left-0 top-0 bottom-0 w-1 <?php echo $isUrgent ? 'bg-red-500' : ($isRead ? 'bg-gray-400' : 'bg-blue-500'); ?>"></div>
+        <div class="flex-shrink-0 <?php echo $isUrgent ? 'bg-red-100' : ($isRead ? 'bg-gray-100' : 'bg-blue-100'); ?> rounded-full p-3 mr-4">
+            <i class="fas fa-cross <?php echo $isUrgent ? 'text-red-600' : ($isRead ? 'text-gray-500' : 'text-blue-600'); ?> text-lg" aria-hidden="true"></i>
+        </div>
+        <div class="flex-grow">
+            <div class="flex justify-between items-start mb-2">
+                <div class="flex-grow">
+                    <div class="flex items-center gap-2 mb-2">
+                        <h3 class="text-lg font-semibold <?php echo $isRead ? 'text-gray-500' : 'text-sidebar-text'; ?>"><?php echo $isUrgent ? 'URGENT: ' : ''; ?>Funeral Booking Request</h3>
+                        <?php if ($isUrgent): ?>
+                        <span class="bg-red-100 text-red-800 text-xs font-medium px-2 py-1 rounded-full">High Priority</span>
+                        <?php endif; ?>
                     </div>
+                    <p class="<?php echo $isRead ? 'text-gray-500' : 'text-sidebar-text'; ?>"><?php echo htmlspecialchars($notification['deceased_name']); ?> - <?php echo htmlspecialchars($notification['service_name']); ?></p>
                 </div>
-                <?php endforeach; ?>
+                <div class="flex items-center space-x-2 ml-4 notification-status">
+                    <?php if (!$isRead): ?>
+                    <span class="h-3 w-3 bg-blue-600 rounded-full unread-dot" aria-label="Unread notification"></span>
+                    <span class="text-xs text-gray-500 status-text">Unread</span>
+                    <?php else: ?>
+                    <span class="text-xs text-green-500 status-text"><i class="fas fa-check mr-1"></i>Read</span>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <div class="flex flex-wrap items-center text-sm text-gray-600 mb-4 gap-4">
+                <div class="flex items-center">
+                    <i class="far fa-clock mr-2" aria-hidden="true"></i>
+                    <span><?php echo $timeAgo; ?></span>
+                </div>
+                <div class="flex items-center">
+                    <i class="fas fa-calendar mr-2" aria-hidden="true"></i>
+                    <span>Booking Date: <?php echo date('F j, Y', strtotime($notification['notification_date'])); ?></span>
+                </div>
+            </div>
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div class="flex flex-wrap gap-2">
+                    <a href="<?php echo $notification['link_base']; ?>" 
+                        class="ripple-effect px-4 py-2 <?php echo $isRead ? 'bg-gray-400' : 'bg-sidebar-accent'; ?> text-white rounded-lg hover:bg-darkgold transition-all duration-200 text-sm font-medium transform hover:scale-105 focus-visible:focus view-details-btn"
+                        title="View detailed booking information"
+                        data-notification-type="funeral"
+                        data-booking-id="<?php echo $notification['booking_id']; ?>"
+                    >
+                        <i class="fas fa-eye mr-2" aria-hidden="true"></i>View Details
+                    </a>
+                </div>
+                <?php if (!$isRead): ?>
+                <button 
+                    onclick="markAsRead(this)" 
+                    class="text-gray-400 hover:text-sidebar-accent transition-colors p-2 rounded focus-visible:focus mark-read-btn"
+                    title="Mark as read"
+                    aria-label="Mark notification as read"
+                    data-notification-type="funeral"
+                    data-booking-id="<?php echo $notification['booking_id']; ?>"
+                >
+                    <i class="fas fa-check-circle text-lg" aria-hidden="true"></i>
+                </button>
+                <?php else: ?>
+                <div class="w-8 h-8"></div> <!-- Spacer for alignment when no button -->
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+</div>
+<?php endforeach; ?>
 
                 <!-- Life Plan Bookings -->
                 <?php foreach ($lifeplanNotifications as $notification): 
@@ -871,33 +926,93 @@ function time_elapsed_string($datetime, $full = false) {
         // Mark a single notification as read
         function markAsRead(button) {
             const notification = button.closest('.notification-item');
-            const dot = notification.querySelector('.bg-blue-600, .bg-purple-600, .bg-yellow-600');
-            const statusText = notification.querySelector('.text-xs.text-gray-500');
+            const notificationType = notification.getAttribute('data-notification-type');
+            const bookingId = notification.getAttribute('data-booking-id');
             
-            if (dot) {
-                dot.remove();
-                statusText.textContent = 'Read';
+            showLoadingOverlay();
+            
+            fetch('mark_notification_read.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `notification_type=${encodeURIComponent(notificationType)}&booking_id=${encodeURIComponent(bookingId)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideLoadingOverlay();
                 
-                // Show toast
-                showToast('Notification marked as read');
-                
-                // Update counts
-                updateNotificationCounts();
-            }
+                if (data.success) {
+                    // Update the data attribute
+                    notification.setAttribute('data-is-read', '1');
+                    
+                    // Update UI - change colors and styles
+                    notification.classList.add('read');
+                    
+                    // Update the left border color
+                    const leftBorder = notification.querySelector('.absolute.left-0');
+                    if (leftBorder) {
+                        leftBorder.classList.remove('bg-blue-500', 'bg-purple-500', 'bg-yellow-500', 'bg-red-500');
+                        leftBorder.classList.add('bg-gray-400');
+                    }
+                    
+                    // Update the icon background and color
+                    const iconContainer = notification.querySelector('.flex-shrink-0');
+                    const icon = notification.querySelector('.flex-shrink-0 i');
+                    if (iconContainer && icon) {
+                        iconContainer.classList.remove('bg-blue-100', 'bg-purple-100', 'bg-yellow-100', 'bg-red-100');
+                        iconContainer.classList.add('bg-gray-100');
+                        icon.classList.remove('text-blue-600', 'text-purple-600', 'text-yellow-600', 'text-red-600');
+                        icon.classList.add('text-gray-500');
+                    }
+                    
+                    // Update text colors
+                    const title = notification.querySelector('h3');
+                    const content = notification.querySelector('p.text-sidebar-text');
+                    if (title) title.classList.add('text-gray-500');
+                    if (content) content.classList.add('text-gray-500');
+                    
+                    // Update the button color
+                    const viewButton = notification.querySelector('.view-details-btn');
+                    if (viewButton) {
+                        viewButton.classList.remove('bg-sidebar-accent');
+                        viewButton.classList.add('bg-gray-400');
+                    }
+                    
+                    // Update status section
+                    const statusSection = notification.querySelector('.notification-status');
+                    if (statusSection) {
+                        statusSection.innerHTML = '<span class="text-xs text-green-500 status-text">Read</span>';
+                    }
+                    
+                    // Remove the mark as read button
+                    button.remove();
+                    
+                    // Show toast
+                    showToast('Notification marked as read');
+                    
+                    // Update counts
+                    updateNotificationCounts();
+                } else {
+                    showToast('Failed to mark as read: ' + data.message);
+                }
+            })
+            .catch(error => {
+                hideLoadingOverlay();
+                console.error('Error marking notification as read:', error);
+                showToast('Error marking notification as read');
+            });
         }
-
         
 
         // Refresh notifications
         function refreshNotifications() {
             showLoadingOverlay();
             
-            // Simulate API call with timeout
+            // Reload the page to get fresh data from server
             setTimeout(() => {
-                // In a real app, this would fetch new data from the server
-                hideLoadingOverlay();
-                showToast('Notifications refreshed');
-            }, 1000);
+                window.location.reload();
+            }, 500);
         }
 
         // Load more notifications
@@ -939,22 +1054,97 @@ function time_elapsed_string($datetime, $full = false) {
         // Update notification counts in the UI
         function updateNotificationCounts() {
             const unreadCounts = {
-                funeral: document.querySelectorAll('.notification-item.funeral .bg-blue-600').length,
-                lifeplan: document.querySelectorAll('.notification-item.lifeplan .bg-purple-600').length,
-                validation: document.querySelectorAll('.notification-item.validation .bg-yellow-600').length
+                funeral: document.querySelectorAll('.notification-item.funeral[data-is-read="0"]').length,
+                lifeplan: document.querySelectorAll('.notification-item.lifeplan[data-is-read="0"]').length,
+                validation: document.querySelectorAll('.notification-item.validation[data-is-read="0"]').length
             };
             
             const totalUnread = unreadCounts.funeral + unreadCounts.lifeplan + unreadCounts.validation;
             
-            // Update total count
+            // Update header count
             document.getElementById('total-notifications').textContent = totalUnread;
             
             // Update tab counts
-            document.querySelector('.filter-tab:nth-child(1) span').textContent = totalUnread;
-            document.querySelector('.filter-tab:nth-child(2) span').textContent = unreadCounts.funeral;
-            document.querySelector('.filter-tab:nth-child(3) span').textContent = unreadCounts.lifeplan;
-            document.querySelector('.filter-tab:nth-child(4) span').textContent = unreadCounts.validation;
+            const tabs = document.querySelectorAll('.filter-tab');
+            tabs[0].querySelector('span').textContent = totalUnread; // All tab
+            tabs[1].querySelector('span').textContent = unreadCounts.funeral; // Funeral tab
+            tabs[2].querySelector('span').textContent = unreadCounts.lifeplan; // Lifeplan tab
+            tabs[3].querySelector('span').textContent = unreadCounts.validation; // Validation tab
+            
+            // Update current count display (showing all notifications, not just unread)
+            const visibleCount = document.querySelectorAll('.notification-item[style*="display: block"]').length;
+            document.getElementById('current-count').textContent = visibleCount;
         }
+        
+        // Handle view details clicks to mark as read before navigating (only for unread)
+        function initializeViewDetailsHandlers() {
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.view-details-btn')) {
+                    const button = e.target.closest('.view-details-btn');
+                    const href = button.getAttribute('href');
+                    const notificationType = button.getAttribute('data-notification-type');
+                    const bookingId = button.getAttribute('data-booking-id');
+                    const notification = button.closest('.notification-item');
+                    const isRead = notification.getAttribute('data-is-read') === '1';
+                    
+                    if (!isRead) {
+                        // If unread, mark as read first
+                        e.preventDefault();
+                        markNotificationAsReadAndNavigate(notificationType, bookingId, href);
+                    }
+                    // If already read, just navigate normally (no prevention)
+                }
+            });
+        }
+        
+        // Mark notification as read and then navigate
+        function markNotificationAsReadAndNavigate(notificationType, bookingId, href) {
+            showLoadingOverlay();
+            
+            fetch('mark_notification_read.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `notification_type=${encodeURIComponent(notificationType)}&booking_id=${encodeURIComponent(bookingId)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideLoadingOverlay();
+                
+                if (data.success) {
+                    // Update counts before navigating
+                    updateNotificationCounts();
+                    // Navigate to the page
+                    window.location.href = href;
+                } else {
+                    showToast('Failed to mark as read: ' + data.message);
+                    // Still navigate even if marking fails
+                    window.location.href = href;
+                }
+            })
+            .catch(error => {
+                hideLoadingOverlay();
+                console.error('Error marking notification as read:', error);
+                // Navigate even if there's an error
+                window.location.href = href;
+            });
+        }
+        
+        // Update the initialization function
+        function initializeEventListeners() {
+            // Tab click handlers
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active', 'border-sidebar-accent', 'text-sidebar-accent'));
+                    this.classList.add('active', 'border-sidebar-accent', 'text-sidebar-accent');
+                });
+            });
+            
+            // Initialize view details handlers
+            initializeViewDetailsHandlers();
+        }
+
 
         // Modal and toast functions
         function showHelpModal() {
