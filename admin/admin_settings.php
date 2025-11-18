@@ -460,8 +460,8 @@
                         </div>
                         <div class="sm:col-span-2 space-y-2">
                             <label for="email" class="block text-sidebar-text font-medium font-inter text-sm sm:text-base">Email</label>
-                            <input type="email" id="email" name="email" required
-                                   class="w-full px-3 py-2 sm:px-4 sm:py-3 border border-sidebar-border rounded-xl focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-white text-sm sm:text-base"
+                            <input type="email" id="email" name="email" required readonly
+                                   class="w-full px-3 py-2 sm:px-4 sm:py-3 border border-sidebar-border rounded-xl focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-white text-sm sm:text-base cursor-not-allowed"
                                    value="<?php echo htmlspecialchars($admin['email']); ?>">
                             <p id="email_error" class="text-red-500 text-xs sm:text-sm hidden"></p>
                         </div>
