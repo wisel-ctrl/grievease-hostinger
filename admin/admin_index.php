@@ -995,7 +995,7 @@ foreach ($serviceData as $service => $branches) {
         // Include database connection
         require_once '../db_connect.php';
         
-        // Query for pending funeral bookings
+        // Query for pending funeral bookings (only unread)
         $funeralQuery = "SELECT 
                             b.booking_id,
                             CONCAT(b.deceased_lname, ', ', b.deceased_fname, ' ', IFNULL(b.deceased_midname, '')) AS deceased_name,
@@ -1005,10 +1005,10 @@ foreach ($serviceData as $service => $branches) {
                             'Booking_acceptance.php' AS link_base
                          FROM booking_tb b
                          LEFT JOIN services_tb s ON b.service_id = s.service_id
-                         WHERE b.status = 'Pending'
+                         WHERE b.status = 'Pending' AND b.is_read = 0
                          ORDER BY b.booking_date DESC";
         
-        // Query for pending life plan bookings
+        // Query for pending life plan bookings (only unread)
         $lifeplanQuery = "SELECT 
                             lb.lpbooking_id AS booking_id,
                             CONCAT(lb.benefeciary_lname, ', ', lb.benefeciary_fname, ' ', IFNULL(lb.benefeciary_mname, '')) AS deceased_name,
@@ -1018,10 +1018,10 @@ foreach ($serviceData as $service => $branches) {
                             'Booking_acceptance.php' AS link_base
                           FROM lifeplan_booking_tb lb
                           JOIN services_tb s ON lb.service_id = s.service_id
-                          WHERE lb.booking_status = 'pending'
+                          WHERE lb.booking_status = 'pending' AND lb.is_read = 0
                           ORDER BY lb.initial_date DESC";
         
-        // Query for pending ID validations
+        // Query for pending ID validations (only unread)
         $idValidationQuery = "SELECT 
                                 id AS booking_id,
                                 '' AS deceased_name,
@@ -1030,7 +1030,7 @@ foreach ($serviceData as $service => $branches) {
                                 'id_validation' AS notification_type,
                                 'id_confirmation.php' AS link_base
                              FROM valid_id_tb
-                             WHERE is_validated = 'no'
+                             WHERE is_validated = 'no' AND is_read = 0
                              ORDER BY upload_at DESC";
         
         // Execute all queries
@@ -1176,7 +1176,10 @@ foreach ($serviceData as $service => $branches) {
                             $title = 'New ID validation request';
                         }
                         ?>
-                        <a href="<?php echo $notification['link_base']; ?>" class="block px-3 sm:px-5 py-3 sm:py-4 border-b border-sidebar-border hover:bg-sidebar-hover transition-all duration-300 flex items-start relative">
+                        <a href="<?php echo $notification['link_base']; ?>" 
+                           class="block px-3 sm:px-5 py-3 sm:py-4 border-b border-sidebar-border hover:bg-sidebar-hover transition-all duration-300 flex items-start relative"
+                           data-notification-type="<?php echo $notification['notification_type']; ?>"
+                           data-booking-id="<?php echo $notification['booking_id']; ?>">
                             <div class="absolute left-0 top-0 bottom-0 w-1 bg-<?php echo $color; ?>-500 rounded-r"></div>
                             <div class="flex-shrink-0 bg-<?php echo $color; ?>-100 rounded-full p-1.5 sm:p-2.5 mr-2 sm:mr-4">
                                 <i class="<?php echo $icon; ?> text-<?php echo $color; ?>-600 text-xs sm:text-sm"></i>
@@ -3706,18 +3709,21 @@ document.getElementById('notification-bell').addEventListener('click', function(
   const dropdown = document.getElementById('notifications-dropdown');
   
   if (dropdown.classList.contains('hidden')) {
-    // Show dropdown with animation
-    dropdown.classList.remove('hidden');
-    setTimeout(() => {
-      dropdown.classList.remove('opacity-0', 'translate-y-2');
-    }, 10);
-  } else {
-    // Hide dropdown with animation
-    dropdown.classList.add('opacity-0', 'translate-y-2');
-    setTimeout(() => {
-      dropdown.classList.add('hidden');
-    }, 300);
-  }
+        // Show dropdown with animation
+        dropdown.classList.remove('hidden');
+        setTimeout(() => {
+            dropdown.classList.remove('opacity-0', 'translate-y-2');
+        }, 10);
+        
+        // Optional: Mark all as read when opening dropdown
+        // markAllNotificationsAsRead();
+    } else {
+        // Hide dropdown with animation
+        dropdown.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => {
+            dropdown.classList.add('hidden');
+        }, 300);
+    }
   
   // If showing notifications, mark as read (update counter)
   if (!dropdown.classList.contains('hidden')) {
@@ -3740,6 +3746,27 @@ document.getElementById('notification-bell').addEventListener('click', function(
     }, 2000);
   }
 });
+
+function markAllNotificationsAsRead() {
+    fetch('mark_all_notifications_read.php', {
+        method: 'POST'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Reset notification count to 0
+            const notificationCounter = document.querySelector('#notification-bell > span');
+            notificationCounter.textContent = '0';
+            notificationCounter.classList.add('scale-0', 'opacity-0');
+            setTimeout(() => {
+                notificationCounter.classList.add('hidden');
+            }, 300);
+        }
+    })
+    .catch(error => {
+        console.error('Error marking all notifications as read:', error);
+    });
+}
 
 // Close notification dropdown when clicking outside
 document.addEventListener('click', function(event) {
@@ -3771,6 +3798,88 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 3000);
   });
 });
+
+// Function to mark notification as read
+function markNotificationAsRead(notificationType, bookingId, link) {
+    fetch('dashboard/mark_notification_read.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `notification_type=${encodeURIComponent(notificationType)}&booking_id=${encodeURIComponent(bookingId)}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Decrease the notification count
+            updateNotificationCount(-1);
+            
+            // Navigate to the link after marking as read
+            window.location.href = link;
+        } else {
+            console.error('Failed to mark notification as read:', data.message);
+            // Still navigate to the link even if marking as read fails
+            window.location.href = link;
+        }
+    })
+    .catch(error => {
+        console.error('Error marking notification as read:', error);
+        // Navigate to the link even if there's an error
+        window.location.href = link;
+    });
+}
+
+// Function to update notification count
+function updateNotificationCount(change) {
+    const notificationCounter = document.querySelector('#notification-bell > span');
+    let currentCount = parseInt(notificationCounter.textContent) || 0;
+    
+    // Calculate new count (ensure it doesn't go below 0)
+    const newCount = Math.max(0, currentCount + change);
+    
+    if (newCount === 0) {
+        // Hide counter if no notifications
+        notificationCounter.classList.add('scale-0', 'opacity-0');
+        setTimeout(() => {
+            notificationCounter.classList.add('hidden');
+        }, 300);
+    } else {
+        // Update counter with animation
+        notificationCounter.textContent = newCount;
+        notificationCounter.classList.remove('hidden', 'scale-0', 'opacity-0');
+        notificationCounter.classList.add('scale-100', 'opacity-100');
+        
+        // Add pulse animation for count change
+        notificationCounter.classList.add('animate-pulse');
+        setTimeout(() => {
+            notificationCounter.classList.remove('animate-pulse');
+        }, 600);
+    }
+}
+
+// Update the notification links to use the new function
+document.addEventListener('DOMContentLoaded', function() {
+    // This would be dynamically applied to each notification link
+    const notificationLinks = document.querySelectorAll('#notifications-dropdown a[href]');
+    notificationLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Get notification data from data attributes
+            const notificationType = this.getAttribute('data-notification-type');
+            const bookingId = this.getAttribute('data-booking-id');
+            const href = this.getAttribute('href');
+            
+            if (notificationType && bookingId) {
+                markNotificationAsRead(notificationType, bookingId, href);
+            } else {
+                // Fallback: navigate directly if data attributes are missing
+                window.location.href = href;
+            }
+        });
+    });
+});
+
 </script>
 <script>
 function loadBranchData(timePeriod) {
