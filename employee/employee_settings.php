@@ -517,8 +517,8 @@ unset($_SESSION['error_message']);
                         </div>
                         <div class="md:col-span-2 space-y-2">
                             <label for="email" class="block text-primary-foreground font-medium font-inter">Email</label>
-                            <input type="email" id="email" name="email" required
-                                   class="w-full px-4 py-3 border border-input-border rounded-xl focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-primary"
+                            <input type="email" id="email" name="email" required readonly
+                                   class="w-full px-4 py-3 border border-input-border rounded-xl focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent shadow-input transition-all duration-300 bg-primary cursor-not-allowed text-base" 
                                    value="<?php echo htmlspecialchars($employee['email']); ?>">
                             <p id="email_error" class="text-error text-sm hidden"></p>
                         </div>
