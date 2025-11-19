@@ -458,34 +458,68 @@ header("Pragma: no-cache");
           });
       }
       
-      // Function to display conversation messages
-      function displayConversation(messages) {
-        modalConversation.innerHTML = '';
-        const adminId = '<?php echo $_SESSION["user_id"]; ?>';
-        
-        messages.forEach(message => {
-          const isAdmin = message.sender === adminId;
-          const messageDate = new Date(message.timestamp);
-          const formattedTime = formatTime(messageDate);
-          
-          const messageElement = document.createElement('div');
-          messageElement.className = `mb-4 ${isAdmin ? 'pl-4 md:pl-12' : 'pr-4 md:pr-12'}`;
-          
-          messageElement.innerHTML = `
-            <div class="flex ${isAdmin ? 'justify-end' : 'justify-start'}">
-              <div class="rounded-lg py-2 px-3 md:px-4 max-w-[85%] md:max-w-[75%] ${isAdmin ? 'bg-sidebar-accent text-white' : 'bg-gray-100 text-gray-800'}">
-                <div class="text-sm whitespace-pre-wrap break-words">${message.message}</div>
-                <div class="text-xs mt-1 opacity-70 ${isAdmin ? 'text-gray-200' : 'text-gray-500'} text-right">${formattedTime}</div>
-              </div>
-            </div>
-          `;
-          
-          modalConversation.appendChild(messageElement);
-        });
-        
-        // Scroll to the bottom of the conversation
-        modalConversation.scrollTop = modalConversation.scrollHeight;
+      // Function to display conversation messages with sender labels
+function displayConversation(messages) {
+  modalConversation.innerHTML = '';
+  const adminId = '<?php echo $_SESSION["user_id"]; ?>';
+  
+  messages.forEach(message => {
+    const isAdmin = message.sender === adminId;
+    const messageDate = new Date(message.timestamp);
+    const formattedTime = formatTime(messageDate);
+    
+    // Determine sender type and label
+    let senderLabel = '';
+    let labelColor = '';
+    
+    if (isAdmin) {
+      senderLabel = 'Admin';
+      labelColor = 'bg-yellow-600';
+    } else {
+      switch(message.sender_type) {
+        case '2':
+          senderLabel = 'Employee';
+          labelColor = 'bg-yellow-600';
+          break;
+        case '3':
+          senderLabel = 'Customer';
+          labelColor = 'bg-yellow-600';
+          break;
+        default:
+          senderLabel = 'User';
+          labelColor = 'bg-gray-500';
       }
+    }
+    
+    const messageElement = document.createElement('div');
+    messageElement.className = `mb-4 ${isAdmin ? 'text-right' : 'text-left'}`;
+    
+    messageElement.innerHTML = `
+      <!-- Sender label above message bubble -->
+      ${!isAdmin ? `
+        <div class="mb-1 flex ${isAdmin ? 'justify-end' : 'justify-start'}">
+          <span class="text-xs ${labelColor} text-white px-2 py-1 rounded-full font-medium">${senderLabel}</span>
+        </div>
+      ` : ''}
+      
+      <!-- Message bubble -->
+      <div class="flex ${isAdmin ? 'justify-end' : 'justify-start'}">
+        <div class="rounded-lg py-2 px-3 md:px-4 max-w-[85%] md:max-w-[75%] ${isAdmin ? 'bg-sidebar-accent text-white' : 'bg-gray-100 text-gray-800'}">
+          <!-- Message content -->
+          <div class="text-sm whitespace-pre-wrap break-words">${message.message}</div>
+          
+          <!-- Timestamp -->
+          <div class="text-xs mt-1 ${isAdmin ? 'text-gray-200' : 'text-gray-500'} text-right">${formattedTime}</div>
+        </div>
+      </div>
+    `;
+    
+    modalConversation.appendChild(messageElement);
+  });
+  
+  // Scroll to the bottom of the conversation
+  modalConversation.scrollTop = modalConversation.scrollHeight;
+}
       
       let isSending = false;
 

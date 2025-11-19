@@ -66,9 +66,11 @@ try {
             cm.status,
             cm.messageType,
             cm.attachmentUrl,
-            cm.chatRoomId
+            cm.chatRoomId,
+            u.user_type as sender_type
         FROM chat_messages cm
         JOIN chat_recipients cr ON cm.chatId = cr.chatId
+        JOIN users u ON cm.sender = u.id
         WHERE cm.chatRoomId = '$chatRoomId'
         AND cr.userId = '$admin_id'
         ORDER BY cm.timestamp ASC
