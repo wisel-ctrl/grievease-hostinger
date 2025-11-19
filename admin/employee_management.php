@@ -3342,6 +3342,26 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
+  // Calculate proration factor based on date range
+  function calculateProrationFactor(startDate, endDate) {
+    // Calculate total days in the selected range
+    const timeDiff = endDate.getTime() - startDate.getTime();
+    const daysInRange = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1; // +1 to include both start and end dates
+    
+    // Get the number of days in the current month of the start date
+    const year = startDate.getFullYear();
+    const month = startDate.getMonth();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    
+    // Calculate proration factor
+    const prorationFactor = daysInRange / daysInMonth;
+    
+    console.log(`Date Range: ${startDate.toDateString()} to ${endDate.toDateString()}`);
+    console.log(`Days in range: ${daysInRange}, Days in month: ${daysInMonth}, Proration factor: ${prorationFactor}`);
+    
+    return prorationFactor;
+  }
+  
   // Update summary section
   function updateSummary(summary) {
     document.getElementById('totalMonthlySalary').textContent = `₱${parseFloat(summary.total_monthly_salary).toLocaleString('en-PH', { minimumFractionDigits: 2 })}`;

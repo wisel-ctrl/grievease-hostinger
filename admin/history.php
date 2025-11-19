@@ -4136,9 +4136,24 @@ function saveStaffAssignment() {
     }).filter(id => id); // Filter out any undefined/empty values
 
     if (assignedStaff.length === 0) {
-        alert('Please select at least one staff member');
+        Swal.fire({
+            icon: 'warning',
+            title: 'Staff Selection Required',
+            text: 'Please select at least one staff member',
+            confirmButtonColor: '#3085d6',
+        });
         return;
     }
+
+    // Show loading indicator
+    Swal.fire({
+        title: 'Assigning Staff...',
+        text: 'Please wait while we save the assignment',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
 
     // Get base salaries for selected employees
     fetch('get_employee_salaries.php?employee_ids=' + assignedStaff.join(','))
@@ -4166,28 +4181,44 @@ function saveStaffAssignment() {
             });
         })
         .then(response => {
-    if (!response.ok) {
-        return response.text().then(text => {
-            console.error('Server response:', text);
-            throw new Error('Server error: ' + response.status);
-        });
-    }
-    return response.json();
-})
+            if (!response.ok) {
+                return response.text().then(text => {
+                    console.error('Server response:', text);
+                    throw new Error('Server error: ' + response.status);
+                });
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.success) {
-                alert('Staff assigned successfully!');
-                closeAssignStaffModal();
-                // Optionally refresh the page or update the UI
-                location.reload();
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: 'Staff assigned successfully!',
+                    confirmButtonColor: '#3085d6',
+                }).then((result) => {
+                    closeAssignStaffModal();
+                    // Optionally refresh the page or update the UI
+                    location.reload();
+                });
             } else {
-                alert('Error: ' + data.message);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Assignment Failed',
+                    text: 'Error: ' + data.message,
+                    confirmButtonColor: '#d33',
+                });
             }
         })
         .catch(error => {
-    console.error('Error details:', error);
-    alert('An error occurred while saving the assignment. See console for details.');
-});
+            console.error('Error details:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'An error occurred while saving the assignment. Please try again.',
+                confirmButtonColor: '#d33',
+            });
+        });
 }
 
 // Function to open the Complete Service Modal
@@ -4433,7 +4464,12 @@ function finalizeServiceCompletion() {
     const chapelDays = document.getElementById('chapelDays').value || 0;
     
     if (!completionDateInput) {
-        alert('Please specify a completion date.');
+        Swal.fire({
+            icon: 'warning',
+            title: 'Completion Date Required',
+            text: 'Please specify a completion date.',
+            confirmButtonColor: '#3085d6',
+        });
         return;
     }
     
@@ -4446,6 +4482,16 @@ function finalizeServiceCompletion() {
     
     // Combine date and time for SQL timestamp format (yyyy-mm-dd HH:MM:SS)
     const completionDateTime = `${completionDateInput} ${currentTime}`;
+
+    // Show loading indicator
+    Swal.fire({
+        title: 'Completing Service...',
+        text: 'Please wait while we finalize the service completion',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
 
     // Get all checked checkboxes within the completeServiceModal
     const modal = document.getElementById('completeServiceModal');
@@ -4498,16 +4544,32 @@ function finalizeServiceCompletion() {
         })
         .then(data => {
             if (data.success) {
-                alert('Service completed successfully!');
-                closeCompleteModal();
-                location.reload();
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Service Completed!',
+                    text: 'Service completed successfully!',
+                    confirmButtonColor: '#3085d6',
+                }).then((result) => {
+                    closeCompleteModal();
+                    location.reload();
+                });
             } else {
-                alert('Error: ' + data.message);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Completion Failed',
+                    text: 'Error: ' + data.message,
+                    confirmButtonColor: '#d33',
+                });
             }
         })
         .catch(error => {
             console.error('Error details:', error);
-            alert('An error occurred while completing the service. See console for details.');
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'An error occurred while completing the service. Please try again.',
+                confirmButtonColor: '#d33',
+            });
         });
 }
 // Function to view service details (kept from original)
@@ -7164,9 +7226,24 @@ function saveCustomStaffAssignment() {
     }).filter(id => id); // Filter out any undefined/empty values
 
     if (assignedStaff.length === 0) {
-        alert('Please select at least one staff member');
+        Swal.fire({
+            icon: 'warning',
+            title: 'Staff Selection Required',
+            text: 'Please select at least one staff member',
+            confirmButtonColor: '#3085d6',
+        });
         return;
     }
+
+    // Show loading indicator
+    Swal.fire({
+        title: 'Assigning Staff...',
+        text: 'Please wait while we assign staff to the custom service',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
 
     // Get base salaries for selected employees
     fetch('get_employee_salaries.php?employee_ids=' + assignedStaff.join(','))
@@ -7204,17 +7281,33 @@ function saveCustomStaffAssignment() {
         })
         .then(data => {
             if (data.success) {
-                alert('Staff assigned successfully to custom service!');
-                closeAssignCustomStaffModal();
-                // Optionally refresh the page or update the UI
-                location.reload();
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: 'Staff assigned successfully to custom service!',
+                    confirmButtonColor: '#3085d6',
+                }).then((result) => {
+                    closeAssignCustomStaffModal();
+                    // Optionally refresh the page or update the UI
+                    location.reload();
+                });
             } else {
-                alert('Error: ' + data.message);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Assignment Failed',
+                    text: 'Error: ' + data.message,
+                    confirmButtonColor: '#d33',
+                });
             }
         })
         .catch(error => {
             console.error('Error details:', error);
-            alert('An error occurred while saving the assignment. See console for details.');
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'An error occurred while saving the assignment. Please try again.',
+                confirmButtonColor: '#d33',
+            });
         });
 }
 
