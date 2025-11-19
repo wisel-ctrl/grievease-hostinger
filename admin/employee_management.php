@@ -2925,15 +2925,87 @@ document.addEventListener('DOMContentLoaded', function() {
 
   let startDateFP, endDateFP;
 
+  // Function to validate date range
+  function validateDateRange(startDate, endDate) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Reset time part for accurate date comparison
+    
+    // Check if start date is in the future
+    if (startDate > today) {
+      return {
+        isValid: false,
+        message: 'Start date cannot be in the future'
+      };
+    }
+    
+    // Check if end date is before start date
+    if (endDate < startDate) {
+      return {
+        isValid: false,
+        message: 'End date cannot be before start date'
+      };
+    }
+    
+    // Check if end date is in the future
+    if (endDate > today) {
+      return {
+        isValid: false,
+        message: 'End date cannot be in the future'
+      };
+    }
+    
+    return {
+      isValid: true,
+      message: 'Valid date range'
+    };
+  }
+
+  // Function to show validation error
+  function showDateValidationError(message) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Invalid Date Range',
+      text: message,
+      confirmButtonColor: '#3085d6'
+    });
+  }
+
   startDateFP = flatpickr(startDatePicker, {
       dateFormat: "Y-m-d",
       maxDate: "today",
       onChange: function(selectedDates, dateStr, instance) {
-          selectedDateRange.startDate = selectedDates[0];
           if (selectedDates[0]) {
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+              
+              // Validate start date is not in future
+              if (selectedDates[0] > today) {
+                  showDateValidationError('Start date cannot be in the future');
+                  startDateFP.clear();
+                  selectedDateRange.startDate = null;
+                  return;
+              }
+              
+              selectedDateRange.startDate = selectedDates[0];
               endDateFP.set('minDate', selectedDates[0]);
+              
+              // If end date is already selected, validate the range
+              if (selectedDateRange.endDate) {
+                  const validation = validateDateRange(selectedDates[0], selectedDateRange.endDate);
+                  if (!validation.isValid) {
+                      showDateValidationError(validation.message);
+                      selectedDateRange.startDate = null;
+                      startDateFP.clear();
+                      endDateFP.set('minDate', null);
+                      return;
+                  }
+              }
+              
               // Auto-set end date to same month if start date is selected
               autoSetEndDate(selectedDates[0]);
+          } else {
+              selectedDateRange.startDate = null;
+              endDateFP.set('minDate', null);
           }
       }
   });
@@ -2942,9 +3014,35 @@ document.addEventListener('DOMContentLoaded', function() {
       dateFormat: "Y-m-d",
       maxDate: "today",
       onChange: function(selectedDates, dateStr, instance) {
-          selectedDateRange.endDate = selectedDates[0];
           if (selectedDates[0]) {
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+              
+              // Validate end date is not in future
+              if (selectedDates[0] > today) {
+                  showDateValidationError('End date cannot be in the future');
+                  endDateFP.clear();
+                  selectedDateRange.endDate = null;
+                  return;
+              }
+              
+              selectedDateRange.endDate = selectedDates[0];
               startDateFP.set('maxDate', selectedDates[0]);
+              
+              // If start date is already selected, validate the range
+              if (selectedDateRange.startDate) {
+                  const validation = validateDateRange(selectedDateRange.startDate, selectedDates[0]);
+                  if (!validation.isValid) {
+                      showDateValidationError(validation.message);
+                      selectedDateRange.endDate = null;
+                      endDateFP.clear();
+                      startDateFP.set('maxDate', "today");
+                      return;
+                  }
+              }
+          } else {
+              selectedDateRange.endDate = null;
+              startDateFP.set('maxDate', "today");
           }
       }
   });
@@ -2956,8 +3054,14 @@ document.addEventListener('DOMContentLoaded', function() {
           selectedDateRange.endDate.getFullYear() !== startDate.getFullYear()) {
           
           const endOfMonth = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0);
-          endDateFP.setDate(endOfMonth);
-          selectedDateRange.endDate = endOfMonth;
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          
+          // Ensure end of month is not in the future
+          const actualEndDate = endOfMonth > today ? today : endOfMonth;
+          
+          endDateFP.setDate(actualEndDate);
+          selectedDateRange.endDate = actualEndDate;
       }
   }
 
@@ -2965,7 +3069,7 @@ document.addEventListener('DOMContentLoaded', function() {
   function resetDatePickers() {
       startDateFP.clear();
       endDateFP.clear();
-      startDateFP.set('maxDate', null);
+      startDateFP.set('maxDate', "today");
       endDateFP.set('minDate', null);
       selectedDateRange = { startDate: null, endDate: null };
   }
@@ -3004,17 +3108,52 @@ document.addEventListener('DOMContentLoaded', function() {
   closeModal.addEventListener('click', closePayrollModal);
   cancelBtn.addEventListener('click', closePayrollModal);
   
-  // Apply date range button
+  // Apply date range button with validation
   applyDateRangeBtn.addEventListener('click', function() {
       if (selectedDateRange.startDate && selectedDateRange.endDate) {
-          loadPayrollData(selectedBranchId, selectedDateRange);
+          // Final validation before applying
+          const validation = validateDateRange(selectedDateRange.startDate, selectedDateRange.endDate);
+          
+          if (validation.isValid) {
+              loadPayrollData(selectedBranchId, selectedDateRange);
+          } else {
+              showDateValidationError(validation.message);
+              // Clear invalid dates
+              if (validation.message.includes('future')) {
+                  if (selectedDateRange.startDate > new Date()) {
+                      startDateFP.clear();
+                      selectedDateRange.startDate = null;
+                  }
+                  if (selectedDateRange.endDate > new Date()) {
+                      endDateFP.clear();
+                      selectedDateRange.endDate = null;
+                  }
+              } else if (validation.message.includes('before')) {
+                  endDateFP.clear();
+                  selectedDateRange.endDate = null;
+              }
+          }
       } else {
-          alert('Please select both start date and end date');
+          Swal.fire({
+              icon: 'warning',
+              title: 'Date Range Required',
+              text: 'Please select both start date and end date',
+              confirmButtonColor: '#3085d6'
+          });
       }
   });
   
-  // Event listener for recording expense
+  // Event listener for recording expense with date validation
   recordExpenseBtn.addEventListener('click', async function() {
+      // Validate date range before proceeding
+      if (selectedDateRange.startDate && selectedDateRange.endDate) {
+          const validation = validateDateRange(selectedDateRange.startDate, selectedDateRange.endDate);
+          if (!validation.isValid) {
+              showDateValidationError(validation.message);
+              return;
+          }
+      }
+      
       // Get the grand total from the summary
       const grandTotalText = document.getElementById('grandTotal').textContent;
       const grandTotal = parseFloat(grandTotalText.replace('₱', '').replace(/,/g, ''));
@@ -3203,26 +3342,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // Calculate proration factor based on date range
-  function calculateProrationFactor(startDate, endDate) {
-    // Calculate total days in the selected range
-    const timeDiff = endDate.getTime() - startDate.getTime();
-    const daysInRange = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1; // +1 to include both start and end dates
-    
-    // Get the number of days in the current month of the start date
-    const year = startDate.getFullYear();
-    const month = startDate.getMonth();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    
-    // Calculate proration factor
-    const prorationFactor = daysInRange / daysInMonth;
-    
-    console.log(`Date Range: ${startDate.toDateString()} to ${endDate.toDateString()}`);
-    console.log(`Days in range: ${daysInRange}, Days in month: ${daysInMonth}, Proration factor: ${prorationFactor}`);
-    
-    return prorationFactor;
-  }
-  
   // Update summary section
   function updateSummary(summary) {
     document.getElementById('totalMonthlySalary').textContent = `₱${parseFloat(summary.total_monthly_salary).toLocaleString('en-PH', { minimumFractionDigits: 2 })}`;
