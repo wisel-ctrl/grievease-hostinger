@@ -2239,7 +2239,10 @@ function setupEditFieldValidation(fieldType, fieldId, errorElementId, userId, us
     const field = document.getElementById(fieldId);
     const errorElement = document.getElementById(errorElementId);
     
-    if (!field || !errorElement) return;
+    if (!field || !errorElement) {
+        console.error(`Field or error element not found: ${fieldId}, ${errorElementId}`);
+        return;
+    }
 
     let validationTimeout;
     const fieldContainer = field.parentElement;
@@ -2262,37 +2265,46 @@ function setupEditFieldValidation(fieldType, fieldId, errorElementId, userId, us
         
         // Basic format validation
         let isValidFormat = true;
+        let formatErrorMessage = '';
+        
         if (fieldType === 'email') {
-            isValidFormat = value.includes('@');
-            if (!isValidFormat) {
-                errorElement.textContent = 'Please enter a valid email address';
-            }
+            isValidFormat = value.includes('@') && value.includes('.');
+            formatErrorMessage = 'Please enter a valid email address';
         } else { // phone
-            isValidFormat = value.startsWith('09') && value.length === 11;
-            if (!isValidFormat) {
-                errorElement.textContent = 'Philippine number must start with 09 and be 11 digits';
-            }
+            // Clean phone number for validation
+            const cleanedPhone = value.replace(/\D/g, '');
+            isValidFormat = cleanedPhone.startsWith('09') && cleanedPhone.length === 11;
+            formatErrorMessage = 'Philippine number must start with 09 and be 11 digits';
         }
         
         if (!isValidFormat) {
             field.classList.add('border-red-500');
             fieldFeedback.innerHTML = '<i class="fas fa-times text-red-500"></i>';
+            errorElement.textContent = formatErrorMessage;
             errorElement.classList.remove('hidden');
             return;
         }
 
         validationTimeout = setTimeout(() => {
+            // Use the same endpoints for both customer and employee
             const endpoint = fieldType === 'email' 
-                ? 'check_edit_email.php' 
-                : 'check_edit_phone.php';
+                ? '../employee/accountManagement/check_email.php' 
+                : '../employee/accountManagement/check_phone.php';
+            
+            const params = fieldType === 'email' 
+                ? `email=${encodeURIComponent(value)}&current_user=${userId}`
+                : `phone=${encodeURIComponent(value)}&current_user=${userId}`;
                 
-            fetch(`editAccount/${endpoint}?${fieldType}=${encodeURIComponent(value)}&current_user=${userId}&user_type=${userType}`)
+            fetch(`${endpoint}?${params}`)
                 .then(response => {
                     if (!response.ok) throw new Error('Network response was not ok');
                     return response.json();
                 })
                 .then(data => {
-                    if (data.exists) {
+                    // Handle both response formats (available vs exists)
+                    const isAvailable = data.available !== undefined ? data.available : !data.exists;
+                    
+                    if (!isAvailable) {
                         field.classList.add('border-red-500');
                         fieldFeedback.innerHTML = '<i class="fas fa-times text-red-500"></i>';
                         errorElement.textContent = data.message || 
@@ -2312,10 +2324,25 @@ function setupEditFieldValidation(fieldType, fieldId, errorElementId, userId, us
                 .catch(error => {
                     console.error(`Error checking ${fieldType}:`, error);
                     // Don't show error to user for failed validation checks
+                    // Just remove any existing feedback
+                    fieldFeedback.innerHTML = '';
+                    field.classList.remove('border-green-500', 'border-red-500');
                 });
         }, 500);
     });
+
+    // Also validate on blur for immediate feedback
+    field.addEventListener('blur', function() {
+        const value = this.value.trim();
+        if (value.length > 0) {
+            // Trigger validation immediately on blur
+            clearTimeout(validationTimeout);
+            const event = new Event('input');
+            this.dispatchEvent(event);
+        }
+    });
 }
+
 
 function openEditCustomerAccountModal(userId) {
     // Fetch user details
@@ -2675,39 +2702,64 @@ function setupEditEmailValidation(emailFieldId, errorElementId, userId, userType
 
 // Helper function to show tooltips
 function showTooltip(element, message) {
+    // Remove existing tooltip if any
+    const existingTooltip = element.querySelector('.validation-tooltip');
+    if (existingTooltip) {
+        existingTooltip.remove();
+    }
+
     const tooltip = document.createElement('div');
-    tooltip.className = 'absolute z-10 w-max px-2 py-1 text-xs text-white bg-gray-800 rounded-md opacity-0 transition-opacity duration-200';
+    tooltip.className = 'validation-tooltip absolute z-50 px-2 py-1 text-xs text-white bg-gray-800 rounded shadow-lg';
     tooltip.textContent = message;
-    element.appendChild(tooltip);
     
-    // Position tooltip
+    // Position tooltip above the element
     tooltip.style.bottom = '100%';
     tooltip.style.left = '50%';
     tooltip.style.transform = 'translateX(-50%)';
+    tooltip.style.marginBottom = '5px';
+    tooltip.style.whiteSpace = 'nowrap';
     
-    setTimeout(() => {
-        tooltip.classList.remove('opacity-0');
-        tooltip.classList.add('opacity-100');
-    }, 10);
+    element.style.position = 'relative';
+    element.appendChild(tooltip);
     
-    // Remove tooltip after delay
+    // Remove tooltip after 3 seconds
     setTimeout(() => {
-        tooltip.remove();
+        if (tooltip.parentElement) {
+            tooltip.remove();
+        }
     }, 3000);
 }
-
 function setupPhoneValidation(phoneFieldId) {
     const phoneField = document.getElementById(phoneFieldId);
     if (!phoneField) return;
     
     phoneField.addEventListener('input', function() {
-        this.value = this.value.replace(/\D/g, '');
-        if (this.value.length > 11) this.value = this.value.substring(0, 11);
-        if (this.value.length === 1 && this.value === '9') this.value = '09';
+        // Remove non-numeric characters
+        let phoneNumber = this.value.replace(/\D/g, '');
+        
+        // Limit to 11 characters
+        if (phoneNumber.length > 11) {
+            phoneNumber = phoneNumber.substring(0, 11);
+        }
+        
+        // Auto-add 09 if user starts with 9
+        if (phoneNumber.length === 1 && phoneNumber === '9') {
+            phoneNumber = '09';
+        }
+        
+        // Update the field value
+        this.value = phoneNumber;
     });
     
     phoneField.addEventListener('keydown', function(e) {
-        if (!/[0-9]|Backspace|Delete|ArrowLeft|ArrowRight/.test(e.key)) {
+        // Allow: backspace, delete, tab, escape, enter, arrows
+        if ([8, 9, 13, 27, 46, 37, 38, 39, 40].includes(e.keyCode) || 
+            // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+            (e.ctrlKey && [65, 67, 86, 88].includes(e.keyCode))) {
+            return;
+        }
+        // Allow only numbers
+        if ((e.keyCode < 48 || e.keyCode > 57) && (e.keyCode < 96 || e.keyCode > 105)) {
             e.preventDefault();
         }
     });
@@ -2947,13 +2999,13 @@ function checkPhoneExists(phone, errorElementId) {
 
 
 function setupEditFormValidations() {
-    // Name validation
-    const nameFields = ['editFirstName', 'editMiddleName', 'editLastName'];
+    // Name validation for both customer and employee
+    const nameFields = ['editFirstName', 'editMiddleName', 'editLastName', 'editEmpFirstName', 'editEmpMiddleName', 'editEmpLastName'];
     nameFields.forEach(fieldId => {
         const field = document.getElementById(fieldId);
         if (field) {
             field.addEventListener('input', function() {
-                // Remove invalid characters
+                // Remove invalid characters (allow letters, spaces, hyphens, apostrophes)
                 this.value = this.value.replace(/[^a-zA-Z\s'-]/g, '');
                 
                 // No leading spaces
@@ -2971,51 +3023,73 @@ function setupEditFormValidations() {
                     });
                 }
             });
+
+            // Prevent paste of invalid content
+            field.addEventListener('paste', function(e) {
+                e.preventDefault();
+                const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+                const cleanedText = pastedText.replace(/[^a-zA-Z\s'-]/g, '');
+                document.execCommand('insertText', false, cleanedText);
+            });
         }
     });
 
-    // Email validation - no spaces
-    const emailField = document.getElementById('editEmail');
-    if (emailField) {
-        emailField.addEventListener('input', function() {
-            // Remove any spaces
-            if (this.value.includes(' ')) {
-                this.value = this.value.replace(/\s/g, '');
-            }
-        });
-        
-        emailField.addEventListener('keydown', function(e) {
-            if (e.key === ' ') {
-                e.preventDefault();
-            }
-        });
-    }
+    // Email validation - no spaces for both customer and employee
+    const emailFields = ['editEmail', 'editEmpEmail'];
+    emailFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            field.addEventListener('input', function() {
+                // Remove any spaces
+                if (this.value.includes(' ')) {
+                    this.value = this.value.replace(/\s/g, '');
+                }
+            });
+            
+            field.addEventListener('keydown', function(e) {
+                if (e.key === ' ') {
+                    e.preventDefault();
+                }
+            });
 
-    // Phone validation - Philippine format
-    const phoneField = document.getElementById('editPhone');
-    if (phoneField) {
-        phoneField.addEventListener('input', function() {
-            // Remove non-digits
-            this.value = this.value.replace(/\D/g, '');
-            
-            // Limit to 11 characters
-            if (this.value.length > 11) {
-                this.value = this.value.substring(0, 11);
-            }
-            
-            // Auto-add 09 if starts with 9
-            if (this.value.length === 1 && this.value === '9') {
-                this.value = '09';
-            }
-        });
-        
-        phoneField.addEventListener('keydown', function(e) {
-            // Allow only numbers, backspace, delete, arrows
-            if (!/[0-9]|Backspace|Delete|ArrowLeft|ArrowRight/.test(e.key)) {
+            // Prevent paste of content with spaces
+            field.addEventListener('paste', function(e) {
                 e.preventDefault();
-            }
-        });
-    }
+                const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+                const cleanedText = pastedText.replace(/\s/g, '');
+                document.execCommand('insertText', false, cleanedText);
+            });
+        }
+    });
+
+    // Phone validation - Philippine format for both customer and employee
+    const phoneFields = ['editPhone', 'editEmpPhone'];
+    phoneFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            field.addEventListener('input', function() {
+                // Remove non-digits
+                this.value = this.value.replace(/\D/g, '');
+                
+                // Limit to 11 characters
+                if (this.value.length > 11) {
+                    this.value = this.value.substring(0, 11);
+                }
+                
+                // Auto-add 09 if starts with 9
+                if (this.value.length === 1 && this.value === '9') {
+                    this.value = '09';
+                }
+            });
+            
+            field.addEventListener('keydown', function(e) {
+                // Allow only numbers, backspace, delete, arrows
+                if (!/[0-9]|Backspace|Delete|ArrowLeft|ArrowRight/.test(e.key)) {
+                    e.preventDefault();
+                }
+            });
+        }
+    });
 }
 
 function validateAndSaveCustomerChanges() {
@@ -3380,9 +3454,16 @@ function openEditEmployeeAccountModal(userId) {
                 
                 document.body.appendChild(modal);
                 
-                setupEmployeeRealTimeValidation(userId);
+                // Use the same validation setup as customer modal
+                setupEditFieldValidation('email', 'editEmpEmail', 'empEmailExistsError', userId, 2);
+                setupEditFieldValidation('phone', 'editEmpPhone', 'empPhoneExistsError', userId, 2);
                 
-
+                // Setup phone formatting
+                setupPhoneValidation('editEmpPhone');
+                
+                // Add form validations
+                setupEditFormValidations();
+                
                 // Add event listener for Escape key
                 document.addEventListener('keydown', function(e) {
                     if (e.key === 'Escape') {
@@ -3397,10 +3478,6 @@ function openEditEmployeeAccountModal(userId) {
             console.error('Error:', error);
             alert('An error occurred while fetching employee details');
         });
-        
-        
-        
-
 }
 
 function setupEmployeeRealTimeValidation(userId) {
