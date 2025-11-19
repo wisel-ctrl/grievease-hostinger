@@ -807,7 +807,12 @@
             
             if (newPassword !== confirmPassword) {
                 e.preventDefault();
-                alert('New passwords do not match!');
+                swal({
+                    title: 'Password Mismatch',
+                    text: 'New passwords do not match!',
+                    icon: 'error',
+                    button: 'OK'
+                });
             }
         });
         
@@ -1619,22 +1624,42 @@ document.getElementById('password-form')?.addEventListener('submit', function(e)
         const confirmPass = document.getElementById('confirm_password');
         
         if (!currentPass.value) {
-            alert('Current password is required');
+            Swal.fire({
+                title: 'Required Field',
+                text: 'Current password is required',
+                icon: 'warning',
+                confirmButtonText: 'OK'
+            });
             return;
         }
         
         if (newPass.value.includes(' ')) {
-            alert('New password cannot contain spaces');
+            Swal.fire({
+                title: 'Invalid Password',
+                text: 'New password cannot contain spaces',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
             return;
         }
         
         if (newPass.value.length < 6) {
-            alert('New password must be at least 6 characters');
+            Swal.fire({
+                title: 'Password Too Short',
+                text: 'New password must be at least 6 characters',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
             return;
         }
         
         if (newPass.value !== confirmPass.value) {
-            alert('New passwords do not match');
+            Swal.fire({
+                title: 'Password Mismatch',
+                text: 'New passwords do not match',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
             return;
         }
     }
