@@ -3132,12 +3132,7 @@ function confirmCheckout() {
   // Validate email format
   const email = document.getElementById('clientEmail').value;
   if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    Swal.fire({
-      icon: 'warning',
-      title: 'Invalid Email',
-      text: 'Please enter a valid email address.',
-      confirmButtonColor: '#3085d6',
-    });
+    alert("Please enter a valid email address.");
     document.getElementById('clientEmail').focus();
     return;
   }
@@ -3145,23 +3140,13 @@ function confirmCheckout() {
   // Validate Philippine phone number (must start with 09 and be 11 digits)
   const phone = document.getElementById('clientPhone').value;
   if (!phone) {
-    Swal.fire({
-      icon: 'warning',
-      title: 'Phone Required',
-      text: 'Phone number is required.',
-      confirmButtonColor: '#3085d6',
-    });
+    alert("Phone number is required.");
     document.getElementById('clientPhone').focus();
     return;
   }
   
   if (!/^09\d{9}$/.test(phone)) {
-    Swal.fire({
-      icon: 'warning',
-      title: 'Invalid Phone Number',
-      text: 'Please enter a valid Philippine phone number starting with 09 and 11 digits long (e.g., 09123456789).',
-      confirmButtonColor: '#3085d6',
-    });
+    alert("Please enter a valid Philippine phone number starting with 09 and 11 digits long (e.g., 09123456789).");
     document.getElementById('clientPhone').focus();
     return;
   }
@@ -3175,22 +3160,12 @@ function confirmCheckout() {
   // Validate date of birth (if provided)
   if (dateOfBirth) {
     if (dateOfBirth > today) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Invalid Date',
-        text: 'Date of birth cannot be in the future.',
-        confirmButtonColor: '#3085d6',
-      });
+      alert("Date of birth cannot be in the future.");
       document.getElementById('dateOfBirth').focus();
       return;
     }
     if (dateOfDeath && dateOfBirth > dateOfDeath) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Invalid Date',
-        text: 'Date of birth cannot be after date of death.',
-        confirmButtonColor: '#3085d6',
-      });
+      alert("Date of birth cannot be after date of death.");
       document.getElementById('dateOfBirth').focus();
       return;
     }
@@ -3198,22 +3173,12 @@ function confirmCheckout() {
 
   // Validate date of death (required)
   if (!dateOfDeath) {
-    Swal.fire({
-      icon: 'warning',
-      title: 'Date Required',
-      text: 'Date of death is required.',
-      confirmButtonColor: '#3085d6',
-    });
+    alert("Date of death is required.");
     document.getElementById('dateOfDeath').focus();
     return;
   }
   if (dateOfDeath > today) {
-    Swal.fire({
-      icon: 'warning',
-      title: 'Invalid Date',
-      text: 'Date of death cannot be in the future.',
-      confirmButtonColor: '#3085d6',
-    });
+    alert("Date of death cannot be in the future.");
     document.getElementById('dateOfDeath').focus();
     return;
   }
@@ -3221,12 +3186,7 @@ function confirmCheckout() {
   // Validate date of burial (if provided)
   if (dateOfBurial) {
     if (dateOfBurial < dateOfDeath) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Invalid Date',
-        text: 'Date of burial cannot be before date of death.',
-        confirmButtonColor: '#3085d6',
-      });
+      alert("Date of burial cannot be before date of death.");
       document.getElementById('dateOfBurial').focus();
       return;
     }
@@ -3239,34 +3199,19 @@ function confirmCheckout() {
 
   // Check if values are valid numbers
   if (isNaN(servicePrice) || servicePrice <= 0) {
-    Swal.fire({
-      icon: 'warning',
-      title: 'Invalid Price',
-      text: 'Service price must be a valid positive number.',
-      confirmButtonColor: '#3085d6',
-    });
+    alert("Service price must be a valid positive number.");
     document.getElementById('service-price').focus();
     return;
   }
 
   if (isNaN(totalPrice) || totalPrice <= 0) {
-    Swal.fire({
-      icon: 'warning',
-      title: 'Invalid Price',
-      text: 'Total price must be a valid positive number.',
-      confirmButtonColor: '#3085d6',
-    });
+    alert("Total price must be a valid positive number.");
     document.getElementById('totalPrice').focus();
     return;
   }
 
   if (isNaN(amountPaid) || amountPaid < 0) {
-    Swal.fire({
-      icon: 'warning',
-      title: 'Invalid Amount',
-      text: 'Amount paid must be a valid non-negative number.',
-      confirmButtonColor: '#3085d6',
-    });
+    alert("Amount paid must be a valid non-negative number.");
     document.getElementById('amountPaid').focus();
     return;
   }
@@ -3274,24 +3219,14 @@ function confirmCheckout() {
   // Validate total price is at least 50% of service price
   const minimumAllowedPrice = servicePrice * 0.5;
   if (totalPrice < minimumAllowedPrice) {
-    Swal.fire({
-      icon: 'warning',
-      title: 'Price Too Low',
-      text: `Total price cannot be lower than 50% of the service price (₱${minimumAllowedPrice.toFixed(2)}).`,
-      confirmButtonColor: '#3085d6',
-    });
+    alert(`Total price cannot be lower than 50% of the service price (₱${minimumAllowedPrice.toFixed(2)}).`);
     document.getElementById('totalPrice').focus();
     return;
   }
 
   // Validate amount paid doesn't exceed total price
   if (amountPaid > totalPrice) {
-    Swal.fire({
-      icon: 'warning',
-      title: 'Invalid Payment',
-      text: 'Amount paid cannot exceed the total price.',
-      confirmButtonColor: '#3085d6',
-    });
+    alert("Amount paid cannot exceed the total price.");
     document.getElementById('amountPaid').focus();
     return;
   }
@@ -3309,60 +3244,27 @@ function confirmCheckout() {
   formData.append('balance', balance.toFixed(2));
   formData.append('payment_status', balance > 0 ? 'With Balance' : 'Fully Paid');
 
-  // Show SweetAlert confirmation dialog
-  Swal.fire({
-    title: 'Confirm Order',
-    html: `
-      <div class="text-left">
-        <p class="mb-2">Are you sure you want to proceed with this order?</p>
-        <div class="bg-gray-50 p-3 rounded mt-2">
-          <p class="text-sm"><strong>Service Price:</strong> ₱${servicePrice.toFixed(2)}</p>
-          <p class="text-sm"><strong>Total Price:</strong> ₱${totalPrice.toFixed(2)}</p>
-          <p class="text-sm"><strong>Amount Paid:</strong> ₱${amountPaid.toFixed(2)}</p>
-          <p class="text-sm"><strong>Balance:</strong> ₱${balance.toFixed(2)}</p>
-          <p class="text-sm mt-1"><strong>Payment Status:</strong> ${balance > 0 ? 'With Balance' : 'Fully Paid'}</p>
-        </div>
-      </div>
-    `,
-    icon: 'question',
-    showCancelButton: true,
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33',
-    confirmButtonText: 'Yes, proceed with order!',
-    cancelButtonText: 'Cancel',
-    width: '500px'
-  }).then((result) => {
-    if (result.isConfirmed) {
-      // Send data to server using AJAX
-      fetch('posFunctions/process_checkout.php', {
-        method: 'POST',
-        body: formData
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          document.getElementById('checkoutModal').classList.add('hidden');
-          showConfirmation(data.orderId);
-        } else {
-          Swal.fire({
-            icon: 'error',
-            title: 'Checkout Failed',
-            text: data.message || 'Failed to process checkout',
-            confirmButtonColor: '#3085d6',
-          });
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'An error occurred while processing your order. Please try again.',
-          confirmButtonColor: '#3085d6',
-        });
-      });
-    }
-  });
+  // Show confirmation dialog before submitting
+  if (confirm("Are you sure you want to proceed with this order?")) {
+    // Send data to server using AJAX
+    fetch('posFunctions/process_checkout.php', {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        document.getElementById('checkoutModal').classList.add('hidden');
+        showConfirmation(data.orderId);
+      } else {
+        alert('Error: ' + (data.message || 'Failed to process checkout'));
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('An error occurred while processing your order. Please try again.');
+    });
+  }
 }
 
 // New function to show confirmation with order ID
