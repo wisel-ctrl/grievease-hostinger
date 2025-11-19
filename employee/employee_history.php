@@ -2332,22 +2332,53 @@ function saveCustomPayment() {
 
   // Validate required fields
   if (!customerID || !branchID) {
-    alert('Missing required information. Please try again.');
+    Swal.fire({
+      icon: 'error',
+      title: 'Missing Information',
+      text: 'Missing required information. Please try again.',
+      confirmButtonColor: '#3085d6',
+    });
     return;
   }
 
   if (!paymentAmount || isNaN(paymentAmount) || paymentAmount <= 0) {
-    alert('Please enter a valid payment amount');
+    Swal.fire({
+      icon: 'warning',
+      title: 'Invalid Amount',
+      text: 'Please enter a valid payment amount',
+      confirmButtonColor: '#3085d6',
+    });
     return;
   }
 
   if (!paymentMethod) {
-    alert('Please select a payment method');
+    Swal.fire({
+      icon: 'warning',
+      title: 'Payment Method Required',
+      text: 'Please select a payment method',
+      confirmButtonColor: '#3085d6',
+    });
     return;
   }
 
   if (!paymentDate) {
-    alert('Please select a payment date');
+    Swal.fire({
+      icon: 'warning',
+      title: 'Date Required',
+      text: 'Please select a payment date',
+      confirmButtonColor: '#3085d6',
+    });
+    return;
+  }
+
+  // Validate payment amount doesn't exceed balance
+  if (paymentAmount > currentBalance) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Payment Exceeds Balance',
+      text: `Payment amount (₱${paymentAmount.toFixed(2)}) cannot exceed current balance (₱${currentBalance.toFixed(2)})`,
+      confirmButtonColor: '#3085d6',
+    });
     return;
   }
 
@@ -2367,44 +2398,92 @@ function saveCustomPayment() {
     notes: notes
   };
 
-  // Show loading state
-  const saveBtn = document.getElementById('recordPaymentBtn');
-  const originalBtnText = saveBtn.innerHTML;
-  saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-  saveBtn.disabled = true;
+  // Show confirmation dialog with payment summary
+  Swal.fire({
+    title: 'Confirm Payment',
+    html: `
+      <div class="text-left">
+        <p>Are you sure you want to record this payment?</p>
+        <div class="bg-gray-50 p-3 rounded mt-3">
+          <p class="text-sm"><strong>Client:</strong> ${clientName}</p>
+          <p class="text-sm"><strong>Current Balance:</strong> ₱${currentBalance.toFixed(2)}</p>
+          <p class="text-sm"><strong>Payment Amount:</strong> ₱${paymentAmount.toFixed(2)}</p>
+          <p class="text-sm"><strong>New Balance:</strong> ₱${newBalance.toFixed(2)}</p>
+          <p class="text-sm"><strong>Payment Method:</strong> ${paymentMethod}</p>
+          <p class="text-sm"><strong>Payment Date:</strong> ${paymentDate}</p>
+          ${notes ? `<p class="text-sm"><strong>Notes:</strong> ${notes}</p>` : ''}
+        </div>
+      </div>
+    `,
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, record payment!',
+    cancelButtonText: 'Cancel',
+    width: '500px'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // Show loading state
+      const saveBtn = document.getElementById('recordPaymentBtn');
+      const originalBtnText = saveBtn.innerHTML;
+      saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+      saveBtn.disabled = true;
 
-  // Send data to server
-  fetch('historyAPI/record_custom_payment.php', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(paymentData)
-  })
-  .then(response => {
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
+      // Send data to server
+      fetch('historyAPI/record_custom_payment.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(paymentData)
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.success) {
+          Swal.fire({
+            title: 'Success!',
+            html: `
+              <div class="text-center">
+                <i class="fas fa-check-circle text-green-500 text-4xl mb-3"></i>
+                <p class="text-lg font-semibold">Payment recorded successfully!</p>
+                <p class="text-sm text-gray-600 mt-2">Total paid: <strong>₱${data.new_amount_paid ? data.new_amount_paid.toFixed(2) : paymentAmount.toFixed(2)}</strong></p>
+              </div>
+            `,
+            icon: 'success',
+            confirmButtonColor: '#3085d6',
+            timer: 3000,
+            timerProgressBar: true,
+            showConfirmButton: false
+          }).then(() => {
+            closeRecordPaymentModal();
+            // Refresh the page to show updated values
+            location.reload();
+          });
+        } else {
+          throw new Error(data.message || 'Failed to record payment');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Payment Failed',
+          text: error.message || 'An error occurred while recording the payment',
+          confirmButtonColor: '#3085d6',
+        });
+      })
+      .finally(() => {
+        // Restore button state
+        saveBtn.innerHTML = originalBtnText;
+        saveBtn.disabled = false;
+      });
     }
-    return response.json();
-  })
-  .then(data => {
-    if (data.success) {
-      alert(`Payment recorded successfully! Total paid: ₱${data.new_amount_paid.toFixed(2)}`);
-      closeRecordPaymentModal();
-      // Refresh the page to show updated values
-      location.reload();
-    } else {
-      throw new Error(data.message || 'Failed to record payment');
-    }
-  })
-  .catch(error => {
-    console.error('Error:', error);
-    alert('Error: ' + error.message);
-  })
-  .finally(() => {
-    // Restore button state
-    saveBtn.innerHTML = originalBtnText;
-    saveBtn.disabled = false;
   });
 }
 </script>
@@ -3120,11 +3199,42 @@ async function saveServiceChanges() {
 
     if (!firstName || !lastName || !deceasedFirstName || 
         !deceasedLastName || !burialDate || !serviceId) {
-        alert('Please fill in all required fields');
+        Swal.fire({
+            icon: 'warning',
+            title: 'Missing Information',
+            text: 'Please fill in all required fields',
+            confirmButtonColor: '#3085d6',
+        });
+        return;
+    }
+
+    // Show confirmation dialog before saving
+    const confirmationResult = await Swal.fire({
+        title: 'Update Service',
+        text: 'Are you sure you want to update this service information?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, update service!',
+        cancelButtonText: 'Cancel'
+    });
+
+    if (!confirmationResult.isConfirmed) {
         return;
     }
 
     try {
+        // Show loading state
+        Swal.fire({
+            title: 'Updating Service...',
+            text: 'Please wait while we save your changes',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
         // Send data to server
         const response = await fetch('historyAPI/update_history_sales.php', {
             method: 'POST',
@@ -3134,16 +3244,29 @@ async function saveServiceChanges() {
         const data = await response.json();
         
         if (data.success) {
-            alert('Service updated successfully!');
-            closeEditServiceModal();
-            // Optionally refresh the page or update the table
-            location.reload();
+            Swal.fire({
+                title: 'Success!',
+                text: 'Service updated successfully!',
+                icon: 'success',
+                confirmButtonColor: '#3085d6',
+                timer: 2000,
+                timerProgressBar: true
+            }).then(() => {
+                closeEditServiceModal();
+                // Optionally refresh the page or update the table
+                location.reload();
+            });
         } else {
-            alert('Error: ' + data.message);
+            throw new Error(data.message || 'Failed to update service');
         }
     } catch (error) {
         console.error('Error:', error);
-        alert('An error occurred while updating the service');
+        Swal.fire({
+            icon: 'error',
+            title: 'Update Failed',
+            text: error.message || 'An error occurred while updating the service',
+            confirmButtonColor: '#3085d6',
+        });
     }
 }
 
