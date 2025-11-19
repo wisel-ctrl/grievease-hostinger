@@ -1957,24 +1957,45 @@ document.addEventListener('DOMContentLoaded', function() {
         if (data.status === 'success') {
             // Success handling
             console.log('Employee added successfully:', data);
-            alert(data.message);
-            closeAddEmployeeModal();
-            location.reload();
-            addEmployeeAccountForm.reset();
+            Swal.fire({
+                title: 'Success!',
+                text: data.message,
+                icon: 'success',
+                confirmButtonText: 'OK'
+            }).then(() => {
+                closeAddEmployeeModal();
+                location.reload();
+                addEmployeeAccountForm.reset();
+            });
         } else {
             // Error handling
             console.error('Error:', data);
             if (data.errors) {
                 // Display validation errors
-                alert(data.errors.join('\n'));
+                Swal.fire({
+                    title: 'Validation Error',
+                    text: data.errors.join('\n'),
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
             } else {
-                alert(data.message || 'An error occurred');
+                Swal.fire({
+                    title: 'Error',
+                    text: data.message || 'An error occurred',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
             }
         }
     })
     .catch(error => {
         console.error('Network or server error:', error);
-        alert('An unexpected error occurred. Please try again.');
+        Swal.fire({
+            title: 'Network Error',
+            text: 'An unexpected error occurred. Please try again.',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
     });
   });
 });

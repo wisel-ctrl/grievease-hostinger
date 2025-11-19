@@ -27,26 +27,136 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $base_salary = !empty($_POST['commissionSalary']) ? sanitizeInput($_POST['commissionSalary']) : NULL;
     $monthly_salary = !empty($_POST['monthlySalary']) ? sanitizeInput($_POST['monthlySalary']) : NULL;
 
-    // Validate inputs (add more robust validation as needed)
+    // Validate inputs
     $errors = [];
 
+    // Required fields validation
     if (empty($fname) || empty($lname)) {
         $errors[] = "First name and last name are required.";
     }
 
+    // Email validation
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $errors[] = "Invalid email format.";
     }
 
+    // Phone number validation
     if (!preg_match("/^(\+63|0)\d{10}$/", $phone_number)) {
         $errors[] = "Invalid phone number format.";
+    }
+
+    // Age validation - must be at least 18 years old
+    if (!empty($bday)) {
+        $birthDate = new DateTime($bday);
+        $today = new DateTime();
+        $age = $today->diff($birthDate)->y;
+        
+        if ($age < 18) {
+            $errors[] = "Employee must be at least 18 years old.";
+        }
+    }
+
+    // Salary validation - monthly salary must be <= 10000
+    if (!empty($monthly_salary)) {
+        $monthly_salary_float = floatval($monthly_salary);
+        if ($monthly_salary_float > 10000) {
+            $errors[] = "Monthly salary must be less than or equal to ₱10,000.";
+        }
+        
+        // Additional validation for negative salary
+        if ($monthly_salary_float < 0) {
+            $errors[] = "Monthly salary cannot be negative.";
+        }
+    }
+
+    // Commission salary validation
+    if (!empty($base_salary)) {
+        $base_salary_float = floatval($base_salary);
+        if ($base_salary_float < 0) {
+            $errors[] = "Commission salary cannot be negative.";
+        }
+    }
+
+    // Payment structure validation
+    if ($pay_structure === 'monthly' || $pay_structure === 'both') {
+        if (empty($monthly_salary)) {
+            $errors[] = "Monthly salary is required for the selected payment structure.";
+        }
+    }
+    
+    if ($pay_structure === 'commission' || $pay_structure === 'both') {
+        if (empty($base_salary)) {
+            $errors[] = "Commission salary is required for the selected payment structure.";
+        }
+    }
+
+    // Validate that at least one salary is provided
+    if (empty($monthly_salary) && empty($base_salary)) {
+        $errors[] = "Either monthly salary or commission salary must be provided.";
+    }
+
+    // Validate position is not empty
+    if (empty($position)) {
+        $errors[] = "Employee position is required.";
+    }
+
+    // Validate gender is not empty
+    if (empty($gender)) {
+        $errors[] = "Gender is required.";
+    }
+
+    // Validate branch is selected
+    if (empty($branch_id)) {
+        $errors[] = "Branch location is required.";
+    }
+
+    // Validate date of birth is provided
+    if (empty($bday)) {
+        $errors[] = "Date of birth is required.";
     }
 
     // If no errors, proceed with database insertion
     if (empty($errors)) {
         try {
-            // Use the connection from the included file
-            // The $conn variable should be available from db_connect.php
+            // Check if email already exists
+            $email_check_sql = "SELECT id FROM employee_tb WHERE email = ?";
+            $email_stmt = $conn->prepare($email_check_sql);
+            $email_stmt->bind_param("s", $email);
+            $email_stmt->execute();
+            $email_stmt->store_result();
+            
+            if ($email_stmt->num_rows > 0) {
+                $errors[] = "Email address already exists.";
+                $email_stmt->close();
+                
+                $response = [
+                    'status' => 'error',
+                    'errors' => $errors
+                ];
+                echo json_encode($response);
+                exit;
+            }
+            $email_stmt->close();
+
+            // Check if phone number already exists
+            $phone_check_sql = "SELECT id FROM employee_tb WHERE phone_number = ?";
+            $phone_stmt = $conn->prepare($phone_check_sql);
+            $phone_stmt->bind_param("s", $phone_number);
+            $phone_stmt->execute();
+            $phone_stmt->store_result();
+            
+            if ($phone_stmt->num_rows > 0) {
+                $errors[] = "Phone number already exists.";
+                $phone_stmt->close();
+                
+                $response = [
+                    'status' => 'error',
+                    'errors' => $errors
+                ];
+                echo json_encode($response);
+                exit;
+            }
+            $phone_stmt->close();
 
             // Prepare SQL statement
             $sql = "INSERT INTO employee_tb (
@@ -58,6 +168,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             // Prepare and bind parameters
             $stmt = $conn->prepare($sql);
+            
+            // Convert salary values to appropriate types
+            $base_salary_value = !empty($base_salary) ? floatval($base_salary) : NULL;
+            $monthly_salary_value = !empty($monthly_salary) ? floatval($monthly_salary) : NULL;
+            
             $stmt->bind_param(
                 "sssssssssidsd", 
                 $fname, 
@@ -70,9 +185,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $phone_number, 
                 $email, 
                 $branch_id, 
-                $base_salary,
+                $base_salary_value,
                 $pay_structure,
-                $monthly_salary
+                $monthly_salary_value
             );
 
             // Execute the statement
