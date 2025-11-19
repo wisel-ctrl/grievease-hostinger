@@ -3048,11 +3048,12 @@ document.addEventListener('DOMContentLoaded', function() {
           recordExpenseBtn.textContent = 'Recording...';
           
           // Show loading SweetAlert
-          Swal.fire({
+          const loadingAlert = Swal.fire({
               title: 'Recording Expense...',
               text: 'Please wait while we record the payroll expense.',
               allowOutsideClick: false,
-              didOpen: () => {
+              showConfirmButton: false,
+              willOpen: () => {
                   Swal.showLoading();
               }
           });
@@ -3096,18 +3097,20 @@ document.addEventListener('DOMContentLoaded', function() {
           
           const data = await response.json();
           
+          // Close the loading alert first
+          await Swal.close();
+          
           if (data.success) {
-              Swal.fire({
+              await Swal.fire({
                   icon: 'success',
-                  title: 'Expense Recorded!',
+                  title: 'Expense Recorded Successfully!',
                   text: `Expense: ${data.expense_name}\nAmount: ₱${grandTotal.toLocaleString('en-PH')}\nBranch: ${branchId}`,
                   confirmButtonColor: '#3085d6',
                   confirmButtonText: 'OK'
-              }).then(() => {
-                  closePayrollModal();
               });
+              closePayrollModal();
           } else {
-              Swal.fire({
+              await Swal.fire({
                   icon: 'error',
                   title: 'Recording Failed',
                   text: 'Error recording expense: ' + data.message,
@@ -3117,16 +3120,16 @@ document.addEventListener('DOMContentLoaded', function() {
           
       } catch (error) {
           console.error('Error recording expense:', error);
-          Swal.fire({
+          // Close any open SweetAlert loading dialog first
+          await Swal.close();
+          
+          await Swal.fire({
               icon: 'error',
               title: 'Error',
               text: 'Error recording expense. Please check console for details and try again.',
               confirmButtonColor: '#d33'
           });
       } finally {
-          // Close any open SweetAlert loading dialog
-          Swal.close();
-          
           // Reset button state
           recordExpenseBtn.disabled = false;
           recordExpenseBtn.textContent = 'Record Expense';
