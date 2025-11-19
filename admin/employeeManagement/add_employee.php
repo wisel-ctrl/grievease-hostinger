@@ -119,7 +119,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (empty($errors)) {
         try {
             // Check if email already exists
-            $email_check_sql = "SELECT id FROM employee_tb WHERE email = ?";
+            $email_check_sql = "SELECT EmployeeID FROM employee_tb WHERE email = ?";
             $email_stmt = $conn->prepare($email_check_sql);
             $email_stmt->bind_param("s", $email);
             $email_stmt->execute();
@@ -139,7 +139,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $email_stmt->close();
 
             // Check if phone number already exists
-            $phone_check_sql = "SELECT id FROM employee_tb WHERE phone_number = ?";
+            $phone_check_sql = "SELECT EmployeeID FROM employee_tb WHERE phone_number = ?";
             $phone_stmt = $conn->prepare($phone_check_sql);
             $phone_stmt->bind_param("s", $phone_number);
             $phone_stmt->execute();
