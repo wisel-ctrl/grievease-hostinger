@@ -5155,7 +5155,7 @@ document.getElementById('completeCustomServiceForm').addEventListener('submit', 
   const balanceSettled = document.getElementById('customFinalBalanceSettled').checked;
   
   if (!completionDateInput) {
-    alert('Please specify a completion date.');
+    Swal.fire('Error', 'Please specify a completion date.', 'error');
     return;
   }
   
@@ -5179,7 +5179,7 @@ document.getElementById('completeCustomServiceForm').addEventListener('submit', 
   }).filter(id => id); // Filter out any undefined/empty values
 
   if (assignedStaff.length === 0) {
-    alert('Please select at least one staff member who completed this service.');
+    Swal.fire('Error', 'Please select at least one staff member who completed this service.', 'error');
     return;
   }
 
@@ -5212,16 +5212,21 @@ document.getElementById('completeCustomServiceForm').addEventListener('submit', 
     .then(response => response.json())
     .then(data => {
       if (data.success) {
-        alert('Service completed successfully!');
-        closeCompleteCustomModal();
-        location.reload();
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: 'Service completed successfully!'
+        }).then(() => {
+          closeCompleteCustomModal();
+          location.reload();
+        });
       } else {
-        alert('Error: ' + data.message);
+        Swal.fire('Error', 'Error: ' + data.message, 'error');
       }
     })
     .catch(error => {
       console.error('Error:', error);
-      alert('An error occurred while completing the service');
+      Swal.fire('Error', 'An error occurred while completing the service', 'error');
     });
 });
 
