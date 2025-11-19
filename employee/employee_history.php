@@ -3144,6 +3144,28 @@ function loadServicesForBranch(branchId, currentServiceId) {
     });
 }
 
+function validateRequiredFields() {
+    const requiredFields = [
+        { id: 'editFirstName', name: 'First Name' },
+        { id: 'editLastName', name: 'Last Name' },
+        { id: 'editDeceasedFirstName', name: 'Deceased First Name' },
+        { id: 'editDeceasedLastName', name: 'Deceased Last Name' },
+        { id: 'editBurialDate', name: 'Burial Date' },
+        { id: 'editServiceType', name: 'Service Type' }
+    ];
+
+    const missingFields = [];
+
+    requiredFields.forEach(field => {
+        const value = document.getElementById(field.id).value.trim();
+        if (!value) {
+            missingFields.push(field.name);
+        }
+    });
+
+    return missingFields;
+}
+
 // Function to save changes to a service
 async function saveServiceChanges() {
     // Get all form values
@@ -3197,16 +3219,19 @@ async function saveServiceChanges() {
     const burialDate = document.getElementById('editBurialDate').value;
     const serviceId = document.getElementById('editServiceType').value;
 
-    if (!firstName || !lastName || !deceasedFirstName || 
-        !deceasedLastName || !burialDate || !serviceId) {
+    const missingFields = validateRequiredFields();
+
+    if (missingFields.length > 0) {
+        const fieldList = missingFields.join(', ');
         Swal.fire({
             icon: 'warning',
             title: 'Missing Information',
-            text: 'Please fill in all required fields',
+            html: `Please fill in the following required fields:<br><strong>${fieldList}</strong>`,
             confirmButtonColor: '#3085d6',
         });
         return;
     }
+
 
     // Show confirmation dialog before saving
     const confirmationResult = await Swal.fire({
