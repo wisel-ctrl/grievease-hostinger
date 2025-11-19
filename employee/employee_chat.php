@@ -452,8 +452,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 
         html += `
             <div class="conversation-item hover:bg-gray-50 p-3 sm:p-4 cursor-pointer transition-colors duration-200 ${isUnread ? 'bg-blue-50' : ''}" 
-                 data-chatroom="${conversation.chatRoomId}" 
-                 data-receiver="${conversation.sender == '<?php echo $_SESSION['user_id']; ?>' ? conversation.receiver : conversation.sender}">
+         data-chatroom="${conversation.chatRoomId}" 
+         data-receiver="${conversation.receiver || conversation.sender}">
               <div class="flex items-start gap-2 sm:gap-3">
                 <div class="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 text-sm sm:text-base">
                   <i class="fas fa-user"></i>

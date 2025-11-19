@@ -1,9 +1,8 @@
 <?php
-// messages/get_messages.php
+// messages/get_messages.php - SIMPLEST VERSION
 session_start();
 header('Content-Type: application/json');
 
-// Check if user is logged in as employee
 if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] != 2) {
     echo json_encode(['success' => false, 'error' => 'Unauthorized access']);
     exit();
@@ -12,91 +11,98 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] != 2) {
 require_once '../../db_connect.php';
 
 $employee_id = $_SESSION['user_id'];
-$filter_condition = "";
-$search_condition = "";
 
-// Handle filter parameter
-if (isset($_GET['filter'])) {
-    $filter = $_GET['filter'];
-    
-    switch ($filter) {
-        case 'unread':
-            $filter_condition = " AND cr.status IN ('sent', 'delivered')";
-            break;
-        case 'today':
-            $filter_condition = " AND DATE(cm.timestamp) = CURDATE()";
-            break;
-        case 'week':
-            $filter_condition = " AND YEARWEEK(cm.timestamp, 1) = YEARWEEK(CURDATE(), 1)";
-            break;
-        case 'month':
-            $filter_condition = " AND MONTH(cm.timestamp) = MONTH(CURDATE()) AND YEAR(cm.timestamp) = YEAR(CURDATE())";
-            break;
-        default:
-            break;
-    }
-}
-
-// Handle search parameter
-if (isset($_GET['search']) && !empty($_GET['search'])) {
-    $search = $conn->real_escape_string($_GET['search']);
-    $search_condition = " AND (u.first_name LIKE '%$search%' OR u.last_name LIKE '%$search%' OR u.email LIKE '%$search%')";
-}
-
+// Get all unique chat rooms where employee has messages
 $query = "
-    SELECT 
-        cm.chatId,
-        cm.chatRoomId,
-        cm.sender,
-        cm.message,
-        cm.timestamp,
-        cm.messageType,
-        cm.attachmentUrl,
-        cr.status AS recipient_status,
-        CONCAT(u.first_name, ' ', u.last_name) AS sender_name,
-        u.email AS sender_email,
-        CASE
-            WHEN u.user_type = 1 THEN 'Admin'
-            WHEN cm.sender = '$employee_id' THEN 'You (Employee)'
-            ELSE CONCAT(u.first_name, ' ', u.last_name)
-        END AS sender_name,
-        (
-            SELECT COUNT(*) 
-            FROM chat_recipients 
-            WHERE chatId IN (SELECT chatId FROM chat_messages WHERE chatRoomId = cm.chatRoomId)
-            AND userId = '$employee_id'
-            AND status IN ('sent', 'delivered')
-        ) AS unread_count
+    SELECT DISTINCT cm.chatRoomId
     FROM chat_messages cm
-    JOIN (
-        SELECT chatRoomId, MAX(timestamp) as latest_timestamp
-        FROM chat_messages
-        GROUP BY chatRoomId
-    ) latest ON cm.chatRoomId = latest.chatRoomId AND cm.timestamp = latest.latest_timestamp
-    LEFT JOIN chat_recipients cr ON cm.chatId = cr.chatId AND cr.userId = '$employee_id'
-    JOIN users u ON cm.sender = u.id
-    WHERE (cr.userId = '$employee_id' OR u.user_type = 1)  -- Include admin messages
-    $filter_condition
-    $search_condition
+    JOIN chat_recipients cr ON cm.chatId = cr.chatId
+    WHERE cr.userId = '$employee_id'
     ORDER BY cm.timestamp DESC
 ";
 
-
-$result = $conn->query($query);
-
-if ($result === false) {
-    echo json_encode(['success' => false, 'error' => 'Database error: ' . $conn->error]);
-    exit();
-}
-
+$room_result = $conn->query($query);
 $conversations = [];
-while ($row = $result->fetch_assoc()) {
-    if ($row['sender'] == $employee_id) {
-        $row['sender_name'] = 'You (Employee)';
-        $row['sender_email'] = $_SESSION['email'] ?? 'employee@grievease.com';
+
+if ($room_result && $room_result->num_rows > 0) {
+    while ($room_row = $room_result->fetch_assoc()) {
+        $chatRoomId = $room_row['chatRoomId'];
+        
+        // Get the latest message in this chat room
+        $message_query = "
+            SELECT cm.*, 
+                   CONCAT(u.first_name, ' ', u.last_name) as sender_name,
+                   u.user_type as sender_type
+            FROM chat_messages cm
+            JOIN users u ON cm.sender = u.id
+            WHERE cm.chatRoomId = '$chatRoomId'
+            ORDER BY cm.timestamp DESC 
+            LIMIT 1
+        ";
+        
+        $message_result = $conn->query($message_query);
+        $latest_message = $message_result->fetch_assoc();
+        
+        // Find the customer in this chat room
+        $customer_query = "
+            SELECT DISTINCT u.id, CONCAT(u.first_name, ' ', u.last_name) as name
+            FROM chat_messages cm
+            JOIN users u ON cm.sender = u.id
+            WHERE cm.chatRoomId = '$chatRoomId'
+            AND u.user_type = 3
+            LIMIT 1
+        ";
+        
+        $customer_result = $conn->query($customer_query);
+        $customer = $customer_result->fetch_assoc();
+        
+        // If no customer found, use the first non-employee participant
+        if (!$customer) {
+            $fallback_query = "
+                SELECT DISTINCT u.id, CONCAT(u.first_name, ' ', u.last_name) as name
+                FROM chat_messages cm
+                JOIN users u ON cm.sender = u.id
+                WHERE cm.chatRoomId = '$chatRoomId'
+                AND u.id != '$employee_id'
+                LIMIT 1
+            ";
+            $fallback_result = $conn->query($fallback_query);
+            $customer = $fallback_result->fetch_assoc();
+        }
+        
+        // Get unread count
+        $unread_query = "
+            SELECT COUNT(*) as unread_count
+            FROM chat_recipients cr
+            JOIN chat_messages cm ON cr.chatId = cm.chatId
+            WHERE cm.chatRoomId = '$chatRoomId'
+            AND cr.userId = '$employee_id'
+            AND cr.status IN ('sent', 'delivered')
+        ";
+        $unread_result = $conn->query($unread_query);
+        $unread_count = $unread_result->fetch_assoc()['unread_count'];
+        
+        // Add message context
+        $message_context = "";
+        if ($latest_message['sender_type'] == 2) {
+            $message_context = "You: ";
+        } else if ($latest_message['sender_type'] == 1) {
+            $message_context = "Admin: ";
+        }
+        
+        $conversations[] = [
+            'chatId' => $chatRoomId,
+            'chatRoomId' => $chatRoomId,
+            'sender' => $latest_message['sender'],
+            'receiver' => $customer['id'],
+            'message' => $message_context . $latest_message['message'],
+            'timestamp' => $latest_message['timestamp'],
+            'sender_name' => $latest_message['sender_name'],
+            'customer_name' => $customer['name'],
+            'customer_id' => $customer['id'],
+            'unread_count' => $unread_count
+        ];
     }
-    
-    $conversations[] = $row;
 }
 
 echo json_encode([
@@ -106,5 +112,4 @@ echo json_encode([
 ]);
 
 $conn->close();
-
 ?>
