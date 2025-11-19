@@ -3245,26 +3245,59 @@ function confirmCheckout() {
   formData.append('payment_status', balance > 0 ? 'With Balance' : 'Fully Paid');
 
   // Show confirmation dialog before submitting
-  if (confirm("Are you sure you want to proceed with this order?")) {
-    // Send data to server using AJAX
-    fetch('posFunctions/process_checkout.php', {
-      method: 'POST',
-      body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        document.getElementById('checkoutModal').classList.add('hidden');
-        showConfirmation(data.orderId);
-      } else {
-        alert('Error: ' + (data.message || 'Failed to process checkout'));
-      }
-    })
-    .catch(error => {
-      console.error('Error:', error);
-      alert('An error occurred while processing your order. Please try again.');
-    });
-  }
+  Swal.fire({
+    title: 'Confirm Order',
+    html: `
+      <div class="text-left">
+        <p class="mb-2">Are you sure you want to proceed with this order?</p>
+        <div class="bg-gray-50 p-3 rounded mt-2">
+          <p class="text-sm"><strong>Service Price:</strong> ₱${servicePrice.toFixed(2)}</p>
+          <p class="text-sm"><strong>Total Price:</strong> ₱${totalPrice.toFixed(2)}</p>
+          <p class="text-sm"><strong>Amount Paid:</strong> ₱${amountPaid.toFixed(2)}</p>
+          <p class="text-sm"><strong>Balance:</strong> ₱${balance.toFixed(2)}</p>
+          <p class="text-sm mt-1"><strong>Payment Status:</strong> ${balance > 0 ? 'With Balance' : 'Fully Paid'}</p>
+        </div>
+      </div>
+    `,
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, proceed with order!',
+    cancelButtonText: 'Cancel',
+    width: '500px'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // Send data to server using AJAX
+      fetch('posFunctions/process_checkout.php', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          document.getElementById('checkoutModal').classList.add('hidden');
+          showConfirmation(data.orderId);
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Checkout Failed',
+            text: data.message || 'Failed to process checkout',
+            confirmButtonColor: '#3085d6',
+          });
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'An error occurred while processing your order. Please try again.',
+          confirmButtonColor: '#3085d6',
+        });
+      });
+    }
+  });
 }
 
 // New function to show confirmation with order ID
