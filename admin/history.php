@@ -7402,7 +7402,12 @@ document.getElementById('completeCustomServiceForm').addEventListener('submit', 
   const balanceSettled = document.getElementById('customFinalBalanceSettled').checked;
   
   if (!completionDateInput) {
-    alert('Please specify a completion date.');
+    Swal.fire({
+      icon: 'warning',
+      title: 'Completion Date Required',
+      text: 'Please specify a completion date.',
+      confirmButtonColor: '#3085d6',
+    });
     return;
   }
   
@@ -7426,9 +7431,24 @@ document.getElementById('completeCustomServiceForm').addEventListener('submit', 
   }).filter(id => id); // Filter out any undefined/empty values
 
   if (assignedStaff.length === 0) {
-    alert('Please select at least one staff member who completed this service.');
+    Swal.fire({
+      icon: 'warning',
+      title: 'Staff Selection Required',
+      text: 'Please select at least one staff member who completed this service.',
+      confirmButtonColor: '#3085d6',
+    });
     return;
   }
+
+  // Show loading indicator
+  Swal.fire({
+    title: 'Completing Service...',
+    text: 'Please wait while we finalize the custom service completion',
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading();
+    }
+  });
 
   // First get the salaries for the selected employees
   fetch('get_employee_salaries.php?employee_ids=' + assignedStaff.join(','))
@@ -7456,19 +7476,43 @@ document.getElementById('completeCustomServiceForm').addEventListener('submit', 
         body: JSON.stringify(completionData)
       });
     })
-    .then(response => response.json())
+    .then(response => {
+      if (!response.ok) {
+        return response.text().then(text => {
+          console.error('Server response:', text);
+          throw new Error('Server error: ' + response.status);
+        });
+      }
+      return response.json();
+    })
     .then(data => {
       if (data.success) {
-        alert('Service completed successfully!');
-        closeCompleteCustomModal();
-        location.reload();
+        Swal.fire({
+          icon: 'success',
+          title: 'Service Completed!',
+          text: 'Service completed successfully!',
+          confirmButtonColor: '#3085d6',
+        }).then((result) => {
+          closeCompleteCustomModal();
+          location.reload();
+        });
       } else {
-        alert('Error: ' + data.message);
+        Swal.fire({
+          icon: 'error',
+          title: 'Completion Failed',
+          text: 'Error: ' + data.message,
+          confirmButtonColor: '#d33',
+        });
       }
     })
     .catch(error => {
       console.error('Error:', error);
-      alert('An error occurred while completing the service');
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'An error occurred while completing the service. Please try again.',
+        confirmButtonColor: '#d33',
+      });
     });
 });
 
