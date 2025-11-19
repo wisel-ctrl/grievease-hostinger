@@ -2032,12 +2032,27 @@ function filterByBranch(branchId) {
 
     // Validate form
     if (!this.checkValidity()) {
-        alert('Please fill out all required fields correctly.');
+        Swal.fire({
+            icon: 'warning',
+            title: 'Validation Error',
+            text: 'Please fill out all required fields correctly.',
+            confirmButtonColor: '#3085d6'
+        });
         return;
     }
 
     // Prepare form data
     const formData = new FormData(this);
+
+    // Show loading state
+    Swal.fire({
+        title: 'Updating Employee...',
+        text: 'Please wait while we update the employee information.',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
 
     // Send AJAX request to update employee
     fetch('employeeManagement/update_employee.php', {
@@ -2047,18 +2062,35 @@ function filterByBranch(branchId) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert('Employee updated successfully!');
-            closeEditEmployeeModal();
-            location.reload();
-
-            // Optionally refresh the employee list or update the specific row
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: 'Employee updated successfully!',
+                confirmButtonColor: '#3085d6',
+                timer: 2000,
+                showConfirmButton: true
+            }).then(() => {
+                closeEditEmployeeModal();
+                location.reload();
+                // Optionally refresh the employee list or update the specific row
+            });
         } else {
-            alert('Error updating employee: ' + data.message);
+            Swal.fire({
+                icon: 'error',
+                title: 'Update Failed',
+                text: 'Error updating employee: ' + data.message,
+                confirmButtonColor: '#d33'
+            });
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('An error occurred while updating the employee.');
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'An error occurred while updating the employee.',
+            confirmButtonColor: '#d33'
+        });
     });
 });
 
