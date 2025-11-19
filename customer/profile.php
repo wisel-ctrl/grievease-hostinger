@@ -410,6 +410,10 @@ input[name*="LastName"] {
             grid-template-columns: repeat(3, minmax(0, 1fr));
         }
     }
+    
+    .lifeplan-black-text {
+        color: #000 !important;
+    }
     </style>
 </head>
 <body class="bg-cream overflow-x-hidden w-full max-w-full m-0 p-0 font-hedvig">
@@ -1597,13 +1601,13 @@ document.addEventListener('DOMContentLoaded', function() {
                             <span class="<?php echo $status_class; ?> text-xs px-2 py-1 rounded-full"><?php echo $status_text; ?></span>
                             <p class="text-sm text-gray-500">Life Plan ID: <?php echo $booking['lpbooking_id']; ?></p>
                         </div>
-                        <h4 class="font-hedvig text-lg text-blue-600 mb-2"><?php echo $service_name; ?> (Life Plan)</h4>
+                        <h4 class="font-hedvig text-lg text-black mb-2"><?php echo $service_name; ?> (Life Plan)</h4>
                     </div>
                     <div class="p-4 sm:p-6 space-y-3 sm:space-y-4">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
                             <div>
                                 <p class="text-sm text-gray-500">Beneficiary Name</p>
-                                <p class="text-blue-600"><?php echo ucwords(strtolower($beneficiary_name)); ?></p>
+                                <p class="text-sm text-black"><?php echo ucwords(strtolower($beneficiary_name)); ?></p>
                             </div>
                             <div>
                                 <p class="text-sm text-gray-500">Branch</p>
@@ -2786,40 +2790,40 @@ function populateLifePlanCards(containerId, lifeplans) {
                         <span class="${statusClass} text-xs px-2 py-1 rounded-full">${escapeHtml(statusText)}</span>
                         <p class="text-sm text-gray-500">Life Plan ID: ${escapeHtml(plan.lifeplan_id)}</p>
                     </div>
-                    <h4 class="font-hedvig text-lg text-blue-600 mb-2">${escapeHtml(plan.service_name)} (Life Plan)</h4>
+                    <h4 class="font-hedvig text-lg text-black mb-2">${escapeHtml(plan.service_name)} (Life Plan)</h4>
                 </div>
                 <div class="p-4 sm:p-6 space-y-3 sm:space-y-4">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
                         <div>
                             <p class="text-sm text-gray-500">Beneficiary Name</p>
-                            <p class="text-blue-600">${escapeHtml(plan.benefeciary_name)}</p>
+                            <p class="text-black">${escapeHtml(plan.benefeciary_name)}</p>
                         </div>
                         <div>
                             <p class="text-sm text-gray-500">Start Date</p>
-                            <p class="text-blue-600">${formattedInitialDate}</p>
+                            <p class="text-black">${formattedInitialDate}</p>
                         </div>
                         <div>
                             <p class="text-sm text-gray-500">End Date</p>
-                            <p class="text-blue-600">${formattedEndDate}</p>
+                            <p class="text-black">${formattedEndDate}</p>
                         </div>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
                         <div>
                             <p class="text-sm text-gray-500">Total Amount</p>
-                            <p class="text-blue-600 font-bold">${formatCurrency(plan.custom_price)}</p>
+                            <p class="text-black font-bold">${formatCurrency(plan.custom_price)}</p>
                         </div>
                         <div>
                             <p class="text-sm text-gray-500">Amount Paid</p>
-                            <p class="text-blue-600">${formatCurrency(plan.amount_paid)}</p>
+                            <p class="text-black">${formatCurrency(plan.amount_paid)}</p>
                         </div>
                         <div>
                             <p class="text-sm text-gray-500">Balance</p>
-                            <p class="text-blue-600">${formatCurrency(plan.balance)}</p>
+                            <p class="text-black">${formatCurrency(plan.balance)}</p>
                         </div>
                     </div>
                     <div class="flex justify-end space-x-2">
                         <button onclick="openPaymentHistoryModal('life-plan', '${escapeHtml(plan.lifeplan_id)}')" 
-                            class="bg-blue-600/5 text-blue-600 px-3 py-1 rounded hover:bg-blue-600/10 transition text-sm">
+                            class="bg-blue-600/5 text-black px-3 py-1 rounded hover:bg-blue-600/10 transition text-sm">
                             <i class="fas fa-file-alt mr-1"></i> View History
                         </button>
                         <a href="feedback.php?service_id=${escapeHtml(plan.lifeplan_id)}&service_type=life-plan" 
@@ -3702,7 +3706,7 @@ function getSamplePaymentHistory(packageType) {
     </div>
     <div class="bg-gray-50 p-4 rounded-lg border border-gray-100 flex items-center">
       <div class="bg-blue-100 p-3 rounded-full mr-4">
-        <i class="fas fa-balance-scale text-blue-600 text-xl"></i>
+        <i class="fas fa-balance-scale text-black text-xl"></i>
       </div>
       <div class="flex-grow">
         <p class="text-gray-600 font-medium">Balance</p>
@@ -3926,7 +3930,7 @@ function getSamplePaymentHistory(packageType) {
   <div class="w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden max-h-[90vh]">
     <div class="modal-scroll-container overflow-y-auto max-h-[90vh]">
       <!-- Header with close button -->
-      <div class="bg-blue-600 p-6 flex justify-between items-center">
+      <div class="bg-yellow-600 p-6 flex justify-between items-center">
         <div class="flex items-center">
           <h2 class="text-2xl font-hedvig text-white">Life Plan Booking Details</h2>
         </div>
@@ -3938,13 +3942,13 @@ function getSamplePaymentHistory(packageType) {
       <!-- Booking Status Banner -->
       <div id="lifeplan-status-banner" class="px-6 py-3 bg-blue-50 border-b border-blue-100 flex items-center">
         <div class="flex items-center">
-          <div class="h-3 w-3 rounded-full bg-blue-500 mr-2"></div>
-          <span class="font-medium text-blue-600">Status:</span>
+          
+          <span class="font-medium text-gray-500">Status:</span>
           <span id="lifeplan-detail-status" class="ml-2 text-blue-600 font-bold"></span>
         </div>
         <div class="ml-auto text-sm">
           <span class="text-gray-500">Reference Code:</span>
-          <span id="lifeplan-detail-reference" class="text-blue-600 font-mono ml-1"></span>
+          <span id="lifeplan-detail-reference" class="text-black font-mono ml-1"></span>
         </div>
       </div>
       
@@ -3953,32 +3957,32 @@ function getSamplePaymentHistory(packageType) {
         <!-- Service Information Card -->
         <div class="bg-white rounded-xl shadow-sm p-5 mb-6">
           <div class="flex items-center mb-4">
-            <h4 class="font-semibold text-blue-600 text-lg">Service Information</h4>
+            <h4 class="font-semibold text-black text-lg">Service Information</h4>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3">
             <div class="flex">
               <span class="text-gray-500 w-32">Service Type:</span> 
-              <span id="lifeplan-detail-service" class="text-blue-600 font-medium"></span>
+              <span id="lifeplan-detail-service" class="text-black font-medium"></span>
             </div>
             <div class="flex">
               <span class="text-gray-500 w-32">Branch:</span> 
-              <span id="lifeplan-detail-branch" class="text-blue-600 font-medium"></span>
+              <span id="lifeplan-detail-branch" class="text-black font-medium"></span>
             </div>
             <div class="flex">
               <span class="text-gray-500 w-32">Booking Date:</span> 
-              <span id="lifeplan-detail-booking-date" class="text-blue-600 font-medium"></span>
+              <span id="lifeplan-detail-booking-date" class="text-black font-medium"></span>
             </div>
             <div class="flex">
               <span class="text-gray-500 w-32">Total Amount:</span> 
-              <span id="lifeplan-detail-total" class="text-blue-600 font-bold"></span>
+              <span id="lifeplan-detail-total" class="text-black font-bold"></span>
             </div>
             <div class="flex">
               <span class="text-gray-500 w-32">Payment Duration:</span> 
-              <span id="lifeplan-detail-duration" class="text-blue-600 font-medium"></span>
+              <span id="lifeplan-detail-duration" class="text-black font-medium"></span>
             </div>
             <div class="flex">
               <span class="text-gray-500 w-32">End Date:</span> 
-              <span id="lifeplan-detail-end-date" class="text-blue-600 font-medium"></span>
+              <span id="lifeplan-detail-end-date" class="text-black font-medium"></span>
             </div>
           </div>
         </div>
@@ -3986,28 +3990,28 @@ function getSamplePaymentHistory(packageType) {
         <!-- Beneficiary Information Card -->
         <div class="bg-white rounded-xl shadow-sm p-5 mb-6">
           <div class="flex items-center mb-4">
-            <h4 class="font-semibold text-blue-600 text-lg">Beneficiary Information</h4>
+            <h4 class="font-semibold text-black text-lg">Beneficiary Information</h4>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3">
             <div class="flex">
               <span class="text-gray-500 w-32">Full Name:</span> 
-              <span id="lifeplan-detail-beneficiary-name" class="text-blue-600 font-medium"></span>
+              <span id="lifeplan-detail-beneficiary-name" class="text-black font-medium"></span>
             </div>
             <div class="flex">
               <span class="text-gray-500 w-32">Birth Date:</span> 
-              <span id="lifeplan-detail-birth" class="text-blue-600 font-medium"></span>
+              <span id="lifeplan-detail-birth" class="text-black font-medium"></span>
             </div>
             <div class="flex">
               <span class="text-gray-500 w-32">Relationship:</span> 
-              <span id="lifeplan-detail-relationship" class="text-blue-600 font-medium"></span>
+              <span id="lifeplan-detail-relationship" class="text-black font-medium"></span>
             </div>
             <div class="flex">
               <span class="text-gray-500 w-32">Phone Number:</span> 
-              <span id="lifeplan-detail-phone" class="text-blue-600 font-medium"></span>
+              <span id="lifeplan-detail-phone" class="text-black font-medium"></span>
             </div>
             <div class="flex md:col-span-2">
               <span class="text-gray-500 w-32">Address:</span> 
-              <span id="lifeplan-detail-address" class="text-blue-600 font-medium"></span>
+              <span id="lifeplan-detail-address" class="text-black font-medium"></span>
             </div>
           </div>
         </div>
@@ -4015,7 +4019,7 @@ function getSamplePaymentHistory(packageType) {
         <!-- Payment Information Card -->
         <div class="bg-white rounded-xl shadow-sm p-5 mb-6">
           <div class="flex items-center mb-4">
-            <h4 class="font-semibold text-blue-600 text-lg">Payment Information</h4>
+            <h4 class="font-semibold text-black text-lg">Payment Information</h4>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="bg-gray-50 p-4 rounded-lg border border-gray-100 flex items-center">
@@ -4024,16 +4028,16 @@ function getSamplePaymentHistory(packageType) {
               </div>
               <div class="flex-grow">
                 <p class="text-gray-600 font-medium">Amount Paid</p>
-                <p id="lifeplan-detail-paid" class="text-blue-600 font-bold text-xl"></p>
+                <p id="lifeplan-detail-paid" class="text-black font-bold text-xl"></p>
               </div>
             </div>
             <div class="bg-gray-50 p-4 rounded-lg border border-gray-100 flex items-center">
               <div class="bg-blue-100 p-3 rounded-full mr-4">
-                <i class="fas fa-balance-scale text-blue-600 text-xl"></i>
+                <i class="fas fa-balance-scale text-black text-xl"></i>
               </div>
               <div class="flex-grow">
                 <p class="text-gray-600 font-medium">Balance</p>
-                <p id="lifeplan-detail-balance" class="text-blue-600 font-bold text-xl"></p>
+                <p id="lifeplan-detail-balance" class="text-black font-bold text-xl"></p>
               </div>
             </div>
           </div>
@@ -4055,7 +4059,7 @@ function getSamplePaymentHistory(packageType) {
   <div class="w-full max-w-3xl bg-white rounded-2xl shadow-xl overflow-hidden max-h-[90vh]">
     <div class="modal-scroll-container overflow-y-auto max-h-[90vh]">
       <!-- Header with close button -->
-      <div class="bg-blue-600 p-6 flex justify-between items-center">
+      <div class="bg-yellow-600 p-6 flex justify-between items-center">
         <h2 class="text-2xl font-hedvig text-white">Modify Life Plan Booking</h2>
         <button class="close-lifeplan-modal text-white hover:text-blue-300">
           <i class="fas fa-times text-2xl"></i>
@@ -4071,16 +4075,16 @@ function getSamplePaymentHistory(packageType) {
           
           <!-- Service Information -->
           <div class="space-y-5 mb-6">
-            <h4 class="font-semibold text-blue-600 text-lg">Service Information</h4>
+            <h4 class="font-semibold text-black text-lg">Service Information</h4>
             <div class="space-y-4">
               <div>
-                <label class="block text-sm font-medium text-blue-600 mb-1 sm:mb-2">Service Package</label>
+                <label class="block text-sm font-medium text-black mb-1 sm:mb-2">Service Package</label>
                 <div id="display-lifeplan-service" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg bg-gray-50 text-sm sm:text-base">
                   <!-- Service package details will be displayed here -->
                 </div>
               </div>
               <div>
-                <label class="block text-sm font-medium text-blue-600 mb-1 sm:mb-2">Branch Location</label>
+                <label class="block text-sm font-medium text-blackmb-1 sm:mb-2">Branch Location</label>
                 <div id="display-lifeplan-branch" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg bg-gray-50 text-sm sm:text-base">
                   <!-- Branch location will be displayed here -->
                 </div>
@@ -4090,44 +4094,44 @@ function getSamplePaymentHistory(packageType) {
           
           <!-- Beneficiary Information -->
           <div class="space-y-5 mb-6">
-            <h4 class="font-semibold text-blue-600 text-lg">Beneficiary Information</h4>
+            <h4 class="font-semibold text-black text-lg">Beneficiary Information</h4>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
               <div>
-                <label class="block text-sm font-medium text-blue-600 mb-1 sm:mb-2">First Name*</label>
+                <label class="block text-sm font-medium text-black mb-1 sm:mb-2">First Name*</label>
                 <input type="text" name="benefeciary_fname" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base" required>
               </div>
               <div>
-                <label class="block text-sm font-medium text-blue-600 mb-1 sm:mb-2">Middle Name</label>
+                <label class="block text-sm font-medium text-black mb-1 sm:mb-2">Middle Name</label>
                 <input type="text" name="benefeciary_mname" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base">
               </div>
               <div>
-                <label class="block text-sm font-medium text-blue-600 mb-1 sm:mb-2">Last Name*</label>
+                <label class="block text-sm font-medium text-black mb-1 sm:mb-2">Last Name*</label>
                 <input type="text" name="benefeciary_lname" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base" required>
               </div>
               <div>
-                <label class="block text-sm font-medium text-blue-600 mb-1 sm:mb-2">Suffix</label>
+                <label class="block text-sm font-medium text-black mb-1 sm:mb-2">Suffix</label>
                 <input type="text" name="benefeciary_suffix" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base">
               </div>
               <div>
-                <label class="block text-sm font-medium text-blue-600 mb-1 sm:mb-2">Date of Birth</label>
+                <label class="block text-sm font-medium text-black mb-1 sm:mb-2">Date of Birth</label>
                 <input type="date" name="benefeciary_birth" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base">
               </div>
               <div>
-                <label class="block text-sm font-medium text-blue-600 mb-1 sm:mb-2">Relationship</label>
+                <label class="block text-sm font-medium text-black mb-1 sm:mb-2">Relationship</label>
                 <input type="text" name="relationship_to_client" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base">
               </div>
               <div>
-                <label class="block text-sm font-medium text-blue-600 mb-1 sm:mb-2">Phone Number</label>
+                <label class="block text-sm font-medium text-black mb-1 sm:mb-2">Phone Number</label>
                 <input type="text" name="phone" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base">
               </div>
               <div class="md:col-span-2">
-                <label class="block text-sm font-medium text-blue-600 mb-1 sm:mb-2">Address</label>
+                <label class="block text-sm font-medium text-black mb-1 sm:mb-2">Address</label>
                 <textarea name="benefeciary_address" rows="2" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"></textarea>
               </div>
               <div class="md:col-span-2">
                 <div class="flex items-center">
-                  <input type="checkbox" name="with_cremate" id="lifeplan-with_cremate" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mr-2">
-                  <label for="lifeplan-with_cremate" class="text-sm font-medium text-blue-600">Include Cremation Service</label>
+                  <input type="checkbox" name="with_cremate" id="lifeplan-with_cremate" class="w-4 h-4 text-black border-gray-300 rounded focus:ring-blue-500 mr-2">
+                  <label for="lifeplan-with_cremate" class="text-sm font-medium text-gray-600">Include Cremation Service</label>
                 </div>
               </div>
             </div>
@@ -4137,14 +4141,14 @@ function getSamplePaymentHistory(packageType) {
       
       <!-- Modal Footer -->
       <div class="modal-sticky-footer px-6 py-4 flex flex-col sm:flex-row sm:justify-end gap-3 border-t border-gray-200 bg-white">
-        <button type="button" class="close-lifeplan-modal w-full sm:w-auto px-6 py-3 bg-white border border-blue-600 text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center">
-          Cancel
-        </button>
-        <button type="submit" form="modifyLifeplanForm" id="modifyLifeplanSubmit" class="w-full sm:w-auto px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-md transition-all duration-300 flex items-center justify-center">
-          <i class="fas fa-save mr-2"></i>
-          Save Changes
-        </button>
-      </div>
+            <button type="button" class="close-lifeplan-modal w-full sm:w-auto px-6 py-3 bg-white border border-yellow-600 text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center">
+                Cancel
+            </button>
+            <button type="submit" form="modifyLifeplanForm" id="modifyLifeplanSubmit" class="w-full sm:w-auto px-6 py-3 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg shadow-md transition-all duration-300 flex items-center justify-center">
+                <i class="fas fa-save mr-2"></i>
+                Save Changes
+            </button>
+        </div>
     </div>
   </div>
 </div>
@@ -4154,7 +4158,7 @@ function getSamplePaymentHistory(packageType) {
   <div class="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden max-h-[90vh]">
     <div class="modal-scroll-container overflow-y-auto max-h-[90vh]">
       <!-- Header with close button -->
-      <div class="bg-blue-600 p-6 flex justify-between items-center">
+      <div class="bg-yellow-600 p-6 flex justify-between items-center">
         <h2 class="text-2xl font-hedvig text-white">Cancel Life Plan Booking</h2>
         <button class="close-lifeplan-modal text-white hover:text-blue-300">
           <i class="fas fa-times text-2xl"></i>
@@ -4171,16 +4175,16 @@ function getSamplePaymentHistory(packageType) {
           <div class="space-y-4 sm:space-y-6">
             <!-- Reason for Cancellation -->
             <div>
-              <label class="block text-sm font-medium text-blue-600 mb-1 sm:mb-2">Reason for Cancellation*</label>
+              <label class="block text-sm font-medium text-black mb-1 sm:mb-2">Reason for Cancellation*</label>
               <textarea name="cancel_reason" rows="3" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base" required></textarea>
             </div>
             
             <!-- OTP Verification -->
             <div>
-              <label class="block text-sm font-medium text-blue-600 mb-1 sm:mb-2">OTP Verification*</label>
+              <label class="block text-sm font-medium text-black mb-1 sm:mb-2">OTP Verification*</label>
               <div class="flex items-center space-x-2">
                 <input type="text" name="otp" id="lifeplan-otpInput" class="flex-1 px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base" placeholder="Enter OTP" required>
-                <button type="button" id="lifeplan-sendOtpBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 sm:py-3 rounded-lg shadow-md transition-all duration-300">
+                <button type="button" id="lifeplan-sendOtpBtn" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 sm:py-3 rounded-lg shadow-md transition-all duration-300">
                   Send OTP
                 </button>
               </div>
@@ -4192,7 +4196,7 @@ function getSamplePaymentHistory(packageType) {
       
       <!-- Modal Footer -->
       <div class="modal-sticky-footer px-6 py-4 flex flex-col sm:flex-row sm:justify-end gap-3 border-t border-gray-200 bg-white">
-        <button class="close-lifeplan-modal w-full sm:w-auto px-6 py-3 bg-white border border-blue-600 text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center">
+        <button class="close-lifeplan-modal w-full sm:w-auto px-6 py-3 bg-white border border-yellow-600 text-gray-800 rounded-lg font-medium hover:bg-yellow-100 transition-all duration-200 flex items-center justify-center">
           No, Keep Booking
         </button>
         <button type="submit" form="cancelLifeplanForm" class="w-full sm:w-auto px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg shadow-md transition-all duration-300 flex items-center justify-center">
