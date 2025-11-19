@@ -59,8 +59,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Salary validation - monthly salary must be <= 10000
     if (!empty($monthly_salary)) {
         $monthly_salary_float = floatval($monthly_salary);
-        if ($monthly_salary_float > 10000) {
-            $errors[] = "Monthly salary must be less than or equal to ₱10,000.";
+        if ($monthly_salary_float > 100000) {
+            $errors[] = "Monthly salary must be less than or equal to ₱100,000.";
         }
         
         // Additional validation for negative salary
