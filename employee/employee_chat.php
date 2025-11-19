@@ -451,21 +451,21 @@ document.addEventListener('DOMContentLoaded', function() {
         const displayName = capitalizeWords(conversation.customer_name || 'Customer');
                 
         html += `
-            <div class="conversation-item hover:bg-gray-50 p-4 cursor-pointer transition-colors duration-200 ${isUnread ? 'bg-blue-50' : ''}" 
+            <div class="conversation-item hover:bg-gray-50 p-3 sm:p-4 cursor-pointer transition-colors duration-200 ${isUnread ? 'bg-blue-50' : ''}" 
                  data-chatroom="${conversation.chatRoomId}" 
                  data-receiver="${conversation.sender == '<?php echo $_SESSION['user_id']; ?>' ? conversation.receiver : conversation.sender}">
-              <div class="flex items-start gap-3">
-                <div class="flex-shrink-0 w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-600">
+              <div class="flex items-start gap-2 sm:gap-3">
+                <div class="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 text-sm sm:text-base">
                   <i class="fas fa-user"></i>
                 </div>
                 <div class="flex-grow min-w-0">
-                  <div class="flex justify-between items-start">
-                    <h3 class="font-semibold text-gray-800 truncate ${isUnread ? 'font-bold' : ''}">${displayName}</h3>
+                  <div class="flex justify-between items-start gap-2 flex-wrap sm:flex-nowrap">
+                    <h3 class="font-semibold text-gray-800 text-sm sm:text-base truncate ${isUnread ? 'font-bold' : ''}">${displayName}</h3>
                     <span class="text-xs text-gray-500 whitespace-nowrap">${formattedDate}</span>
                   </div>
-                  <div class="flex justify-between items-center mt-1">
-                    <p class="text-sm text-gray-600 truncate pr-4">${conversation.message}</p>
-                    ${isUnread ? `<span class="inline-flex items-center justify-center w-5 h-5 text-xs font-semibold text-white bg-[#008080] rounded-full">${conversation.unread_count}</span>` : ''}
+                  <div class="flex justify-between items-center mt-1 gap-2">
+                    <p class="text-xs sm:text-sm text-gray-600 truncate">${conversation.message}</p>
+                    ${isUnread ? `<span class="inline-flex items-center justify-center w-5 h-5 text-xs font-semibold text-white bg-[#008080] rounded-full flex-shrink-0">${conversation.unread_count}</span>` : ''}
                   </div>
                 </div>
               </div>
@@ -551,8 +551,8 @@ function capitalizeWords(str) {
       // Add message
       html += `
         <div class="mb-4 ${isEmployee ? 'flex justify-end' : 'flex justify-start'}">
-          <div class="${isEmployee ? 'max-w-[70%]' : 'max-w-[60%]'} ${isEmployee ? 'bg-[#008080] text-white rounded-l-lg rounded-tr-lg' : 'bg-gray-100 text-gray-800 rounded-r-lg rounded-tl-lg'} px-4 py-2 shadow-sm">
-            <div class="text-sm mb-1">${message.message}</div>
+          <div class="${isEmployee ? 'max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg' : 'max-w-xs sm:max-w-sm md:max-w-md'} ${isEmployee ? 'bg-[#008080] text-white rounded-l-lg rounded-tr-lg' : 'bg-gray-100 text-gray-800 rounded-r-lg rounded-tl-lg'} px-3 sm:px-4 py-2 shadow-sm">
+            <div class="text-sm mb-1 break-words">${message.message}</div>
             <div class="text-xs ${isEmployee ? 'text-teal-100' : 'text-gray-500'} text-right">${messageTime}</div>
           </div>
         </div>
@@ -676,7 +676,7 @@ function capitalizeWords(str) {
   function showError(message) {
     // Show error toast
     const toast = document.createElement('div');
-    toast.className = 'fixed bottom-4 right-4 bg-red-500 text-white px-6 py-3 rounded shadow-lg';
+    toast.className = 'fixed bottom-4 right-4 bg-red-500 text-white px-4 sm:px-6 py-3 rounded shadow-lg text-sm sm:text-base';
     toast.textContent = message;
     document.body.appendChild(toast);
     
@@ -740,58 +740,81 @@ function capitalizeWords(str) {
     .sidebar-link.active::before {
       background-color: #CA8A04;
     }
-    
-    /* Animate the sidebar
-    @keyframes slideIn {
-      from { transform: translateX(-100%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
-    }
-    
-    .animate-sidebar {
-      animation: slideIn 0.3s ease forwards;
-    } */
 
     /* Gradient background for menu section headers */
     .menu-header {
       background: linear-gradient(to right, rgba(202, 138, 4, 0.1), transparent);
     }
-    /* Add this to your existing styles */
-.main-content {
-  margin-left: 16rem; /* Adjust this value to match the width of your sidebar */
-  width: calc(100% - 16rem); /* Ensure the main content takes up the remaining width */
-  z-index: 1; /* Ensure the main content is above the sidebar */
-}
 
-.sidebar {
-  z-index: 10; /* Ensure the sidebar is below the main content */
-}
-/* Add this to your existing styles */
-#sidebar {
-  transition: width 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
-}
+    .main-content {
+      margin-left: 16rem;
+      width: calc(100% - 16rem);
+      z-index: 1;
+    }
 
-#main-content {
-  transition: margin-left 0.3s ease;
-}
+    .sidebar {
+      z-index: 10;
+    }
 
-.w-0 {
-  width: 0;
-}
+    #sidebar {
+      transition: width 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
+    }
 
-.opacity-0 {
-  opacity: 0;
-}
+    #main-content {
+      transition: margin-left 0.3s ease;
+    }
 
-.invisible {
-  visibility: hidden;
-}
-.w-\[calc\(100\%-16rem\)\] {
-  width: calc(100% - 16rem);
-}
+    .w-0 {
+      width: 0;
+    }
 
-.w-\[calc\(100\%-4rem\)\] {
-  width: calc(100% - 4rem);
-}
+    .opacity-0 {
+      opacity: 0;
+    }
+
+    .invisible {
+      visibility: hidden;
+    }
+
+    .w-\[calc\(100\%-16rem\)\] {
+      width: calc(100% - 16rem);
+    }
+
+    .w-\[calc\(100\%-4rem\)\] {
+      width: calc(100% - 4rem);
+    }
+
+    /* Responsive main content adjustments */
+    @media (max-width: 768px) {
+      .main-content {
+        margin-left: 0;
+        width: 100%;
+      }
+    }
+
+    /* Mobile modal responsiveness */
+    @media (max-width: 640px) {
+      #message-detail-modal {
+        padding: 0 !important;
+      }
+
+      #message-detail-modal .bg-white {
+        border-radius: 0;
+        max-height: 100vh;
+        max-width: 100%;
+      }
+
+      #modal-conversation {
+        max-height: calc(100vh - 200px);
+      }
+    }
+
+    /* Text wrapping for long messages */
+    .break-words {
+      word-break: break-word;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
   </style>
 </head>
 <body class="flex bg-gray-50">
@@ -799,54 +822,56 @@ function capitalizeWords(str) {
 <?php include 'employee_sidebar.php'; ?>
 
   <!-- Main Content -->
-<div id="main-content" class="p-6 bg-gray-100 min-h-screen transition-all duration-300 ml-64 main-content">
-    <div class="flex justify-between items-center mb-6 bg-white p-4 rounded-lg shadow">
-      <h1 class="text-2xl font-bold text-gray-800">Customer Messages</h1>
-      <div class="flex gap-2">
-        <div class="relative">
-          <input type="text" id="customer-search" placeholder="Search customers..." class="px-4 py-2 pl-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent">
-          <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
-        </div>
-        <button id="refresh-messages" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-md flex items-center gap-2">
-          <i class="fas fa-sync-alt"></i> Refresh
-        </button>
-        <div class="relative">
-          <button id="filter-dropdown-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-md flex items-center gap-2">
-            <i class="fas fa-filter"></i> Filter
-          </button>
-          <div id="filter-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
-            <div class="py-1">
-              <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="filterMessages('all')">All Messages</button>
-              <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="filterMessages('unread')">Unread Only</button>
-              <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="filterMessages('today')">Today</button>
-              <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="filterMessages('week')">This Week</button>
-              <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="filterMessages('month')">This Month</button>
+<div id="main-content" class="p-3 sm:p-6 bg-gray-100 min-h-screen transition-all duration-300 ml-64 main-content">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 bg-white p-3 sm:p-4 rounded-lg shadow gap-3">
+      <h1 class="text-xl sm:text-2xl font-bold text-gray-800">Customer Messages</h1>
+      <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+          <div class="relative flex-1 sm:flex-initial">
+            <input type="text" id="customer-search" placeholder="Search customers..." class="w-full px-3 sm:px-4 py-2 pl-9 sm:pl-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent text-sm sm:text-base">
+            <i class="fas fa-search absolute left-2 sm:left-3 top-2 sm:top-3 text-gray-400 text-sm"></i>
+          </div>
+          <div class="flex gap-2 w-full sm:w-auto">
+            <button id="refresh-messages" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 sm:px-4 py-2 rounded-md flex items-center justify-center gap-2 text-sm sm:text-base flex-1 sm:flex-initial">
+              <i class="fas fa-sync-alt"></i> <span class="hidden sm:inline">Refresh</span>
+            </button>
+            <div class="relative flex-1 sm:flex-initial">
+              <button id="filter-dropdown-btn" class="w-full sm:w-auto bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 sm:px-4 py-2 rounded-md flex items-center justify-center gap-2 text-sm sm:text-base">
+                <i class="fas fa-filter"></i> <span class="hidden sm:inline">Filter</span>
+              </button>
+              <div id="filter-dropdown" class="hidden absolute right-0 mt-2 w-40 sm:w-48 bg-white rounded-md shadow-lg z-10">
+                <div class="py-1">
+                  <button class="block w-full text-left px-3 sm:px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="filterMessages('all')">All Messages</button>
+                  <button class="block w-full text-left px-3 sm:px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="filterMessages('unread')">Unread Only</button>
+                  <button class="block w-full text-left px-3 sm:px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="filterMessages('today')">Today</button>
+                  <button class="block w-full text-left px-3 sm:px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="filterMessages('week')">This Week</button>
+                  <button class="block w-full text-left px-3 sm:px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="filterMessages('month')">This Month</button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
     </div>
 
     <!-- Customer Messages Interface -->
     <div class="bg-white rounded-lg shadow-md overflow-hidden">
       <!-- Messages Header -->
-      <div class="border-b border-gray-200 bg-gray-50 p-4">
-        <div class="flex justify-between items-center">
-          <h2 class="text-lg font-semibold text-gray-800">Incoming Customer Messages</h2>
-          <div class="text-sm text-gray-500">Showing <span id="message-count" class="font-medium">0</span> messages</div>
+      <div class="border-b border-gray-200 bg-gray-50 p-3 sm:p-4">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+          <h2 class="text-base sm:text-lg font-semibold text-gray-800">Incoming Customer Messages</h2>
+          <div class="text-xs sm:text-sm text-gray-500">Showing <span id="message-count" class="font-medium">0</span> messages</div>
         </div>
       </div>
       
       <!-- Messages Content -->
       <div class="divide-y divide-gray-200">
         <!-- Empty state - No messages -->
-        <div id="empty-state" class="py-12 flex flex-col items-center justify-center text-gray-500">
+        <div id="empty-state" class="py-12 px-4 flex flex-col items-center justify-center text-gray-500">
           <div class="bg-gray-100 rounded-full p-4 mb-4">
-            <i class="fas fa-inbox text-3xl"></i>
+            <i class="fas fa-inbox text-2xl sm:text-3xl"></i>
           </div>
-          <h3 class="text-lg font-medium mb-1">No customer messages</h3>
-          <p class="text-sm">Customer messages will appear here when received</p>
-          <button id="load-messages-btn" class="mt-4 bg-[#008080] text-white px-4 py-2 rounded-md hover:bg-opacity-90 transition-colors">
+          <h3 class="text-base sm:text-lg font-medium mb-1">No customer messages</h3>
+          <p class="text-xs sm:text-sm text-center">Customer messages will appear here when received</p>
+          <button id="load-messages-btn" class="mt-4 bg-[#008080] text-white px-4 py-2 rounded-md hover:bg-opacity-90 transition-colors text-sm sm:text-base">
             Load Messages
           </button>
         </div>
@@ -860,31 +885,30 @@ function capitalizeWords(str) {
   </div>  
 
   <!-- Message Detail Modal -->
-  <div id="message-detail-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
-      <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[80vh] flex flex-col">
+  <div id="message-detail-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4">
+      <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl sm:max-w-3xl md:max-w-4xl max-h-[90vh] sm:max-h-[85vh] flex flex-col">
         <!-- Modal Header -->
-        <div class="p-4 border-b border-gray-200 flex justify-between items-center">
-          <div>
-            <h3 class="text-lg font-semibold" id="modal-customer-name">Customer Name</h3>
-            <p class="text-sm text-gray-500" id="modal-message-date">Date</p>
+        <div class="p-3 sm:p-4 border-b border-gray-200 flex justify-between items-start sm:items-center gap-2">
+          <div class="flex-1 min-w-0">
+            <h3 class="text-base sm:text-lg font-semibold truncate" id="modal-customer-name">Customer Name</h3>
+            <p class="text-xs sm:text-sm text-gray-500 truncate" id="modal-message-date">Date</p>
           </div>
-          <button id="close-modal" class="text-gray-500 hover:text-gray-700">
-            <i class="fas fa-times text-xl"></i>
+          <button id="close-modal" class="text-gray-500 hover:text-gray-700 flex-shrink-0">
+            <i class="fas fa-times text-lg sm:text-xl"></i>
           </button>
         </div>
         
         <!-- Modal Body - Conversation -->
-        <div class="p-4 overflow-y-auto flex-grow" id="modal-conversation">
+        <div class="p-3 sm:p-4 overflow-y-auto flex-grow scrollbar-thin" id="modal-conversation">
           <!-- Conversation messages will be loaded here -->
         </div>
         
         <!-- Modal Footer - Reply Form -->
-        <div class="p-4 border-t border-gray-200">
-         
+        <div class="p-3 sm:p-4 border-t border-gray-200">
           <div class="flex gap-2">
-            <textarea id="reply-input" class="flex-1 p-2.5 border border-gray-300 rounded text-sm" placeholder="Type your reply..."></textarea>
-            <button class="bg-[#008080] text-white px-4 py-2 rounded-md hover:bg-opacity-90" id="send-reply">
-              <i class="fas fa-paper-plane mr-2"></i> Send
+            <textarea id="reply-input" class="flex-1 p-2 sm:p-2.5 border border-gray-300 rounded text-sm resize-none" placeholder="Type your reply..." rows="2"></textarea>
+            <button class="bg-[#008080] text-white px-3 sm:px-4 py-2 rounded-md hover:bg-opacity-90 flex-shrink-0 h-fit text-sm sm:text-base" id="send-reply">
+              <i class="fas fa-paper-plane hidden sm:inline mr-2"></i> <span class="hidden sm:inline">Send</span><span class="sm:hidden">Send</span>
             </button>
           </div>
         </div>
@@ -892,7 +916,7 @@ function capitalizeWords(str) {
     </div>
 
 
-  <script src="sidebar.js"></script>
+  
   <script src="tailwind.js"></script>
 
 </body>
