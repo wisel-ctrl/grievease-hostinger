@@ -2817,22 +2817,73 @@ function cancelAddressChange() {
   // resetAddressDropdowns();
 }
 
-function setupSimpleBurialRestrictions() {
+// Set up date restrictions
+function setupDateRestrictions() {
+    const birthDateInput = document.getElementById('editBirthDate');
     const deathDateInput = document.getElementById('editDeathDate');
     const burialDateInput = document.getElementById('editBurialDate');
 
-    // Prevent future dates
     const today = new Date().toISOString().split('T')[0];
-    burialDateInput.max = today;
 
-    // Set min date when death date is selected
-    deathDateInput.addEventListener('change', function() {
-        if (this.value) {
-            burialDateInput.min = this.value;
-        } else {
-            burialDateInput.min = '';
-        }
-    });
+    // Birth date: cannot pick future dates and cannot be after death date
+    birthDateInput.max = today;
+
+    // Death date: cannot pick future dates and cannot be after burial date
+    deathDateInput.max = today;
+
+    // Burial date: cannot be before death date (but can be future)
+
+    // Update restrictions when any date changes
+    birthDateInput.addEventListener('change', updateDateRestrictions);
+    deathDateInput.addEventListener('change', updateDateRestrictions);
+    burialDateInput.addEventListener('change', updateDateRestrictions);
+
+    // Initial setup
+    updateDateRestrictions();
+}
+
+function updateDateRestrictions() {
+    const birthDateInput = document.getElementById('editBirthDate');
+    const deathDateInput = document.getElementById('editDeathDate');
+    const burialDateInput = document.getElementById('editBurialDate');
+
+    const birthDate = birthDateInput.value;
+    const deathDate = deathDateInput.value;
+    const burialDate = burialDateInput.value;
+    const today = new Date().toISOString().split('T')[0];
+
+    // Birth date restrictions:
+    // - Cannot be in future (max = today)
+    // - Cannot be after death date
+    if (deathDate) {
+        birthDateInput.max = deathDate;
+    } else {
+        birthDateInput.max = today;
+    }
+
+    // Death date restrictions:
+    // - Cannot be in future (max = today) 
+    // - Cannot be after burial date
+    // - Cannot be before birth date
+    let deathMax = today;
+    if (burialDate) {
+        deathMax = burialDate < today ? burialDate : today;
+    }
+    deathDateInput.max = deathMax;
+
+    if (birthDate) {
+        deathDateInput.min = birthDate;
+    } else {
+        deathDateInput.min = '';
+    }
+
+    // Burial date restrictions:
+    // - Cannot be before death date
+    if (deathDate) {
+        burialDateInput.min = deathDate;
+    } else {
+        burialDateInput.min = '';
+    }
 }
 
 
@@ -2975,7 +3026,7 @@ function openEditServiceModal(serviceId) {
         // Load services for this branch
         loadServicesForBranch(data.branch_id, data.service_id);
         // Call this when modal opens
-        setupSimpleBurialRestrictions();
+        setupDateRestrictions();
         
       } else {
         alert('Failed to fetch service details: ' + data.message);
