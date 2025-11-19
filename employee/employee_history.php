@@ -2817,6 +2817,26 @@ function cancelAddressChange() {
   // resetAddressDropdowns();
 }
 
+function setupSimpleBurialRestrictions() {
+    const deathDateInput = document.getElementById('editDeathDate');
+    const burialDateInput = document.getElementById('editBurialDate');
+
+    // Prevent future dates
+    const today = new Date().toISOString().split('T')[0];
+    burialDateInput.max = today;
+
+    // Set min date when death date is selected
+    deathDateInput.addEventListener('change', function() {
+        if (this.value) {
+            burialDateInput.min = this.value;
+        } else {
+            burialDateInput.min = '';
+        }
+    });
+}
+
+
+
 let deathCertFileChanged = false;
 let discountIdFileChanged = false;
 
@@ -2954,6 +2974,8 @@ function openEditServiceModal(serviceId) {
         
         // Load services for this branch
         loadServicesForBranch(data.branch_id, data.service_id);
+        // Call this when modal opens
+        setupSimpleBurialRestrictions();
         
       } else {
         alert('Failed to fetch service details: ' + data.message);
