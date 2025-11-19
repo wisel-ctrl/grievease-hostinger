@@ -2525,12 +2525,12 @@ function confirmCheckout() {
       showConfirmationModal();
     } else {
       // Show error message
-      alert('Error: ' + (data.message || 'Failed to process order'));
+      Swal.fire('Error', 'Error: ' + (data.message || 'Failed to process order'), 'error');
     }
   })
   .catch(error => {
     console.error('Error:', error);
-    alert('An error occurred while processing your order. Please try again.');
+    Swal.fire('Error', 'An error occurred while processing your order. Please try again.', 'error');
   });
 }
 
