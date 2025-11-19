@@ -4468,29 +4468,58 @@ function handleSearch() {
 
 // Function to unarchive an addon
 function unarchiveAddon(id) {
-    if (confirm('Are you sure you want to unarchive this add-on?')) {
-        fetch('servicesManagement/unarchive_addOns.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ id: id })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Add-on unarchived successfully');
-                loadArchivedAddons(); // Reload the table
-                fetchAndPopulateAddOns();
-            } else {
-                alert('Error: ' + data.error);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error unarchiving add-on');
-        });
-    }
+    Swal.fire({
+        title: 'Unarchive Add-on',
+        text: 'Are you sure you want to unarchive this add-on?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, unarchive it!',
+        cancelButtonText: 'Cancel',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch('servicesManagement/unarchive_addOns.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ id: id })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Add-on unarchived successfully',
+                        icon: 'success',
+                        confirmButtonColor: '#3085d6',
+                        timer: 2000,
+                        timerProgressBar: true
+                    });
+                    loadArchivedAddons(); // Reload the table
+                    fetchAndPopulateAddOns();
+                } else {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Error: ' + (data.error || 'Unknown error occurred'),
+                        icon: 'error',
+                        confirmButtonColor: '#3085d6'
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Error unarchiving add-on',
+                    icon: 'error',
+                    confirmButtonColor: '#3085d6'
+                });
+            });
+        }
+    });
 }
 
 // Function to close modal
