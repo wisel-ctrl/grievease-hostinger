@@ -414,6 +414,22 @@ input[name*="LastName"] {
     .lifeplan-black-text {
         color: #000 !important;
     }
+    
+    #lifeplan-booking-content .text-black,
+#lifeplan-bookings-list .text-black ,
+#lifeplan-booking-content h4.text-black {
+    color: #000 !important;
+}
+
+/* More specific selector */
+.bg-white .text-black,
+.bg-white p:not(.text-gray-500),
+#lifeplan-bookings-list h4{
+    color: #000 !important;
+}
+#lifeplan-bookings-list .view-lifeplan-details{
+    color: #000 !important;
+}
     </style>
 </head>
 <body class="bg-cream overflow-x-hidden w-full max-w-full m-0 p-0 font-hedvig">
@@ -1599,7 +1615,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="bg-blue-600 bg-opacity-10 px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200">
                         <div class="flex items-center justify-between mb-3">
                             <span class="<?php echo $status_class; ?> text-xs px-2 py-1 rounded-full"><?php echo $status_text; ?></span>
-                            <p class="text-sm text-gray-500">Life Plan ID: <?php echo $booking['lpbooking_id']; ?></p>
+                            <p class="text-sm text-gray-500 text-black">Life Plan ID: <?php echo $booking['lpbooking_id']; ?></p>
                         </div>
                         <h4 class="font-hedvig text-lg text-black mb-2"><?php echo $service_name; ?> (Life Plan)</h4>
                     </div>
@@ -1611,29 +1627,29 @@ document.addEventListener('DOMContentLoaded', function() {
                             </div>
                             <div>
                                 <p class="text-sm text-gray-500">Branch</p>
-                                <p class="text-blue-600"><?php echo ucwords(strtolower($booking['branch_name'])); ?></p>
+                                <p class="text-black"><?php echo ucwords(strtolower($booking['branch_name'])); ?></p>
                             </div>
                             <div>
                                 <p class="text-sm text-gray-500">End Date</p>
-                                <p class="text-blue-600"><?php echo $end_date; ?></p>
+                                <p class="text-black"><?php echo $end_date; ?></p>
                             </div>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
                             <div>
                                 <p class="text-sm text-gray-500">Total Amount</p>
-                                <p class="text-blue-600 font-bold">₱<?php echo $price; ?></p>
+                                <p class="text-black font-bold">₱<?php echo $price; ?></p>
                             </div>
                             <div>
                                 <p class="text-sm text-gray-500">Amount Paid</p>
-                                <p class="text-blue-600">₱<?php echo $amount_paid; ?></p>
+                                <p class="text-black">₱<?php echo $amount_paid; ?></p>
                             </div>
                             <div>
                                 <p class="text-sm text-gray-500">Balance</p>
-                                <p class="text-blue-600">₱<?php echo $balance; ?></p>
+                                <p class="text-black">₱<?php echo $balance; ?></p>
                             </div>
                         </div>
                         <div class="flex justify-end">
-                            <button class="view-lifeplan-details bg-blue-600/5 text-blue-600 px-3 py-1 rounded hover:bg-blue-600/10 transition text-sm mr-2" data-booking="<?php echo $booking['lpbooking_id']; ?>">
+                            <button class="view-lifeplan-details text-black-600 px-3 py-1 rounded  transition text-sm mr-2" data-booking="<?php echo $booking['lpbooking_id']; ?>">
                                 <i class="fas fa-file-alt mr-1"></i> View Details
                             </button>
                             <?php if ($booking['booking_status'] === 'pending' || $booking['booking_status'] === 'decline'): ?>
