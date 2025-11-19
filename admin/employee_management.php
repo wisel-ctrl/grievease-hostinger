@@ -3023,12 +3023,22 @@ document.addEventListener('DOMContentLoaded', function() {
       const branchId = selectedBranchId;
       
       if (!branchId) {
-          alert('Please select a branch first!');
+          Swal.fire({
+              icon: 'warning',
+              title: 'Branch Required',
+              text: 'Please select a branch first!',
+              confirmButtonColor: '#3085d6'
+          });
           return;
       }
       
       if (grandTotal <= 0) {
-          alert('No payroll expense to record!');
+          Swal.fire({
+              icon: 'info',
+              title: 'No Expense',
+              text: 'No payroll expense to record!',
+              confirmButtonColor: '#3085d6'
+          });
           return;
       }
       
@@ -3036,6 +3046,16 @@ document.addEventListener('DOMContentLoaded', function() {
           // Show loading state
           recordExpenseBtn.disabled = true;
           recordExpenseBtn.textContent = 'Recording...';
+          
+          // Show loading SweetAlert
+          Swal.fire({
+              title: 'Recording Expense...',
+              text: 'Please wait while we record the payroll expense.',
+              allowOutsideClick: false,
+              didOpen: () => {
+                  Swal.showLoading();
+              }
+          });
           
           // FIXED: Prepare date parameters without timezone conversion issues
           let startDateParam = null;
@@ -3077,16 +3097,42 @@ document.addEventListener('DOMContentLoaded', function() {
           const data = await response.json();
           
           if (data.success) {
-              alert(`✅ Payroll expense recorded successfully!\nExpense: ${data.expense_name}\nAmount: ₱${grandTotal.toLocaleString('en-PH')}\nBranch: ${branchId}`);
-              closePayrollModal();
+              Swal.fire({
+                  icon: 'success',
+                  title: 'Expense Recorded!',
+                  html: `
+                      <div style="text-align: left;">
+                          <p><strong>Expense:</strong> ${data.expense_name}</p>
+                          <p><strong>Amount:</strong> ₱${grandTotal.toLocaleString('en-PH')}</p>
+                          <p><strong>Branch:</strong> ${branchId}</p>
+                      </div>
+                  `,
+                  confirmButtonColor: '#3085d6',
+                  confirmButtonText: 'OK'
+              }).then(() => {
+                  closePayrollModal();
+              });
           } else {
-              alert('Error recording expense: ' + data.message);
+              Swal.fire({
+                  icon: 'error',
+                  title: 'Recording Failed',
+                  text: 'Error recording expense: ' + data.message,
+                  confirmButtonColor: '#d33'
+              });
           }
           
       } catch (error) {
           console.error('Error recording expense:', error);
-          alert('Error recording expense. Please check console for details and try again.');
+          Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Error recording expense. Please check console for details and try again.',
+              confirmButtonColor: '#d33'
+          });
       } finally {
+          // Close any open SweetAlert loading dialog
+          Swal.close();
+          
           // Reset button state
           recordExpenseBtn.disabled = false;
           recordExpenseBtn.textContent = 'Record Expense';
