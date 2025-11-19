@@ -3100,13 +3100,7 @@ document.addEventListener('DOMContentLoaded', function() {
               Swal.fire({
                   icon: 'success',
                   title: 'Expense Recorded!',
-                  html: `
-                      <div style="text-align: left;">
-                          <p><strong>Expense:</strong> ${data.expense_name}</p>
-                          <p><strong>Amount:</strong> ₱${grandTotal.toLocaleString('en-PH')}</p>
-                          <p><strong>Branch:</strong> ${branchId}</p>
-                      </div>
-                  `,
+                  text: `Expense: ${data.expense_name}\nAmount: ₱${grandTotal.toLocaleString('en-PH')}\nBranch: ${branchId}`,
                   confirmButtonColor: '#3085d6',
                   confirmButtonText: 'OK'
               }).then(() => {
