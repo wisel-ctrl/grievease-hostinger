@@ -3544,7 +3544,7 @@ function finalizeServiceCompletion() {
   const chapelDays = document.getElementById('chapelDays').value || 0;
   
   if (!completionDateInput) {
-    alert('Please specify a completion date.');
+    Swal.fire('Error', 'Please specify a completion date.', 'error');
     return;
   }
   
@@ -3599,16 +3599,21 @@ function finalizeServiceCompletion() {
     .then(response => response.json())
     .then(data => {
       if (data.success) {
-        alert('Service completed successfully!');
-        closeCompleteModal();
-        location.reload();
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: 'Service completed successfully!'
+        }).then(() => {
+          closeCompleteModal();
+          location.reload();
+        });
       } else {
-        alert('Error: ' + data.message);
+        Swal.fire('Error', 'Error: ' + data.message, 'error');
       }
     })
     .catch(error => {
       console.error('Error:', error);
-      alert('An error occurred while completing the service');
+      Swal.fire('Error', 'An error occurred while completing the service', 'error');
     });
 }
 
@@ -5026,16 +5031,21 @@ document.getElementById('editCustomServiceForm').addEventListener('submit', func
   .then(response => response.json())
   .then(data => {
     if (data.success) {
-      alert('Service updated successfully!');
-      closeEditCustomServiceModal();
-      location.reload();
+      Swal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: 'Service updated successfully!'
+      }).then(() => {
+        closeEditCustomServiceModal();
+        location.reload();
+      });
     } else {
-      alert('Error: ' + data.message);
+      Swal.fire('Error', 'Error: ' + data.message, 'error');
     }
   })
   .catch(error => {
     console.error('Error:', error);
-    alert('An error occurred while updating the service');
+    Swal.fire('Error', 'An error occurred while updating the service', 'error');
   });
 });
 
