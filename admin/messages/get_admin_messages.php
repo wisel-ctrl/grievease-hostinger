@@ -83,12 +83,11 @@ try {
     }
 
     // Get the most recent message for each chat room where admin is a participant
-    $query = "
+$query = "
     SELECT 
         cm.chatRoomId,
         cm.sender,
         cm.message,
-        -- Convert timestamp to Philippine time
         CONVERT_TZ(cm.timestamp, '+00:00', '+08:00') as timestamp,
         cm.status,
         cm.messageType,
@@ -118,6 +117,42 @@ try {
             LIMIT 1
         ) AS sender_email,
         (
+            SELECT CONCAT('../../profile_picture/', u.profile_picture)
+            FROM chat_recipients cr2
+            JOIN users u ON cr2.userId = u.id
+            WHERE cr2.chatId IN (
+                SELECT chatId 
+                FROM chat_messages 
+                WHERE chatRoomId = cm.chatRoomId
+            )
+            AND u.user_type = 3
+            LIMIT 1
+        ) AS sender_profile_picture,
+        (
+            SELECT u.first_name
+            FROM chat_recipients cr2
+            JOIN users u ON cr2.userId = u.id
+            WHERE cr2.chatId IN (
+                SELECT chatId 
+                FROM chat_messages 
+                WHERE chatRoomId = cm.chatRoomId
+            )
+            AND u.user_type = 3
+            LIMIT 1
+        ) AS sender_first_name,
+        (
+            SELECT u.last_name
+            FROM chat_recipients cr2
+            JOIN users u ON cr2.userId = u.id
+            WHERE cr2.chatId IN (
+                SELECT chatId 
+                FROM chat_messages 
+                WHERE chatRoomId = cm.chatRoomId
+            )
+            AND u.user_type = 3
+            LIMIT 1
+        ) AS sender_last_name,
+        (
             SELECT COUNT(*) 
             FROM chat_messages cm2
             JOIN chat_recipients cr2 ON cm2.chatId = cr2.chatId
@@ -128,7 +163,7 @@ try {
         ) AS unread_count
     FROM chat_messages cm
     JOIN chat_recipients cr ON cm.chatId = cr.chatId
-    JOIN users u ON cr.userId = u.id  -- Add this line to join with users table
+    JOIN users u ON cr.userId = u.id
     WHERE cr.userId = '$admin_id'
     AND cm.chatId IN (
         SELECT chatId 
@@ -136,13 +171,11 @@ try {
         WHERE userId = '$admin_id'
     )
     AND (
-        -- Either the latest message in the chat room
         cm.timestamp = (
             SELECT MAX(timestamp) 
             FROM chat_messages 
             WHERE chatRoomId = cm.chatRoomId
         )
-        -- OR the first message from the customer (if only 2 messages exist)
         OR (
             SELECT COUNT(*) 
             FROM chat_messages 

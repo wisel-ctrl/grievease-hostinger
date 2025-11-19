@@ -35,7 +35,10 @@ try {
         SELECT 
             u.id,
             CONCAT(u.first_name, ' ', u.last_name) AS name,
-            u.email
+            u.email,
+            CONCAT('../../profile_picture/', u.profile_picture) AS profile_picture,
+            u.first_name,
+            u.last_name
         FROM users u
         JOIN (
             SELECT DISTINCT cr.userId

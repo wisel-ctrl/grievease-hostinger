@@ -356,51 +356,61 @@ header("Pragma: no-cache");
       }
       
       // Function to display messages in the list
-      function displayMessages(conversations) {
-        messageList.innerHTML = '';
-        
-        conversations.forEach(conversation => {
-          const messageDate = new Date(conversation.timestamp);
-          const formattedDate = formatDateTime(messageDate);
-          const isUnread = conversation.status === 'sent' && conversation.receiver === '<?php echo $_SESSION["user_id"]; ?>';
-          
-          const messageItem = document.createElement('div');
-          messageItem.className = `message-item p-3 md:p-4 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0 ${isUnread ? 'bg-blue-50 message-new' : 'message-read'}`;
-          messageItem.dataset.chatRoomId = conversation.chatRoomId;
-          messageItem.dataset.receiverId = conversation.sender;
-          
-          messageItem.innerHTML = `
-            <div class="flex items-start">
-              <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-yellow-600 flex items-center justify-center text-white mr-3 flex-shrink-0">
-                ${conversation.sender_profile_picture ? 
-                  `<img src="${conversation.sender_profile_picture}" alt="${conversation.sender_name}" class="w-8 h-8 md:w-10 md:h-10 rounded-full object-cover">` : 
-                  `<span class="text-xs md:text-sm">${conversation.sender_name?.charAt(0).toUpperCase() ?? ''}</span>`}
-              </div>
-              <div class="flex-1 min-w-0">
-                <div class="flex justify-between items-start">
-                  <h4 class="text-sm font-medium text-gray-900 truncate">
-                    ${conversation.sender_name?.charAt(0)?.toUpperCase() + conversation.sender_name?.slice(1)?.toLowerCase() ?? 'Unknown'}
-                  </h4>
-                  <span class="text-xs text-gray-500 whitespace-nowrap ml-2">${formattedDate}</span>
-                </div>
-                <p class="text-sm text-gray-600 truncate mt-1">${conversation.message}</p>
-                <div class="flex items-center mt-2">
-                  <span class="text-xs text-gray-500 truncate">${conversation.sender_email}</span>
-                  ${isUnread ? '<span class="ml-2 w-2 h-2 bg-teal-500 rounded-full flex-shrink-0"></span>' : ''}
-                  ${conversation.unread_count > 0 ? 
-                    `<span class="ml-auto bg-teal-500 text-white text-xs px-2 py-0.5 rounded-full flex-shrink-0">${conversation.unread_count}</span>` : ''}
-                </div>
-              </div>
-            </div>
-          `;
-          
-          messageItem.addEventListener('click', function() {
-            openConversation(this.dataset.chatRoomId, this.dataset.receiverId);
-          });
-          
-          messageList.appendChild(messageItem);
-        });
-      }
+      // Function to display messages in the list
+function displayMessages(conversations) {
+  messageList.innerHTML = '';
+  
+  conversations.forEach(conversation => {
+    const messageDate = new Date(conversation.timestamp);
+    const formattedDate = formatDateTime(messageDate);
+    const isUnread = conversation.status === 'sent' && conversation.receiver === '<?php echo $_SESSION["user_id"]; ?>';
+    
+    // Get initials for fallback avatar
+    const firstName = conversation.sender_first_name || '';
+    const lastName = conversation.sender_last_name || '';
+    const initials = (firstName.charAt(0) + lastName.charAt(0)).toUpperCase() || '?';
+    
+    // Check if profile picture exists
+    const hasProfilePicture = conversation.sender_profile_picture && conversation.sender_profile_picture.trim() !== '';
+    const profilePictureUrl = hasProfilePicture ? conversation.sender_profile_picture : '';
+    
+    const messageItem = document.createElement('div');
+    messageItem.className = `message-item p-3 md:p-4 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0 ${isUnread ? 'bg-blue-50 message-new' : 'message-read'}`;
+    messageItem.dataset.chatRoomId = conversation.chatRoomId;
+    messageItem.dataset.receiverId = conversation.sender;
+    
+    messageItem.innerHTML = `
+      <div class="flex items-start">
+        <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-yellow-600 flex items-center justify-center text-white mr-3 flex-shrink-0 overflow-hidden">
+          ${hasProfilePicture ? 
+            `<img src="${profilePictureUrl}" alt="${conversation.sender_name}" class="w-full h-full object-cover">` : 
+            `<span class="text-xs md:text-sm font-semibold">${initials}</span>`}
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex justify-between items-start">
+            <h4 class="text-sm font-medium text-gray-900 truncate">
+              ${conversation.sender_name?.charAt(0)?.toUpperCase() + conversation.sender_name?.slice(1)?.toLowerCase() ?? 'Unknown'}
+            </h4>
+            <span class="text-xs text-gray-500 whitespace-nowrap ml-2">${formattedDate}</span>
+          </div>
+          <p class="text-sm text-gray-600 truncate mt-1">${conversation.message}</p>
+          <div class="flex items-center mt-2">
+            <span class="text-xs text-gray-500 truncate">${conversation.sender_email}</span>
+            ${isUnread ? '<span class="ml-2 w-2 h-2 bg-teal-500 rounded-full flex-shrink-0"></span>' : ''}
+            ${conversation.unread_count > 0 ? 
+              `<span class="ml-auto bg-teal-500 text-white text-xs px-2 py-0.5 rounded-full flex-shrink-0">${conversation.unread_count}</span>` : ''}
+          </div>
+        </div>
+      </div>
+    `;
+    
+    messageItem.addEventListener('click', function() {
+      openConversation(this.dataset.chatRoomId, this.dataset.receiverId);
+    });
+    
+    messageList.appendChild(messageItem);
+  });
+}
       
       // Function to open conversation modal
       function openConversation(chatRoomId, receiverId) {
@@ -421,42 +431,61 @@ header("Pragma: no-cache");
       }
       
       // Function to load conversation messages
-      function loadConversation(chatRoomId) {
-        fetch(`messages/get_conversation.php?chatRoomId=${chatRoomId}`)
-          .then(response => response.json())
-          .then(data => {
-            if (data.success) {
-              // Update modal header with user info
-              modalCustomerName.textContent = capitalizeWords(data.userInfo.name);
-              modalMessageDate.textContent = data.userInfo.email;
-              
-              // Display messages
-              displayConversation(data.messages);
-              
-              // Mark this conversation as read in the list
-              const conversationElement = document.querySelector(`.message-item[data-chat-room-id="${chatRoomId}"]`);
-              if (conversationElement) {
-                conversationElement.classList.remove('message-new', 'bg-blue-50');
-                conversationElement.classList.add('message-read');
-                
-                // Update unread indicators
-                const unreadDot = conversationElement.querySelector('.bg-teal-500.rounded-full');
-                if (unreadDot) unreadDot.remove();
-                
-                const unreadBadge = conversationElement.querySelector('.bg-teal-500.text-white');
-                if (unreadBadge) unreadBadge.remove();
-              }
-              
-              // After loading conversation, refresh message list to update unread counts
-              loadAllMessages();
-            } else {
-              showError('Failed to load conversation: ' + (data.error || 'Unknown error'));
-            }
-          })
-          .catch(error => {
-            showError('Error loading conversation: ' + error.message);
-          });
+      // Function to load conversation messages
+function loadConversation(chatRoomId) {
+  fetch(`messages/get_conversation.php?chatRoomId=${chatRoomId}`)
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        // Get initials for modal header
+        const firstName = data.userInfo.first_name || '';
+        const lastName = data.userInfo.last_name || '';
+        const initials = (firstName.charAt(0) + lastName.charAt(0)).toUpperCase() || '?';
+        const hasProfilePicture = data.userInfo.profile_picture && data.userInfo.profile_picture.trim() !== '';
+        const profilePictureUrl = hasProfilePicture ? data.userInfo.profile_picture : '';
+        
+        // Update modal header with user info and avatar
+        modalCustomerName.innerHTML = `
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-yellow-600 flex items-center justify-center text-white flex-shrink-0 overflow-hidden">
+              ${hasProfilePicture ? 
+                `<img src="${profilePictureUrl}" alt="${data.userInfo.name}" class="w-full h-full object-cover">` : 
+                `<span class="text-sm md:text-base font-semibold">${initials}</span>`}
+            </div>
+            <div>
+              <div class="text-lg md:text-xl font-bold">${capitalizeWords(data.userInfo.name)}</div>
+              <div class="text-xs md:text-sm text-white text-opacity-80 mt-1">${data.userInfo.email}</div>
+            </div>
+          </div>
+        `;
+        
+        // Display messages
+        displayConversation(data.messages);
+        
+        // Mark this conversation as read in the list
+        const conversationElement = document.querySelector(`.message-item[data-chat-room-id="${chatRoomId}"]`);
+        if (conversationElement) {
+          conversationElement.classList.remove('message-new', 'bg-blue-50');
+          conversationElement.classList.add('message-read');
+          
+          // Update unread indicators
+          const unreadDot = conversationElement.querySelector('.bg-teal-500.rounded-full');
+          if (unreadDot) unreadDot.remove();
+          
+          const unreadBadge = conversationElement.querySelector('.bg-teal-500.text-white');
+          if (unreadBadge) unreadBadge.remove();
+        }
+        
+        // After loading conversation, refresh message list to update unread counts
+        loadAllMessages();
+      } else {
+        showError('Failed to load conversation: ' + (data.error || 'Unknown error'));
       }
+    })
+    .catch(error => {
+      showError('Error loading conversation: ' + error.message);
+    });
+}
       
       // Function to display conversation messages with sender labels
 function displayConversation(messages) {
@@ -519,6 +548,8 @@ function displayConversation(messages) {
   
   // Scroll to the bottom of the conversation
   modalConversation.scrollTop = modalConversation.scrollHeight;
+  
+  
 }
       
       let isSending = false;
@@ -776,6 +807,21 @@ function displayConversation(messages) {
         min-height: 44px;
       }
     }
+    
+    /* Ensure profile pictures display properly */
+.avatar-img {
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Fallback avatar styles */
+.avatar-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
   </style>
 </body>
 </html>
