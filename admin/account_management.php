@@ -2491,12 +2491,22 @@ setupPhoneValidation('editPhone');
                     }
                 });
             } else {
-                alert('Failed to fetch customer details: ' + data.message);
+                swal({
+                    title: 'Error',
+                    text: 'Failed to fetch customer details: ' + data.message,
+                    icon: 'error',
+                    button: 'OK'
+                });
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('An error occurred while fetching customer details');
+            swal({
+                title: 'Error',
+                text: 'An error occurred while fetching customer details',
+                icon: 'error',
+                button: 'OK'
+            });
         });
         
     setupEditFieldValidation('email', 'editEmail', 'emailExistsError', userId, 3);
