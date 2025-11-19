@@ -58,8 +58,8 @@ try {
                 $filter_condition = " AND (cm.status = 'sent' AND cr.userId = '$admin_id')";
                 break;
             case 'today':
-                // Use CONVERT_TZ to handle timezone conversion for today's filter
-                $filter_condition = " AND DATE(CONVERT_TZ(cm.timestamp, '+00:00', '+08:00')) = CURDATE()";
+                // Use Philippine timezone directly without CONVERT_TZ
+                $filter_condition = " AND DATE(CONVERT_TZ(cm.timestamp, '+00:00', '+08:00')) = DATE(CONVERT_TZ(NOW(), '+00:00', '+08:00'))";
                 break;
             case 'week':
                 // Adjust for week considering Philippine timezone
