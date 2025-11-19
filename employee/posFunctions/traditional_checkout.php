@@ -48,7 +48,7 @@ try {
 
     foreach ($requiredFields as $field) {
         if (empty($_POST[$field])) {
-            throw new Exception("Please fill in all required fields. Missing: $field");
+            throw new Exception("Please fill in all required fields.");
         }
     }
 
