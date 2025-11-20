@@ -393,97 +393,148 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
   
-  // Load messages function
-  function loadMessages() {
-    const searchTerm = customerSearch.value;
-    
-    // Show loading state
-    messageList.innerHTML = `
-      <div class="py-8 flex justify-center">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#008080]"></div>
-      </div>
-    `;
-    messageList.classList.remove('hidden');
-    emptyState.classList.add('hidden');
-    
-    // Fetch messages from server
-    fetch(`messages/get_messages.php?filter=${currentFilter}${searchTerm ? '&search=' + encodeURIComponent(searchTerm) : ''}`)
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          // Update message count
-          messageCount.textContent = data.count;
-          
-          // Check if there are any messages
-          if (data.count > 0) {
-            // Show message list, hide empty state
-            messageList.classList.remove('hidden');
-            emptyState.classList.add('hidden');
-            
-            // Render messages
-            renderMessages(data.conversations);
-          } else {
-            // Show empty state, hide message list
-            messageList.classList.add('hidden');
-            emptyState.classList.remove('hidden');
-          }
-        } else {
-          console.error('Error fetching messages:', data.error);
-          showError('Failed to load messages');
+// Load messages function
+function loadMessages() {
+  const searchTerm = customerSearch.value;
+  
+  // Show loading state
+  messageList.innerHTML = `
+    <div class="py-8 flex justify-center">
+      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#008080]"></div>
+    </div>
+  `;
+  messageList.classList.remove('hidden');
+  emptyState.classList.add('hidden');
+  
+  // Use your original get_messages.php endpoint
+  let url = `messages/get_messages.php`;
+  
+  // Fetch messages from server
+  fetch(url)
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        let filteredConversations = data.conversations;
+        
+        // Apply client-side filtering
+        if (currentFilter !== 'all') {
+          filteredConversations = filterConversationsByTime(filteredConversations, currentFilter);
         }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        showError('Network error. Please try again.');
-      });
-  }
+        
+        // Apply client-side search
+        if (searchTerm) {
+          filteredConversations = filterConversationsBySearch(filteredConversations, searchTerm);
+        }
+        
+        // Update message count
+        messageCount.textContent = filteredConversations.length;
+        
+        // Check if there are any messages
+        if (filteredConversations.length > 0) {
+          // Show message list, hide empty state
+          messageList.classList.remove('hidden');
+          emptyState.classList.add('hidden');
+          
+          // Render messages
+          renderMessages(filteredConversations);
+        } else {
+          // Show empty state, hide message list
+          messageList.classList.add('hidden');
+          emptyState.classList.remove('hidden');
+        }
+      } else {
+        console.error('Error fetching messages:', data.error);
+        showError('Failed to load messages');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      showError('Network error. Please try again.');
+    });
+}
+
+// Client-side filter by time
+function filterConversationsByTime(conversations, filter) {
+  const now = new Date();
+  
+  return conversations.filter(conversation => {
+    const messageDate = new Date(conversation.timestamp);
+    
+    switch (filter) {
+      case 'unread':
+        return conversation.unread_count > 0;
+      case 'today':
+        return messageDate.toDateString() === now.toDateString();
+      case 'week':
+        const startOfWeek = new Date(now);
+        startOfWeek.setDate(now.getDate() - now.getDay());
+        startOfWeek.setHours(0, 0, 0, 0);
+        return messageDate >= startOfWeek;
+      case 'month':
+        return messageDate.getMonth() === now.getMonth() && 
+               messageDate.getFullYear() === now.getFullYear();
+      default:
+        return true;
+    }
+  });
+}
+
+// Client-side search
+function filterConversationsBySearch(conversations, searchTerm) {
+  const term = searchTerm.toLowerCase();
+  return conversations.filter(conversation => {
+    return conversation.customer_name.toLowerCase().includes(term) ||
+           conversation.message.toLowerCase().includes(term);
+  });
+}
   
   // Render messages function
-  function renderMessages(conversations) {
-    let html = '';
-    
-    conversations.forEach(conversation => {
-        const isUnread = conversation.unread_count > 0;
-        const date = new Date(conversation.timestamp);
-        const formattedDate = formatDate(date);
-        
-        // Always use the customer_name instead of sender_name
-        const displayName = capitalizeWords(conversation.customer_name || 'Customer');
-                
-        html += `
-            <div class="conversation-item hover:bg-gray-50 p-3 sm:p-4 cursor-pointer transition-colors duration-200 ${isUnread ? 'bg-blue-50' : ''}" 
-         data-chatroom="${conversation.chatRoomId}" 
-         data-receiver="${conversation.receiver || conversation.sender}">
-              <div class="flex items-start gap-2 sm:gap-3">
-                <div class="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 text-sm sm:text-base">
-                  <i class="fas fa-user"></i>
+  // Render messages function - KEEP THIS ORIGINAL VERSION
+function renderMessages(conversations) {
+  let html = '';
+  
+  conversations.forEach(conversation => {
+      const isUnread = conversation.unread_count > 0;
+      const date = new Date(conversation.timestamp);
+      const formattedDate = formatDate(date);
+      
+      // Always use the customer_name instead of sender_name
+      const displayName = capitalizeWords(conversation.customer_name || 'Customer');
+              
+      html += `
+          <div class="conversation-item hover:bg-gray-50 p-3 sm:p-4 cursor-pointer transition-colors duration-200 ${isUnread ? 'bg-blue-50' : ''}" 
+       data-chatroom="${conversation.chatRoomId}" 
+       data-receiver="${conversation.receiver || conversation.sender}">
+            <div class="flex items-start gap-2 sm:gap-3">
+              <div class="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 text-sm sm:text-base">
+                <i class="fas fa-user"></i>
+              </div>
+              <div class="flex-grow min-w-0">
+                <div class="flex justify-between items-start gap-2 flex-wrap sm:flex-nowrap">
+                  <h3 class="font-semibold text-gray-800 text-sm sm:text-base truncate ${isUnread ? 'font-bold' : ''}">${displayName}</h3>
+                  <span class="text-xs text-gray-500 whitespace-nowrap">${formattedDate}</span>
                 </div>
-                <div class="flex-grow min-w-0">
-                  <div class="flex justify-between items-start gap-2 flex-wrap sm:flex-nowrap">
-                    <h3 class="font-semibold text-gray-800 text-sm sm:text-base truncate ${isUnread ? 'font-bold' : ''}">${displayName}</h3>
-                    <span class="text-xs text-gray-500 whitespace-nowrap">${formattedDate}</span>
-                  </div>
-                  <div class="flex justify-between items-center mt-1 gap-2">
-                    <p class="text-xs sm:text-sm text-gray-600 truncate">${conversation.message}</p>
-                    ${isUnread ? `<span class="inline-flex items-center justify-center w-5 h-5 text-xs font-semibold text-white bg-[#008080] rounded-full flex-shrink-0">${conversation.unread_count}</span>` : ''}
-                  </div>
+                <div class="flex justify-between items-center mt-1 gap-2">
+                  <p class="text-xs sm:text-sm text-gray-600 truncate">${conversation.message}</p>
+                  ${isUnread ? `<span class="inline-flex items-center justify-center w-5 h-5 text-xs font-semibold text-white bg-[#008080] rounded-full flex-shrink-0">${conversation.unread_count}</span>` : ''}
                 </div>
               </div>
             </div>
-        `;
-    });
-    
-    messageList.innerHTML = html;
-    
-    // Add click event listeners to conversation items
-    document.querySelectorAll('.conversation-item').forEach(item => {
-        item.addEventListener('click', function() {
-            const chatRoomId = this.dataset.chatroom;
-            const receiverId = this.dataset.receiver;
-            openConversation(chatRoomId, receiverId);
-        });
-    });
-} 
+          </div>
+      `;
+  });
+  
+  messageList.innerHTML = html;
+  
+  // Add click event listeners to conversation items
+  document.querySelectorAll('.conversation-item').forEach(item => {
+      item.addEventListener('click', function() {
+          const chatRoomId = this.dataset.chatroom;
+          const receiverId = this.dataset.receiver;
+          openConversation(chatRoomId, receiverId);
+      });
+  });
+}
 
 function capitalizeWords(str) {
   return str.replace(/\b\w/g, char => char.toUpperCase());
