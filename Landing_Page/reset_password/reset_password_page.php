@@ -315,18 +315,19 @@ $user = $result->fetch_assoc();
                     if (data.status === 'success') {
                         swal({
                             title: "Success",
-                            text: "Password reset successfully",
+                            text: "Password reset successfully. You can reset your password again after 30 days.",
                             icon: "success",
                             button: "Login"
                         }).then(() => {
                             window.location.href = '../login.php';
                         });
                     } else {
+                        // Show specific error messages including the monthly limit message
                         swal({
                             title: "Error",
                             text: data.message || "An error occurred while resetting your password",
                             icon: "error",
-                            button: "Try Again"
+                            button: "OK"
                         });
                     }
                 })
@@ -334,7 +335,7 @@ $user = $result->fetch_assoc();
                     // Reset button state
                     submitButton.innerHTML = originalButtonText;
                     submitButton.disabled = false;
-
+                
                     swal({
                         title: "Error",
                         text: "An unexpected error occurred",
@@ -392,6 +393,32 @@ $user = $result->fetch_assoc();
         
         // Hide loader when the page is fully loaded
         window.addEventListener('load', hideLoader);
+        
+        // Add this function to your script section
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg text-white z-50 transform translate-x-full transition-transform duration-300 ${
+                type === 'error' ? 'bg-red-600' : 
+                type === 'success' ? 'bg-green-600' : 
+                'bg-blue-600'
+            }`;
+            toast.textContent = message;
+            
+            document.body.appendChild(toast);
+            
+            // Animate in
+            setTimeout(() => {
+                toast.classList.remove('translate-x-full');
+            }, 100);
+            
+            // Remove after 5 seconds
+            setTimeout(() => {
+                toast.classList.add('translate-x-full');
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300);
+            }, 5000);
+        }
     </script>
 
     <!-- Add these styles to your head section -->

@@ -91,14 +91,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // Check if email exists in users table
-    $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
+    // Check if email exists in users table and check reset limit
+    $stmt = $conn->prepare("SELECT id, last_password_reset FROM users WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
         $user = $result->fetch_assoc();
+        
+        // Check if user has reset password within the last month (PH time)
+        if ($user['last_password_reset']) {
+            $lastReset = new DateTime($user['last_password_reset'], new DateTimeZone('Asia/Manila'));
+            $now = new DateTime('now', new DateTimeZone('Asia/Manila'));
+            $interval = $lastReset->diff($now);
+            
+            // Check if less than 30 days have passed
+            if ($interval->days < 30) {
+                $daysLeft = 30 - $interval->days;
+                echo json_encode([
+                    'status' => 'error',
+                    'message' => "You can only reset your password once per month. You can request a new reset in $daysLeft day(s)."
+                ]);
+                exit;
+            }
+        }
         
         // Generate reset token
         $reset_token = generateResetToken($user['id']);
@@ -123,4 +140,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     exit;
 }
+
 ?>

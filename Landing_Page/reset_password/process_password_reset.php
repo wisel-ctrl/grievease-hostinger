@@ -1,6 +1,8 @@
 <?php
 require_once '../../db_connect.php';
 
+date_default_timezone_set('Asia/Manila');
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Retrieve and sanitize inputs
     $token = $_POST['token'] ?? null;
@@ -34,8 +36,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // Validate token
-    $stmt = $conn->prepare("SELECT id, email FROM users WHERE reset_token = ? AND reset_token_expiry > NOW()");
+    // Validate token and check reset limit
+    $stmt = $conn->prepare("SELECT id, email, last_password_reset FROM users WHERE reset_token = ? AND reset_token_expiry > NOW()");
     $stmt->bind_param("s", $token);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -50,16 +52,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $user = $result->fetch_assoc();
 
+    // Check if user has reset password within the last month (PH time)
+    if ($user['last_password_reset']) {
+        $lastReset = new DateTime($user['last_password_reset'], new DateTimeZone('Asia/Manila'));
+        $now = new DateTime('now', new DateTimeZone('Asia/Manila'));
+        $interval = $lastReset->diff($now);
+        
+        // Check if less than 30 days have passed
+        if ($interval->days < 30) {
+            $daysLeft = 30 - $interval->days;
+            echo json_encode([
+                'status' => 'error',
+                'message' => "You can only reset your password once per month. Please try again in $daysLeft day(s)."
+            ]);
+            exit;
+        }
+    }
+
     // Hash the new password
     $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
 
-    // Update password and clear reset token
+    // Update password, clear reset token, and set last reset timestamp
+    $current_time = date('Y-m-d H:i:s');
     $stmt = $conn->prepare("UPDATE users SET 
         password = ?, 
         reset_token = NULL, 
-        reset_token_expiry = NULL 
+        reset_token_expiry = NULL,
+        last_password_reset = ?
         WHERE id = ?");
-    $stmt->bind_param("si", $hashed_password, $user['id']);
+    $stmt->bind_param("ssi", $hashed_password, $current_time, $user['id']);
 
     if ($stmt->execute()) {
         echo json_encode([
