@@ -77,11 +77,38 @@ try {
     }
 
     // Handle search parameter
-    if (isset($_GET['search']) && !empty($_GET['search'])) {
-        $search = $conn->real_escape_string($_GET['search']);
-        $search_condition = " AND (u.first_name LIKE '%$search%' OR u.last_name LIKE '%$search%' OR u.email LIKE '%$search%')";
-    }
-
+   // Handle search parameter
+if (isset($_GET['search']) && !empty($_GET['search'])) {
+    $search = $conn->real_escape_string($_GET['search']);
+    
+    $search_condition = " AND (
+        (
+            SELECT CONCAT(u.first_name, ' ', u.last_name)
+            FROM chat_recipients cr2
+            JOIN users u ON cr2.userId = u.id
+            WHERE cr2.chatId IN (
+                SELECT chatId 
+                FROM chat_messages 
+                WHERE chatRoomId = cm.chatRoomId
+            )
+            AND u.user_type = 3
+            LIMIT 1
+        ) LIKE '%$search%'
+        OR
+        (
+            SELECT u.email
+            FROM chat_recipients cr2
+            JOIN users u ON cr2.userId = u.id
+            WHERE cr2.chatId IN (
+                SELECT chatId 
+                FROM chat_messages 
+                WHERE chatRoomId = cm.chatRoomId
+            )
+            AND u.user_type = 3
+            LIMIT 1
+        ) LIKE '%$search%'
+    )";
+}
     // Get the most recent message for each chat room where admin is a participant
 $query = "
     SELECT 

@@ -167,7 +167,6 @@ header("Pragma: no-cache");
       <div class="px-4 md:px-6 py-4 md:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
         <div>
           <h3 class="text-lg md:text-xl font-bold text-white flex items-center" id="modal-customer-name">Customer Name</h3>
-          <p class="text-xs md:text-sm text-white text-opacity-80 mt-1" id="modal-message-date">Date</p>
         </div>
       </div>
       
@@ -447,14 +446,16 @@ function loadConversation(chatRoomId) {
         // Update modal header with user info and avatar
         modalCustomerName.innerHTML = `
           <div class="flex items-center gap-3">
-            <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-yellow-600 flex items-center justify-center text-white flex-shrink-0 overflow-hidden">
+            <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gradient-to-r from-sidebar-accent to-darkgold flex items-center justify-center text-white flex-shrink-0 overflow-hidden shadow-md">
               ${hasProfilePicture ? 
                 `<img src="${profilePictureUrl}" alt="${data.userInfo.name}" class="w-full h-full object-cover">` : 
                 `<span class="text-sm md:text-base font-semibold">${initials}</span>`}
             </div>
             <div>
-              <div class="text-lg md:text-xl font-bold">${capitalizeWords(data.userInfo.name)}</div>
-              <div class="text-xs md:text-sm text-white text-opacity-80 mt-1">${data.userInfo.email}</div>
+              <div class="text-lg md:text-xl font-bold text-white">${capitalizeWords(data.userInfo.name)}</div>
+              <div class="text-xs md:text-sm text-white text-opacity-90 mt-1 flex items-center gap-2">
+                <span>${data.userInfo.email}</span>
+              </div>
             </div>
           </div>
         `;
