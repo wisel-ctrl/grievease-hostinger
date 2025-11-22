@@ -2971,69 +2971,6 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeSortingAndFiltering();
 });
 
-document.addEventListener('DOMContentLoaded', function() {
-    // Set max date for lifeplan date of birth to today
-    const today = new Date();
-    const todayFormatted = today.toISOString().split('T')[0];
-    document.getElementById('lifeplanDateOfBirth').max = todayFormatted;
-    
-    // Contact number validation - only numbers
-    // Contact number validation - Philippine mobile number starting with 09
-    const contactNumberInput = document.getElementById('lifeplanContactNumber');
-        if (contactNumberInput) {
-    contactNumberInput.addEventListener('input', function() {
-        // Remove any non-digit characters
-        this.value = this.value.replace(/\D/g, '');
-        
-        // Ensure it starts with 09 and has exactly 11 digits
-        if (this.value.length > 0 && !this.value.startsWith('09')) {
-            this.value = '09' + this.value.slice(2);
-        }
-        
-        // Limit to 11 characters
-        if (this.value.length > 11) {
-            this.value = this.value.slice(0, 11);
-        }
-    });
-    
-    contactNumberInput.addEventListener('paste', function(e) {
-        e.preventDefault();
-        const pastedText = (e.clipboardData || window.clipboardData).getData('text');
-        const cleanedText = pastedText.replace(/\D/g, ''); // Remove non-digits
-        
-        // Ensure it starts with 09
-        let finalText = cleanedText;
-        if (cleanedText.length > 0 && !cleanedText.startsWith('09')) {
-            finalText = '09' + cleanedText.slice(2);
-        }
-        
-        // Limit to 11 characters
-        document.execCommand('insertText', false, finalText.slice(0, 11));
-    });
-    
-    // Add blur validation
-    contactNumberInput.addEventListener('blur', function() {
-        if (this.value.length !== 11 || !this.value.startsWith('09')) {
-            this.setCustomValidity('Please enter a valid 11-digit Philippine mobile number starting with 09');
-        } else {
-            this.setCustomValidity('');
-        }
-    });
-    
-    // Set pattern attribute for HTML5 validation
-    contactNumberInput.pattern = "09[0-9]{9}";
-    contactNumberInput.title = "Please enter a valid Philippine mobile number starting with 09 (11 digits total)";
-    }
-    
-    
-    
-    // Add pattern validation for contact number (optional)
-    if (contactNumberInput) {
-        contactNumberInput.pattern = '\\d*'; // Only digits allowed
-        contactNumberInput.title = 'Please enter numbers only (no spaces or symbols)';
-    }
-});
-// Lifeplan GCash Receipt Upload Preview
 // Lifeplan GCash Receipt Upload Handler (similar changes)
 document.getElementById('lifeplanGcashReceipt')?.addEventListener('change', function() {
     const file = this.files[0];
@@ -4653,63 +4590,6 @@ function resetFilters() {
     console.log('=== FILTERS RESET ===');
 }
 
-// Date validation for traditional booking form
-document.addEventListener('DOMContentLoaded', function() {
-    // Get today's date in YYYY-MM-DD format
-    const today = new Date();
-    const todayFormatted = today.toISOString().split('T')[0];
-    
-    // Set max date for date of birth and date of death to today
-    document.getElementById('traditionalDateOfBirth').max = todayFormatted;
-    document.getElementById('traditionalDateOfDeath').max = todayFormatted;
-    
-    // Set min date for date of burial to tomorrow
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const tomorrowFormatted = tomorrow.toISOString().split('T')[0];
-    document.getElementById('traditionalDateOfBurial').min = tomorrowFormatted;
-    
-    // Validate date of birth is before date of death
-    document.getElementById('traditionalDateOfBirth').addEventListener('change', function() {
-        const dob = this.value;
-        const dod = document.getElementById('traditionalDateOfDeath').value;
-        
-        if (dob && dod && dob > dod) {
-            alert('Date of birth must be before date of death');
-            this.value = '';
-        }
-    });
-    
-    // Validate date of death is after date of birth and before date of burial
-    document.getElementById('traditionalDateOfDeath').addEventListener('change', function() {
-        const dod = this.value;
-        const dob = document.getElementById('traditionalDateOfBirth').value;
-        const dobInput = document.getElementById('traditionalDateOfBirth');
-        
-        if (dob && dod < dob) {
-            alert('Date of death must be after date of birth');
-            this.value = '';
-            return;
-        }
-        
-        const burialDate = document.getElementById('traditionalDateOfBurial').value;
-        if (burialDate && dod > burialDate) {
-            alert('Date of death must be before date of burial');
-            this.value = '';
-        }
-    });
-    
-    // Validate date of burial is after date of death
-    document.getElementById('traditionalDateOfBurial').addEventListener('change', function() {
-        const burialDate = this.value;
-        const dod = document.getElementById('traditionalDateOfDeath').value;
-        
-        if (dod && burialDate < dod) {
-            alert('Date of burial must be after date of death');
-            this.value = '';
-        }
-    });
-});
 
 // Add this to your existing JavaScript
 // Update your existing resize handler to include lifeplan modal
@@ -5281,51 +5161,282 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
-
-// Disable future dates in all date pickers
+// ===== COMPREHENSIVE DATE VALIDATION - REPLACE ALL EXISTING DATE CODE =====
 document.addEventListener('DOMContentLoaded', function() {
-    // Get today's date
+    // Part 1: Lifeplan contact number validation (keep this part)
     const today = new Date();
     const todayFormatted = today.toISOString().split('T')[0];
     
-    // Disable future dates for all date inputs
-    const dateInputs = [
-        'traditionalDateOfBirth',
-        'traditionalDateOfDeath', 
-        'traditionalDateOfBurial',
-        'lifeplanDateOfBirth'
-    ];
+    // Set max date for lifeplan date of birth to today
+    document.getElementById('lifeplanDateOfBirth').max = todayFormatted;
     
-    dateInputs.forEach(inputId => {
-        const input = document.getElementById(inputId);
-        if (input) {
-            input.max = todayFormatted;
+    // Contact number validation - Philippine mobile number starting with 09
+    const contactNumberInput = document.getElementById('lifeplanContactNumber');
+    if (contactNumberInput) {
+        contactNumberInput.addEventListener('input', function() {
+            // Remove any non-digit characters
+            this.value = this.value.replace(/\D/g, '');
             
-            // Add validation to prevent manual entry of future dates
-            input.addEventListener('change', function() {
-                if (this.value > todayFormatted) {
-                    Swal.fire({
-                        title: 'Invalid Date',
-                        text: 'Future dates are not allowed. Please select a valid date.',
-                        icon: 'warning',
-                        confirmButtonColor: '#d97706'
-                    });
-                    this.value = '';
+            // Ensure it starts with 09 and has exactly 11 digits
+            if (this.value.length > 0 && !this.value.startsWith('09')) {
+                this.value = '09' + this.value.slice(2);
+            }
+            
+            // Limit to 11 characters
+            if (this.value.length > 11) {
+                this.value = this.value.slice(0, 11);
+            }
+        });
+        
+        contactNumberInput.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+            const cleanedText = pastedText.replace(/\D/g, ''); // Remove non-digits
+            
+            // Ensure it starts with 09
+            let finalText = cleanedText;
+            if (cleanedText.length > 0 && !cleanedText.startsWith('09')) {
+                finalText = '09' + cleanedText.slice(2);
+            }
+            
+            // Limit to 11 characters
+            document.execCommand('insertText', false, finalText.slice(0, 11));
+        });
+        
+        // Add blur validation
+        contactNumberInput.addEventListener('blur', function() {
+            if (this.value.length !== 11 || !this.value.startsWith('09')) {
+                this.setCustomValidity('Please enter a valid 11-digit Philippine mobile number starting with 09');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+        
+        // Set pattern attribute for HTML5 validation
+        contactNumberInput.pattern = "09[0-9]{9}";
+        contactNumberInput.title = "Please enter a valid Philippine mobile number starting with 09 (11 digits total)";
+    }
+
+    // Part 2: ENHANCED TRADITIONAL FORM DATE VALIDATION (Date of Birth Optional, Date of Death Required)
+    const dobInput = document.getElementById('traditionalDateOfBirth');
+    const dodInput = document.getElementById('traditionalDateOfDeath');
+    const burialInput = document.getElementById('traditionalDateOfBurial');
+    
+    if (dobInput && dodInput && burialInput) {
+        // Function to update date constraints in real-time
+        function updateDateConstraints() {
+            // Set max dates for all fields to today (no future dates allowed)
+            dobInput.max = todayFormatted;
+            dodInput.max = todayFormatted;
+            burialInput.max = todayFormatted;
+            
+            // Get selected date of birth (if any)
+            const dobValue = dobInput.value;
+            
+            if (dobValue) {
+                // If date of birth is provided: date of death must be >= date of birth
+                const dobDate = new Date(dobValue);
+                dodInput.min = dobValue;
+                
+                // If current dod value is invalid (before dob), clear it with notification
+                if (dodInput.value && new Date(dodInput.value) < dobDate) {
+                    const oldValue = dodInput.value;
+                    dodInput.value = '';
+                    if (oldValue) {
+                        showDateValidationError('Date of death cannot be before date of birth. The invalid date has been cleared.');
+                    }
                 }
+            } else {
+                // If no date of birth, remove any min constraint on date of death
+                dodInput.min = '';
+            }
+            
+            // Date of death is always enabled (required field)
+            dodInput.disabled = false;
+            
+            // Update burial date constraints based on date of death
+            const dodValue = dodInput.value;
+            if (dodValue) {
+                const dodDate = new Date(dodValue);
+                const minBurialDate = new Date(dodDate);
+                const minBurialFormatted = minBurialDate.toISOString().split('T')[0];
+                
+                // Burial must be after date of death
+                burialInput.min = minBurialFormatted;
+                burialInput.disabled = false;
+                
+                // If current burial value is invalid, clear it
+                if (burialInput.value && new Date(burialInput.value) <= dodDate) {
+                    const oldValue = burialInput.value;
+                    burialInput.value = '';
+                    if (oldValue) {
+                        showDateValidationError('Date of burial must be after date of death. The invalid date has been cleared.');
+                    }
+                }
+            } else {
+                // If no date of death, burial has no constraints but is disabled until death date is set
+                burialInput.min = '';
+                burialInput.disabled = true;
+                if (burialInput.value) {
+                    burialInput.value = '';
+                }
+            }
+        }
+        
+        // Function to show validation errors
+        function showDateValidationError(message) {
+            Swal.fire({
+                title: 'Invalid Date',
+                text: message,
+                icon: 'warning',
+                confirmButtonColor: '#d97706',
+                timer: 4000,
+                showConfirmButton: true
             });
         }
-    });
-    
-    // Additional validation for burial date (should be after death date but still not future)
-    const burialDateInput = document.getElementById('traditionalDateOfBurial');
-    const deathDateInput = document.getElementById('traditionalDateOfDeath');
-    
-    if (burialDateInput && deathDateInput) {
-        deathDateInput.addEventListener('change', function() {
-            if (this.value) {
-                burialDateInput.min = this.value;
-                // Ensure burial date max is still today
-                burialDateInput.max = todayFormatted;
+        
+        // Real-time event listeners for traditional form dates
+        dobInput.addEventListener('change', function() {
+            updateDateConstraints();
+            
+            // Additional validation when date of birth is changed
+            if (this.value && dodInput.value) {
+                const dobDate = new Date(this.value);
+                const dodDate = new Date(dodInput.value);
+                
+                if (dodDate < dobDate) {
+                    dodInput.value = '';
+                    showDateValidationError('Date of death has been cleared because it was before the date of birth');
+                }
+            }
+        });
+        
+        dodInput.addEventListener('change', function() {
+            // Validate date of death against date of birth (if provided)
+            if (this.value && dobInput.value) {
+                const dobDate = new Date(dobInput.value);
+                const dodDate = new Date(this.value);
+                
+                if (dodDate < dobDate) {
+                    this.value = '';
+                    showDateValidationError('Date of death cannot be before date of birth');
+                    return;
+                }
+            }
+            
+            // Validate date of death is not in the future
+            if (this.value && new Date(this.value) > new Date()) {
+                this.value = '';
+                showDateValidationError('Date of death cannot be in the future');
+                return;
+            }
+            
+            updateDateConstraints();
+            
+            // Additional validation for burial date
+            if (this.value && burialInput.value) {
+                const dodDate = new Date(this.value);
+                const burialDate = new Date(burialInput.value);
+                
+                if (burialDate < dodDate) {
+                    burialInput.value = '';
+                    showDateValidationError('Date of burial has been cleared because it must be after date of death');
+                }
+            }
+        });
+        
+        burialInput.addEventListener('change', function() {
+            if (this.value && dodInput.value) {
+                const dodDate = new Date(dodInput.value);
+                const burialDate = new Date(this.value);
+                
+                if (burialDate < dodDate) {
+                    this.value = '';
+                    showDateValidationError('Date of burial must be after date of death');
+                }
+            }
+            
+            // Validate burial date is not in the future (if you want to restrict it)
+            // if (this.value && new Date(this.value) > new Date()) {
+            //     this.value = '';
+            //     showDateValidationError('Date of burial cannot be in the future');
+            // }
+        });
+        
+        // Input event listeners for real-time validation
+        dobInput.addEventListener('input', updateDateConstraints);
+        dodInput.addEventListener('input', updateDateConstraints);
+        
+        // Initialize constraints on page load
+        updateDateConstraints();
+        
+        // Also update constraints when the traditional modal is opened
+        document.addEventListener('click', function(event) {
+            if (event.target.classList.contains('selectPackageBtn')) {
+                // Small delay to ensure modal is fully loaded
+                setTimeout(updateDateConstraints, 100);
+            }
+        });
+        
+        // Form submission validation
+        document.getElementById('traditionalBookingForm').addEventListener('submit', function(e) {
+            const dobValue = dobInput.value;
+            const dodValue = dodInput.value;
+            const burialValue = burialInput.value;
+            
+            let hasError = false;
+            let errorMessage = '';
+            
+            // Validate required date of death
+            if (!dodValue) {
+                hasError = true;
+                errorMessage = 'Date of death is required';
+            }
+            // Validate date of death is not in future
+            else if (new Date(dodValue) > new Date()) {
+                hasError = true;
+                errorMessage = 'Date of death cannot be in the future';
+            }
+            // Validate date relationships (only if date of birth is provided)
+            else if (dobValue && new Date(dodValue) < new Date(dobValue)) {
+                hasError = true;
+                errorMessage = 'Date of death cannot be before date of birth';
+            }
+            // Validate burial date (if provided)
+            else if (burialValue && dodValue && new Date(burialValue) < new Date(dodValue)) {
+                hasError = true;
+                errorMessage = 'Date of burial must be after date of death';
+            }
+            
+            if (hasError) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Invalid Dates',
+                    text: errorMessage,
+                    icon: 'error',
+                    confirmButtonColor: '#d97706'
+                });
+            }
+        });
+    }
+
+    // Part 3: Lifeplan date of birth validation
+    const lifeplanDobInput = document.getElementById('lifeplanDateOfBirth');
+    if (lifeplanDobInput) {
+        lifeplanDobInput.max = todayFormatted;
+        
+        lifeplanDobInput.addEventListener('change', function() {
+            const selectedDate = new Date(this.value);
+            const today = new Date();
+            
+            if (selectedDate > today) {
+                this.value = '';
+                Swal.fire({
+                    title: 'Invalid Date',
+                    text: 'Date of birth cannot be in the future',
+                    icon: 'warning',
+                    confirmButtonColor: '#d97706'
+                });
             }
         });
     }
