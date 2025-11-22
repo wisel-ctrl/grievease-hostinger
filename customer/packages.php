@@ -4563,7 +4563,7 @@ function resetFilters() {
     restoreOriginalOrder();
     
     // Hide the "no results" message
-    document.getElementById('no-results').classelist.add('hidden');
+    document.getElementById('no-results').classList.add('hidden');
     
     console.log('=== FILTERS RESET ===');
 }
@@ -4574,61 +4574,29 @@ document.addEventListener('DOMContentLoaded', function() {
     const today = new Date();
     const todayFormatted = today.toISOString().split('T')[0];
     
+    // Get all date input elements
+    const dobInput = document.getElementById('traditionalDateOfBirth');
+    const dodInput = document.getElementById('traditionalDateOfDeath');
+    const burialInput = document.getElementById('traditionalDateOfBurial');
+    
     // Set max date for date of birth and date of death to today
-    document.getElementById('traditionalDateOfBirth').max = todayFormatted;
-    document.getElementById('traditionalDateOfDeath').max = todayFormatted;
+    dobInput.max = todayFormatted;
+    dodInput.max = todayFormatted;
     
     // Set min date for date of burial to tomorrow
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
     const tomorrowFormatted = tomorrow.toISOString().split('T')[0];
-    document.getElementById('traditionalDateOfBurial').min = tomorrowFormatted;
+    burialInput.min = tomorrowFormatted;
     
-    // Validate date of birth is before date of death
-    document.getElementById('traditionalDateOfBirth').addEventListener('change', function() {
-        const dob = this.value;
-        const dod = document.getElementById('traditionalDateOfDeath').value;
-        
-        if (dob && dod && dob > dod) {
-            alert('Date of birth must be before date of death');
-            this.value = '';
-        }
-    });
-    
-    // Validate date of death is after date of birth and before date of burial
-    document.getElementById('traditionalDateOfDeath').addEventListener('change', function() {
-        const dod = this.value;
-        const dob = document.getElementById('traditionalDateOfBirth').value;
-        const dobInput = document.getElementById('traditionalDateOfBirth');
-        
-        if (dob && dod < dob) {
-            alert('Date of death must be after date of birth');
-            this.value = '';
-            return;
-        }
-        
-        const burialDate = document.getElementById('traditionalDateOfBurial').value;
-        if (burialDate && dod > burialDate) {
-            alert('Date of death must be before date of burial');
-            this.value = '';
-        }
-    });
-    
-    // Validate date of burial is after date of death
-    document.getElementById('traditionalDateOfBurial').addEventListener('change', function() {
-        const burialDate = this.value;
-        const dod = document.getElementById('traditionalDateOfDeath').value;
-        
-        if (dod && burialDate < dod) {
-            alert('Date of burial must be after date of death');
-            this.value = '';
-        }
-    });
-});
-
-// Add this to your existing JavaScript
-// Update your existing resize handler to include lifeplan modal
-window.addEventListener('resize', function() {
+    // Function to show error message using SweetAlert
+    function showError(message) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Invalid Date',
+            text: message,
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'OK'
     const traditionalModal = document.getElementById('traditionalModal');
     const lifeplanModal = document.getElementById('lifeplanModal');
     
