@@ -13,7 +13,22 @@
     $first_name = $row['first_name'];
     $last_name = $row['last_name'];
     $email = $row['email'];
-    $profile_picture = $row['profile_picture'] ? '../' . $row['profile_picture'] : '../default.png';
+        $initials = '';
+        if (!empty($first_name) && !empty($last_name)) {
+            $initials = strtoupper(substr($first_name, 0, 1) . substr($last_name, 0, 1));
+        } elseif (!empty($first_name)) {
+            $initials = strtoupper(substr($first_name, 0, 1));
+        } elseif (!empty($last_name)) {
+            $initials = strtoupper(substr($last_name, 0, 1));
+        }
+        
+        // Check if profile picture exists, otherwise use initials
+        if ($row['profile_picture'] && file_exists('../' . $row['profile_picture'])) {
+            $profile_picture = '../' . $row['profile_picture'];
+        } else {
+            $profile_picture = '../default.png';
+            // We'll use CSS to show initials when default image is used
+        }
   ?>
 
 <?php
@@ -244,7 +259,10 @@ if ($count_result->num_rows > 0) {
     <!-- User Profile -->
     <div class="flex items-center px-5 py-4 border-b border-sidebar-border bg-gradient-to-r from-navy to-primary">
         <div class="w-10 h-10 rounded-full bg-yellow-600 flex items-center justify-center shadow-md overflow-hidden">
-            <img src="<?php echo htmlspecialchars($profile_picture); ?>" alt="Profile Picture" class="w-full h-full object-cover">
+            <img src="<?php echo htmlspecialchars($profile_picture); ?>" alt="Profile Picture" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="w-full h-full bg-yellow-600 flex items-center justify-center text-white font-bold" style="display: none;">
+                <?php echo htmlspecialchars($initials); ?>
+            </div>
         </div>
         <div class="ml-3">
             <div class="text-sm font-medium text-sidebar-text">
