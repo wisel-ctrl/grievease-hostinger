@@ -4564,46 +4564,77 @@ document.addEventListener('DOMContentLoaded', function() {
     const tomorrowFormatted = tomorrow.toISOString().split('T')[0];
     document.getElementById('traditionalDateOfBurial').min = tomorrowFormatted;
     
-    // Validate date of birth is before date of death
-    document.getElementById('traditionalDateOfBirth').addEventListener('change', function() {
-        const dob = this.value;
-        const dod = document.getElementById('traditionalDateOfDeath').value;
-        
-        if (dob && dod && dob > dod) {
-            alert('Date of birth must be before date of death');
-            this.value = '';
-        }
-    });
     
-    // Validate date of death is after date of birth and before date of burial
-    document.getElementById('traditionalDateOfDeath').addEventListener('change', function() {
-        const dod = this.value;
-        const dob = document.getElementById('traditionalDateOfBirth').value;
-        const dobInput = document.getElementById('traditionalDateOfBirth');
-        
-        if (dob && dod < dob) {
-            alert('Date of death must be after date of birth');
-            this.value = '';
-            return;
-        }
-        
-        const burialDate = document.getElementById('traditionalDateOfBurial').value;
-        if (burialDate && dod > burialDate) {
-            alert('Date of death must be before date of burial');
-            this.value = '';
-        }
-    });
+    // --- Complete UPDATED Code to ADD ---
+
+/**
+ * Validates the chronological order of Date of Birth, Date of Death, and Date of Burial.
+ * Ensures: DOB < DOD < Burial.
+ */
+function validateTraditionalDates() {
+    const dobInput = document.getElementById('traditionalDateOfBirth');
+    const dodInput = document.getElementById('traditionalDateOfDeath');
+    const burialInput = document.getElementById('traditionalDateOfBurial');
+
+    const dob = dobInput ? dobInput.value : null;
+    const dod = dodInput ? dodInput.value : null;
+    const burialDate = burialInput ? burialInput.value : null;
+
+    let errorMessage = '';
+    let invalidInput = null;
+
+    // Check 1: Date of Death must be after Date of Birth (DOD > DOB)
+    if (dob && dod && dod < dob) {
+        errorMessage = 'Date of death must be after date of birth.';
+        invalidInput = dodInput;
+    } 
     
-    // Validate date of burial is after date of death
-    document.getElementById('traditionalDateOfBurial').addEventListener('change', function() {
-        const burialDate = this.value;
-        const dod = document.getElementById('traditionalDateOfDeath').value;
-        
-        if (dod && burialDate < dod) {
-            alert('Date of burial must be after date of death');
-            this.value = '';
-        }
-    });
+    // Check 2: Date of Burial must be after Date of Death (Burial > DOD)
+    else if (dod && burialDate && burialDate < dod) {
+        errorMessage = 'Date of burial must be after date of death.';
+        invalidInput = burialInput;
+    }
+    
+    // Check 3: Date of Burial must also be after Date of Birth (Burial > DOB)
+    // This is a necessary safety check even if Check 1 and 2 pass.
+    else if (dob && burialDate && burialDate < dob) {
+        errorMessage = 'Date of burial must be after date of birth.';
+        invalidInput = burialInput;
+    }
+
+    if (errorMessage) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Chronological Error',
+            text: errorMessage,
+            confirmButtonColor: '#d97706' // Adjust color if necessary
+        }).then(() => {
+             // Use a timeout to ensure the focus/value clearing happens after the Swal closes
+             setTimeout(() => {
+                 if (invalidInput) {
+                     invalidInput.value = ''; // Clear the invalid date
+                     invalidInput.focus();     // Return focus to the problematic field
+                 }
+             }, 100); // 100ms delay to allow SweetAlert2 to fully close
+        });
+        return false;
+    }
+    
+    return true;
+}
+
+// Attach the consolidated validator to the 'change' event for all three date fields
+// This ensures validation runs no matter which date is updated.
+if (document.getElementById('traditionalDateOfBirth')) {
+    document.getElementById('traditionalDateOfBirth').addEventListener('change', validateTraditionalDates);
+}
+if (document.getElementById('traditionalDateOfDeath')) {
+    document.getElementById('traditionalDateOfDeath').addEventListener('change', validateTraditionalDates);
+}
+if (document.getElementById('traditionalDateOfBurial')) {
+    document.getElementById('traditionalDateOfBurial').addEventListener('change', validateTraditionalDates);
+}
+// --------------------------------------------------------
 });
 
 // Add this to your existing JavaScript
