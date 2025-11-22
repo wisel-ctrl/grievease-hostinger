@@ -292,6 +292,27 @@ if ($result_gcash) {
             aspect-ratio: 3/2; /* Maintain landscape aspect ratio */
         }
     }
+    
+    /* Enhanced date input styling for traditional funeral page */
+input[type="date"]:disabled {
+    background-color: #f9fafb;
+    color: #6b7280;
+    cursor: not-allowed;
+    border-color: #d1d5db;
+}
+
+.date-field-hint {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-top: 0.25rem;
+    font-style: italic;
+}
+
+/* Visual feedback for date constraints */
+.date-constraint-active {
+    border-color: #d97706 !important;
+    background-color: #fffbeb !important;
+}
     </style>
     <script>
         function toggleMenu() {
@@ -1985,21 +2006,7 @@ if (dodField) {
     });
 }
     
-    if (burialField) {
-        // Set min date to tomorrow
-        const today = new Date();
-        const tomorrow = new Date(today);
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        burialField.min = formatDate(tomorrow);
-        
-        burialField.addEventListener('change', function() {
-            if (dodField.value && new Date(this.value) < new Date(dodField.value)) {
-                alert('Date of burial must be after date of death');
-                this.value = '';
-            }
-            updateDateConstraints();
-        });
-    }
+    
     
     function updateDateConstraints() {
         // Update date of death constraints based on date of birth
@@ -3468,6 +3475,206 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
             // If no notifications, the normal link behavior will proceed
+        });
+    }
+});
+
+// ===== CORRECTED DATE VALIDATION FOR TRADITIONAL FUNERAL =====
+document.addEventListener('DOMContentLoaded', function() {
+    const dobInput = document.getElementById('traditionalDateOfBirth');
+    const dodInput = document.getElementById('traditionalDateOfDeath');
+    const burialInput = document.getElementById('traditionalDateOfBurial');
+    
+    if (dobInput && dodInput && burialInput) {
+        // Function to update date constraints in real-time
+        function updateDateConstraints() {
+            const today = new Date();
+            const todayFormatted = today.toISOString().split('T')[0];
+            
+            // Set max dates for all fields to today (no future dates allowed)
+            dobInput.max = todayFormatted;
+            dodInput.max = todayFormatted;
+            burialInput.max = todayFormatted;
+            
+            // Get selected date of birth (if any)
+            const dobValue = dobInput.value;
+            
+            if (dobValue) {
+                // If date of birth is provided: date of death must be >= date of birth
+                const dobDate = new Date(dobValue);
+                dodInput.min = dobValue;
+                
+                // If current dod value is invalid (before dob), clear it with notification
+                if (dodInput.value && new Date(dodInput.value) < dobDate) {
+                    const oldValue = dodInput.value;
+                    dodInput.value = '';
+                    if (oldValue) {
+                        showDateValidationError('Date of death cannot be before date of birth. The invalid date has been cleared.');
+                    }
+                }
+            } else {
+                // If no date of birth, remove any min constraint on date of death
+                dodInput.min = '';
+            }
+            
+            // Date of death is always enabled (required field)
+            dodInput.disabled = false;
+            
+            // Update burial date constraints based on date of death
+            const dodValue = dodInput.value;
+            if (dodValue) {
+                const dodDate = new Date(dodValue);
+                // Burial can be on the same day as death or after - NO +1 day!
+                burialInput.min = dodValue; // Same day allowed
+                burialInput.disabled = false;
+                
+                // If current burial value is invalid (before death), clear it
+                if (burialInput.value && new Date(burialInput.value) < dodDate) {
+                    const oldValue = burialInput.value;
+                    burialInput.value = '';
+                    if (oldValue) {
+                        showDateValidationError('Date of burial cannot be before date of death. The invalid date has been cleared.');
+                    }
+                }
+            } else {
+                // If no date of death, burial has no constraints but is disabled until death date is set
+                burialInput.min = '';
+                burialInput.disabled = true;
+                if (burialInput.value) {
+                    burialInput.value = '';
+                }
+            }
+        }
+        
+        // Function to show validation errors
+        function showDateValidationError(message) {
+            Swal.fire({
+                title: 'Invalid Date',
+                text: message,
+                icon: 'warning',
+                confirmButtonColor: '#d97706',
+                timer: 4000,
+                showConfirmButton: true
+            });
+        }
+        
+        // Real-time event listeners for traditional form dates
+        dobInput.addEventListener('change', function() {
+            updateDateConstraints();
+            
+            // Additional validation when date of birth is changed
+            if (this.value && dodInput.value) {
+                const dobDate = new Date(this.value);
+                const dodDate = new Date(dodInput.value);
+                
+                if (dodDate < dobDate) {
+                    dodInput.value = '';
+                    showDateValidationError('Date of death has been cleared because it was before the date of birth');
+                }
+            }
+        });
+        
+        dodInput.addEventListener('change', function() {
+            // Validate date of death against date of birth (if provided)
+            if (this.value && dobInput.value) {
+                const dobDate = new Date(dobInput.value);
+                const dodDate = new Date(this.value);
+                
+                if (dodDate < dobDate) {
+                    this.value = '';
+                    showDateValidationError('Date of death cannot be before date of birth');
+                    return;
+                }
+            }
+            
+            // Validate date of death is not in the future
+            if (this.value && new Date(this.value) > new Date()) {
+                this.value = '';
+                showDateValidationError('Date of death cannot be in the future');
+                return;
+            }
+            
+            updateDateConstraints();
+            
+            // Additional validation for burial date - ONLY check if burial is BEFORE death
+            if (this.value && burialInput.value) {
+                const dodDate = new Date(this.value);
+                const burialDate = new Date(burialInput.value);
+                
+                if (burialDate < dodDate) {
+                    burialInput.value = '';
+                    showDateValidationError('Date of burial has been cleared because it cannot be before date of death');
+                }
+            }
+        });
+        
+        burialInput.addEventListener('change', function() {
+            if (this.value && dodInput.value) {
+                const dodDate = new Date(dodInput.value);
+                const burialDate = new Date(this.value);
+                
+                // ONLY validate if burial is BEFORE death - same day is allowed
+                if (burialDate < dodDate) {
+                    this.value = '';
+                    showDateValidationError('Date of burial cannot be before date of death');
+                }
+            }
+        });
+        
+        // Input event listeners for real-time validation
+        dobInput.addEventListener('input', updateDateConstraints);
+        dodInput.addEventListener('input', updateDateConstraints);
+        
+        // Initialize constraints on page load
+        updateDateConstraints();
+        
+        // Also update constraints when the traditional modal is opened
+        document.addEventListener('click', function(event) {
+            if (event.target.classList.contains('selectPackageBtn')) {
+                // Small delay to ensure modal is fully loaded
+                setTimeout(updateDateConstraints, 100);
+            }
+        });
+        
+        // Form submission validation
+        document.getElementById('traditionalBookingForm').addEventListener('submit', function(e) {
+            const dobValue = dobInput.value;
+            const dodValue = dodInput.value;
+            const burialValue = burialInput.value;
+            
+            let hasError = false;
+            let errorMessage = '';
+            
+            // Validate required date of death
+            if (!dodValue) {
+                hasError = true;
+                errorMessage = 'Date of death is required';
+            }
+            // Validate date of death is not in future
+            else if (new Date(dodValue) > new Date()) {
+                hasError = true;
+                errorMessage = 'Date of death cannot be in the future';
+            }
+            // Validate date relationships (only if date of birth is provided)
+            else if (dobValue && new Date(dodValue) < new Date(dobValue)) {
+                hasError = true;
+                errorMessage = 'Date of death cannot be before date of birth';
+            }
+            // Validate burial date (if provided) - ONLY check if burial is BEFORE death
+            else if (burialValue && dodValue && new Date(burialValue) < new Date(dodValue)) {
+                hasError = true;
+                errorMessage = 'Date of burial cannot be before date of death';
+            }
+            
+            if (hasError) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Invalid Dates',
+                    text: errorMessage,
+                    icon: 'error',
+                    confirmButtonColor: '#d97706'
+                });
+            }
         });
     }
 });
