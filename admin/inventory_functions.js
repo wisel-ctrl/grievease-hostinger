@@ -551,18 +551,62 @@ function openAddInventoryModal(branchId) {
   document.getElementById('addInventoryModal').classList.remove('hidden');
   document.body.classList.add('overflow-hidden');
 
-  const radioButtons = document.querySelectorAll('input[name="branch"]');
-  radioButtons.forEach(radio => {
-    if (radio.value === branchId.toString()) {
-      radio.checked = true;
-      const customRadio = radio.nextElementSibling;
-      if (customRadio) {
-        customRadio.classList.add('peer-checked:bg-gold', 'peer-checked:border-darkgold');
+  // Clear any previous selections and errors
+  const checkboxes = document.querySelectorAll('input[name="branches[]"]');
+  const branchError = document.getElementById('branchError');
+  
+  if (branchError) {
+    branchError.classList.add('hidden');
+  }
+
+  // If branchId is provided, select that specific branch
+  if (branchId) {
+    checkboxes.forEach(checkbox => {
+      if (checkbox.value === branchId.toString()) {
+        checkbox.checked = true;
+        // Update visual state for custom checkbox
+        const customCheckbox = checkbox.nextElementSibling;
+        if (customCheckbox) {
+          customCheckbox.classList.add('bg-gold', 'border-darkgold');
+          customCheckbox.classList.remove('bg-white', 'border-gray-300');
+          // Show checkmark
+          const checkmark = customCheckbox.querySelector('svg');
+          if (checkmark) {
+            checkmark.classList.remove('hidden');
+          }
+        }
+      } else {
+        checkbox.checked = false;
+        // Reset visual state for other checkboxes
+        const customCheckbox = checkbox.nextElementSibling;
+        if (customCheckbox) {
+          customCheckbox.classList.remove('bg-gold', 'border-darkgold');
+          customCheckbox.classList.add('bg-white', 'border-gray-300');
+          // Hide checkmark
+          const checkmark = customCheckbox.querySelector('svg');
+          if (checkmark) {
+            checkmark.classList.add('hidden');
+          }
+        }
       }
-    } else {
-      radio.checked = false;
-    }
-  });
+    });
+  } else {
+    // If no branchId provided, clear all selections
+    checkboxes.forEach(checkbox => {
+      checkbox.checked = false;
+      // Reset visual state
+      const customCheckbox = checkbox.nextElementSibling;
+      if (customCheckbox) {
+        customCheckbox.classList.remove('bg-gold', 'border-darkgold');
+        customCheckbox.classList.add('bg-white', 'border-gray-300');
+        // Hide checkmark
+        const checkmark = customCheckbox.querySelector('svg');
+        if (checkmark) {
+          checkmark.classList.add('hidden');
+        }
+      }
+    });
+  }
 }
 
 function closeAddInventoryModal() {
