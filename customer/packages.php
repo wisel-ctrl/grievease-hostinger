@@ -2716,7 +2716,7 @@ function removeGcash() {
                                         <i class="fas fa-trash-alt mr-1"></i> Remove file
                                     </button>
                                     
-                                    <input type="file" id="comakerIdImage" name="comakerIdImage" accept=".jpg,.jpeg,.png" class="hidden" required>
+                                    <input type="file" id="comakerIdImage" name="comakerIdImage" accept=".jpg,.jpeg,.png" class="hidden">
                                 </div>
                                 <p class="text-xs text-gray-500 mt-1">Accepted formats: JPG, JPEG, PNG</p>
                             </div>
@@ -3384,6 +3384,31 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('traditionalBookingForm').addEventListener('submit', function(e) {
         e.preventDefault();
         
+         const gcashReceiptInput = document.getElementById('traditionalGcashReceipt');
+
+        // Check if GCash receipt is uploaded
+        if (!gcashReceiptInput.files || gcashReceiptInput.files.length === 0) {
+            Swal.fire({
+                title: 'Missing Payment Proof',
+                text: 'Please upload your GCash payment receipt.',
+                icon: 'warning',
+                confirmButtonColor: '#d97706'
+            });
+            return;
+        }
+        
+        // Validate file types for GCash receipt
+        const gcashFile = gcashReceiptInput.files[0];
+        const validImageTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+        if (!validImageTypes.includes(gcashFile.type)) {
+            Swal.fire({
+                title: 'Invalid File Type',
+                text: 'Please upload a valid image file (JPG, JPEG, PNG) for payment proof.',
+                icon: 'error',
+                confirmButtonColor: '#d97706'
+            });
+            return;
+        }
         
         
         const formData = new FormData(this);
@@ -4103,69 +4128,147 @@ function closeAllModals() {
     
 
     // Lifeplan Form submission
-    document.getElementById('lifeplanBookingForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        combineLifeplanAddress();
-
-        const formData = new FormData(this);
-        const formElement = this;
-
+    // Lifeplan Form submission - FIXED VERSION
+document.getElementById('lifeplanBookingForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    // Define constants here for Lifeplan
+    const VALID_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png'];
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+    
+    // VALIDATE REQUIRED FILES FOR LIFEPLAN
+    const lifeplanGcashReceiptInput = document.getElementById('lifeplanGcashReceipt');
+    const comakerIdImageInput = document.getElementById('comakerIdImage');
+    
+    // Check if GCash receipt is uploaded
+    if (!lifeplanGcashReceiptInput.files || lifeplanGcashReceiptInput.files.length === 0) {
         Swal.fire({
-            title: 'Confirm Lifeplan Booking',
-            text: 'Are you sure you want to proceed with this lifeplan?',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#d97706',
-            cancelButtonColor: '#6b7280',
-            confirmButtonText: 'Yes, proceed',
-            cancelButtonText: 'Cancel'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Show loading indicator
-                Swal.fire({
-                    title: 'Processing Lifeplan',
-                    html: 'Please wait while we process your lifeplan...',
-                    allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    }
-                });
-
-                // Send data to backend using fetch
-                fetch('booking/lifeplan_booking.php', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => response.json()) // Expecting JSON response
-                .then(data => {
-                    Swal.close();
-
-                    if (data.success) {
-                        // Success handling
-                        document.getElementById('lifeplanModal').classList.add('hidden');
-                        formElement.reset();
-
-                        const detailsSection = document.querySelector('#lifeplanModal .details-section');
-                        const formSection = document.querySelector('#lifeplanModal .form-section');
-
-                        detailsSection.classList.remove('hidden');
-                        formSection.classList.add('hidden');
-
-                        showNotification('Lifeplan Created', 'Your lifeplan has been successfully created.', '#');
-                    } else {
-                        // Show error from backend
-                        Swal.fire('Error', data.message || 'Something went wrong.', 'error');
-                    }
-                })
-                .catch(error => {
-                    Swal.close();
-                    console.error('Fetch error:', error);
-                    Swal.fire('Error', 'An error occurred while processing your request.', 'error');
-                });
-            }
+            title: 'Missing Payment Proof',
+            text: 'Please upload your GCash payment receipt for the first payment.',
+            icon: 'warning',
+            confirmButtonColor: '#d97706'
         });
+        return;
+    }
+    
+    // Check if Comaker ID Image is uploaded
+    if (!comakerIdImageInput.files || comakerIdImageInput.files.length === 0) {
+        Swal.fire({
+            title: 'Missing Co-Maker ID',
+            text: 'Please upload the Co-Maker\'s valid ID image.',
+            icon: 'warning',
+            confirmButtonColor: '#d97706'
+        });
+        return;
+    }
+    
+    // Validate GCash receipt file type
+    const gcashFile = lifeplanGcashReceiptInput.files[0];
+    if (!VALID_IMAGE_TYPES.includes(gcashFile.type)) {
+        Swal.fire({
+            title: 'Invalid Payment Proof',
+            text: 'Please upload a valid image file (JPG, JPEG, PNG) for payment proof.',
+            icon: 'error',
+            confirmButtonColor: '#d97706'
+        });
+        return;
+    }
+    
+    // Validate Comaker ID file type
+    const comakerIdFile = comakerIdImageInput.files[0];
+    if (!VALID_IMAGE_TYPES.includes(comakerIdFile.type)) {
+        Swal.fire({
+            title: 'Invalid Co-Maker ID',
+            text: 'Please upload a valid image file (JPG, JPEG, PNG) for Co-Maker ID.',
+            icon: 'error',
+            confirmButtonColor: '#d97706'
+        });
+        return;
+    }
+    
+    // Validate file sizes
+    if (gcashFile.size > MAX_FILE_SIZE) {
+        Swal.fire({
+            title: 'File Too Large',
+            text: 'Payment proof image must be less than 5MB.',
+            icon: 'error',
+            confirmButtonColor: '#d97706'
+        });
+        return;
+    }
+    
+    if (comakerIdFile.size > MAX_FILE_SIZE) {
+        Swal.fire({
+            title: 'File Too Large',
+            text: 'Co-Maker ID image must be less than 5MB.',
+            icon: 'error',
+            confirmButtonColor: '#d97706'
+        });
+        return;
+    }
+    
+    combineLifeplanAddress();
+
+    const formData = new FormData(this);
+    const formElement = this;
+
+    Swal.fire({
+        title: 'Confirm Lifeplan Booking',
+        text: 'Are you sure you want to proceed with this lifeplan?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#d97706',
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: 'Yes, proceed',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Show loading indicator
+            Swal.fire({
+                title: 'Processing Lifeplan',
+                html: 'Please wait while we process your lifeplan...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            fetch('booking/lifeplan_booking.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                Swal.close();
+
+                if (data.success) {
+                    // Success handling
+                    document.getElementById('lifeplanModal').classList.add('hidden');
+                    formElement.reset();
+
+                    const detailsSection = document.querySelector('#lifeplanModal .details-section');
+                    const formSection = document.querySelector('#lifeplanModal .form-section');
+
+                    detailsSection.classList.remove('hidden');
+                    formSection.classList.add('hidden');
+
+                    showNotification('Lifeplan Created', 'Your lifeplan has been successfully created.', '#');
+                    
+                    // Reset file previews
+                    hideLifeplanGcashPreview();
+                    hideComakerIdPreview();
+                } else {
+                    Swal.fire('Error', data.message || 'Something went wrong.', 'error');
+                }
+            })
+            .catch(error => {
+                Swal.close();
+                console.error('Fetch error:', error);
+                Swal.fire('Error', 'An error occurred while processing your request.', 'error');
+            });
+        }
     });
+});
 
 
 
@@ -5175,6 +5278,55 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
             // If no notifications, the normal link behavior will proceed
+        });
+    }
+});
+
+// Disable future dates in all date pickers
+document.addEventListener('DOMContentLoaded', function() {
+    // Get today's date
+    const today = new Date();
+    const todayFormatted = today.toISOString().split('T')[0];
+    
+    // Disable future dates for all date inputs
+    const dateInputs = [
+        'traditionalDateOfBirth',
+        'traditionalDateOfDeath', 
+        'traditionalDateOfBurial',
+        'lifeplanDateOfBirth'
+    ];
+    
+    dateInputs.forEach(inputId => {
+        const input = document.getElementById(inputId);
+        if (input) {
+            input.max = todayFormatted;
+            
+            // Add validation to prevent manual entry of future dates
+            input.addEventListener('change', function() {
+                if (this.value > todayFormatted) {
+                    Swal.fire({
+                        title: 'Invalid Date',
+                        text: 'Future dates are not allowed. Please select a valid date.',
+                        icon: 'warning',
+                        confirmButtonColor: '#d97706'
+                    });
+                    this.value = '';
+                }
+            });
+        }
+    });
+    
+    // Additional validation for burial date (should be after death date but still not future)
+    const burialDateInput = document.getElementById('traditionalDateOfBurial');
+    const deathDateInput = document.getElementById('traditionalDateOfDeath');
+    
+    if (burialDateInput && deathDateInput) {
+        deathDateInput.addEventListener('change', function() {
+            if (this.value) {
+                burialDateInput.min = this.value;
+                // Ensure burial date max is still today
+                burialDateInput.max = todayFormatted;
+            }
         });
     }
 });
