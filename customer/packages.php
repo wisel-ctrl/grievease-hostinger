@@ -4548,29 +4548,7 @@ function resetFilters() {
     console.log('=== FILTERS RESET ===');
 }
 
-// Date validation for traditional booking form
-document.addEventListener('DOMContentLoaded', function() {
-    // Get today's date in YYYY-MM-DD format
-    const today = new Date();
-    const todayFormatted = today.toISOString().split('T')[0];
-    
-    // Set max date for date of birth and date of death to today
-    document.getElementById('traditionalDateOfBirth').max = todayFormatted;
-    document.getElementById('traditionalDateOfDeath').max = todayFormatted;
-    
-    // Set min date for date of burial to tomorrow
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const tomorrowFormatted = tomorrow.toISOString().split('T')[0];
-    document.getElementById('traditionalDateOfBurial').min = tomorrowFormatted;
-    
-    
-    // --- Complete UPDATED Code to ADD ---
 
-/**
- * Validates the chronological order of Date of Birth, Date of Death, and Date of Burial.
- * Ensures: DOB < DOD < Burial.
- */
 function validateTraditionalDates() {
     const dobInput = document.getElementById('traditionalDateOfBirth');
     const dodInput = document.getElementById('traditionalDateOfDeath');
@@ -4634,8 +4612,7 @@ if (document.getElementById('traditionalDateOfDeath')) {
 if (document.getElementById('traditionalDateOfBurial')) {
     document.getElementById('traditionalDateOfBurial').addEventListener('change', validateTraditionalDates);
 }
-// --------------------------------------------------------
-});
+// ---
 
 // Add this to your existing JavaScript
 // Update your existing resize handler to include lifeplan modal
