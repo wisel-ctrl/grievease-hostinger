@@ -669,21 +669,28 @@ document.getElementById('addInventoryForm').addEventListener('submit', function(
   // Create FormData object
   const formData = new FormData(this);
 
-  // Get form values
+  // Get form values for confirmation dialog
   const itemName = document.getElementById('itemName').value;
   const category = document.getElementById('category').value;
   const quantity = document.getElementById('quantity').value;
   const unitPriceVal = document.getElementById('unitPrice').value;
   const sellingPriceVal = document.getElementById('sellingPrice').value;
 
-  // Add selected branches to form data
+  // Remove any existing branches from formData to avoid duplication
+  // This is the key fix - remove existing branches array
+  formData.delete('branches[]');
+  
+  // Add selected branches to form data correctly
   selectedBranches.forEach(branch => {
     formData.append('branches[]', branch);
   });
 
-  formData.append('category_id', category);
-  formData.append('price', unitPrice);
-  formData.append('sellingPrice', sellingPrice);
+  // Update other form data with proper values
+  formData.set('category_id', category);
+  formData.set('price', unitPrice.toString());
+  formData.set('sellingPrice', sellingPrice.toString());
+
+  
 
   Swal.fire({
     title: 'Confirm Item Addition',
@@ -693,6 +700,7 @@ document.getElementById('addInventoryForm').addEventListener('submit', function(
         <p><strong>Item Name:</strong> ${itemName}</p>
         <p><strong>Branches:</strong> ${selectedBranches.map(b => getBranchName(b)).join(', ')}</p>
         <p><strong>Quantity per Branch:</strong> ${quantity}</p>
+        <p><strong>Total Quantity:</strong> ${quantity * selectedBranches.length}</p>
         <p><strong>Unit Price:</strong> ₱${unitPriceVal}</p>
         <p><strong>Selling Price:</strong> ₱${sellingPriceVal}</p>
       </div>
@@ -779,6 +787,17 @@ function getBranchName(branchId) {
   }
   return branchId;
 }
+
+// Helper function to get branch names for display
+  // function getBranchName(branchId) {
+  //   const checkbox = document.querySelector(`input[name="branches[]"][value="${branchId}"]`);
+  //   if (checkbox) {
+  //     const label = checkbox.closest('label');
+  //     const span = label.querySelector('span');
+  //     return span ? span.textContent : `Branch ${branchId}`;
+  //   }
+  //   return `Branch ${branchId}`;
+  // }
 
 function showNotification(title, message, type) {
   alert(`${title}: ${message}`);
