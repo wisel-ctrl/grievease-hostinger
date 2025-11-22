@@ -1199,15 +1199,34 @@ function capitalizeWords(str) {
                         <div class="flex flex-wrap -mx-2 mb-3">
                             <div class="w-full sm:w-1/3 px-2 mb-3 sm:mb-0">
                                 <label for="traditionalDateOfBirth" class="block text-sm font-medium text-navy mb-1">Date of Birth</label>
-                                <input type="date" id="traditionalDateOfBirth" name="dateOfBirth" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                <input 
+                                    type="date" 
+                                    id="traditionalDateOfBirth" 
+                                    name="dateOfBirth" 
+                                    max="<?php echo date('Y-m-d'); ?>" 
+                                    class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600"
+                                >
                             </div>
                             <div class="w-full sm:w-1/3 px-2 mb-3 sm:mb-0">
-                                <label for="traditionalDateOfDeath" class="block text-sm font-medium text-navy mb-1">Date of Death <span class="text-red-500">*</label>
-                                <input type="date" id="traditionalDateOfDeath" name="dateOfDeath" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                <label for="traditionalDateOfDeath" class="block text-sm font-medium text-navy mb-1">Date of Death <span class="text-red-500">*</span></label>
+                                <input 
+                                    type="date" 
+                                    id="traditionalDateOfDeath" 
+                                    name="dateOfDeath" 
+                                    max="<?php echo date('Y-m-d'); ?>" 
+                                    required 
+                                    class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600"
+                                >
                             </div>
                             <div class="w-full sm:w-1/3 px-2">
                                 <label for="traditionalDateOfBurial" class="block text-sm font-medium text-navy mb-1">Date of Burial</label>
-                                <input type="date" id="traditionalDateOfBurial" name="dateOfBurial" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                <input 
+                                    type="date" 
+                                    id="traditionalDateOfBurial" 
+                                    name="dateOfBurial" 
+                                    min="<?php echo date('Y-m-d', strtotime('+1 day')); ?>" 
+                                    class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600"
+                                >
                             </div>
                         </div>
                         
@@ -4555,125 +4574,56 @@ document.addEventListener('DOMContentLoaded', function() {
     const today = new Date();
     const todayFormatted = today.toISOString().split('T')[0];
     
-    // Get references to date inputs
-    const dobInput = document.getElementById('traditionalDateOfBirth');
-    const dodInput = document.getElementById('traditionalDateOfDeath');
-    const burialInput = document.getElementById('traditionalDateOfBurial');
-    
     // Set max date for date of birth and date of death to today
-    dobInput.max = todayFormatted;
-    dodInput.max = todayFormatted;
+    document.getElementById('traditionalDateOfBirth').max = todayFormatted;
+    document.getElementById('traditionalDateOfDeath').max = todayFormatted;
     
-    // Function to update burial date minimum based on DOD
-    function updateBurialMinDate() {
-        if (dodInput.value) {
-            const dod = new Date(dodInput.value);
-            const nextDay = new Date(dod);
-            nextDay.setDate(dod.getDate() + 1);
-            const nextDayFormatted = nextDay.toISOString().split('T')[0];
-            burialInput.min = nextDayFormatted;
-            
-            // If current burial date is before DOD, clear it
-            if (burialInput.value && burialInput.value <= dodInput.value) {
-                burialInput.value = '';
-            }
-        } else {
-            // If no DOD, set min to tomorrow
-            const tomorrow = new Date();
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            burialInput.min = tomorrow.toISOString().split('T')[0];
-        }
-    }
-    
-    // Initial setup for burial date
-    updateBurialMinDate();
+    // Set min date for date of burial to tomorrow
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowFormatted = tomorrow.toISOString().split('T')[0];
+    document.getElementById('traditionalDateOfBurial').min = tomorrowFormatted;
     
     // Validate date of birth is before date of death
-    dobInput.addEventListener('change', function() {
+    document.getElementById('traditionalDateOfBirth').addEventListener('change', function() {
         const dob = this.value;
-        const dod = dodInput.value;
+        const dod = document.getElementById('traditionalDateOfDeath').value;
         
-        if (dob && dod && dob >= dod) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Invalid Date',
-                text: 'Date of birth must be before date of death',
-                confirmButtonColor: '#3085d6',
-            });
+        if (dob && dod && dob > dod) {
+            alert('Date of birth must be before date of death');
             this.value = '';
         }
     });
     
-    // Validate date of death is after date of birth and update burial date min
-    dodInput.addEventListener('change', function() {
+    // Validate date of death is after date of birth and before date of burial
+    document.getElementById('traditionalDateOfDeath').addEventListener('change', function() {
         const dod = this.value;
-        const dob = dobInput.value;
+        const dob = document.getElementById('traditionalDateOfBirth').value;
+        const dobInput = document.getElementById('traditionalDateOfBirth');
         
-        if (dob && dod <= dob) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Invalid Date',
-                text: 'Date of death must be after date of birth',
-                confirmButtonColor: '#3085d6',
-            });
+        if (dob && dod < dob) {
+            alert('Date of death must be after date of birth');
             this.value = '';
             return;
         }
         
-        // Update burial date minimum when DOD changes
-        updateBurialMinDate();
-    });
-    
-    // Validate date of burial is after date of death
-    burialInput.addEventListener('change', function() {
-        const burialDate = this.value;
-        const dod = dodInput.value;
-        
-        if (dod && burialDate <= dod) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Invalid Date',
-                text: 'Date of burial must be after date of death',
-                confirmButtonColor: '#3085d6',
-            });
+        const burialDate = document.getElementById('traditionalDateOfBurial').value;
+        if (burialDate && dod > burialDate) {
+            alert('Date of death must be before date of burial');
             this.value = '';
         }
     });
     
-    // Add form submission validation
-    const bookingForm = document.querySelector('form[action="booking/insert_booking.php"]');
-    if (bookingForm) {
-        bookingForm.addEventListener('submit', function(e) {
-            const dob = dobInput.value;
-            const dod = dodInput.value;
-            const burial = burialInput.value;
-            
-            // Only validate if fields are filled
-            if (dob && dod && dob >= dod) {
-                e.preventDefault();
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Invalid Date Range',
-                    text: 'Date of birth must be before date of death',
-                    confirmButtonColor: '#3085d6',
-                });
-                return false;
-            }
-            
-            if (dod && burial && burial <= dod) {
-                e.preventDefault();
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Invalid Date Range',
-                    text: 'Date of burial must be after date of death',
-                    confirmButtonColor: '#3085d6',
-                });
-                return false;
-            }
-            
-            return true;
-        });
-    }
+    // Validate date of burial is after date of death
+    document.getElementById('traditionalDateOfBurial').addEventListener('change', function() {
+        const burialDate = this.value;
+        const dod = document.getElementById('traditionalDateOfDeath').value;
+        
+        if (dod && burialDate < dod) {
+            alert('Date of burial must be after date of death');
+            this.value = '';
+        }
+    });
 });
 
 // Add this to your existing JavaScript
