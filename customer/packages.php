@@ -1199,15 +1199,34 @@ function capitalizeWords(str) {
                         <div class="flex flex-wrap -mx-2 mb-3">
                             <div class="w-full sm:w-1/3 px-2 mb-3 sm:mb-0">
                                 <label for="traditionalDateOfBirth" class="block text-sm font-medium text-navy mb-1">Date of Birth</label>
-                                <input type="date" id="traditionalDateOfBirth" name="dateOfBirth" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                <input 
+                                    type="date" 
+                                    id="traditionalDateOfBirth" 
+                                    name="dateOfBirth" 
+                                    max="<?php echo date('Y-m-d'); ?>" 
+                                    class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600"
+                                >
                             </div>
                             <div class="w-full sm:w-1/3 px-2 mb-3 sm:mb-0">
-                                <label for="traditionalDateOfDeath" class="block text-sm font-medium text-navy mb-1">Date of Death <span class="text-red-500">*</label>
-                                <input type="date" id="traditionalDateOfDeath" name="dateOfDeath" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                <label for="traditionalDateOfDeath" class="block text-sm font-medium text-navy mb-1">Date of Death <span class="text-red-500">*</span></label>
+                                <input 
+                                    type="date" 
+                                    id="traditionalDateOfDeath" 
+                                    name="dateOfDeath" 
+                                    max="<?php echo date('Y-m-d'); ?>" 
+                                    required 
+                                    class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600"
+                                >
                             </div>
                             <div class="w-full sm:w-1/3 px-2">
                                 <label for="traditionalDateOfBurial" class="block text-sm font-medium text-navy mb-1">Date of Burial</label>
-                                <input type="date" id="traditionalDateOfBurial" name="dateOfBurial" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                <input 
+                                    type="date" 
+                                    id="traditionalDateOfBurial" 
+                                    name="dateOfBurial" 
+                                    min="<?php echo date('Y-m-d', strtotime('+1 day')); ?>" 
+                                    class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600"
+                                >
                             </div>
                         </div>
                         
