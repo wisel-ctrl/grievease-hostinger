@@ -163,7 +163,7 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
   <!-- Header with breadcrumb and welcome message -->
   <div class="flex justify-between items-center mb-6 bg-white p-5 rounded-lg shadow-sidebar">
     <div>
-      <h1 class="text-2xl font-bold text-sidebar-text">History</h1>
+      <h1 class="text-2xl font-bold text-sidebar-text">Sales History/Transaction</h1>
     </div>
     <div class="relative">
       <button id="branchFilterToggle" class="px-4 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover transition-colors">
