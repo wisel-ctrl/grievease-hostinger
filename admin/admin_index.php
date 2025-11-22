@@ -1492,7 +1492,7 @@ function formatRevenue($revenue) {
             <i class="fas fa-wallet mr-1 sm:mr-2 text-xs sm:text-sm"></i>
             <span>Profit</span>
           </div>
-          <div class="text-lg sm:text-xl font-bold text-gray-800 break-all">₱<?php echo number_format($paeteMetrics['profit'], 2); ?></div>
+          <div class="text-lg sm:text-xl font-bold text-gray-800 break-all"><?php echo formatRevenue($paeteMetrics['profit']); ?></div>
           <div class="mt-1 sm:mt-2 text-xs text-gray-500">
   Current month
 </div>
