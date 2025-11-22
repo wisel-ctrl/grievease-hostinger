@@ -4272,6 +4272,13 @@ function saveStaffAssignment() {
         });
 }
 
+document.addEventListener('DOMContentLoaded', function() {
+    const toggleButton = document.getElementById('toggleAllStaffBtn');
+    if (toggleButton) {
+        toggleButton.addEventListener('click', toggleAllStaff);
+    }
+});
+
 // Function to open the Complete Service Modal
 function openCompleteModal(serviceId) {
   // Set service ID and default values
