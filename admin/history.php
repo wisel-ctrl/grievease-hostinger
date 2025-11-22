@@ -2148,6 +2148,14 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
       <form id="assignStaffForm" class="space-y-3 sm:space-y-4">
         <input type="hidden" id="assignServiceId">
         
+        <!-- Toggle All Button -->
+        <div class="flex justify-end mb-2">
+          <button type="button" id="toggleAllStaffBtn" class="px-4 py-2 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-all duration-200 flex items-center">
+            <i class="fas fa-check-square mr-2"></i>
+            Check All Staff
+          </button>
+        </div>
+        
         <?php
         // This will be populated by JavaScript when the modal opens
         $branch_id = 0;
@@ -2179,7 +2187,7 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
                     $employeeId = htmlspecialchars($employee['employee_id']);
                     
                     echo '<div class="flex items-center">';
-                    echo '<input type="checkbox" id="'.$positionLower.$count.'" name="assigned_staff[]" value="'.$employeeId.'" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">';
+                    echo '<input type="checkbox" id="'.$positionLower.$count.'" name="assigned_staff[]" value="'.$employeeId.'" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent staff-checkbox">';
                     echo '<label for="'.$positionLower.$count.'" class="text-gray-700">'.$fullName.'</label>';
                     echo '</div>';
                     
@@ -4012,10 +4020,15 @@ function saveServiceChanges() {
   });
 }
 
-// Function to open the Assign Staff Modal
+let allStaffChecked = false;
+
 function openAssignStaffModal(salesId) {
     // Set the service ID in the form
     document.getElementById('assignServiceId').value = salesId;
+    
+    // Reset the toggle state when modal opens
+    allStaffChecked = false;
+    updateToggleButton();
     
     // Show the modal
     document.getElementById('assignStaffModal').classList.remove('hidden');
@@ -4097,7 +4110,7 @@ function populateEmployeeSection(sectionId, position, employees) {
             });
 
             html += `<div class="flex items-center">
-                <input type="checkbox" id="${checkboxId}" name="assigned_staff[]" value="${employee.employeeID}" class="mr-2">
+                <input type="checkbox" id="${checkboxId}" name="assigned_staff[]" value="${employee.employeeID}" class="mr-2 staff-checkbox">
                 <label for="${checkboxId}" class="text-gray-700">${fullName}</label>
             </div>`;
             
@@ -4116,6 +4129,44 @@ function populateEmployeeSection(sectionId, position, employees) {
     console.log('Section populated successfully');
     console.groupEnd();
 }
+
+// Function to toggle all staff checkboxes
+function toggleAllStaff() {
+    console.log('Toggling all staff checkboxes...');
+    
+    // Get all checkboxes with the class 'staff-checkbox'
+    const checkboxes = document.querySelectorAll('.staff-checkbox');
+    console.log(`Found ${checkboxes.length} staff checkboxes`);
+    
+    // Toggle all checkboxes based on current state
+    const newState = !allStaffChecked;
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = newState;
+    });
+    
+    // Update the global state
+    allStaffChecked = newState;
+    
+    // Update button text and icon
+    updateToggleButton();
+    
+    console.log(`All staff checkboxes ${newState ? 'checked' : 'unchecked'}`);
+}
+
+// Function to update the toggle button text and icon
+function updateToggleButton() {
+    const button = document.getElementById('toggleAllStaffBtn');
+    if (allStaffChecked) {
+        button.innerHTML = '<i class="fas fa-times-circle mr-2"></i>Uncheck All Staff';
+        button.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+        button.classList.add('bg-gray-500', 'hover:bg-gray-600');
+    } else {
+        button.innerHTML = '<i class="fas fa-check-square mr-2"></i>Check All Staff';
+        button.classList.remove('bg-gray-500', 'hover:bg-gray-600');
+        button.classList.add('bg-blue-500', 'hover:bg-blue-600');
+    }
+}
+
 
 function closeAssignStaffModal() {
     document.getElementById('assignStaffModal').classList.add('hidden');
