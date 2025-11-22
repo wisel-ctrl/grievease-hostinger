@@ -1270,6 +1270,15 @@ function time_elapsed_string($datetime, $full = false) {
     if (!$full) $string = array_slice($string, 0, 1);
     return $string ? implode(', ', $string) . ' ago' : 'just now';
 }
+
+function formatRevenue($revenue) {
+    if ($revenue < 0) {
+        return '<span style="color: red;">(P' . number_format(abs($revenue), 2) . ')</span>';
+    } else {
+        return '₱' . number_format($revenue, 2);
+    }
+}
+
 ?>
   </div>
 
@@ -1414,10 +1423,10 @@ function time_elapsed_string($datetime, $full = false) {
             <i class="fas fa-wallet mr-1 sm:mr-2 text-xs sm:text-sm"></i>
             <span>Profit</span>
           </div>
-          <div class="text-lg sm:text-xl font-bold text-gray-800 break-all">₱<?php echo number_format($pilaMetrics['profit'], 2); ?></div>
+          <div class="text-lg sm:text-xl font-bold text-gray-800 break-all"><?php echo formatRevenue($pilaMetrics['profit']); ?></div>
           <div class="mt-1 sm:mt-2 text-xs text-gray-500">
-  Current month
-</div>
+            Current month
+          </div>
         </div>
         
         <!-- Margin -->
