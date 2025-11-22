@@ -2977,64 +2977,22 @@ document.addEventListener('DOMContentLoaded', function() {
     const todayFormatted = today.toISOString().split('T')[0];
     document.getElementById('lifeplanDateOfBirth').max = todayFormatted;
     
-    // START FIX: Apply absolute date constraints for Traditional Funeral Dates
-    const deceasedDOB = document.getElementById('traditionalDeceasedDateOfBirth');
-    const dateOfDeath = document.getElementById('traditionalDateOfDeath');
-    const dateOfBurial = document.getElementById('traditionalDateOfBurial');
-    
-    // Fix 1: Date of Birth and Date of Death cannot be in the future (max date is today)
-    if (deceasedDOB) {
-        deceasedDOB.max = todayFormatted;
-    }
-    
-    if (dateOfDeath) {
-        dateOfDeath.max = todayFormatted;
-    }
-
-    // Fix 2: Date of Burial cannot be in the past (min date is today)
-    if (dateOfBurial) {
-        dateOfBurial.min = todayFormatted;
-    }
-    // END FIX
-
     // Contact number validation - only numbers
     // Contact number validation - Philippine mobile number starting with 09
     const contactNumberInput = document.getElementById('lifeplanContactNumber');
-    if (contactNumberInput) {
-        contactNumberInput.addEventListener('input', function() {
-            // Remove any non-digit characters
-            this.value = this.value.replace(/\D/g, '');
-            // Ensure it starts with 09 and has exactly 11 digits
-            if (this.value.length > 0 && !this.value.startsWith('09')) {
-                this.value = '09' + this.value.slice(2);
-            }
-            // Limit to
-        });
-    }
-
-    // Validate date of death is after date of birth
-    document.getElementById('traditionalDateOfDeath').addEventListener('change', function() {
-        const dod = this.value;
-        const dob = document.getElementById('traditionalDeceasedDateOfBirth').value;
-        if (dob && dod < dob) {
-            alert('Date of death must be after date of birth');
-            this.value = '';
+        if (contactNumberInput) {
+    contactNumberInput.addEventListener('input', function() {
+        // Remove any non-digit characters
+        this.value = this.value.replace(/\D/g, '');
+        
+        // Ensure it starts with 09 and has exactly 11 digits
+        if (this.value.length > 0 && !this.value.startsWith('09')) {
+            this.value = '09' + this.value.slice(2);
         }
-        // Check if date of death is before date of burial (if burial date exists)
-        const burialDate = document.getElementById('traditionalDateOfBurial').value;
-        if (burialDate && dod > burialDate) {
-            alert('Date of death must be before date of burial');
-            this.value = '';
-        }
-    });
-
-    // Validate date of burial is after date of death
-    document.getElementById('traditionalDateOfBurial').addEventListener('change', function() {
-        const burialDate = this.value;
-        const dod = document.getElementById('traditionalDateOfDeath').value;
-        if (dod && burialDate < dod) {
-            alert('Date of burial must be after date of death');
-            this.value = '';
+        
+        // Limit to 11 characters
+        if (this.value.length > 11) {
+            this.value = this.value.slice(0, 11);
         }
     });
     
