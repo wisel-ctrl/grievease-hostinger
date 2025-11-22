@@ -2265,6 +2265,14 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
       <form id="completeServiceForm" class="space-y-3 sm:space-y-4">
         <input type="hidden" id="completeServiceId">
         
+        <!-- Toggle All Button -->
+        <div class="flex justify-end mb-2">
+          <button type="button" id="toggleCompleteAllStaffBtn" class="px-4 py-2 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-all duration-200 flex items-center">
+            <i class="fas fa-check-square mr-2"></i>
+            Check All Staff
+          </button>
+        </div>
+        
         <!-- Drivers Section -->
         <div id="completeDriversSection" class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
           <h4 class="text-xs sm:text-sm font-medium text-gray-700 mb-2 flex items-center">
@@ -4279,7 +4287,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Function to open the Complete Service Modal
+let completeAllStaffChecked = false;
+
 function openCompleteModal(serviceId) {
   // Set service ID and default values
   document.getElementById('completeServiceId').value = serviceId;
@@ -4292,6 +4301,10 @@ function openCompleteModal(serviceId) {
   document.getElementById('completionNotes').value = '';
   document.getElementById('internmentPlace').value = '';
   document.getElementById('finalBalanceSettled').checked = false;
+  
+  // Reset the toggle state when modal opens
+  completeAllStaffChecked = false;
+  updateCompleteToggleButton();
   
   // Fetch the branch_id and employees via AJAX
   fetch('history/get_branch_and_employees.php?sales_id=' + serviceId)
@@ -4310,6 +4323,91 @@ function openCompleteModal(serviceId) {
       alert('An error occurred while fetching employee data');
     });
 }
+
+function populateCompleteEmployeeSection(sectionId, position, employees) {
+  const section = document.getElementById(sectionId);
+  section.innerHTML = ''; // Clear existing content
+  
+  if (employees && employees.length > 0) {
+    employees.forEach((employee, index) => {
+      // Format each name part
+      const formatName = (name) => {
+        if (!name || name.toLowerCase() === 'null') return '';
+        return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+      };
+
+      const firstName = formatName(employee.fname);
+      const middleName = formatName(employee.mname);
+      const lastName = formatName(employee.lname);
+
+      // Combine names with proper spacing
+      let fullName = [firstName, middleName, lastName]
+        .filter(name => name && name.trim() !== '')
+        .join(' ');
+      
+      const checkboxId = `complete-${position.toLowerCase()}-${index+1}`;
+      
+      const div = document.createElement('div');
+      div.className = 'flex items-center';
+      div.innerHTML = `
+        <input type="checkbox" id="${checkboxId}" name="complete_assigned_staff[]" value="${employee.employeeID}" class="mr-2 complete-staff-checkbox">
+        <label for="${checkboxId}" class="text-gray-700">${fullName}</label>
+      `;
+      
+      section.appendChild(div);
+    });
+  } else {
+    section.innerHTML = `<p class="text-gray-500 col-span-2">No ${position.toLowerCase()}s available</p>`;
+  }
+}
+
+// Function to toggle all staff checkboxes in complete modal
+function toggleCompleteAllStaff() {
+  console.log('Toggling all staff checkboxes in complete modal...');
+  
+  // Get all checkboxes with the class 'complete-staff-checkbox'
+  const checkboxes = document.querySelectorAll('.complete-staff-checkbox');
+  console.log(`Found ${checkboxes.length} staff checkboxes in complete modal`);
+  
+  // Toggle all checkboxes based on current state
+  const newState = !completeAllStaffChecked;
+  checkboxes.forEach(checkbox => {
+    checkbox.checked = newState;
+  });
+  
+  // Update the global state
+  completeAllStaffChecked = newState;
+  
+  // Update button text and icon
+  updateCompleteToggleButton();
+  
+  console.log(`All staff checkboxes ${newState ? 'checked' : 'unchecked'} in complete modal`);
+}
+
+// Function to update the complete modal toggle button text and icon
+function updateCompleteToggleButton() {
+  const button = document.getElementById('toggleCompleteAllStaffBtn');
+  if (!button) return;
+  
+  if (completeAllStaffChecked) {
+    button.innerHTML = '<i class="fas fa-times-circle mr-2"></i>Uncheck All Staff';
+    button.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+    button.classList.add('bg-gray-500', 'hover:bg-gray-600');
+  } else {
+    button.innerHTML = '<i class="fas fa-check-square mr-2"></i>Check All Staff';
+    button.classList.remove('bg-gray-500', 'hover:bg-gray-600');
+    button.classList.add('bg-blue-500', 'hover:bg-blue-600');
+  }
+}
+
+
+// Add event listener to the complete modal toggle button when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+  const toggleButton = document.getElementById('toggleCompleteAllStaffBtn');
+  if (toggleButton) {
+    toggleButton.addEventListener('click', toggleCompleteAllStaff);
+  }
+});
 
 // Cemetery data array
 const cemeteryData = [
@@ -4437,42 +4535,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
-function populateCompleteEmployeeSection(sectionId, position, employees) {
-  const section = document.getElementById(sectionId);
-  section.innerHTML = ''; // Clear existing content
-  
-  if (employees && employees.length > 0) {
-    employees.forEach((employee, index) => {
-      // Format each name part
-      const formatName = (name) => {
-        if (!name || name.toLowerCase() === 'null') return '';
-        return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
-      };
-
-      const firstName = formatName(employee.fname);
-      const middleName = formatName(employee.mname);
-      const lastName = formatName(employee.lname);
-
-      // Combine names with proper spacing
-      let fullName = [firstName, middleName, lastName]
-        .filter(name => name && name.trim() !== '')
-        .join(' ');
-      
-      const checkboxId = `complete-${position.toLowerCase()}-${index+1}`;
-      
-      const div = document.createElement('div');
-      div.className = 'flex items-center';
-      div.innerHTML = `
-        <input type="checkbox" id="${checkboxId}" name="complete_assigned_staff[]" value="${employee.employeeID}" class="mr-2">
-        <label for="${checkboxId}" class="text-gray-700">${fullName}</label>
-      `;
-      
-      section.appendChild(div);
-    });
-  } else {
-    section.innerHTML = `<p class="text-gray-500 col-span-2">No ${position.toLowerCase()}s available</p>`;
-  }
-}
 
 // Function to close the Complete Service Modal
 function closeCompleteModal() {
@@ -4526,6 +4588,17 @@ function finalizeServiceCompletion() {
             icon: 'warning',
             title: 'Completion Date Required',
             text: 'Please specify a completion date.',
+            confirmButtonColor: '#3085d6',
+        });
+        return;
+    }
+
+    // Validate interment place
+    if (!intermentPlace || intermentPlace.trim() === '') {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Interment Place Required',
+            text: 'Please specify the interment place.',
             confirmButtonColor: '#3085d6',
         });
         return;
