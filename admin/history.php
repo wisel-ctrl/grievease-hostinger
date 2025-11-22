@@ -4535,42 +4535,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
-function populateCompleteEmployeeSection(sectionId, position, employees) {
-  const section = document.getElementById(sectionId);
-  section.innerHTML = ''; // Clear existing content
-  
-  if (employees && employees.length > 0) {
-    employees.forEach((employee, index) => {
-      // Format each name part
-      const formatName = (name) => {
-        if (!name || name.toLowerCase() === 'null') return '';
-        return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
-      };
-
-      const firstName = formatName(employee.fname);
-      const middleName = formatName(employee.mname);
-      const lastName = formatName(employee.lname);
-
-      // Combine names with proper spacing
-      let fullName = [firstName, middleName, lastName]
-        .filter(name => name && name.trim() !== '')
-        .join(' ');
-      
-      const checkboxId = `complete-${position.toLowerCase()}-${index+1}`;
-      
-      const div = document.createElement('div');
-      div.className = 'flex items-center';
-      div.innerHTML = `
-        <input type="checkbox" id="${checkboxId}" name="complete_assigned_staff[]" value="${employee.employeeID}" class="mr-2">
-        <label for="${checkboxId}" class="text-gray-700">${fullName}</label>
-      `;
-      
-      section.appendChild(div);
-    });
-  } else {
-    section.innerHTML = `<p class="text-gray-500 col-span-2">No ${position.toLowerCase()}s available</p>`;
-  }
-}
 
 // Function to close the Complete Service Modal
 function closeCompleteModal() {
