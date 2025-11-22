@@ -854,18 +854,6 @@ const itemPerformanceChart = new Chart(document.getElementById('itemPerformanceC
 });
 
 
-// Form Submission Handling
-document.getElementById('addInventoryForm').addEventListener('submit', function (e) {
-e.preventDefault();
-// Add logic to handle form submission
-closeAddInventoryModal();
-});
-
-document.getElementById('editInventoryForm').addEventListener('submit', function (e) {
-e.preventDefault();
-// Add logic to handle form submission
-closeEditInventoryModal();
-});
 
 
 function applyQuantityHeatmap() {
