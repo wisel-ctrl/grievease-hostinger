@@ -939,7 +939,7 @@ if ($branchResult->num_rows > 0) {
           </div>
         </div>
 
-        <!-- Branch -->
+        <!-- Branch Selection - Updated for multiple selection -->
         <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border-l-4 border-gold">
           <label class="block text-xs font-medium text-gray-700 mb-2">Branch <span class="text-red-500">*</span></label>
           <div class="flex flex-wrap gap-3 sm:gap-4">
@@ -954,8 +954,10 @@ if ($branchResult->num_rows > 0) {
             if ($result->num_rows > 0) {
                 while ($row = $result->fetch_assoc()) {
                     echo '<label class="flex items-center space-x-2 cursor-pointer">';
-                    echo '<input type="radio" name="branch" value="' . $row['branch_id'] . '" required class="hidden peer">';
-                    echo '<div class="w-5 h-5 rounded-full border-2 border-gold flex items-center justify-center peer-checked:bg-gold peer-checked:border-darkgold transition-colors"></div>';
+                    echo '<input type="checkbox" name="branches[]" value="' . $row['branch_id'] . '" class="hidden peer">';
+                    echo '<div class="w-5 h-5 rounded border-2 border-gold flex items-center justify-center peer-checked:bg-gold peer-checked:border-darkgold transition-colors">';
+                    echo '<svg class="w-3 h-3 text-white hidden peer-checked:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>';
+                    echo '</div>';
                     echo '<span class="text-gray-700 font-medium">' . htmlspecialchars(ucfirst($row['branch_name'])) . '</span>';
                     echo '</label>';
                 }
@@ -964,6 +966,7 @@ if ($branchResult->num_rows > 0) {
             }
             ?>
           </div>
+          <div id="branchError" class="text-red-500 text-xs mt-2 hidden">Please select at least one branch</div>
         </div>
         
         <!-- Quantity -->

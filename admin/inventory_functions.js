@@ -580,9 +580,28 @@ function handleFileInput() {
   });
 }
 
-// Consolidated form submission handler
+// Consolidated form submission handler - Updated for multiple branches
 document.getElementById('addInventoryForm').addEventListener('submit', function(e) {
   e.preventDefault();
+
+  // Get selected branches
+  const branchCheckboxes = document.querySelectorAll('input[name="branches[]"]:checked');
+  const selectedBranches = Array.from(branchCheckboxes).map(cb => cb.value);
+  
+  // Validate at least one branch selected
+  if (selectedBranches.length === 0) {
+    document.getElementById('branchError').classList.remove('hidden');
+    Swal.fire({
+      title: 'Branch Selection Required',
+      text: 'Please select at least one branch.',
+      icon: 'error',
+      confirmButtonColor: '#3085d6',
+      confirmButtonText: 'OK'
+    });
+    return;
+  } else {
+    document.getElementById('branchError').classList.add('hidden');
+  }
 
   // Get cleaned numeric values
   const unitPriceInput = document.getElementById('unitPrice').value.replace(/[^0-9.]/g, '');
@@ -600,22 +619,25 @@ document.getElementById('addInventoryForm').addEventListener('submit', function(
       confirmButtonColor: '#3085d6',
       confirmButtonText: 'OK'
     });
-    return; // Prevent submission
+    return;
   }
 
-  // Create FormData object to handle file upload
+  // Create FormData object
   const formData = new FormData(this);
 
   // Get form values
   const itemName = document.getElementById('itemName').value;
   const category = document.getElementById('category').value;
-  const branch = document.querySelector('input[name="branch"]:checked').value;
   const quantity = document.getElementById('quantity').value;
   const unitPriceVal = document.getElementById('unitPrice').value;
   const sellingPriceVal = document.getElementById('sellingPrice').value;
 
+  // Add selected branches to form data
+  selectedBranches.forEach(branch => {
+    formData.append('branches[]', branch);
+  });
+
   formData.append('category_id', category);
-  formData.append('branch_id', branch);
   formData.append('price', unitPrice);
   formData.append('sellingPrice', sellingPrice);
 
@@ -625,7 +647,8 @@ document.getElementById('addInventoryForm').addEventListener('submit', function(
       <p>Are you sure you want to add the following item?</p>
       <div class="mt-4 text-left">
         <p><strong>Item Name:</strong> ${itemName}</p>
-        <p><strong>Quantity:</strong> ${quantity}</p>
+        <p><strong>Branches:</strong> ${selectedBranches.map(b => getBranchName(b)).join(', ')}</p>
+        <p><strong>Quantity per Branch:</strong> ${quantity}</p>
         <p><strong>Unit Price:</strong> ₱${unitPriceVal}</p>
         <p><strong>Selling Price:</strong> ₱${sellingPriceVal}</p>
       </div>
@@ -665,7 +688,7 @@ document.getElementById('addInventoryForm').addEventListener('submit', function(
             toast: true,
             position: 'top-end',
             icon: 'success',
-            title: 'Inventory item added successfully',
+            title: `Item added to ${data.added_count} branch(es) successfully`,
             showConfirmButton: false,
             timer: 5000,
             timerProgressBar: true,
@@ -701,6 +724,17 @@ document.getElementById('addInventoryForm').addEventListener('submit', function(
     }
   });
 });
+
+// Helper function to get branch name
+function getBranchName(branchId) {
+  const branchLabels = document.querySelectorAll('input[name="branches[]"]');
+  for (let checkbox of branchLabels) {
+    if (checkbox.value === branchId) {
+      return checkbox.parentElement.querySelector('span').textContent;
+    }
+  }
+  return branchId;
+}
 
 function showNotification(title, message, type) {
   alert(`${title}: ${message}`);
