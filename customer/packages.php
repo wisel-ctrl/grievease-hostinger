@@ -4571,21 +4571,16 @@ function resetFilters() {
 // Date validation for traditional booking form
 document.addEventListener('DOMContentLoaded', function() {
     // Get today's date in YYYY-MM-DD format
-    const today = new Date();
     const todayFormatted = today.toISOString().split('T')[0];
-    
-    // Set max date for date of birth and date of death to today
     document.getElementById('traditionalDateOfBirth').max = todayFormatted;
     document.getElementById('traditionalDateOfDeath').max = todayFormatted;
     
-    // Set min date for date of burial to tomorrow
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
     const tomorrowFormatted = tomorrow.toISOString().split('T')[0];
     document.getElementById('traditionalDateOfBurial').min = tomorrowFormatted;
+    
     // Enhanced date validation for traditional booking form
-document.addEventListener('DOMContentLoaded', function() {
-    // Get the date input elements
     const dateOfBirthInput = document.getElementById('traditionalDateOfBirth');
     const dateOfDeathInput = document.getElementById('traditionalDateOfDeath');
     const dateOfBurialInput = document.getElementById('traditionalDateOfBurial');
