@@ -4592,6 +4592,17 @@ function finalizeServiceCompletion() {
         });
         return;
     }
+
+    // Validate interment place
+    if (!intermentPlace || intermentPlace.trim() === '') {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Interment Place Required',
+            text: 'Please specify the interment place.',
+            confirmButtonColor: '#3085d6',
+        });
+        return;
+    }
     
     // Get current time
     const now = new Date();
