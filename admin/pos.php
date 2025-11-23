@@ -3120,6 +3120,149 @@ function confirmCheckout() {
   const form = document.getElementById('checkoutForm');
   const formData = new FormData(form);
 
+  // Validate required fields first
+  const paymentMethod = document.getElementById('paymentMethod').value;
+  const deceasedFirstName = document.getElementById('deceasedFirstName').value.trim();
+  const deceasedLastName = document.getElementById('deceasedLastName').value.trim();
+  const dateOfDeath = document.getElementById('dateOfDeath').value;
+  
+  // Validate payment method
+  if (!paymentMethod) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Payment Method Required',
+      text: 'Please select a payment method.',
+      confirmButtonColor: '#3085d6',
+    });
+    document.getElementById('paymentMethod').focus();
+    return;
+  }
+
+  // Validate deceased first name
+  if (!deceasedFirstName) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Deceased First Name Required',
+      text: 'Please enter the deceased first name.',
+      confirmButtonColor: '#3085d6',
+    });
+    document.getElementById('deceasedFirstName').focus();
+    return;
+  }
+
+  // Validate deceased last name
+  if (!deceasedLastName) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Deceased Last Name Required',
+      text: 'Please enter the deceased last name.',
+      confirmButtonColor: '#3085d6',
+    });
+    document.getElementById('deceasedLastName').focus();
+    return;
+  }
+
+  // Validate date of death
+  if (!dateOfDeath) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Date of Death Required',
+      text: 'Please enter the date of death.',
+      confirmButtonColor: '#3085d6',
+    });
+    document.getElementById('dateOfDeath').focus();
+    return;
+  }
+
+  // Validate address fields
+  const deceasedRegion = document.getElementById('deceasedRegion').value;
+  const deceasedProvince = document.getElementById('deceasedProvince').value;
+  const deceasedCity = document.getElementById('deceasedCity').value;
+  const deceasedBarangay = document.getElementById('deceasedBarangay').value;
+  const deceasedStreet = document.getElementById('deceasedStreet').value.trim();
+  const deceasedZip = document.getElementById('deceasedZip').value.trim();
+
+  if (!deceasedRegion) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Region Required',
+      text: 'Please select a region for the deceased address.',
+      confirmButtonColor: '#3085d6',
+    });
+    document.getElementById('deceasedRegion').focus();
+    return;
+  }
+
+  if (!deceasedProvince) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Province Required',
+      text: 'Please select a province for the deceased address.',
+      confirmButtonColor: '#3085d6',
+    });
+    document.getElementById('deceasedProvince').focus();
+    return;
+  }
+
+  if (!deceasedCity) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'City/Municipality Required',
+      text: 'Please select a city/municipality for the deceased address.',
+      confirmButtonColor: '#3085d6',
+    });
+    document.getElementById('deceasedCity').focus();
+    return;
+  }
+
+  if (!deceasedBarangay) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Barangay Required',
+      text: 'Please select a barangay for the deceased address.',
+      confirmButtonColor: '#3085d6',
+    });
+    document.getElementById('deceasedBarangay').focus();
+    return;
+  }
+
+  if (!deceasedStreet) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Street Address Required',
+      text: 'Please enter the street address for the deceased.',
+      confirmButtonColor: '#3085d6',
+    });
+    document.getElementById('deceasedStreet').focus();
+    return;
+  }
+
+  if (!deceasedZip) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'ZIP Code Required',
+      text: 'Please enter the ZIP code for the deceased address.',
+      confirmButtonColor: '#3085d6',
+    });
+    document.getElementById('deceasedZip').focus();
+    return;
+  }
+
+  // Validate ZIP code format (basic Philippine ZIP code validation)
+  const zipRegex = /^\d{4}$/;
+  if (!zipRegex.test(deceasedZip)) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Invalid ZIP Code',
+      text: 'Please enter a valid 4-digit Philippine ZIP code.',
+      confirmButtonColor: '#3085d6',
+    });
+    document.getElementById('deceasedZip').focus();
+    return;
+  }
+
+  // Continue with existing validations...
+
   //address
   const address = document.getElementById('deceasedAddress').value;
   formData.append('deceasedAddress', address);
@@ -3169,8 +3312,6 @@ function confirmCheckout() {
 
   // Date validations
   const dateOfBirth = document.getElementById('dateOfBirth').value;
-  const dateOfDeath = document.getElementById('dateOfDeath').value;
-  const dateOfBurial = document.getElementById('dateOfBurial').value;
   const today = new Date().toISOString().split('T')[0];
 
   // Validate date of birth (if provided)
@@ -3197,17 +3338,7 @@ function confirmCheckout() {
     }
   }
 
-  // Validate date of death (required)
-  if (!dateOfDeath) {
-    Swal.fire({
-      icon: 'warning',
-      title: 'Date Required',
-      text: 'Date of death is required.',
-      confirmButtonColor: '#3085d6',
-    });
-    document.getElementById('dateOfDeath').focus();
-    return;
-  }
+  // Validate date of death (already checked above, but additional validation)
   if (dateOfDeath > today) {
     Swal.fire({
       icon: 'warning',
@@ -3220,6 +3351,7 @@ function confirmCheckout() {
   }
 
   // Validate date of burial (if provided)
+  const dateOfBurial = document.getElementById('dateOfBurial').value;
   if (dateOfBurial) {
     if (dateOfBurial < dateOfDeath) {
       Swal.fire({
@@ -3322,6 +3454,7 @@ function confirmCheckout() {
           <p class="text-sm"><strong>Amount Paid:</strong> ₱${amountPaid.toFixed(2)}</p>
           <p class="text-sm"><strong>Balance:</strong> ₱${balance.toFixed(2)}</p>
           <p class="text-sm mt-1"><strong>Payment Status:</strong> ${balance > 0 ? 'With Balance' : 'Fully Paid'}</p>
+          <p class="text-sm mt-1"><strong>Payment Method:</strong> ${paymentMethod}</p>
         </div>
       </div>
     `,
