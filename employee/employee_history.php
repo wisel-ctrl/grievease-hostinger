@@ -1958,6 +1958,14 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
       <form id="completeServiceForm" class="space-y-3 sm:space-y-4">
         <input type="hidden" id="completeServiceId">
         
+        <!-- Toggle All Button -->
+        <div class="flex justify-end mb-2">
+          <button type="button" id="toggleAllCompleteStaffBtn" class="px-4 py-2 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-all duration-200 flex items-center text-sm">
+            <i class="fas fa-check-square mr-2"></i>
+            Check All Staff
+          </button>
+        </div>
+        
         <!-- Drivers Section -->
         <div id="completeDriversSection" class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
           <h4 class="text-xs sm:text-sm font-medium text-gray-700 mb-2 flex items-center">
@@ -3385,83 +3393,83 @@ function toggleBodyScroll(isOpen) {
 }
 
 // Function to open the Assign Staff Modal
-function openAssignStaffModal(serviceId) {
-    // Set the service ID in the form
-    document.getElementById('assignServiceId').value = serviceId;
+// function openAssignStaffModal(serviceId) {
+//     // Set the service ID in the form
+//     document.getElementById('assignServiceId').value = serviceId;
     
-    // Show the modal
-    const modal = document.getElementById('assignStaffModal');
-    modal.classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
+//     // Show the modal
+//     const modal = document.getElementById('assignStaffModal');
+//     modal.classList.remove('hidden');
+//     document.body.style.overflow = 'hidden';
     
-    // Fetch employees for each position
-    fetch(`historyAPI/get_employees.php?service_id=${serviceId}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            // Populate each section
-            populateEmployeeSection('embalmersSection', 'Embalmer', data.embalmers || []);
-            populateEmployeeSection('driversSection', 'Driver', data.drivers || []);
-            populateEmployeeSection('personnelSection', 'Personnel', data.personnel || []);
-        })
-        .catch(error => {
-            console.error('Error fetching employees:', error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Failed to load employees. Please try again.',
-                confirmButtonColor: '#3085d6'
-            });
-            closeAssignStaffModal();
-        });
-}
+//     // Fetch employees for each position
+//     fetch(`historyAPI/get_employees.php?service_id=${serviceId}`)
+//         .then(response => {
+//             if (!response.ok) {
+//                 throw new Error('Network response was not ok');
+//             }
+//             return response.json();
+//         })
+//         .then(data => {
+//             // Populate each section
+//             populateEmployeeSection('embalmersSection', 'Embalmer', data.embalmers || []);
+//             populateEmployeeSection('driversSection', 'Driver', data.drivers || []);
+//             populateEmployeeSection('personnelSection', 'Personnel', data.personnel || []);
+//         })
+//         .catch(error => {
+//             console.error('Error fetching employees:', error);
+//             Swal.fire({
+//                 icon: 'error',
+//                 title: 'Error',
+//                 text: 'Failed to load employees. Please try again.',
+//                 confirmButtonColor: '#3085d6'
+//             });
+//             closeAssignStaffModal();
+//         });
+// }
 
-function populateEmployeeSection(sectionId, position, employees) {
-    const section = document.getElementById(sectionId);
-    const positionLower = position.toLowerCase();
+// function populateEmployeeSection(sectionId, position, employees) {
+//     const section = document.getElementById(sectionId);
+//     const positionLower = position.toLowerCase();
     
-    let html = '';
+//     let html = '';
     
-    if (employees && employees.length > 0) {
-        employees.forEach((employee, index) => {
-            // Format name parts
-            const formatName = (name) => {
-                if (!name || name.toLowerCase() === 'null') return '';
-                return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
-            };
+//     if (employees && employees.length > 0) {
+//         employees.forEach((employee, index) => {
+//             // Format name parts
+//             const formatName = (name) => {
+//                 if (!name || name.toLowerCase() === 'null') return '';
+//                 return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+//             };
 
-            const firstName = formatName(employee.fname);
-            const middleName = formatName(employee.mname);
-            const lastName = formatName(employee.lname);
+//             const firstName = formatName(employee.fname);
+//             const middleName = formatName(employee.mname);
+//             const lastName = formatName(employee.lname);
 
-            // Combine names with proper spacing
-            const fullName = [firstName, middleName, lastName]
-                .filter(name => name && name.trim() !== '')
-                .join(' ');
+//             // Combine names with proper spacing
+//             const fullName = [firstName, middleName, lastName]
+//                 .filter(name => name && name.trim() !== '')
+//                 .join(' ');
             
-            const checkboxId = `${positionLower}${index + 1}`;
+//             const checkboxId = `${positionLower}${index + 1}`;
             
-            html += `
-                <div class="flex items-center">
-                    <input type="checkbox" 
-                           id="${checkboxId}" 
-                           name="assigned_staff[]" 
-                           value="${employee.employeeID}" 
-                           class="w-4 h-4 text-sidebar-accent border-gray-300 rounded focus:ring-sidebar-accent">
-                    <label for="${checkboxId}" class="ml-2 text-sm text-gray-700">${fullName}</label>
-                </div>
-            `;
-        });
-    } else {
-        html = `<p class="text-gray-500 col-span-2">No ${positionLower}s available</p>`;
-    }
+//             html += `
+//                 <div class="flex items-center">
+//                     <input type="checkbox" 
+//                            id="${checkboxId}" 
+//                            name="assigned_staff[]" 
+//                            value="${employee.employeeID}" 
+//                            class="w-4 h-4 text-sidebar-accent border-gray-300 rounded focus:ring-sidebar-accent">
+//                     <label for="${checkboxId}" class="ml-2 text-sm text-gray-700">${fullName}</label>
+//                 </div>
+//             `;
+//         });
+//     } else {
+//         html = `<p class="text-gray-500 col-span-2">No ${positionLower}s available</p>`;
+//     }
     
-    section.innerHTML = html;
-}
+//     section.innerHTML = html;
+// }
 
 function closeAssignStaffModal() {
     const modal = document.getElementById('assignStaffModal');
@@ -3563,73 +3571,78 @@ function saveStaffAssignment() {
         });
 }
 
-// Function to open the Complete Service Modal
-function openCompleteModal(serviceId) {
-  // Set service ID and default values
-  document.getElementById('completeServiceId').value = serviceId;
-  // Set current date in yyyy-mm-dd format
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, '0');
-  const day = String(today.getDate()).padStart(2, '0');
-  document.getElementById('completionDate').value = `${year}-${month}-${day}`;
-  document.getElementById('completionNotes').value = '';
-  document.getElementById('finalBalanceSettled').checked = false;
+// function openCompleteModal(serviceId) {
+//   // Reset select all state
+//   isAllCompleteStaffSelected = false;
   
-  // Fetch the employees via AJAX
-  fetch('historyAPI/get_employees.php?service_id=' + serviceId)
-    .then(response => response.json())
-    .then(data => {
-      // Populate the sections with drivers and personnel
-      populateCompleteEmployeeSection('completeDriversList', 'Driver', data.drivers);
-      populateCompleteEmployeeSection('completePersonnelList', 'Personnel', data.personnel);
-      
-      // Show the modal
-      document.getElementById('completeServiceModal').classList.remove('hidden');
-      toggleBodyScroll(true);
-    })
-    .catch(error => {
-      console.error('Error:', error);
-      alert('An error occurred while fetching employee data');
-    });
-}
-
-function populateCompleteEmployeeSection(sectionId, position, employees) {
-  const section = document.getElementById(sectionId);
-  section.innerHTML = ''; // Clear existing content
+//   // Set service ID and default values
+//   document.getElementById('completeServiceId').value = serviceId;
+//   // Set current date in yyyy-mm-dd format
+//   const today = new Date();
+//   const year = today.getFullYear();
+//   const month = String(today.getMonth() + 1).padStart(2, '0');
+//   const day = String(today.getDate()).padStart(2, '0');
+//   document.getElementById('completionDate').value = `${year}-${month}-${day}`;
+//   document.getElementById('completionNotes').value = '';
+//   document.getElementById('finalBalanceSettled').checked = false;
   
-  if (employees && employees.length > 0) {
-    employees.forEach((employee, index) => {
-      // Format each name part
-      const formatName = (name) => {
-        if (!name || name.toLowerCase() === 'null') return '';
-        return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
-      };
+//   // Fetch the employees via AJAX
+//   fetch('historyAPI/get_employees.php?service_id=' + serviceId)
+//     .then(response => response.json())
+//     .then(data => {
+//       // Populate the sections with drivers and personnel
+//       populateCompleteEmployeeSection('completeDriversList', 'Driver', data.drivers);
+//       populateCompleteEmployeeSection('completePersonnelList', 'Personnel', data.personnel);
+      
+//       // Setup toggle button after populating
+//       setupCompleteToggleAllButton();
+      
+//       // Show the modal
+//       document.getElementById('completeServiceModal').classList.remove('hidden');
+//       toggleBodyScroll(true);
+//     })
+//     .catch(error => {
+//       console.error('Error:', error);
+//       alert('An error occurred while fetching employee data');
+//     });
+// }
 
-      const firstName = formatName(employee.fname);
-      const middleName = formatName(employee.mname);
-      const lastName = formatName(employee.lname);
+// function populateCompleteEmployeeSection(sectionId, position, employees) {
+//   const section = document.getElementById(sectionId);
+//   section.innerHTML = ''; // Clear existing content
+  
+//   if (employees && employees.length > 0) {
+//     employees.forEach((employee, index) => {
+//       // Format each name part
+//       const formatName = (name) => {
+//         if (!name || name.toLowerCase() === 'null') return '';
+//         return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+//       };
 
-      // Combine names with proper spacing
-      let fullName = [firstName, middleName, lastName]
-        .filter(name => name && name.trim() !== '')
-        .join(' ');
+//       const firstName = formatName(employee.fname);
+//       const middleName = formatName(employee.mname);
+//       const lastName = formatName(employee.lname);
+
+//       // Combine names with proper spacing
+//       let fullName = [firstName, middleName, lastName]
+//         .filter(name => name && name.trim() !== '')
+//         .join(' ');
       
-      const checkboxId = `complete-${position.toLowerCase()}-${index+1}`;
+//       const checkboxId = `complete-${position.toLowerCase()}-${index+1}`;
       
-      const div = document.createElement('div');
-      div.className = 'flex items-center';
-      div.innerHTML = `
-        <input type="checkbox" id="${checkboxId}" name="complete_assigned_staff[]" value="${employee.employeeID}" class="mr-2">
-        <label for="${checkboxId}" class="text-gray-700">${fullName}</label>
-      `;
+//       const div = document.createElement('div');
+//       div.className = 'flex items-center';
+//       div.innerHTML = `
+//         <input type="checkbox" id="${checkboxId}" name="complete_assigned_staff[]" value="${employee.employeeID}" class="complete-staff-checkbox mr-2 w-4 h-4 text-sidebar-accent border-gray-300 rounded focus:ring-sidebar-accent">
+//         <label for="${checkboxId}" class="text-gray-700 text-sm">${fullName}</label>
+//       `;
       
-      section.appendChild(div);
-    });
-  } else {
-    section.innerHTML = `<p class="text-gray-500 col-span-2">No ${position.toLowerCase()}s available</p>`;
-  }
-}
+//       section.appendChild(div);
+//     });
+//   } else {
+//     section.innerHTML = `<p class="text-gray-500 col-span-2 text-sm">No ${position.toLowerCase()}s available</p>`;
+//   }
+// }
 
 // Function to close the Complete Service Modal
 function closeCompleteModal() {
@@ -7087,6 +7100,139 @@ function updateToggleButtonText() {
 }
 
 // Your existing saveStaffAssignment function would go here
+</script>
+<script>
+// Global variable to track select all state for complete modal
+let isAllCompleteStaffSelected = false;
+
+function openCompleteModal(serviceId) {
+  // Reset select all state
+  isAllCompleteStaffSelected = false;
+  
+  // Set service ID and default values
+  document.getElementById('completeServiceId').value = serviceId;
+  // Set current date in yyyy-mm-dd format
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  document.getElementById('completionDate').value = `${year}-${month}-${day}`;
+  document.getElementById('completionNotes').value = '';
+  document.getElementById('finalBalanceSettled').checked = false;
+  
+  // Fetch the employees via AJAX
+  fetch('historyAPI/get_employees.php?service_id=' + serviceId)
+    .then(response => response.json())
+    .then(data => {
+      // Populate the sections with drivers and personnel
+      populateCompleteEmployeeSection('completeDriversList', 'Driver', data.drivers);
+      populateCompleteEmployeeSection('completePersonnelList', 'Personnel', data.personnel);
+      
+      // Setup toggle button after populating
+      setupCompleteToggleAllButton();
+      
+      // Show the modal
+      document.getElementById('completeServiceModal').classList.remove('hidden');
+      toggleBodyScroll(true);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('An error occurred while fetching employee data');
+    });
+}
+
+function populateCompleteEmployeeSection(sectionId, position, employees) {
+  const section = document.getElementById(sectionId);
+  section.innerHTML = ''; // Clear existing content
+  
+  if (employees && employees.length > 0) {
+    employees.forEach((employee, index) => {
+      // Format each name part
+      const formatName = (name) => {
+        if (!name || name.toLowerCase() === 'null') return '';
+        return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+      };
+
+      const firstName = formatName(employee.fname);
+      const middleName = formatName(employee.mname);
+      const lastName = formatName(employee.lname);
+
+      // Combine names with proper spacing
+      let fullName = [firstName, middleName, lastName]
+        .filter(name => name && name.trim() !== '')
+        .join(' ');
+      
+      const checkboxId = `complete-${position.toLowerCase()}-${index+1}`;
+      
+      const div = document.createElement('div');
+      div.className = 'flex items-center';
+      div.innerHTML = `
+        <input type="checkbox" id="${checkboxId}" name="complete_assigned_staff[]" value="${employee.employeeID}" class="complete-staff-checkbox mr-2 w-4 h-4 text-sidebar-accent border-gray-300 rounded focus:ring-sidebar-accent">
+        <label for="${checkboxId}" class="text-gray-700 text-sm">${fullName}</label>
+      `;
+      
+      section.appendChild(div);
+    });
+  } else {
+    section.innerHTML = `<p class="text-gray-500 col-span-2 text-sm">No ${position.toLowerCase()}s available</p>`;
+  }
+}
+
+function setupCompleteToggleAllButton() {
+  const toggleBtn = document.getElementById('toggleAllCompleteStaffBtn');
+  
+  // Remove any existing event listeners
+  toggleBtn.replaceWith(toggleBtn.cloneNode(true));
+  
+  // Get the new button reference
+  const newToggleBtn = document.getElementById('toggleAllCompleteStaffBtn');
+  
+  // Add click event listener
+  newToggleBtn.addEventListener('click', toggleAllCompleteStaff);
+  
+  // Set initial button state
+  updateCompleteToggleButtonText();
+}
+
+function toggleAllCompleteStaff() {
+  const allCheckboxes = document.querySelectorAll('.complete-staff-checkbox');
+  
+  if (allCheckboxes.length === 0) return;
+  
+  // Toggle the state
+  isAllCompleteStaffSelected = !isAllCompleteStaffSelected;
+  
+  // Check or uncheck all staff checkboxes
+  allCheckboxes.forEach(checkbox => {
+    checkbox.checked = isAllCompleteStaffSelected;
+  });
+  
+  // Update button text and icon
+  updateCompleteToggleButtonText();
+}
+
+function updateCompleteToggleButtonText() {
+  const toggleBtn = document.getElementById('toggleAllCompleteStaffBtn');
+  const icon = toggleBtn.querySelector('i');
+  
+  if (isAllCompleteStaffSelected) {
+    toggleBtn.innerHTML = '<i class="fas fa-times-circle mr-2"></i>Uncheck All Staff';
+    toggleBtn.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+    toggleBtn.classList.add('bg-red-500', 'hover:bg-red-600');
+  } else {
+    toggleBtn.innerHTML = '<i class="fas fa-check-square mr-2"></i>Check All Staff';
+    toggleBtn.classList.remove('bg-red-500', 'hover:bg-red-600');
+    toggleBtn.classList.add('bg-blue-500', 'hover:bg-blue-600');
+  }
+}
+
+function closeCompleteModal() {
+  const modal = document.getElementById('completeServiceModal');
+  modal.classList.add('hidden');
+  toggleBodyScroll(false);
+}
+
+// Your existing finalizeServiceCompletion function would go here
 </script>
 
 </body> 
