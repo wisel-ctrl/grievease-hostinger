@@ -178,6 +178,37 @@ $userId = $_SESSION['user_id'];
     background-color: #d4a933;
     border-radius: 6px;
 }
+
+.client-suggestion {
+    transition: all 0.2s ease;
+}
+
+.client-suggestion:hover {
+    background-color: #f3f4f6;
+}
+
+.client-suggestion:last-child {
+    border-bottom: none;
+}
+
+#clientSuggestions {
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e0 #f7fafc;
+}
+
+#clientSuggestions::-webkit-scrollbar {
+    width: 6px;
+}
+
+#clientSuggestions::-webkit-scrollbar-track {
+    background: #f7fafc;
+    border-radius: 0 0 8px 0;
+}
+
+#clientSuggestions::-webkit-scrollbar-thumb {
+    background-color: #cbd5e0;
+    border-radius: 3px;
+}
   </style>
 </head>
 <body class="flex bg-gray-50">
@@ -2934,6 +2965,9 @@ function openTraditionalCheckout() {
   trackOriginalPrice(); // For discount
   initializeBasePrice();
 
+  fetchAllClients();
+  setTimeout(initializeQuickFill, 100);
+
   // Set the service details in the form
   document.getElementById('service-id').value = serviceId;
   document.getElementById('service-price').value = servicePrice;
@@ -3710,7 +3744,160 @@ function formatPrice(amount) {
     });
 }
 </script>
-  
+<script>
+let allClients = [];
+
+// Fetch all clients on modal open
+function fetchAllClients() {
+    fetch('posFunctions/get_clients.php')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.error) {
+                throw new Error(data.error);
+            }
+            allClients = data;
+        })
+        .catch(error => {
+            console.error('Error fetching clients:', error);
+            showNotification('Failed to load client list: ' + error.message, 'error');
+        });
+}
+
+// The rest of your JavaScript functions remain the same...
+function displaySuggestions(clients) {
+    const suggestionsContainer = document.getElementById('clientSuggestions');
+    
+    if (clients.length === 0) {
+        suggestionsContainer.innerHTML = `
+            <div class="p-3 text-gray-500 text-center">
+                No clients found matching your search
+            </div>
+        `;
+        suggestionsContainer.classList.remove('hidden');
+        return;
+    }
+    
+    suggestionsContainer.innerHTML = clients.map((client, index) => `
+        <div class="client-suggestion p-3 hover:bg-gray-100 cursor-pointer border-b border-gray-200 last:border-b-0 transition-colors duration-200" 
+             data-client-index="${index}"
+             onclick="selectClient(${index})">
+            <div class="font-medium text-gray-800">
+                ${client.first_name} ${client.middle_name || ''} ${client.last_name} ${client.suffix || ''}
+            </div>
+            <div class="text-sm text-gray-600">${client.email || 'No email'}</div>
+            <div class="text-sm text-gray-500">${client.phone_number}</div>
+        </div>
+    `).join('');
+    
+    suggestionsContainer.classList.remove('hidden');
+}
+
+function navigateSuggestions(direction, activeSuggestion) {
+    const suggestions = document.querySelectorAll('.client-suggestion');
+    if (suggestions.length === 0) return;
+    
+    let nextIndex = 0;
+    
+    if (activeSuggestion) {
+        const currentIndex = parseInt(activeSuggestion.dataset.clientIndex);
+        activeSuggestion.classList.remove('bg-sidebar-accent', 'text-white');
+        
+        if (direction === 'down') {
+            nextIndex = (currentIndex + 1) % suggestions.length;
+        } else {
+            nextIndex = (currentIndex - 1 + suggestions.length) % suggestions.length;
+        }
+    }
+    
+    suggestions[nextIndex].classList.add('bg-sidebar-accent', 'text-white');
+    suggestions[nextIndex].scrollIntoView({ block: 'nearest' });
+}
+
+function selectClient(clientIndex) {
+    const selectedClient = allClients[clientIndex];
+    
+    if (!selectedClient) {
+        showNotification('Error: Client data not found', 'error');
+        return;
+    }
+    
+    // Fill the form fields
+    document.getElementById('clientFirstName').value = selectedClient.first_name || '';
+    document.getElementById('clientMiddleName').value = selectedClient.middle_name || '';
+    document.getElementById('clientLastName').value = selectedClient.last_name || '';
+    document.getElementById('clientSuffix').value = selectedClient.suffix || '';
+    document.getElementById('clientPhone').value = selectedClient.phone_number || '';
+    document.getElementById('clientEmail').value = selectedClient.email || '';
+    
+    // Clear and hide suggestions
+    document.getElementById('clientQuickFill').value = '';
+    document.getElementById('clientSuggestions').classList.add('hidden');
+    
+    showNotification('Client information filled successfully!', 'success');
+}
+
+function initializeQuickFill() {
+    const quickFillInput = document.getElementById('clientQuickFill');
+    const suggestionsContainer = document.getElementById('clientSuggestions');
+    
+    if (!quickFillInput || !suggestionsContainer) {
+        console.error('Quick fill elements not found');
+        return;
+    }
+    
+    // Clear previous data
+    quickFillInput.value = '';
+    
+    // Input event for suggestions
+    quickFillInput.addEventListener('input', function(e) {
+        const searchTerm = e.target.value.trim();
+        
+        if (searchTerm.length < 2) {
+            suggestionsContainer.classList.add('hidden');
+            return;
+        }
+        
+        const filteredClients = allClients.filter(client => {
+            const fullName = `${client.first_name} ${client.middle_name || ''} ${client.last_name}`.toLowerCase();
+            return fullName.includes(searchTerm.toLowerCase());
+        });
+        
+        displaySuggestions(filteredClients);
+    });
+    
+    // Handle keyboard navigation
+    quickFillInput.addEventListener('keydown', function(e) {
+        const activeSuggestion = suggestionsContainer.querySelector('.bg-sidebar-accent');
+        
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            navigateSuggestions('down', activeSuggestion);
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            navigateSuggestions('up', activeSuggestion);
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            if (activeSuggestion) {
+                selectClient(activeSuggestion.dataset.clientIndex);
+            }
+        } else if (e.key === 'Escape') {
+            suggestionsContainer.classList.add('hidden');
+        }
+    });
+    
+    // Hide suggestions when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!quickFillInput.contains(e.target) && !suggestionsContainer.contains(e.target)) {
+            suggestionsContainer.classList.add('hidden');
+        }
+    });
+}
+</script>
   
   
 </body>
