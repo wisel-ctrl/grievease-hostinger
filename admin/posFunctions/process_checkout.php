@@ -37,6 +37,9 @@ try {
     
     // Get the cremation checkbox value
     $with_cremate = isset($_POST['withCremation']) && $_POST['withCremation'] === 'on' ? 'yes' : 'no';
+    
+    // Get the chapel checkbox value
+    $use_chapel = $_POST['withChapel'] ?? 'No'; // Default to 'No' if not set
 
     $senior_pwd_discount = $_POST['senior_pwd_discount'] ?? 'no';
     
@@ -100,25 +103,25 @@ try {
         }
     }
 
-    // Prepare SQL statement - including with_cremate
+    // Prepare SQL statement - including with_cremate and use_chapel
     $stmt = $conn->prepare("INSERT INTO sales_tb (
         fname, mname, lname, suffix, phone, email,
         fname_deceased, mname_deceased, lname_deceased, suffix_deceased,
         date_of_birth, date_of_death, date_of_burial, deceased_address,
         branch_id, service_id, payment_method, initial_price, discounted_price, 
         amount_paid, balance, status, payment_status, death_cert_image, sold_by,
-        with_cremate, senior_pwd_discount, discount_id_img
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        with_cremate, use_chapel, senior_pwd_discount, discount_id_img
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
-    // Bind parameters - added with_cremate
+    // Bind parameters - added use_chapel
     $stmt->bind_param(
-        "ssssssssssssssiisddddsssisss",
+        "ssssssssssssssiisddddsssissss",
         $fname, $mname, $lname, $suffix, $phone, $email,
         $fname_deceased, $mname_deceased, $lname_deceased, $suffix_deceased,
         $date_of_birth, $date_of_death, $date_of_burial, $deceased_address,
         $branch_id, $service_id, $payment_method, $initial_price, $discounted_price, 
         $amount_paid, $balance, $status, $payment_status, $death_cert_path, $sold_by,
-        $with_cremate, $senior_pwd_discount, $discount_id_path
+        $with_cremate, $use_chapel, $senior_pwd_discount, $discount_id_path
     );
 
     // Execute the statement

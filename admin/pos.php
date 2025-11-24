@@ -3325,6 +3325,10 @@ function confirmCheckout() {
   const address = document.getElementById('deceasedAddress').value;
   formData.append('deceasedAddress', address);
 
+  // Add chapel checkbox value
+  const withChapel = document.getElementById('withChapel').checked;
+  formData.append('withChapel', withChapel ? 'Yes' : 'No');
+
   const withCremation = document.getElementById('withCremation').checked;
   formData.append('withCremation', withCremation ? 'on' : 'off');
 
@@ -3513,6 +3517,8 @@ function confirmCheckout() {
           <p class="text-sm"><strong>Balance:</strong> ₱${balance.toFixed(2)}</p>
           <p class="text-sm mt-1"><strong>Payment Status:</strong> ${balance > 0 ? 'With Balance' : 'Fully Paid'}</p>
           <p class="text-sm mt-1"><strong>Payment Method:</strong> ${paymentMethod}</p>
+          <p class="text-sm mt-1"><strong>With Chapel:</strong> ${withChapel ? 'Yes' : 'No'}</p>
+          <p class="text-sm mt-1"><strong>With Cremation:</strong> ${withCremation ? 'Yes' : 'No'}</p>
         </div>
       </div>
     `,
