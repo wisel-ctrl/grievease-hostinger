@@ -87,6 +87,8 @@ try {
     // Discount information
     $seniorPwdDiscount = isset($_POST['senior_pwd_discount']) && $_POST['senior_pwd_discount'] === 'yes' ? 'yes' : 'no';
 
+    $use_chapel = $_POST['withChapel'] ?? 'No'; // Default to 'No' if not set
+
     // Service and branch info
     $serviceId = intval($_POST['service_id']);
     $branchId = intval($_POST['branch_id']);
@@ -269,14 +271,14 @@ try {
                 date_of_birth, date_of_death, date_of_burial, sold_by, branch_id,
                 service_id, payment_method, initial_price, discounted_price,
                 amount_paid, balance, status, payment_status, death_cert_image,
-                deceased_address, with_cremate, get_timestamp, senior_pwd_discount, discount_id_img
+                deceased_address, with_cremate, get_timestamp, senior_pwd_discount, discount_id_img, use_chapel
             ) VALUES (
                 ?, ?, ?, ?, ?, ?, ?,
                 ?, ?, ?, ?,
                 ?, ?, ?, ?, ?,
                 ?, ?, ?, ?,
                 ?, ?, ?, ?, ?,
-                ?, ?, ?, ?, ?
+                ?, ?, ?, ?, ?, ?
             )
         ");
         
@@ -298,7 +300,7 @@ try {
             $dateOfBirth, $dateOfDeath, $dateOfBurial, $soldBy, $branchId,
             $serviceId, $paymentMethod, $discountedPrice, $totalPrice,
             $amountPaid, $balance, $status, $paymentStatus, $deathCertificatePath,
-            $deceasedAddress1, $withCremation, $defaultTime, $seniorPwdDiscount, $discountIdImgPath
+            $deceasedAddress1, $withCremation, $defaultTime, $seniorPwdDiscount, $discountIdImgPath, $use_chapel
         );
         
         // Execute the statement

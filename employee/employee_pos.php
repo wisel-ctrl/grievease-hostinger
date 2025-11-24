@@ -748,6 +748,7 @@ $servicesJson = json_encode($allServices);
             Additional Services
           </h4>
           <div class="space-y-3">
+            <!-- Cremation Option -->
             <label class="flex items-center bg-white p-3 rounded-md hover:bg-gray-50 transition-colors cursor-pointer border border-gray-200">
               <input type="checkbox" name="withCremation" id="withCremation" class="mr-3 text-sidebar-accent focus:ring-sidebar-accent">
               <span class="font-medium text-gray-800 mr-2">With Cremation</span>
@@ -755,13 +756,15 @@ $servicesJson = json_encode($allServices);
             </label>
             <p class="text-sm text-gray-500 ml-6">Check this box if the service includes cremation</p>
 
-            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
-                  <input type="checkbox" name="withChapel" id="withChapel" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-                  With Chapel <span class="ml-2 text-sidebar-accent font-semibold">(₱6,000 per day)</span>
-              </label>
-              <p class="text-sm text-gray-500 ml-8">Chapel bill will be calculated after the burial based on actual usage days</p>
+            <!-- Chapel Option - Fixed to match cremation styling -->
+            <label class="flex items-center bg-white p-3 rounded-md hover:bg-gray-50 transition-colors cursor-pointer border border-gray-200">
+              <input type="checkbox" name="withChapel" id="withChapel" class="mr-3 text-sidebar-accent focus:ring-sidebar-accent">
+              <span class="font-medium text-gray-800 mr-2">With Chapel</span>
+              <span class="font-bold text-sidebar-accent bg-amber-50 px-2 py-1 rounded border border-amber-200 text-sm">₱6,000/day</span>
+            </label>
+            <p class="text-sm text-gray-500 ml-6">Chapel bill will be calculated after the burial based on actual usage days</p>
           </div>
-        </div>         
+        </div>      
 
         <!-- Senior Citizen/PWD Discount Section -->
         <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
@@ -2536,6 +2539,9 @@ function confirmCheckout() {
   // Add senior/PWD discount status
   const seniorPwdDiscount = document.getElementById('seniorPwdDiscount').checked ? 'yes' : 'no';
   formData.append('senior_pwd_discount', seniorPwdDiscount);
+
+  const withChapel = document.getElementById('withChapel').checked;
+  formData.append('withChapel', withChapel ? 'Yes' : 'No');
 
   const address = document.getElementById('deceasedAddress').value;
   console.log("newAddress:", address);
