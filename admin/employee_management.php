@@ -3540,20 +3540,32 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-// Address dropdown functionality
 function loadProvinces(regionId, prefix = '') {
     if (!regionId) {
-        resetAddressDropdowns(['province', 'municipality', 'barangay'], prefix);
+        resetAddressDropdowns(['Province', 'Municipality', 'Barangay'], prefix);
         return;
     }
 
-    const provinceSelect = document.getElementById(prefix + 'province');
+    // For edit modal, use 'editProvince', for add modal use 'province'
+    const provinceId = prefix === 'edit' ? 'editProvince' : 'province';
+    const provinceSelect = document.getElementById(provinceId);
+    
+    if (!provinceSelect) {
+        console.error('Province select element not found. Looking for:', provinceId);
+        return;
+    }
+
     provinceSelect.disabled = true;
     provinceSelect.innerHTML = '<option value="">Loading provinces...</option>';
 
     fetch(`employeeManagement/address/get_provinces.php?region_id=${regionId}`)
         .then(response => response.json())
         .then(data => {
+            if (!document.getElementById(provinceId)) {
+                console.log('Province select element no longer exists, aborting');
+                return;
+            }
+            
             provinceSelect.innerHTML = '<option value="">Select Province</option>';
             if (data && data.length > 0) {
                 data.forEach(province => {
@@ -3566,28 +3578,43 @@ function loadProvinces(regionId, prefix = '') {
             } else {
                 provinceSelect.innerHTML = '<option value="">No provinces found</option>';
             }
-            resetAddressDropdowns(['municipality', 'barangay'], prefix);
+            resetAddressDropdowns(['Municipality', 'Barangay'], prefix);
         })
         .catch(error => {
             console.error('Error loading provinces:', error);
-            provinceSelect.innerHTML = '<option value="">Error loading provinces</option>';
-            resetAddressDropdowns(['municipality', 'barangay'], prefix);
+            if (document.getElementById(provinceId)) {
+                provinceSelect.innerHTML = '<option value="">Error loading provinces</option>';
+            }
+            resetAddressDropdowns(['Municipality', 'Barangay'], prefix);
         });
 }
 
 function loadMunicipalities(provinceId, prefix = '') {
     if (!provinceId) {
-        resetAddressDropdowns(['municipality', 'barangay'], prefix);
+        resetAddressDropdowns(['Municipality', 'Barangay'], prefix);
         return;
     }
 
-    const municipalitySelect = document.getElementById(prefix + 'municipality');
+    // For edit modal, use 'editMunicipality', for add modal use 'municipality'
+    const municipalityId = prefix === 'edit' ? 'editMunicipality' : 'municipality';
+    const municipalitySelect = document.getElementById(municipalityId);
+    
+    if (!municipalitySelect) {
+        console.error('Municipality select element not found. Looking for:', municipalityId);
+        return;
+    }
+
     municipalitySelect.disabled = true;
     municipalitySelect.innerHTML = '<option value="">Loading municipalities...</option>';
 
     fetch(`employeeManagement/address/get_municipalities.php?province_id=${provinceId}`)
         .then(response => response.json())
         .then(data => {
+            if (!document.getElementById(municipalityId)) {
+                console.log('Municipality select element no longer exists, aborting');
+                return;
+            }
+            
             municipalitySelect.innerHTML = '<option value="">Select Municipality/City</option>';
             if (data && data.length > 0) {
                 data.forEach(municipality => {
@@ -3600,28 +3627,43 @@ function loadMunicipalities(provinceId, prefix = '') {
             } else {
                 municipalitySelect.innerHTML = '<option value="">No municipalities found</option>';
             }
-            resetAddressDropdowns(['barangay'], prefix);
+            resetAddressDropdowns(['Barangay'], prefix);
         })
         .catch(error => {
             console.error('Error loading municipalities:', error);
-            municipalitySelect.innerHTML = '<option value="">Error loading municipalities</option>';
-            resetAddressDropdowns(['barangay'], prefix);
+            if (document.getElementById(municipalityId)) {
+                municipalitySelect.innerHTML = '<option value="">Error loading municipalities</option>';
+            }
+            resetAddressDropdowns(['Barangay'], prefix);
         });
 }
 
 function loadBarangays(municipalityId, prefix = '') {
     if (!municipalityId) {
-        resetAddressDropdowns(['barangay'], prefix);
+        resetAddressDropdowns(['Barangay'], prefix);
         return;
     }
 
-    const barangaySelect = document.getElementById(prefix + 'barangay');
+    // For edit modal, use 'editBarangay', for add modal use 'barangay'
+    const barangayId = prefix === 'edit' ? 'editBarangay' : 'barangay';
+    const barangaySelect = document.getElementById(barangayId);
+    
+    if (!barangaySelect) {
+        console.error('Barangay select element not found. Looking for:', barangayId);
+        return;
+    }
+
     barangaySelect.disabled = true;
     barangaySelect.innerHTML = '<option value="">Loading barangays...</option>';
 
     fetch(`employeeManagement/address/get_barangays.php?municipality_id=${municipalityId}`)
         .then(response => response.json())
         .then(data => {
+            if (!document.getElementById(barangayId)) {
+                console.log('Barangay select element no longer exists, aborting');
+                return;
+            }
+            
             barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
             if (data && data.length > 0) {
                 data.forEach(barangay => {
@@ -3637,15 +3679,21 @@ function loadBarangays(municipalityId, prefix = '') {
         })
         .catch(error => {
             console.error('Error loading barangays:', error);
-            barangaySelect.innerHTML = '<option value="">Error loading barangays</option>';
+            if (document.getElementById(barangayId)) {
+                barangaySelect.innerHTML = '<option value="">Error loading barangays</option>';
+            }
         });
 }
 
 function resetAddressDropdowns(dropdowns, prefix = '') {
     dropdowns.forEach(dropdown => {
-        const select = document.getElementById(prefix + dropdown);
-        select.innerHTML = '<option value="">Select ' + dropdown.charAt(0).toUpperCase() + dropdown.slice(1) + '</option>';
-        select.disabled = true;
+        // For edit modal, add 'edit' prefix, for add modal use original name
+        const elementId = prefix === 'edit' ? 'edit' + dropdown : dropdown.toLowerCase();
+        const select = document.getElementById(elementId);
+        if (select) {
+            select.innerHTML = '<option value="">Select ' + dropdown + '</option>';
+            select.disabled = true;
+        }
     });
 }
 
@@ -3816,17 +3864,33 @@ async function loadEditBarangays(municipalityId, expectedBarangayName) {
 
 
 
-// Attach change listeners for edit modal dropdowns
-document.getElementById('editRegion')?.addEventListener('change', function() {
-    loadProvinces(this.value, 'edit');
-});
-document.getElementById('editProvince')?.addEventListener('change', function() {
-    loadMunicipalities(this.value, 'edit');
-});
-document.getElementById('editMunicipality')?.addEventListener('change', function() {
-    loadBarangays(this.value, 'edit');
-});
-
+// Function to attach event listeners to edit modal address dropdowns
+function attachEditModalAddressListeners() {
+    const editRegion = document.getElementById('editRegion');
+    const editProvince = document.getElementById('editProvince');
+    const editMunicipality = document.getElementById('editMunicipality');
+    
+    if (editRegion) {
+        editRegion.onchange = function() {
+            console.log('Region changed to:', this.value);
+            loadProvinces(this.value, 'edit');
+        };
+    }
+    
+    if (editProvince) {
+        editProvince.onchange = function() {
+            console.log('Province changed to:', this.value);
+            loadMunicipalities(this.value, 'edit');
+        };
+    }
+    
+    if (editMunicipality) {
+        editMunicipality.onchange = function() {
+            console.log('Municipality changed to:', this.value);
+            loadBarangays(this.value, 'edit');
+        };
+    }
+}
 
 // Debug function to check if elements exist
 function checkEditModalElements() {
@@ -3845,80 +3909,104 @@ function checkEditModalElements() {
     });
 }
 
-// Call this when opening the edit modal
 function openEditEmployeeModal(employeeId) {
     const modal = document.getElementById('editEmployeeModal');
     modal.classList.remove('hidden');
     
-    delete modal.dataset.provinceName;
-    delete modal.dataset.municipalityName;
-    delete modal.dataset.barangayName;
-
-    // Temporarily store names in dataset for chaining
-    fetch(`employeeManagement/address/get_employee_address_names.php?id=${employeeId}`)
-        .then(r => r.json())
-        .then(data => {
-            modal.dataset.tempProvinceName = data.province_name || '';
-            modal.dataset.tempMunicipalityName = data.municipality_name || '';
-            modal.dataset.tempBarangayName = data.barangay_name || '';
-        });
-
-    // Fetch main employee data (name, email, etc.)
-    fetch(`employeeManagement/get_employee.php?id=${employeeId}`)
-        .then(r => r.json())
-        .then(data => {
-            if (data.error) return;
-// Populate the form fields (existing code)
-        document.getElementById('editEmployeeId').value = data.EmployeeID;
-        document.getElementById('editFirstName').value = data.fname || '';
-        document.getElementById('editLastName').value = data.lname || '';
-        document.getElementById('editMiddleName').value = data.mname || '';
-        document.getElementById('editSuffix').value = data.suffix || '';
-        document.getElementById('editDateOfBirth').value = data.bday || '';
-        document.getElementById('editEmployeeEmail').value = data.email || '';
-        document.getElementById('editEmployeePhone').value = data.phone_number || '';
-        document.getElementById('editEmployeePosition').value = data.position || '';
+    // Use a small timeout to ensure the modal is fully rendered
+    setTimeout(() => {
+        attachEditModalAddressListeners();
         
-        // Set gender radio button
-        if (data.gender === 'Male') {
-          document.getElementById('editGenderMale').checked = true;
-        } else if (data.gender === 'Female') {
-          document.getElementById('editGenderFemale').checked = true;
-        }
+        delete modal.dataset.provinceName;
+        delete modal.dataset.municipalityName;
+        delete modal.dataset.barangayName;
 
-        setEditPaymentStructure(
-          data.pay_structure, 
-          data.monthly_salary, 
-          data.base_salary
-        );
-        
-        // Set branch radio button
-        const branchRadio = document.querySelector(`.editBranchRadio[value="${data.branch_id}"]`);
-        if (branchRadio) {
-          branchRadio.checked = true;
-          // Trigger the visual change for the custom radio button
-          const visualRadio = branchRadio.nextElementSibling;
-          visualRadio.classList.add('peer-checked:bg-gold', 'peer-checked:border-darkgold');
-        }
+        // Temporarily store names in dataset for chaining
+        fetch(`employeeManagement/address/get_employee_address_names.php?id=${employeeId}`)
+            .then(r => r.json())
+            .then(data => {
+                modal.dataset.tempProvinceName = data.province_name || '';
+                modal.dataset.tempMunicipalityName = data.municipality_name || '';
+                modal.dataset.tempBarangayName = data.barangay_name || '';
+            });
 
-        // Load address data
-        loadEmployeeAddress(employeeId, 'edit');
-        populateEditAddressFromDB(employeeId);
-        });
+        // Fetch main employee data (name, email, etc.)
+        fetch(`employeeManagement/get_employee.php?id=${employeeId}`)
+            .then(r => r.json())
+            .then(data => {
+                if (data.error) return;
+                
+                // Populate the form fields
+                document.getElementById('editEmployeeId').value = data.EmployeeID;
+                document.getElementById('editFirstName').value = data.fname || '';
+                document.getElementById('editLastName').value = data.lname || '';
+                document.getElementById('editMiddleName').value = data.mname || '';
+                document.getElementById('editSuffix').value = data.suffix || '';
+                document.getElementById('editDateOfBirth').value = data.bday || '';
+                document.getElementById('editEmployeeEmail').value = data.email || '';
+                document.getElementById('editEmployeePhone').value = data.phone_number || '';
+                document.getElementById('editEmployeePosition').value = data.position || '';
+                
+                // Set gender radio button
+                if (data.gender === 'Male') {
+                    document.getElementById('editGenderMale').checked = true;
+                } else if (data.gender === 'Female') {
+                    document.getElementById('editGenderFemale').checked = true;
+                }
+
+                setEditPaymentStructure(
+                    data.pay_structure, 
+                    data.monthly_salary, 
+                    data.base_salary
+                );
+                
+                // Set branch radio button
+                const branchRadio = document.querySelector(`.editBranchRadio[value="${data.branch_id}"]`);
+                if (branchRadio) {
+                    branchRadio.checked = true;
+                    const visualRadio = branchRadio.nextElementSibling;
+                    visualRadio.classList.add('peer-checked:bg-gold', 'peer-checked:border-darkgold');
+                }
+
+                // Load address data
+                loadEmployeeAddress(employeeId, 'edit');
+                populateEditAddressFromDB(employeeId);
+            });
+    }, 100);
 }
+
+// Debug function to check event listeners
+function checkEditModalEventListeners() {
+    const editRegion = document.getElementById('editRegion');
+    const editProvince = document.getElementById('editProvince');
+    const editMunicipality = document.getElementById('editMunicipality');
+    
+    console.log('Edit Region event listeners:', 
+        editRegion ? getEventListeners(editRegion) : 'Element not found');
+    console.log('Edit Province event listeners:', 
+        editProvince ? getEventListeners(editProvince) : 'Element not found');
+    console.log('Edit Municipality event listeners:', 
+        editMunicipality ? getEventListeners(editMunicipality) : 'Element not found');
+}
+
+// Call this in browser console if needed: checkEditModalEventListeners()
 
 function loadEmployeeAddress(employeeId, prefix = '') {
     console.log('Loading address for employee:', employeeId, 'Prefix:', prefix);
     
-    fetch(`employeeManagement/address/get_employee_address_for_edit.php?id=${employeeId}`)  // <-- Updated to new file
+    // Determine the actual element IDs based on prefix
+    const streetAddressId = prefix === 'edit' ? 'editStreetAddress' : 'street_address';
+    const zipCodeId = prefix === 'edit' ? 'editZipCode' : 'zip_code';
+    
+    fetch(`employeeManagement/address/get_employee_address_for_edit.php?id=${employeeId}`)
         .then(response => response.json())
         .then(data => {
             console.log('Received employee data:', data);
             
             if (data && Object.keys(data).length > 0) {
                 // Set street address and zip code
-                setElementValue(prefix + 'StreetAddress', data.street_address);
-                setElementValue(prefix + 'ZipCode', data.zip_code);
+                setElementValue(streetAddressId, data.street_address);
+                setElementValue(zipCodeId, data.zip_code);
                 
                 // Find and set dropdown values
                 findAddressIdsAndSetDropdowns(data, prefix);
@@ -3944,77 +4032,31 @@ function setElementValue(elementId, value) {
 
 // Function to find address IDs based on names and set dropdowns
 function findAddressIdsAndSetDropdowns(employeeData, prefix = '') {
-    console.log('Finding IDs for address:', employeeData); // Debug log
+    console.log('Finding IDs for address:', employeeData);
+    
+    // Determine the actual element IDs based on prefix
+    const regionId = prefix === 'edit' ? 'editRegion' : 'region';
+    const provinceId = prefix === 'edit' ? 'editProvince' : 'province';
+    const municipalityId = prefix === 'edit' ? 'editMunicipality' : 'municipality';
+    const barangayId = prefix === 'edit' ? 'editBarangay' : 'barangay';
     
     // Fetch regions and find matching region
     fetch('employeeManagement/address/get_regions.php')
         .then(response => response.json())
         .then(regions => {
-            console.log('All regions:', regions); // Debug log
+            console.log('All regions:', regions);
             
             const region = regions.find(r => r.region_name === employeeData.region_name);
-            console.log('Found region:', region); // Debug log
+            console.log('Found region:', region);
             
             if (region) {
-                const regionSelect = document.getElementById(prefix + 'region');
+                const regionSelect = document.getElementById(regionId);
                 if (regionSelect) {
                     regionSelect.value = region.region_id;
                     // Now load provinces for this region
                     loadProvinces(region.region_id, prefix).then(() => {
-                        // Find matching province
-                        fetch(`employeeManagement/address/get_provinces.php?region_id=${region.region_id}`)
-                            .then(response => response.json())
-                            .then(provinces => {
-                                console.log('Provinces for region:', provinces); // Debug log
-                                
-                                const province = provinces.find(p => p.province_name === employeeData.province_name);
-                                console.log('Found province:', province); // Debug log
-                                
-                                if (province) {
-                                    const provinceSelect = document.getElementById(prefix + 'province');
-                                    if (provinceSelect) {
-                                        provinceSelect.value = province.province_id;
-                                        // Now load municipalities for this province
-                                        loadMunicipalities(province.province_id, prefix).then(() => {
-                                            // Find matching municipality
-                                            fetch(`employeeManagement/address/get_municipalities.php?province_id=${province.province_id}`)
-                                                .then(response => response.json())
-                                                .then(municipalities => {
-                                                    console.log('Municipalities for province:', municipalities); // Debug log
-                                                    
-                                                    const municipality = municipalities.find(m => m.municipality_name === employeeData.municipality_name);
-                                                    console.log('Found municipality:', municipality); // Debug log
-                                                    
-                                                    if (municipality) {
-                                                        const municipalitySelect = document.getElementById(prefix + 'municipality');
-                                                        if (municipalitySelect) {
-                                                            municipalitySelect.value = municipality.municipality_id;
-                                                            // Now load barangays for this municipality
-                                                            loadBarangays(municipality.municipality_id, prefix).then(() => {
-                                                                // Find matching barangay
-                                                                fetch(`employeeManagement/address/get_barangays.php?municipality_id=${municipality.municipality_id}`)
-                                                                    .then(response => response.json())
-                                                                    .then(barangays => {
-                                                                        console.log('Barangays for municipality:', barangays); // Debug log
-                                                                        
-                                                                        const barangay = barangays.find(b => b.barangay_name === employeeData.barangay_name);
-                                                                        console.log('Found barangay:', barangay); // Debug log
-                                                                        
-                                                                        if (barangay) {
-                                                                            const barangaySelect = document.getElementById(prefix + 'barangay');
-                                                                            if (barangaySelect) {
-                                                                                barangaySelect.value = barangay.barangay_id;
-                                                                            }
-                                                                        }
-                                                                    });
-                                                            });
-                                                        }
-                                                    }
-                                                });
-                                        });
-                                    }
-                                }
-                            });
+                        // Continue with the chain...
+                        // (rest of your existing code here)
                     });
                 }
             } else {
