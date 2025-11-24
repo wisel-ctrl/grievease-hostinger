@@ -2881,10 +2881,6 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('cremationCheckbox').addEventListener('change', function() {
         updateTraditionalPaymentSummary();
     });
-    
-    document.getElementById('chapelServiceCheckbox').addEventListener('change', function() {
-        updateTraditionalPaymentSummary();
-    });
 
     function updateTraditionalPaymentSummary() {
         const basePrice = parseInt(document.getElementById('traditionalSelectedPackagePrice').value) || 0;
