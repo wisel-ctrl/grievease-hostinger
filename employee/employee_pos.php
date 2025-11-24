@@ -468,7 +468,7 @@ $servicesJson = json_encode($allServices);
           <h4 class="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4 pb-2 border-b border-gray-200 flex items-center">
             Client Information
           </h4>
-          
+
           <div class="mb-4">
             <label for="clientQuickFill" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
               Quick Fill - Search Existing Client
@@ -2493,6 +2493,9 @@ function openTraditionalCheckout() {
   const branchId = serviceTypeModal.dataset.branchId;
 
   initializePrices(servicePrice);
+
+  fetchAllClients();
+  setTimeout(initializeQuickFill, 100);
 
   // Set the service details in the form
   document.getElementById('service-id').value = serviceId;
