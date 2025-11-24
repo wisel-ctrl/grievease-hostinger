@@ -64,9 +64,49 @@ try {
     $deceasedMiddleName = isset($_POST['deceasedMiddleName']) ? htmlspecialchars(trim($_POST['deceasedMiddleName'])) : null;
     $deceasedLastName = htmlspecialchars(trim($_POST['deceasedLastName']));
     $deceasedSuffix = isset($_POST['traditionalDeceasedSuffix']) ? htmlspecialchars(trim($_POST['traditionalDeceasedSuffix'])) : null;
-    $dateOfBirth = isset($_POST['dateOfBirth']) ? $_POST['dateOfBirth'] : null;
+    $dateOfBirth = !empty($_POST['dateOfBirth']) ? $_POST['dateOfBirth'] : null;
     $dateOfDeath = $_POST['dateOfDeath'];
-    $dateOfBurial = isset($_POST['dateOfBurial']) ? $_POST['dateOfBurial'] : null;
+    $dateOfBurial = !empty($_POST['dateOfBurial']) ? $_POST['dateOfBurial'] : null;
+
+    // Date Validations
+    $currentDate = date('Y-m-d');
+    
+    // Validate date of birth - cannot be in the future (only if provided)
+    if (!empty($dateOfBirth)) {
+        if ($dateOfBirth > $currentDate) {
+            throw new Exception("Date of birth cannot be in the future.");
+        }
+        
+        // Validate date of birth cannot be after date of death (only if both provided)
+        if (!empty($dateOfDeath) && $dateOfBirth > $dateOfDeath) {
+            throw new Exception("Date of birth cannot be after date of death.");
+        }
+    }
+    
+    // Validate date of death - cannot be in the future (required field)
+    if (!empty($dateOfDeath)) {
+        if ($dateOfDeath > $currentDate) {
+            throw new Exception("Date of death cannot be in the future.");
+        }
+        
+        // Validate date of death must be after date of birth (only if date of birth provided)
+        if (!empty($dateOfBirth) && $dateOfDeath < $dateOfBirth) {
+            throw new Exception("Date of death cannot be before date of birth.");
+        }
+    }
+    
+    // Validate date of burial - cannot be before date of death (only if both provided)
+    if (!empty($dateOfBurial) && !empty($dateOfDeath)) {
+        if ($dateOfBurial < $dateOfDeath) {
+            throw new Exception("Date of burial cannot be before date of death.");
+        }
+        
+        // Optional: Validate date of burial cannot be too far in the future (e.g., within 1 year)
+        $maxBurialDate = date('Y-m-d', strtotime('+1 year'));
+        if ($dateOfBurial > $maxBurialDate) {
+            throw new Exception("Date of burial cannot be more than 1 year in the future.");
+        }
+    }
 
     // Address components
     $deceasedRegion = $_POST['deceasedRegion'];
