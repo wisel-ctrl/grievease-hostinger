@@ -295,6 +295,25 @@ $servicesJson = json_encode($allServices);
 .w-\[calc\(100\%-4rem\)\] {
   width: calc(100% - 4rem);
 }
+
+#clientSuggestions {
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e0 #f7fafc;
+}
+
+#clientSuggestions::-webkit-scrollbar {
+    width: 6px;
+}
+
+#clientSuggestions::-webkit-scrollbar-track {
+    background: #f7fafc;
+    border-radius: 0 0 8px 0;
+}
+
+#clientSuggestions::-webkit-scrollbar-thumb {
+    background-color: #cbd5e0;
+    border-radius: 3px;
+}
   </style>
 </head>
 <body class="flex bg-gray-50">
@@ -532,6 +551,20 @@ $servicesJson = json_encode($allServices);
           <h4 class="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4 pb-2 border-b border-gray-200 flex items-center">
             Deceased Information
           </h4>
+
+          <div class="mb-4">
+            <label for="clientQuickFill" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              Quick Fill - Search Existing Client
+              <span class="text-xs text-gray-500 ml-1">(Type name to search)</span>
+            </label>
+            <div class="relative">
+              <input type="text" id="clientQuickFill" name="clientQuickFill" 
+                    placeholder="Start typing client name..."
+                    class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              <div id="clientSuggestions" class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg hidden max-h-60 overflow-y-auto"></div>
+            </div>
+          </div>
+
           <div class="space-y-3 sm:space-y-4">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-2 sm:gap-4">
               <div>
@@ -722,6 +755,44 @@ $servicesJson = json_encode($allServices);
           </div>
         </div>         
 
+        <!-- Senior Citizen/PWD Discount Section -->
+        <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
+          <h4 class="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4 pb-2 border-b border-gray-200 flex items-center">
+            Discount Information
+          </h4>
+          <div class="space-y-3 sm:space-y-4">
+            <!-- Discount Checkbox -->
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="checkbox" name="senior_pwd_discount" id="seniorPwdDiscount" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              Apply Senior Citizen/PWD Discount (20% Off)
+            </label>
+            <p class="text-sm text-gray-500 ml-4">Check this box if you're eligible for Senior Citizen or PWD discount</p>
+            
+            <!-- ID Upload Section -->
+            <div id="idUploadSection" class="hidden mt-3">
+              <label for="seniorPwdId" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                Senior Citizen ID or PWD ID 
+                <span class="text-xs text-gray-500 ml-1">(Optional)</span>
+              </label>
+              <div class="relative">
+                <div class="flex items-center border border-gray-300 rounded-lg px-3 py-2 focus-within:ring-1 focus-within:ring-sidebar-accent focus-within:border-sidebar-accent transition-all duration-200">
+                  <input type="file" id="seniorPwdId" name="discount_id_img" accept="image/*,.pdf" class="w-full focus:outline-none">
+                </div>
+                <!-- Image preview container -->
+                <div id="idPreview" class="mt-2 hidden">
+                  <div class="relative inline-block">
+                    <img id="idPreviewImage" src="#" alt="ID Preview" class="max-h-40 rounded-lg border border-gray-200">
+                    <button type="button" id="removeIdPreviewBtn" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors">
+                      <i class="fas fa-times text-xs"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">Upload a clear photo of your valid Senior Citizen ID or PWD ID</p>
+            </div>
+          </div>
+        </div>              
+
         <!-- Payment Information -->
         <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
           <h4 class="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4 pb-2 border-b border-gray-200 flex items-center">
@@ -775,43 +846,6 @@ $servicesJson = json_encode($allServices);
           </div>
         </div>
 
-        <!-- Senior Citizen/PWD Discount Section -->
-        <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
-          <h4 class="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4 pb-2 border-b border-gray-200 flex items-center">
-            Discount Information
-          </h4>
-          <div class="space-y-3 sm:space-y-4">
-            <!-- Discount Checkbox -->
-            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
-              <input type="checkbox" name="senior_pwd_discount" id="seniorPwdDiscount" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-              Apply Senior Citizen/PWD Discount (20% Off)
-            </label>
-            <p class="text-sm text-gray-500 ml-4">Check this box if you're eligible for Senior Citizen or PWD discount</p>
-            
-            <!-- ID Upload Section -->
-            <div id="idUploadSection" class="hidden mt-3">
-              <label for="seniorPwdId" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                Senior Citizen ID or PWD ID 
-                <span class="text-xs text-gray-500 ml-1">(Optional)</span>
-              </label>
-              <div class="relative">
-                <div class="flex items-center border border-gray-300 rounded-lg px-3 py-2 focus-within:ring-1 focus-within:ring-sidebar-accent focus-within:border-sidebar-accent transition-all duration-200">
-                  <input type="file" id="seniorPwdId" name="discount_id_img" accept="image/*,.pdf" class="w-full focus:outline-none">
-                </div>
-                <!-- Image preview container -->
-                <div id="idPreview" class="mt-2 hidden">
-                  <div class="relative inline-block">
-                    <img id="idPreviewImage" src="#" alt="ID Preview" class="max-h-40 rounded-lg border border-gray-200">
-                    <button type="button" id="removeIdPreviewBtn" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors">
-                      <i class="fas fa-times text-xs"></i>
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <p class="text-xs text-gray-500 mt-1">Upload a clear photo of your valid Senior Citizen ID or PWD ID</p>
-            </div>
-          </div>
-        </div>
 
       </form>
     </div>
@@ -3551,6 +3585,187 @@ function formatPrice(amount) {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
+}
+</script>
+
+<script>
+let allClients = [];
+
+// Fetch all clients on modal open
+function fetchAllClients() {
+    fetch('../admin/posFunctions/get_clients.php')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.error) {
+                throw new Error(data.error);
+            }
+            allClients = data;
+        })
+        .catch(error => {
+            console.error('Error fetching clients:', error);
+            showNotification('Failed to load client list: ' + error.message, 'error');
+        });
+}
+
+// The rest of your JavaScript functions remain the same...
+function displaySuggestions(clients) {
+    const suggestionsContainer = document.getElementById('clientSuggestions');
+    
+    if (clients.length === 0) {
+        suggestionsContainer.innerHTML = `
+            <div class="p-3 text-gray-500 text-center">
+                No clients found matching your search
+            </div>
+        `;
+        suggestionsContainer.classList.remove('hidden');
+        return;
+    }
+    
+    suggestionsContainer.innerHTML = clients.map(client => `
+        <div class="client-suggestion p-3 hover:bg-gray-100 cursor-pointer border-b border-gray-200 last:border-b-0 transition-colors duration-200" 
+             data-client-id="${client.client_id}"
+             onclick="selectClientById('${client.client_id}')">
+            <div class="font-medium text-gray-800">
+                ${client.first_name} ${client.middle_name || ''} ${client.last_name} ${client.suffix || ''}
+            </div>
+            <div class="text-sm text-gray-600">${client.email || 'No email'}</div>
+            <div class="text-sm text-gray-500">${client.phone_number}</div>
+        </div>
+    `).join('');
+    
+    suggestionsContainer.classList.remove('hidden');
+}
+
+function navigateSuggestions(direction, activeSuggestion) {
+    const suggestions = document.querySelectorAll('.client-suggestion');
+    if (suggestions.length === 0) return;
+    
+    let nextIndex = 0;
+    
+    if (activeSuggestion) {
+        const currentIndex = Array.from(suggestions).indexOf(activeSuggestion);
+        activeSuggestion.classList.remove('bg-sidebar-accent', 'text-white');
+        
+        if (direction === 'down') {
+            nextIndex = (currentIndex + 1) % suggestions.length;
+        } else {
+            nextIndex = (currentIndex - 1 + suggestions.length) % suggestions.length;
+        }
+    }
+    
+    suggestions[nextIndex].classList.add('bg-sidebar-accent', 'text-white');
+    suggestions[nextIndex].scrollIntoView({ block: 'nearest' });
+}
+
+function selectClientById(clientId) {
+    const selectedClient = allClients.find(client => client.client_id == clientId);
+    
+    console.log('Looking for client ID:', clientId);
+    console.log('Found client:', selectedClient);
+    
+    if (!selectedClient) {
+        showNotification('Error: Client data not found', 'error');
+        return;
+    }
+    
+    // Fill the form fields
+    document.getElementById('clientFirstName').value = selectedClient.first_name || '';
+    document.getElementById('clientMiddleName').value = selectedClient.middle_name || '';
+    document.getElementById('clientLastName').value = selectedClient.last_name || '';
+    document.getElementById('clientSuffix').value = selectedClient.suffix || '';
+    document.getElementById('clientPhone').value = selectedClient.phone_number || '';
+    document.getElementById('clientEmail').value = selectedClient.email || '';
+    
+    // Clear and hide suggestions
+    document.getElementById('clientQuickFill').value = '';
+    document.getElementById('clientSuggestions').classList.add('hidden');
+    
+    showNotification('Client information filled successfully!', 'success');
+}
+
+function selectClient(clientIndex) {
+    const selectedClient = allClients[clientIndex];
+    
+    if (!selectedClient) {
+        showNotification('Error: Client data not found', 'error');
+        return;
+    }
+    
+    // Fill the form fields
+    document.getElementById('clientFirstName').value = selectedClient.first_name || '';
+    document.getElementById('clientMiddleName').value = selectedClient.middle_name || '';
+    document.getElementById('clientLastName').value = selectedClient.last_name || '';
+    document.getElementById('clientSuffix').value = selectedClient.suffix || '';
+    document.getElementById('clientPhone').value = selectedClient.phone_number || '';
+    document.getElementById('clientEmail').value = selectedClient.email || '';
+    
+    // Clear and hide suggestions
+    document.getElementById('clientQuickFill').value = '';
+    document.getElementById('clientSuggestions').classList.add('hidden');
+    
+    showNotification('Client information filled successfully!', 'success');
+}
+
+function initializeQuickFill() {
+    const quickFillInput = document.getElementById('clientQuickFill');
+    const suggestionsContainer = document.getElementById('clientSuggestions');
+    
+    if (!quickFillInput || !suggestionsContainer) {
+        console.error('Quick fill elements not found');
+        return;
+    }
+    
+    // Clear previous data
+    quickFillInput.value = '';
+    
+    // Input event for suggestions
+    quickFillInput.addEventListener('input', function(e) {
+        const searchTerm = e.target.value.trim();
+        
+        if (searchTerm.length < 2) {
+            suggestionsContainer.classList.add('hidden');
+            return;
+        }
+        
+        const filteredClients = allClients.filter(client => {
+            const fullName = `${client.first_name} ${client.middle_name || ''} ${client.last_name}`.toLowerCase();
+            return fullName.includes(searchTerm.toLowerCase());
+        });
+        
+        displaySuggestions(filteredClients);
+    });
+    
+    // Handle keyboard navigation
+    quickFillInput.addEventListener('keydown', function(e) {
+        const activeSuggestion = suggestionsContainer.querySelector('.bg-sidebar-accent');
+        
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            navigateSuggestions('down', activeSuggestion);
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            navigateSuggestions('up', activeSuggestion);
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            if (activeSuggestion) {
+                selectClient(activeSuggestion.dataset.clientIndex);
+            }
+        } else if (e.key === 'Escape') {
+            suggestionsContainer.classList.add('hidden');
+        }
+    });
+    
+    // Hide suggestions when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!quickFillInput.contains(e.target) && !suggestionsContainer.contains(e.target)) {
+            suggestionsContainer.classList.add('hidden');
+        }
+    });
 }
 </script>
 
