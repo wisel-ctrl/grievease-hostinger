@@ -1829,24 +1829,30 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
   
   <!-- Modal Content -->
   <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] flex flex-col">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeAssignStaffModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
     <!-- Modal Header -->
     <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
-      <div class="flex justify-between items-center">
-        <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
-          Assign Staff to Service
-        </h3>
-        <button type="button" class="text-white hover:text-gray-200 transition-colors" onclick="closeAssignStaffModal()">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
+      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
+        Assign Staff to Service
+      </h3>
     </div>
     
     <!-- Modal Body -->
     <div class="px-4 sm:px-6 py-4 sm:py-5 overflow-y-auto modal-scroll-container">
-      <form id="assignStaffForm" class="space-y-4">
+      <form id="assignStaffForm" class="space-y-3 sm:space-y-4">
         <input type="hidden" id="assignServiceId">
+        
+        <!-- Toggle All Button -->
+        <div class="flex justify-end mb-2">
+          <button type="button" id="toggleAllStaffBtn" class="px-4 py-2 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-all duration-200 flex items-center">
+            <i class="fas fa-check-square mr-2"></i>
+            Check All Staff
+          </button>
+        </div>
         
         <!-- Staff Sections -->
         <div class="space-y-4">
@@ -6942,6 +6948,145 @@ function formatCurrency(amount) {
     
     return `₱ ${formattedAmount}`;
 }
+</script>
+
+<script>
+// Global variable to track select all state
+let isAllStaffSelected = false;
+
+function openAssignStaffModal(serviceId) {
+    // Reset select all state
+    isAllStaffSelected = false;
+    
+    // Set the service ID in the form
+    document.getElementById('assignServiceId').value = serviceId;
+    
+    // Show the modal
+    const modal = document.getElementById('assignStaffModal');
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    
+    // Fetch employees for each position
+    fetch(`historyAPI/get_employees.php?service_id=${serviceId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Populate each section
+            populateEmployeeSection('embalmersSection', 'Embalmer', data.embalmers || []);
+            populateEmployeeSection('driversSection', 'Driver', data.drivers || []);
+            populateEmployeeSection('personnelSection', 'Personnel', data.personnel || []);
+            
+            // Setup toggle button after populating
+            setupToggleAllButton();
+        })
+        .catch(error => {
+            console.error('Error fetching employees:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to load employees. Please try again.',
+                confirmButtonColor: '#3085d6'
+            });
+            closeAssignStaffModal();
+        });
+}
+
+function populateEmployeeSection(sectionId, position, employees) {
+    const section = document.getElementById(sectionId);
+    const positionLower = position.toLowerCase();
+    
+    let html = '';
+    
+    if (employees && employees.length > 0) {
+        employees.forEach((employee, index) => {
+            // Format name parts
+            const formatName = (name) => {
+                if (!name || name.toLowerCase() === 'null') return '';
+                return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+            };
+
+            const firstName = formatName(employee.fname);
+            const middleName = formatName(employee.mname);
+            const lastName = formatName(employee.lname);
+
+            // Combine names with proper spacing
+            const fullName = [firstName, middleName, lastName]
+                .filter(name => name && name.trim() !== '')
+                .join(' ');
+            
+            const checkboxId = `${positionLower}${index + 1}`;
+            
+            html += `
+                <div class="flex items-center">
+                    <input type="checkbox" 
+                           id="${checkboxId}" 
+                           name="assigned_staff[]" 
+                           value="${employee.employeeID}" 
+                           class="staff-checkbox w-4 h-4 text-sidebar-accent border-gray-300 rounded focus:ring-sidebar-accent">
+                    <label for="${checkboxId}" class="ml-2 text-sm text-gray-700">${fullName}</label>
+                </div>
+            `;
+        });
+    } else {
+        html = `<p class="text-gray-500 col-span-2">No ${positionLower}s available</p>`;
+    }
+    
+    section.innerHTML = html;
+}
+
+function setupToggleAllButton() {
+    const toggleBtn = document.getElementById('toggleAllStaffBtn');
+    
+    // Remove any existing event listeners
+    toggleBtn.replaceWith(toggleBtn.cloneNode(true));
+    
+    // Get the new button reference
+    const newToggleBtn = document.getElementById('toggleAllStaffBtn');
+    
+    // Add click event listener
+    newToggleBtn.addEventListener('click', toggleAllStaff);
+    
+    // Set initial button state
+    updateToggleButtonText();
+}
+
+function toggleAllStaff() {
+    const allCheckboxes = document.querySelectorAll('.staff-checkbox');
+    
+    if (allCheckboxes.length === 0) return;
+    
+    // Toggle the state
+    isAllStaffSelected = !isAllStaffSelected;
+    
+    // Check or uncheck all staff checkboxes
+    allCheckboxes.forEach(checkbox => {
+        checkbox.checked = isAllStaffSelected;
+    });
+    
+    // Update button text and icon
+    updateToggleButtonText();
+}
+
+function updateToggleButtonText() {
+    const toggleBtn = document.getElementById('toggleAllStaffBtn');
+    const icon = toggleBtn.querySelector('i');
+    
+    if (isAllStaffSelected) {
+        toggleBtn.innerHTML = '<i class="fas fa-times-circle mr-2"></i>Uncheck All Staff';
+        toggleBtn.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+        toggleBtn.classList.add('bg-red-500', 'hover:bg-red-600');
+    } else {
+        toggleBtn.innerHTML = '<i class="fas fa-check-square mr-2"></i>Check All Staff';
+        toggleBtn.classList.remove('bg-red-500', 'hover:bg-red-600');
+        toggleBtn.classList.add('bg-blue-500', 'hover:bg-blue-600');
+    }
+}
+
+// Your existing saveStaffAssignment function would go here
 </script>
 
 </body> 
