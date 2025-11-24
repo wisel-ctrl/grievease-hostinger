@@ -4302,17 +4302,33 @@ function openCompleteModal(serviceId) {
   document.getElementById('internmentPlace').value = '';
   document.getElementById('finalBalanceSettled').checked = false;
   
+  // Reset chapel fields
+  document.getElementById('usedFuneralChapel').checked = false;
+  document.getElementById('chapelDays').value = '0';
+  document.getElementById('chapelTotalCost').textContent = '0';
+  document.getElementById('chapelDaysContainer').classList.add('hidden');
+  
   // Reset the toggle state when modal opens
   completeAllStaffChecked = false;
   updateCompleteToggleButton();
   
-  // Fetch the branch_id and employees via AJAX
+  // Fetch the branch_id, use_chapel and employees via AJAX
   fetch('history/get_branch_and_employees.php?sales_id=' + serviceId)
     .then(response => response.json())
     .then(data => {
       // Populate the sections with only drivers and personnel
       populateCompleteEmployeeSection('completeDriversList', 'Driver', data.drivers);
-      populateCompleteEmployeeSection('completePersonnelList', 'Personnel', data.personnel);
+      populateCompleteEmployeeSection('completePersonnelList', 'Personnel', data.personnel);          
+      console.log('chapel use: 'data.use_chapel);
+      
+      // Handle use_chapel value
+      if (data.use_chapel === "Yes") {
+        document.getElementById('usedFuneralChapel').checked = true;
+        document.getElementById('chapelDaysContainer').classList.remove('hidden');
+      } else {
+        document.getElementById('usedFuneralChapel').checked = false;
+        document.getElementById('chapelDaysContainer').classList.add('hidden');
+      }
       
       // Show the modal
       document.getElementById('completeServiceModal').classList.remove('hidden');
