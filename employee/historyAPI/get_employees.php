@@ -18,9 +18,10 @@ if (isset($_GET['service_id'])) {
     $serviceId = $_GET['service_id'];
     debug_log("Received service_id", $serviceId);
     
-    // Get branch_id from the service
+    // Get branch_id and use_chapel from the service
     $branchId = null;
-    $branchQuery = "SELECT branch_id FROM sales_tb WHERE sales_id = ?";
+    $useChapel = "No"; // Default value
+    $branchQuery = "SELECT branch_id, use_chapel FROM sales_tb WHERE sales_id = ?";
     debug_log("Branch query", $branchQuery);
     
     $branchStmt = $conn->prepare($branchQuery);
@@ -43,7 +44,8 @@ if (isset($_GET['service_id'])) {
     if ($branchResult->num_rows > 0) {
         $branchData = $branchResult->fetch_assoc();
         $branchId = $branchData['branch_id'];
-        debug_log("Found branch_id", $branchId);
+        $useChapel = $branchData['use_chapel'] ?? "No"; // Get use_chapel value
+        debug_log("Found branch_id and use_chapel", ['branch_id' => $branchId, 'use_chapel' => $useChapel]);
     } else {
         debug_log("No branch found for service_id", $serviceId);
     }
@@ -62,7 +64,8 @@ if (isset($_GET['service_id'])) {
     $response = [
         'embalmers' => $embalmers,
         'drivers' => $drivers,
-        'personnel' => $personnel
+        'personnel' => $personnel,
+        'use_chapel' => $useChapel // Add use_chapel to response
     ];
     
     header('Content-Type: application/json');
@@ -139,4 +142,4 @@ function getEmployeesByPosition($conn, $branchId, $position) {
     ]);
     return $employees;
 }
-?> 
+?>
