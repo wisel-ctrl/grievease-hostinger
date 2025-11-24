@@ -468,6 +468,20 @@ $servicesJson = json_encode($allServices);
           <h4 class="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4 pb-2 border-b border-gray-200 flex items-center">
             Client Information
           </h4>
+          
+          <div class="mb-4">
+            <label for="clientQuickFill" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              Quick Fill - Search Existing Client
+              <span class="text-xs text-gray-500 ml-1">(Type name to search)</span>
+            </label>
+            <div class="relative">
+              <input type="text" id="clientQuickFill" name="clientQuickFill" 
+                    placeholder="Start typing client name..."
+                    class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              <div id="clientSuggestions" class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg hidden max-h-60 overflow-y-auto"></div>
+            </div>
+          </div>
+
           <div class="space-y-3 sm:space-y-4">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-2 sm:gap-4">
               <div>
@@ -552,18 +566,6 @@ $servicesJson = json_encode($allServices);
             Deceased Information
           </h4>
 
-          <div class="mb-4">
-            <label for="clientQuickFill" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              Quick Fill - Search Existing Client
-              <span class="text-xs text-gray-500 ml-1">(Type name to search)</span>
-            </label>
-            <div class="relative">
-              <input type="text" id="clientQuickFill" name="clientQuickFill" 
-                    placeholder="Start typing client name..."
-                    class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
-              <div id="clientSuggestions" class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg hidden max-h-60 overflow-y-auto"></div>
-            </div>
-          </div>
 
           <div class="space-y-3 sm:space-y-4">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-2 sm:gap-4">
