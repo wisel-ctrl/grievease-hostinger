@@ -1297,6 +1297,16 @@ function capitalizeWords(str) {
                                 <p class="text-xs text-gray-500 mt-1">Cremation and urn for 40,000 pesos</p>
                             </div>
                         </div>
+                        
+                        <div class="flex items-center mt-3 md:mt-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                            <input type="checkbox" id="traditionalUseChapel" name="use_chapel" value="yes" class="h-5 w-5 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded">
+                            <div class="ml-3">
+                                <label for="traditionalUseChapel" class="block text-sm font-medium text-navy">
+                                    Chapel Service
+                                </label>
+                                <p class="text-xs text-gray-500 mt-1">Use of chapel facilities for viewing and services , ₱6,000 per day</p>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="border-b border-gray-200 pb-4 mb-4">
@@ -3371,6 +3381,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         Swal.showLoading();
                     }
                 });
+                
+                
                 
                 fetch('booking/booking.php', {
                     method: 'POST',

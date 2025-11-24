@@ -66,6 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $service_id = $_POST['service_id'];
     $branch_id = $_POST['branch_id'];
     $with_cremate = isset($_POST['with_cremate']) && $_POST['with_cremate'] === 'yes' ? 'yes' : 'no';
+    $use_chapel = isset($_POST['use_chapel']) && $_POST['use_chapel'] === 'yes' ? 'yes' : 'no';
     $initial_price = $_POST['packagePrice'];
     $reference_code = $_POST['referenceNumber'];
     $booking_date = date('Y-m-d H:i:s'); // Current date/time in PH timezone
@@ -76,18 +77,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             INSERT INTO booking_tb (
                 customerID, deceased_fname, deceased_midname, deceased_lname, deceased_suffix,
                 deceased_address, deceased_birth, deceased_dodeath, deceased_dateOfBurial,
-                service_id, with_cremate, branch_id, initial_price, deathcert_url,
+                service_id, with_cremate, use_chapel,  branch_id, initial_price, deathcert_url,
                 payment_url, reference_code, booking_date
             ) VALUES (
-                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
             )
         ");
 
         $stmt->bind_param(
-            "issssssssisdsssss",
+            "issssssssissdsssss",
             $customerID, $deceased_fname, $deceased_midname, $deceased_lname, $deceased_suffix,
             $deceased_address, $deceased_birth, $deceased_dodeath, $deceased_dateOfBurial,
-            $service_id, $with_cremate, $branch_id, $initial_price, $deathCertPath,
+            $service_id, $with_cremate, $use_chapel, $branch_id, $initial_price, $deathCertPath,
             $paymentPath, $reference_code, $booking_date
         );
 
