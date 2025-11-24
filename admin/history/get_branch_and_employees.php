@@ -4,9 +4,10 @@ require_once '../../db_connect.php';
 if (isset($_GET['sales_id'])) {
     $salesId = $_GET['sales_id'];
     
-    // Get branch_id only for non-embalmer positions
+    // Get branch_id and use_chapel
     $branchId = null;
-    $branchQuery = "SELECT branch_id FROM sales_tb WHERE sales_id = ?";
+    $useChapel = "No"; // Default value
+    $branchQuery = "SELECT branch_id, use_chapel FROM sales_tb WHERE sales_id = ?";
     $branchStmt = $conn->prepare($branchQuery);
     $branchStmt->bind_param("i", $salesId);
     $branchStmt->execute();
@@ -15,13 +16,15 @@ if (isset($_GET['sales_id'])) {
     if ($branchResult->num_rows > 0) {
         $branchData = $branchResult->fetch_assoc();
         $branchId = $branchData['branch_id'];
+        $useChapel = $branchData['use_chapel'] ?? "No"; // Get use_chapel value
     }
     
     // Now get employees for each position type
     $response = [
-        'embalmers' => getAllEmployeesByPosition($conn, 'Embalmer'), // Get all embalmers
+        'embalmers' => getAllEmployeesByPosition($conn, 'Embalmer'),
         'drivers' => $branchId ? getEmployeesByPosition($conn, $branchId, 'Driver') : [],
-        'personnel' => $branchId ? getEmployeesByPosition($conn, $branchId, 'Personnel') : []
+        'personnel' => $branchId ? getEmployeesByPosition($conn, $branchId, 'Personnel') : [],
+        'use_chapel' => $useChapel // Add use_chapel to response
     ];
     
     header('Content-Type: application/json');
