@@ -4619,6 +4619,20 @@ function finalizeServiceCompletion() {
         });
         return;
     }
+
+    // Validate funeral chapel usage
+    if (usedChapel) {
+        const chapelDaysValue = parseInt(chapelDays);
+        if (!chapelDays || chapelDays.trim() === '' || chapelDaysValue <= 0) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Chapel Days Required',
+                text: 'Please specify the number of chapel days used (must be greater than 0).',
+                confirmButtonColor: '#3085d6',
+            });
+            return;
+        }
+    }
     
     // Get current time
     const now = new Date();
