@@ -43,6 +43,7 @@ $deathCertificateFile = isset($_FILES['deathCertificate']) ? $_FILES['deathCerti
 $paymentReceiptFile = isset($_FILES['paymentReceipt']) ? $_FILES['paymentReceipt'] : null;
 $referenceNumber = isset($_POST['referenceNumber']) ? $_POST['referenceNumber'] : null;
 $cremationSelected = isset($_POST['cremationSelected']) && $_POST['cremationSelected'] === 'yes' ? 'yes' : 'no';
+$chapelServiceSelected = isset($_POST['chapelServiceSelected']) && $_POST['chapelServiceSelected'] === 'yes' ? 'yes' : 'no';
 
 // Validate required fields
 if (!$customerId || !$branchId || !$casket || !$deceasedFirstName || !$deceasedLastName) {
@@ -122,14 +123,15 @@ try {
             booking_notes, 
             casket_id, 
             initial_price, 
-            with_cremate, 
+            with_cremate,
+            use_chapel,
             deathcert_url, 
             payment_url, 
             reference_code, 
             flower_design, 
             inclusion,
             booking_date
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ");
 
     if (!$stmt) {
@@ -138,7 +140,7 @@ try {
 
     // Bind parameters - added bookingDate at the end
     $stmt->bind_param(
-        'issssssssisidsssssss',
+        'issssssssisidssssssss',
         $customerId,
         $deceasedFirstName,
         $deceasedMiddleName,
@@ -153,6 +155,7 @@ try {
         $casket,
         $packageTotal,
         $cremationSelected,
+        $chapelServiceSelected,
         $deathCertPath,
         $paymentReceiptPath,
         $referenceNumber,
