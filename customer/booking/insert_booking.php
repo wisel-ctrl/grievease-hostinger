@@ -37,6 +37,7 @@ $deceasedAddress = isset($_POST['deceased_address']) ? $_POST['deceased_address'
 
 // Additional information
 $cremationSelected = isset($_POST['cremationSelected']) && $_POST['cremationSelected'] === 'true' ? 'yes' : 'no';
+$chapelServiceSelected = isset($_POST['chapelServiceSelected']) && $_POST['chapelServiceSelected'] === 'true' ? 'yes' : 'no';
 $referenceNumber = isset($_POST['referenceNumber']) ? $_POST['referenceNumber'] : null;
 
 // Validate required fields
@@ -95,13 +96,14 @@ try {
             deceased_address, 
             branch_id,
             initial_price, 
-            with_cremate, 
+            with_cremate,
+            use_chapel,
             deathcert_url, 
             payment_url, 
             reference_code,
             service_id,
             booking_date
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ");
 
     if (!$stmt) {
@@ -110,7 +112,7 @@ try {
 
     // Bind parameters
     $stmt->bind_param(
-        'issssssssidssssis',
+        'issssssssidsssssis',
         $customerId,
         $deceasedFirstName,
         $deceasedMiddleName,
@@ -123,6 +125,7 @@ try {
         $branchId,
         $packageTotal,
         $cremationSelected,
+        $chapelServiceSelected,
         $deathCertPath,
         $paymentPath,
         $referenceNumber,

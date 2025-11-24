@@ -1395,7 +1395,7 @@ input[type="date"]:disabled {
                     <!-- Additional Options moved here -->
                     <div class="border-b border-gray-200 pb-4 mb-4">
                         <h3 class="text-lg font-hedvig text-navy mb-4">Additional Options</h3>
-                        <div class="flex items-start border rounded-lg p-4">
+                        <div class="flex items-start border rounded-lg p-4 mb-4">
                             <input type="checkbox" id="cremationCheckbox" name="cremation" value="40000" 
                                 class="traditional-addon h-5 w-5 text-yellow-600 rounded focus:ring-yellow-500 mt-1" 
                                 data-name="Cremation Service">
@@ -1405,7 +1405,20 @@ input[type="date"]:disabled {
                                 <span class="text-yellow-600">₱40,000</span>
                             </label>
                         </div>
+                        <!-- Cremation Service Option -->
+                        <div class="flex items-start border rounded-lg p-4 mb-4">
+                            <input type="checkbox" id="chapelServiceCheckbox" name="chapel_service" value="6000" 
+                                class="traditional-addon h-5 w-5 text-yellow-600 rounded focus:ring-yellow-500 mt-1" 
+                                data-name="Chapel Service">
+                            <label for="chapelServiceCheckbox" class="ml-3">
+                                <span class="block font-medium mb-1">Chapel Service</span>
+                                <span class="block text-sm text-gray-600 mb-1">Use of chapel facilities for viewing and services</span>
+                                <span class="text-yellow-600">₱6,000 per day</span>
+                            </label>
+                        </div>
                     </div>
+                    
+                    
 
                     <!-- Payment Summary and Confirm Booking moved here -->
                     <div class="bg-cream p-4 rounded-lg">
@@ -2868,6 +2881,10 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('cremationCheckbox').addEventListener('change', function() {
         updateTraditionalPaymentSummary();
     });
+    
+    document.getElementById('chapelServiceCheckbox').addEventListener('change', function() {
+        updateTraditionalPaymentSummary();
+    });
 
     function updateTraditionalPaymentSummary() {
         const basePrice = parseInt(document.getElementById('traditionalSelectedPackagePrice').value) || 0;
@@ -2880,7 +2897,8 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             additionalCost -= parseInt(cremationCheckbox.value);
         }
-
+        
+        
         const totalPrice = basePrice + additionalCost;
         const downpayment = Math.ceil(totalPrice * 0.3);
         console.log("totalPrice: ",totalPrice);
@@ -3094,6 +3112,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             formData.append('referenceNumber', document.getElementById('traditionalReferenceNumber').value);
             formData.append('cremationSelected', document.getElementById('cremationCheckbox').checked ? 'yes' : 'no');
+            formData.append('chapelServiceSelected', document.getElementById('chapelServiceCheckbox').checked ? 'yes' : 'no');
             formData.append('packageTotal', totalPackagePrice);
             formData.append('downpayment', Math.ceil(totalPackagePrice * 0.3));
 
@@ -3194,6 +3213,7 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             additionalServices: [],
             cremationSelected: document.getElementById('cremationCheckbox').checked,
+            chapelServiceSelected: document.getElementById('chapelServiceCheckbox').checked,
             packageTotal: parseInt(document.getElementById('traditionalSelectedPackagePrice').value),
             downpayment: Math.ceil(parseInt(document.getElementById('traditionalSelectedPackagePrice').value) * 0.3),
             serviceId: document.getElementById('serviceID').value
@@ -3233,6 +3253,7 @@ document.addEventListener('DOMContentLoaded', function() {
             formData.append('packageName', packageData.packageName);
             formData.append('packagePrice', packageData.packagePrice);
             formData.append('cremationSelected', packageData.cremationSelected);
+            formData.append('chapelServiceSelected', packageData.chapelServiceSelected);
             formData.append('packageTotal', packageData.packageTotal);
 
             
