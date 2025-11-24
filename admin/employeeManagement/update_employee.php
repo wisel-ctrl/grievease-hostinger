@@ -18,8 +18,28 @@ function sanitizeInput($input) {
 $requiredFields = [
     'employeeId', 'firstName', 'lastName', 'dateOfBirth', 
     'gender', 'employeeEmail', 'employeePhone', 
-    'employeePosition', 'editPaymentStructure', 'branch'
+    'employeePosition', 'editPaymentStructure', 'branch',
+    'region', 'province', 'municipality', 'barangay',
+    'street_address', 'zip_code'
 ];
+
+// Add zip code validation
+if (empty($zip_code)) {
+    $response['message'] = "Zip code is required.";
+    echo json_encode($response);
+    exit();
+} elseif (!preg_match("/^\d{4}$/", $zip_code)) {
+    $response['message'] = "Zip code must be a 4-digit number.";
+    echo json_encode($response);
+    exit();
+}
+
+// Add street address validation
+if (empty($street_address)) {
+    $response['message'] = "Street address is required.";
+    echo json_encode($response);
+    exit();
+}
 
 foreach ($requiredFields as $field) {
     if (!isset($_POST[$field]) || empty($_POST[$field])) {
@@ -42,6 +62,14 @@ $phoneNumber = $_POST['employeePhone'];
 $position = sanitizeInput($_POST['employeePosition']);
 $paymentStructure = in_array($_POST['editPaymentStructure'], ['monthly', 'commission', 'both']) ? $_POST['editPaymentStructure'] : null;
 $branchId = filter_input(INPUT_POST, 'branch', FILTER_VALIDATE_INT);
+
+// Address IDs (for fetching names)
+$region_id = filter_input(INPUT_POST, 'region', FILTER_VALIDATE_INT);
+$province_id = filter_input(INPUT_POST, 'province', FILTER_VALIDATE_INT);
+$municipality_id = filter_input(INPUT_POST, 'municipality', FILTER_VALIDATE_INT);
+$barangay_id = filter_input(INPUT_POST, 'barangay', FILTER_VALIDATE_INT);
+$street_address = !empty($_POST['street_address']) ? sanitizeInput($_POST['street_address']) : null;
+$zip_code = !empty($_POST['zip_code']) ? sanitizeInput($_POST['zip_code']) : null;
 
 // Validate salary fields based on payment structure
 $monthlySalary = null;
@@ -75,6 +103,13 @@ if ($paymentStructure === 'commission' || $paymentStructure === 'both') {
     }
 }
 
+// Zip code validation (if provided)
+if (!empty($zip_code) && !preg_match("/^\d{4}$/", $zip_code)) {
+    $response['message'] = "Zip code must be a 4-digit number.";
+    echo json_encode($response);
+    exit();
+}
+
 // Set base_salary based on payment structure
 $baseSalary = null; // Default to NULL
 
@@ -92,14 +127,70 @@ if ($paymentStructure === 'monthly') {
 // Validate data
 if (!$employeeId || !$firstName || !$lastName || !$dateOfBirth || 
     !$gender || !$email || !$phoneNumber || !$position || 
-    !$paymentStructure || !$branchId) {
+    !$paymentStructure || !$branchId || !$region_id || 
+    !$province_id || !$municipality_id || !$barangay_id ||
+    !$street_address || !$zip_code) {
     $response['message'] = 'Invalid input data';
     echo json_encode($response);
     exit();
 }
 
 try {
-    // Prepare SQL statement
+    // Fetch address names from address database
+    $region_name = '';
+    $province_name = '';
+    $municipality_name = '';
+    $barangay_name = '';
+
+    if ($region_id) {
+        $region_sql = "SELECT region_name FROM table_region WHERE region_id = ?";
+        $region_stmt = $addressDB->prepare($region_sql);
+        $region_stmt->bind_param("i", $region_id);
+        $region_stmt->execute();
+        $region_result = $region_stmt->get_result();
+        if ($region_row = $region_result->fetch_assoc()) {
+            $region_name = $region_row['region_name'];
+        }
+        $region_stmt->close();
+    }
+
+    if ($province_id) {
+        $province_sql = "SELECT province_name FROM table_province WHERE province_id = ?";
+        $province_stmt = $addressDB->prepare($province_sql);
+        $province_stmt->bind_param("i", $province_id);
+        $province_stmt->execute();
+        $province_result = $province_stmt->get_result();
+        if ($province_row = $province_result->fetch_assoc()) {
+            $province_name = $province_row['province_name'];
+        }
+        $province_stmt->close();
+    }
+
+    if ($municipality_id) {
+        $municipality_sql = "SELECT municipality_name FROM table_municipality WHERE municipality_id = ?";
+        $municipality_stmt = $addressDB->prepare($municipality_sql);
+        $municipality_stmt->bind_param("i", $municipality_id);
+        $municipality_stmt->execute();
+        $municipality_result = $municipality_stmt->get_result();
+        if ($municipality_row = $municipality_result->fetch_assoc()) {
+            $municipality_name = $municipality_row['municipality_name'];
+        }
+        $municipality_stmt->close();
+    }
+
+    if ($barangay_id) {
+        $barangay_sql = "SELECT barangay_name FROM table_barangay WHERE barangay_id = ?";
+        $barangay_stmt = $addressDB->prepare($barangay_sql);
+        $barangay_stmt->bind_param("i", $barangay_id);
+        $barangay_stmt->execute();
+        $barangay_result = $barangay_stmt->get_result();
+        if ($barangay_row = $barangay_result->fetch_assoc()) {
+            $barangay_name = $barangay_row['barangay_name'];
+        }
+        $barangay_stmt->close();
+    }
+
+    // Prepare SQL statement with address names
     $sql = "UPDATE employee_tb SET 
             fname = ?, 
             lname = ?, 
@@ -113,14 +204,20 @@ try {
             pay_structure = ?, 
             monthly_salary = ?, 
             base_salary = ?, 
-            branch_id = ?
+            branch_id = ?,
+            region_name = ?,
+            province_name = ?,
+            municipality_name = ?,
+            barangay_name = ?,
+            street_address = ?,
+            zip_code = ?
             WHERE employeeID = ?";
     
     $stmt = $conn->prepare($sql);
     
     // Bind parameters - note the change in type definition string
     $stmt->bind_param(
-        "ssssssssssddii", 
+        "ssssssssssddissssssi", 
         $firstName, 
         $lastName, 
         $middleName, 
@@ -134,6 +231,12 @@ try {
         $monthlySalary, 
         $baseSalary, 
         $branchId,
+        $region_name,
+        $province_name,
+        $municipality_name,
+        $barangay_name,
+        $street_address,
+        $zip_code,
         $employeeId
     );
     

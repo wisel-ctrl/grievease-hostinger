@@ -5,6 +5,18 @@ include 'faviconLogo.php';
 
 require_once '../db_connect.php'; // Database connection
 
+require_once '../addressDB.php';
+
+// Fetch regions for the dropdown
+$region_sql = "SELECT region_id, region_name FROM table_region ORDER BY region_name";
+$region_result = $addressDB->query($region_sql);
+$regions = [];
+if ($region_result->num_rows > 0) {
+    while ($region_row = $region_result->fetch_assoc()) {
+        $regions[] = $region_row;
+    }
+}
+
 // Get user's first name from database
 $user_id = $_SESSION['user_id'];
 $query = "SELECT first_name , last_name , email , birthdate FROM users WHERE id = ?";
@@ -829,6 +841,79 @@ echo "</tr>";
                 placeholder="Amount">
           </div>
         </div>
+        
+        <!-- Address Selection -->
+        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
+            <label class="block text-xs font-medium text-gray-700 mb-2 flex items-center">
+                Address <span class="text-red-500">*</span>
+            </label>
+            
+            <!-- Region Dropdown -->
+            <div class="mb-3">
+                <label class="block text-xs font-medium text-gray-700 mb-1">Region</label>
+                <select id="region" name="region" required 
+                        class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200 address-dropdown"
+                        onchange="loadProvinces(this.value)">
+                    <option value="">Select Region</option>
+                    <?php foreach ($regions as $region): ?>
+                        <option value="<?php echo $region['region_id']; ?>">
+                            <?php echo htmlspecialchars($region['region_name']); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            
+            <!-- Province Dropdown -->
+            <div class="mb-3">
+                <label class="block text-xs font-medium text-gray-700 mb-1">Province</label>
+                <select id="province" name="province" required 
+                        class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200 address-dropdown"
+                        onchange="loadMunicipalities(this.value)" disabled>
+                    <option value="">Select Province</option>
+                </select>
+            </div>
+            
+            <!-- Municipality Dropdown -->
+            <div class="mb-3">
+                <label class="block text-xs font-medium text-gray-700 mb-1">Municipality/City</label>
+                <select id="municipality" name="municipality" required 
+                        class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200 address-dropdown"
+                        onchange="loadBarangays(this.value)" disabled>
+                    <option value="">Select Municipality/City</option>
+                </select>
+            </div>
+            
+            <!-- Barangay Dropdown -->
+            <div class="mb-3">
+                <label class="block text-xs font-medium text-gray-700 mb-1">Barangay</label>
+                <select id="barangay" name="barangay" required 
+                        class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200 address-dropdown"
+                        disabled>
+                    <option value="">Select Barangay</option>
+                </select>
+            </div>
+            
+            <!-- Street Address -->
+            <div class="mb-3">
+                <label for="street_address" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                    Street Address <span class="text-red-500">*</span>
+                </label>
+                <input type="text" id="street_address" name="street_address" required
+                       class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                       placeholder="House No., Street Name, Subdivision, etc.">
+            </div>
+            
+            <!-- Zip Code -->
+            <div class="mb-3">
+                <label for="zip_code" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                    Zip Code <span class="text-red-500">*</span>
+                </label>
+                <input type="text" id="zip_code" name="zip_code" required maxlength="4"
+                       class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                       placeholder="e.g., 4000"
+                       pattern="\d{4}" title="Please enter a 4-digit zip code">
+            </div>
+        </div>
 
         <!-- Gender Selection -->
         <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
@@ -1081,6 +1166,79 @@ echo "</tr>";
               Female
             </label>
           </div>
+        </div>
+        
+        <!-- Address Selection -->
+        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
+            <label class="block text-xs font-medium text-gray-700 mb-2 flex items-center">
+                Address <span class="text-red-500">*</span>
+            </label>
+            
+            <!-- Region Dropdown -->
+            <div class="mb-3">
+                <label for="editRegion" class="block text-xs font-medium text-gray-700 mb-1">Region</label>
+                <select id="editRegion" name="region" required 
+                        class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200 address-dropdown"
+                        onchange="loadProvinces(this.value, 'edit')">
+                    <option value="">Select Region</option>
+                    <?php foreach ($regions as $region): ?>
+                        <option value="<?php echo $region['region_id']; ?>">
+                            <?php echo htmlspecialchars($region['region_name']); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            
+            <!-- Province Dropdown -->
+            <div class="mb-3">
+                <label for="editProvince" class="block text-xs font-medium text-gray-700 mb-1">Province</label>
+                <select id="editProvince" name="province" required 
+                        class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200 address-dropdown"
+                        onchange="loadMunicipalities(this.value, 'edit')" disabled>
+                    <option value="">Select Province</option>
+                </select>
+            </div>
+            
+            <!-- Municipality Dropdown -->
+            <div class="mb-3">
+                <label for="editMunicipality" class="block text-xs font-medium text-gray-700 mb-1">Municipality/City</label>
+                <select id="editMunicipality" name="municipality" required 
+                        class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200 address-dropdown"
+                        onchange="loadBarangays(this.value, 'edit')" disabled>
+                    <option value="">Select Municipality/City</option>
+                </select>
+            </div>
+            
+            <!-- Barangay Dropdown -->
+            <div class="mb-3">
+                <label for="editBarangay" class="block text-xs font-medium text-gray-700 mb-1">Barangay</label>
+                <select id="editBarangay" name="barangay" required 
+                        class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200 address-dropdown"
+                        disabled>
+                    <option value="">Select Barangay</option>
+                </select>
+            </div>
+            
+            <!-- Street Address -->
+            <div class="mb-3">
+                <label for="editStreetAddress" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                    Street Address <span class="text-red-500">*</span>
+                </label>
+                <input type="text" id="editStreetAddress" name="street_address" required
+                       class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                       placeholder="House No., Street Name, Subdivision, etc.">
+            </div>
+        
+            <!-- Zip Code -->
+            <div class="mb-3">
+                <label for="editZipCode" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                    Zip Code <span class="text-red-500">*</span>
+                </label>
+                <input type="text" id="editZipCode" name="zip_code" required maxlength="4"
+                       class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                       placeholder="e.g., 4000"
+                       pattern="\d{4}" title="Please enter a 4-digit zip code">
+            </div>
         </div>
         
         <!-- Branch Selection -->
@@ -2099,13 +2257,13 @@ function filterByBranch(branchId) {
       document.getElementById('editEmployeeModal').classList.add('hidden');
     }
 
-    function fetchEmployeeData(employeeId) {
+function fetchEmployeeData(employeeId) {
   // Send AJAX request to get employee data
   fetch('employeeManagement/get_employee.php?id=' + employeeId)
     .then(response => response.json())
     .then(data => {
       if (data) {
-        // Populate the form fields
+        // Populate the form fields (existing code)
         document.getElementById('editEmployeeId').value = data.EmployeeID;
         document.getElementById('editFirstName').value = data.fname || '';
         document.getElementById('editLastName').value = data.lname || '';
@@ -2137,6 +2295,9 @@ function filterByBranch(branchId) {
           const visualRadio = branchRadio.nextElementSibling;
           visualRadio.classList.add('peer-checked:bg-gold', 'peer-checked:border-darkgold');
         }
+
+        // Load address data
+        loadEmployeeAddress(employeeId, 'edit');
       }
     })
     .catch(error => {
@@ -3384,6 +3545,266 @@ document.addEventListener('DOMContentLoaded', function() {
   window.selectBranch = selectBranch;
   window.closeBranchSelectionModal = closeBranchSelectionModal;
 });
+
+
+// Address dropdown functionality
+function loadProvinces(regionId, prefix = '') {
+    if (!regionId) {
+        resetAddressDropdowns(['province', 'municipality', 'barangay'], prefix);
+        return;
+    }
+
+    const provinceSelect = document.getElementById(prefix + 'province');
+    provinceSelect.disabled = true;
+    provinceSelect.innerHTML = '<option value="">Loading provinces...</option>';
+
+    fetch(`employeeManagement/address/get_provinces.php?region_id=${regionId}`)
+        .then(response => response.json())
+        .then(data => {
+            provinceSelect.innerHTML = '<option value="">Select Province</option>';
+            if (data && data.length > 0) {
+                data.forEach(province => {
+                    const option = document.createElement('option');
+                    option.value = province.province_id;
+                    option.textContent = province.province_name;
+                    provinceSelect.appendChild(option);
+                });
+                provinceSelect.disabled = false;
+            } else {
+                provinceSelect.innerHTML = '<option value="">No provinces found</option>';
+            }
+            resetAddressDropdowns(['municipality', 'barangay'], prefix);
+        })
+        .catch(error => {
+            console.error('Error loading provinces:', error);
+            provinceSelect.innerHTML = '<option value="">Error loading provinces</option>';
+            resetAddressDropdowns(['municipality', 'barangay'], prefix);
+        });
+}
+
+function loadMunicipalities(provinceId, prefix = '') {
+    if (!provinceId) {
+        resetAddressDropdowns(['municipality', 'barangay'], prefix);
+        return;
+    }
+
+    const municipalitySelect = document.getElementById(prefix + 'municipality');
+    municipalitySelect.disabled = true;
+    municipalitySelect.innerHTML = '<option value="">Loading municipalities...</option>';
+
+    fetch(`employeeManagement/address/get_municipalities.php?province_id=${provinceId}`)
+        .then(response => response.json())
+        .then(data => {
+            municipalitySelect.innerHTML = '<option value="">Select Municipality/City</option>';
+            if (data && data.length > 0) {
+                data.forEach(municipality => {
+                    const option = document.createElement('option');
+                    option.value = municipality.municipality_id;
+                    option.textContent = municipality.municipality_name;
+                    municipalitySelect.appendChild(option);
+                });
+                municipalitySelect.disabled = false;
+            } else {
+                municipalitySelect.innerHTML = '<option value="">No municipalities found</option>';
+            }
+            resetAddressDropdowns(['barangay'], prefix);
+        })
+        .catch(error => {
+            console.error('Error loading municipalities:', error);
+            municipalitySelect.innerHTML = '<option value="">Error loading municipalities</option>';
+            resetAddressDropdowns(['barangay'], prefix);
+        });
+}
+
+function loadBarangays(municipalityId, prefix = '') {
+    if (!municipalityId) {
+        resetAddressDropdowns(['barangay'], prefix);
+        return;
+    }
+
+    const barangaySelect = document.getElementById(prefix + 'barangay');
+    barangaySelect.disabled = true;
+    barangaySelect.innerHTML = '<option value="">Loading barangays...</option>';
+
+    fetch(`employeeManagement/address/get_barangays.php?municipality_id=${municipalityId}`)
+        .then(response => response.json())
+        .then(data => {
+            barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+            if (data && data.length > 0) {
+                data.forEach(barangay => {
+                    const option = document.createElement('option');
+                    option.value = barangay.barangay_id;
+                    option.textContent = barangay.barangay_name;
+                    barangaySelect.appendChild(option);
+                });
+                barangaySelect.disabled = false;
+            } else {
+                barangaySelect.innerHTML = '<option value="">No barangays found</option>';
+            }
+        })
+        .catch(error => {
+            console.error('Error loading barangays:', error);
+            barangaySelect.innerHTML = '<option value="">Error loading barangays</option>';
+        });
+}
+
+function resetAddressDropdowns(dropdowns, prefix = '') {
+    dropdowns.forEach(dropdown => {
+        const select = document.getElementById(prefix + dropdown);
+        select.innerHTML = '<option value="">Select ' + dropdown.charAt(0).toUpperCase() + dropdown.slice(1) + '</option>';
+        select.disabled = true;
+    });
+}
+
+// Debug function to check if elements exist
+function checkEditModalElements() {
+    const elements = [
+        'editRegion',
+        'editProvince', 
+        'editMunicipality',
+        'editBarangay',
+        'editStreetAddress',
+        'editZipCode'
+    ];
+    
+    elements.forEach(id => {
+        const element = document.getElementById(id);
+        console.log(`Element ${id}:`, element ? 'EXISTS' : 'NOT FOUND');
+    });
+}
+
+// Call this when opening the edit modal
+function openEditEmployeeModal(employeeId) {
+    document.getElementById('editEmployeeModal').classList.remove('hidden');
+    
+    // Debug: Check if elements exist
+    console.log('Checking edit modal elements...');
+    checkEditModalElements();
+    
+    // Fetch employee data and populate the form
+    fetchEmployeeData(employeeId);
+}
+
+// Function to load address data when editing an employee
+function loadEmployeeAddress(employeeId, prefix = '') {
+    console.log('Loading address for employee:', employeeId, 'Prefix:', prefix);
+    
+    fetch(`employeeManagement/address/get_employee_address.php?id=${employeeId}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log('Received employee data:', data);
+            
+            if (data && Object.keys(data).length > 0) {
+                // Set street address and zip code
+                setElementValue(prefix + 'StreetAddress', data.street_address);
+                setElementValue(prefix + 'ZipCode', data.zip_code);
+                
+                // Find and set dropdown values
+                findAddressIdsAndSetDropdowns(data, prefix);
+            } else {
+                console.log('No employee data found');
+            }
+        })
+        .catch(error => {
+            console.error('Error loading employee address:', error);
+        });
+}
+
+// Helper function to safely set element values
+function setElementValue(elementId, value) {
+    const element = document.getElementById(elementId);
+    if (element && value) {
+        element.value = value;
+        console.log(`Set ${elementId} to:`, value);
+    } else if (!element) {
+        console.warn(`Element not found: ${elementId}`);
+    }
+}
+
+// Function to find address IDs based on names and set dropdowns
+function findAddressIdsAndSetDropdowns(employeeData, prefix = '') {
+    console.log('Finding IDs for address:', employeeData); // Debug log
+    
+    // Fetch regions and find matching region
+    fetch('employeeManagement/address/get_regions.php')
+        .then(response => response.json())
+        .then(regions => {
+            console.log('All regions:', regions); // Debug log
+            
+            const region = regions.find(r => r.region_name === employeeData.region_name);
+            console.log('Found region:', region); // Debug log
+            
+            if (region) {
+                const regionSelect = document.getElementById(prefix + 'region');
+                if (regionSelect) {
+                    regionSelect.value = region.region_id;
+                    // Now load provinces for this region
+                    loadProvinces(region.region_id, prefix).then(() => {
+                        // Find matching province
+                        fetch(`employeeManagement/address/get_provinces.php?region_id=${region.region_id}`)
+                            .then(response => response.json())
+                            .then(provinces => {
+                                console.log('Provinces for region:', provinces); // Debug log
+                                
+                                const province = provinces.find(p => p.province_name === employeeData.province_name);
+                                console.log('Found province:', province); // Debug log
+                                
+                                if (province) {
+                                    const provinceSelect = document.getElementById(prefix + 'province');
+                                    if (provinceSelect) {
+                                        provinceSelect.value = province.province_id;
+                                        // Now load municipalities for this province
+                                        loadMunicipalities(province.province_id, prefix).then(() => {
+                                            // Find matching municipality
+                                            fetch(`employeeManagement/address/get_municipalities.php?province_id=${province.province_id}`)
+                                                .then(response => response.json())
+                                                .then(municipalities => {
+                                                    console.log('Municipalities for province:', municipalities); // Debug log
+                                                    
+                                                    const municipality = municipalities.find(m => m.municipality_name === employeeData.municipality_name);
+                                                    console.log('Found municipality:', municipality); // Debug log
+                                                    
+                                                    if (municipality) {
+                                                        const municipalitySelect = document.getElementById(prefix + 'municipality');
+                                                        if (municipalitySelect) {
+                                                            municipalitySelect.value = municipality.municipality_id;
+                                                            // Now load barangays for this municipality
+                                                            loadBarangays(municipality.municipality_id, prefix).then(() => {
+                                                                // Find matching barangay
+                                                                fetch(`employeeManagement/address/get_barangays.php?municipality_id=${municipality.municipality_id}`)
+                                                                    .then(response => response.json())
+                                                                    .then(barangays => {
+                                                                        console.log('Barangays for municipality:', barangays); // Debug log
+                                                                        
+                                                                        const barangay = barangays.find(b => b.barangay_name === employeeData.barangay_name);
+                                                                        console.log('Found barangay:', barangay); // Debug log
+                                                                        
+                                                                        if (barangay) {
+                                                                            const barangaySelect = document.getElementById(prefix + 'barangay');
+                                                                            if (barangaySelect) {
+                                                                                barangaySelect.value = barangay.barangay_id;
+                                                                            }
+                                                                        }
+                                                                    });
+                                                            });
+                                                        }
+                                                    }
+                                                });
+                                        });
+                                    }
+                                }
+                            });
+                    });
+                }
+            } else {
+                console.log('No matching region found for:', employeeData.region_name);
+            }
+        })
+        .catch(error => {
+            console.error('Error finding address IDs:', error);
+        });
+}
+
 </script>
 
 <footer class="bg-white rounded-lg shadow-sidebar border border-sidebar-border p-4 text-center text-sm text-gray-500 mt-8">
