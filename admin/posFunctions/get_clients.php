@@ -1,11 +1,8 @@
 <?php
-// get_clients.php
-require_once '../../db_connect.php'; // Your database connection file
+require_once '../../db_connect.php';
 
 header('Content-Type: application/json');
 
-
-// Check connection
 if ($conn->connect_error) {
     http_response_code(500);
     echo json_encode(['error' => 'Database connection failed: ' . $conn->connect_error]);
@@ -13,7 +10,8 @@ if ($conn->connect_error) {
 }
 
 try {
-    $query = "SELECT first_name, middle_name, last_name, suffix, phone_number, email FROM users WHERE user_type = 3";
+    // Add client_id to the SELECT statement
+    $query = "SELECT id as client_id, first_name, middle_name, last_name, suffix, phone_number, email FROM users WHERE user_type = 3";
     $result = $conn->query($query);
     
     if ($result === false) {

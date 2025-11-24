@@ -3782,10 +3782,10 @@ function displaySuggestions(clients) {
         return;
     }
     
-    suggestionsContainer.innerHTML = clients.map((client, index) => `
+    suggestionsContainer.innerHTML = clients.map(client => `
         <div class="client-suggestion p-3 hover:bg-gray-100 cursor-pointer border-b border-gray-200 last:border-b-0 transition-colors duration-200" 
-             data-client-index="${index}"
-             onclick="selectClient(${index})">
+             data-client-id="${client.client_id}"
+             onclick="selectClientById('${client.client_id}')">
             <div class="font-medium text-gray-800">
                 ${client.first_name} ${client.middle_name || ''} ${client.last_name} ${client.suffix || ''}
             </div>
@@ -3804,7 +3804,7 @@ function navigateSuggestions(direction, activeSuggestion) {
     let nextIndex = 0;
     
     if (activeSuggestion) {
-        const currentIndex = parseInt(activeSuggestion.dataset.clientIndex);
+        const currentIndex = Array.from(suggestions).indexOf(activeSuggestion);
         activeSuggestion.classList.remove('bg-sidebar-accent', 'text-white');
         
         if (direction === 'down') {
@@ -3816,6 +3816,32 @@ function navigateSuggestions(direction, activeSuggestion) {
     
     suggestions[nextIndex].classList.add('bg-sidebar-accent', 'text-white');
     suggestions[nextIndex].scrollIntoView({ block: 'nearest' });
+}
+
+function selectClientById(clientId) {
+    const selectedClient = allClients.find(client => client.client_id == clientId);
+    
+    console.log('Looking for client ID:', clientId);
+    console.log('Found client:', selectedClient);
+    
+    if (!selectedClient) {
+        showNotification('Error: Client data not found', 'error');
+        return;
+    }
+    
+    // Fill the form fields
+    document.getElementById('clientFirstName').value = selectedClient.first_name || '';
+    document.getElementById('clientMiddleName').value = selectedClient.middle_name || '';
+    document.getElementById('clientLastName').value = selectedClient.last_name || '';
+    document.getElementById('clientSuffix').value = selectedClient.suffix || '';
+    document.getElementById('clientPhone').value = selectedClient.phone_number || '';
+    document.getElementById('clientEmail').value = selectedClient.email || '';
+    
+    // Clear and hide suggestions
+    document.getElementById('clientQuickFill').value = '';
+    document.getElementById('clientSuggestions').classList.add('hidden');
+    
+    showNotification('Client information filled successfully!', 'success');
 }
 
 function selectClient(clientIndex) {
