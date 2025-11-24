@@ -1273,7 +1273,7 @@ function time_elapsed_string($datetime, $full = false) {
 
 function formatRevenue($revenue) {
     if ($revenue < 0) {
-        return '<span style="color: red;">(-)₱' . number_format(abs($revenue), 2) . '</span>';
+        return '<span style="color: red;">(₱' . number_format(abs($revenue), 2) . ')</span>';
     } else {
         return '₱' . number_format($revenue, 2);
     }
