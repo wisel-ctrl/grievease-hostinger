@@ -2,6 +2,7 @@
 // update_employee.php
 session_start();
 include '../../db_connect.php';
+require_once '../../addressDB.php';
 
 // Response array
 $response = [
@@ -13,6 +14,15 @@ $response = [
 function sanitizeInput($input) {
     return htmlspecialchars(trim($input));
 }
+
+
+// Address IDs (for fetching names)
+$region_id = filter_input(INPUT_POST, 'region', FILTER_VALIDATE_INT);
+$province_id = filter_input(INPUT_POST, 'province', FILTER_VALIDATE_INT);
+$municipality_id = filter_input(INPUT_POST, 'municipality', FILTER_VALIDATE_INT);
+$barangay_id = filter_input(INPUT_POST, 'barangay', FILTER_VALIDATE_INT);
+$street_address = !empty($_POST['street_address']) ? sanitizeInput($_POST['street_address']) : null;
+$zip_code = !empty($_POST['zip_code']) ? sanitizeInput($_POST['zip_code']) : null;
 
 // Validate required fields
 $requiredFields = [
@@ -63,13 +73,7 @@ $position = sanitizeInput($_POST['employeePosition']);
 $paymentStructure = in_array($_POST['editPaymentStructure'], ['monthly', 'commission', 'both']) ? $_POST['editPaymentStructure'] : null;
 $branchId = filter_input(INPUT_POST, 'branch', FILTER_VALIDATE_INT);
 
-// Address IDs (for fetching names)
-$region_id = filter_input(INPUT_POST, 'region', FILTER_VALIDATE_INT);
-$province_id = filter_input(INPUT_POST, 'province', FILTER_VALIDATE_INT);
-$municipality_id = filter_input(INPUT_POST, 'municipality', FILTER_VALIDATE_INT);
-$barangay_id = filter_input(INPUT_POST, 'barangay', FILTER_VALIDATE_INT);
-$street_address = !empty($_POST['street_address']) ? sanitizeInput($_POST['street_address']) : null;
-$zip_code = !empty($_POST['zip_code']) ? sanitizeInput($_POST['zip_code']) : null;
+
 
 // Validate salary fields based on payment structure
 $monthlySalary = null;
