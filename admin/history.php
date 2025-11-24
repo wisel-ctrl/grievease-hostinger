@@ -4319,7 +4319,7 @@ function openCompleteModal(serviceId) {
       // Populate the sections with only drivers and personnel
       populateCompleteEmployeeSection('completeDriversList', 'Driver', data.drivers);
       populateCompleteEmployeeSection('completePersonnelList', 'Personnel', data.personnel);          
-      console.log('chapel use: 'data.use_chapel);
+      console.log('chapel use: ',data.use_chapel);
       
       // Handle use_chapel value
       if (data.use_chapel === "Yes") {
