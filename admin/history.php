@@ -1806,6 +1806,63 @@ $offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
               </div>
             </div>
           </div>
+
+          <!-- Customization Notes Section -->
+          <div class="pt-2 border-t border-gray-200">
+            <h4 class="text-lg font-semibold flex items-center text-gray-800 mb-4">
+              Service Customization
+            </h4>
+            
+            <!-- Service Standards Display -->
+            <div class="mb-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+              <h5 class="text-sm font-semibold text-blue-800 mb-2 flex items-center">
+                <i class="fas fa-info-circle mr-2"></i>
+                Service Standards
+              </h5>
+              <div class="space-y-2 text-sm text-blue-700">
+                <div id="flowerDesignInfo" class="flex items-start">
+                  <span class="font-medium w-32 flex-shrink-0">Flower Replacements:</span>
+                  <span id="flowerDesignText" class="flex-1"></span>
+                </div>
+                <div id="inclusionsInfo" class="flex items-start">
+                  <span class="font-medium w-32 flex-shrink-0">Standard Inclusions:</span>
+                  <span id="inclusionsText" class="flex-1"></span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Customization Controls -->
+            <div class="flex items-center justify-between mb-3">
+              <label class="block text-sm font-medium text-gray-700">
+                Customization Notes
+              </label>
+              <button 
+                type="button" 
+                id="customizeServiceBtn"
+                class="px-3 py-1.5 bg-sidebar-accent text-white text-sm rounded-lg hover:bg-darkgold transition-colors duration-200 flex items-center"
+                onclick="toggleCustomization()"
+              >
+                <i class="fas fa-edit mr-1"></i>
+                Customize Service
+              </button>
+            </div>
+            
+            <!-- Customization Notes Textarea -->
+            <div class="relative">
+              <textarea 
+                id="customizationNotes" 
+                name="customizationNotes"
+                rows="4"
+                class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200 resize-none"
+                placeholder="Add any customization notes or special requests here..."
+                disabled
+              ></textarea>
+              <div class="absolute inset-0 bg-gray-100 bg-opacity-50 rounded-lg hidden" id="textareaOverlay"></div>
+            </div>
+            <p class="text-xs text-gray-500 mt-1">
+              Click "Customize Service" to enable editing of customization notes
+            </p>
+          </div>
           
           <!-- Deceased Information Section -->
           <div class="pt-2">
@@ -3880,6 +3937,8 @@ function openEditServiceModal(serviceId) {
         
         // Now fetch services for this branch
         fetchServicesForBranch(data.branch_id, data.service_id);
+
+        populateServiceStandards(data);
         
         // Show the modal
         document.getElementById('editServiceModal').style.display = 'flex';
@@ -3894,6 +3953,86 @@ function openEditServiceModal(serviceId) {
       console.error('Error:', error);
       alert('An error occurred while fetching service details');
     });
+}
+
+function toggleCustomization() {
+  const textarea = document.getElementById('customizationNotes');
+  const button = document.getElementById('customizeServiceBtn');
+  const overlay = document.getElementById('textareaOverlay');
+  
+  if (textarea.disabled) {
+    // Enable customization
+    textarea.disabled = false;
+    textarea.classList.remove('bg-gray-100');
+    textarea.classList.add('bg-white');
+    overlay.classList.add('hidden');
+    button.innerHTML = '<i class="fas fa-lock mr-1"></i> Lock Customization';
+    button.classList.remove('bg-sidebar-accent');
+    button.classList.add('bg-green-600');
+    
+    // Focus on the textarea
+    setTimeout(() => {
+      textarea.focus();
+    }, 100);
+  } else {
+    // Disable customization
+    textarea.disabled = true;
+    textarea.classList.remove('bg-white');
+    textarea.classList.add('bg-gray-100');
+    overlay.classList.remove('hidden');
+    button.innerHTML = '<i class="fas fa-edit mr-1"></i> Customize Service';
+    button.classList.remove('bg-green-600');
+    button.classList.add('bg-sidebar-accent');
+  }
+}
+
+// Function to populate service standards information
+function populateServiceStandards(data) {
+  // Populate flower design information
+  const flowerDesignText = document.getElementById('flowerDesignText');
+  if (data.flower_design) {
+    flowerDesignText.textContent = data.flower_design;
+  } else {
+    flowerDesignText.textContent = 'No flower replacements specified';
+    document.getElementById('flowerDesignInfo').classList.add('hidden');
+  }
+  
+  // Populate inclusions information
+  const inclusionsText = document.getElementById('inclusionsText');
+  if (data.inclusions) {
+    inclusionsText.textContent = data.inclusions;
+  } else {
+    inclusionsText.textContent = 'No standard inclusions specified';
+    document.getElementById('inclusionsInfo').classList.add('hidden');
+  }
+  
+  // Populate customization notes if they exist
+  const customizationNotes = document.getElementById('customizationNotes');
+  if (data.customization_notes) {
+    customizationNotes.value = data.customization_notes;
+  } else {
+    customizationNotes.value = '';
+  }
+}
+
+// Function to reset customization state when modal closes
+function resetCustomizationState() {
+  const textarea = document.getElementById('customizationNotes');
+  const button = document.getElementById('customizeServiceBtn');
+  const overlay = document.getElementById('textareaOverlay');
+  
+  // Ensure textarea is disabled by default
+  textarea.disabled = true;
+  textarea.classList.remove('bg-white');
+  textarea.classList.add('bg-gray-100');
+  overlay.classList.remove('hidden');
+  button.innerHTML = '<i class="fas fa-edit mr-1"></i> Customize Service';
+  button.classList.remove('bg-green-600');
+  button.classList.add('bg-sidebar-accent');
+  
+  // Show both info sections by default
+  document.getElementById('flowerDesignInfo').classList.remove('hidden');
+  document.getElementById('inclusionsInfo').classList.remove('hidden');
 }
 
 function fetchServicesForBranch(branchId, currentServiceId) {

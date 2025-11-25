@@ -10,7 +10,7 @@ if (!isset($_GET['sales_id'])) {
 
 $salesId = $_GET['sales_id'];
 
-$query = "SELECT s.*, sv.branch_id 
+$query = "SELECT s.*, sv.branch_id, sv.inclusions, sv.flower_design 
           FROM sales_tb s
           JOIN services_tb sv ON s.service_id = sv.service_id
           WHERE s.sales_id = ?";
