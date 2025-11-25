@@ -4067,6 +4067,7 @@ function closeEditServiceModal() {
   document.getElementById('editServiceModal').style.display = 'none';
   document.getElementById('customerSearch').value = '';
   toggleBodyScroll(false);
+  resetCustomizationState();
 }
 
 // Function to save changes to a service
@@ -4108,6 +4109,9 @@ function saveServiceChanges() {
   formData.append('burialDate', document.getElementById('burialDate').value);
   formData.append('deceasedAddress', document.getElementById('currentAddressDisplay').value);
   formData.append('branch', document.querySelector('input[name="branch"]:checked')?.value);
+  
+  // Add customization notes
+  formData.append('customization_notes', document.getElementById('customizationNotes').value);
 
   // Add files if they exist
   const deathCertFile = document.getElementById('deathCertificate').files[0];

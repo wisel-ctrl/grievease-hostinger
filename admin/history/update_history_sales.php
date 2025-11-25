@@ -9,7 +9,6 @@ if (!$data) {
     $data = $_POST;
 }
 
-
 if (empty($data['sales_id'])) {
     echo json_encode(['success' => false, 'message' => 'Sales ID is required']);
     exit;
@@ -106,7 +105,7 @@ try {
     $balance = $service_price - $amount_paid;
     $customer_id = !empty($data['customer_id']) ? $data['customer_id'] : NULL;
 
-    // Step 4: Update sales record with balance and file paths included
+    // Step 4: Update sales record with balance, file paths, and customization notes
     $sql = "UPDATE sales_tb SET
                 customerID = ?,
                 fname = ?,
@@ -128,7 +127,8 @@ try {
                 discounted_price = ?,
                 balance = ?,
                 death_cert_image = ?,
-                discount_id_img = ?
+                discount_id_img = ?,
+                customization_notes = ?
             WHERE sales_id = ?";
 
     $stmt = $conn->prepare($sql);
@@ -136,7 +136,10 @@ try {
         throw new Exception("Prepare failed (update): " . $conn->error);
     }
 
-    $stmt->bind_param("issssssssssssssiiddssi",
+    // Get customization notes from POST data, default to empty string if not set
+    $customization_notes = isset($data['customization_notes']) ? $data['customization_notes'] : '';
+
+    $stmt->bind_param("issssssssssssssiiddsssi",
         $customer_id,
         $data['firstName'],
         $data['middleName'],
@@ -158,6 +161,7 @@ try {
         $balance,
         $death_cert_image,
         $discount_id_img,
+        $customization_notes,
         $data['sales_id']
     );
 
@@ -174,7 +178,8 @@ try {
             'amount_paid' => $amount_paid,
             'balance' => $balance,
             'death_cert_image' => $death_cert_image,
-            'discount_id_img' => $discount_id_img
+            'discount_id_img' => $discount_id_img,
+            'customization_notes' => $customization_notes
         ]);
     } else {
         echo json_encode([
