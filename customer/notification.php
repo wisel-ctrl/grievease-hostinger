@@ -1686,6 +1686,10 @@ function getStatusText(status) {
                                         <div class="w-1/3 text-sm text-gray-500">With Cremation</div>
                                         <div class="w-2/3 font-medium text-gray-800 break-words">${data.with_cremate === 'yes' ? 'Yes' : 'No'}</div>
                                     </div>
+                                    <div class="flex flex-wrap">
+                                        <div class="w-1/3 text-sm text-gray-500">Chapel Facilities</div>
+                                        <div class="w-2/3 font-medium text-gray-800 break-words">${data.use_chapel === 'yes' ? 'Yes' : 'No'}</div>
+                                    </div>
                                 </div>
                             </div>
                         
